@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-grey.css">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="stylesheets/index.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+	<title>Bienvenue sur trocio</title>
+</head>
+<body>
+
+	<div id="connexion">
+		<div id="connexionContent" class="w3-display-middle w3-animate-opacity">
+			<h1 class="w3-center">TROCIO<span style="font-size: 0.3em; color: red"> Alpha</span></h1>
+			<div id="punchLine" class="w3-row w3-xlarge">
+				<span id="possibility" class="w3-quarter w3-right-align">Administrez</span>
+				<span class="w3-rest">&nbsp; un commerce éphémère</span>
+			</div>
+			<br>
+			<br>
+
+			<div class="w3-row">
+				<form id="formNewUser" action="#" class="w3-card w3-padding w3-margin-bottom w3-theme-l2 w3-animate-bottom w3-round " style="display: none;">
+
+					<div class="w3-row w3-center">
+						<div class="w3-half">
+							<div class="w3-col iconInput"><i class="w3-xxlarge fa fa-user"></i></div>
+							<div class=" w3-rest">
+								<input id="userNameInput" class="userInput w3-input w3-round" type="text" placeholder="Nom & prénom">
+							</div>
+						</div>
+						<div class="w3-half">
+							<div class="w3-col iconInput"><i class="w3-xxlarge fa fa-birthday-cake"></i></div>
+							<div  class="w3-rest">
+								<input id="userBirthdayInput" class="userInput w3-input w3-round" type="date" min="1900-01-01">
+							</div>
+						</div>
+					</div>
+					
+					<div class="w3-row w3-margin-top w3-center">
+						<div class="w3-half">
+							<div class="w3-col iconInput"><i class="w3-xxlarge fa fa-envelope"></i></div>
+							<div  class="w3-rest">
+								<input id="userMailInput" class="userInput w3-input w3-round" type="email" placeholder="Email">
+							</div>							
+						</div>
+						<div class="w3-half">
+							<div class="w3-col iconInput"><i class="w3-xxlarge fa fa-phone"></i></div>
+							<div  class="w3-rest">
+								<input id="userPhoneInput" class="userInput w3-input w3-round" type="tel" placeholder="Téléphone">
+							</div>						
+						</div>
+					</div>
+
+					<div class="w3-row w3-margin-top w3-center">
+						<div class="w3-half">
+							<div class="w3-col iconInput"><i class="w3-xxlarge fas fa-key"></i></div>
+							<div  class="w3-rest">
+								<input id="userNewPassword" class="userInput w3-input w3-round" type="password" placeholder="Mot de passe">
+							</div>						
+						</div>
+						<div class="w3-half">
+							<div class="w3-col iconInput"><i class="w3-xxlarge fas fa-key"></i></div>
+							<div  class="w3-rest">
+								<input id="userNewPassword2" class="userInput w3-input w3-round" type="password" placeholder="Pour être sur :)">
+							</div>						
+						</div>				
+					</div>
+
+					<div class="w3-row w3-margin-top w3-center">
+						<div id="closeFormNewUser" class="w3-half w3-button w3-round w3-red">
+							<i class="w3-xlarge fa fa-times"></i>
+						</div>
+						<div id="newUser" class="w3-half w3-button w3-round w3-green w3-disabled">
+							<i class="w3-xlarge fa fa-check"></i>
+						</div>
+					</div>	
+				</form>
+
+				<form id="formLogin" action="#" class="w3-card w3-padding w3-margin-bottom w3-theme-l2 w3-animate-bottom w3-round " style="display: none;">
+					
+					<div class="w3-row w3-margin-top w3-center">
+						<div class="w3-half">
+							<div class="w3-col iconInput"><i class="w3-xxlarge fa fa-envelope"></i></div>
+							<div  class="w3-rest">
+								<input id="userMailLogin" class="userInput w3-input w3-round" type="email" placeholder="Email">
+							</div>							
+						</div>
+						<div class="w3-half">
+							<div class="w3-col iconInput"><i class="w3-xxlarge fas fa-key"></i></div>
+							<div  class="w3-rest">
+								<input id="password" class="userInput w3-input w3-round" type="password" placeholder="Mot de passe">
+							</div>						
+						</div>			
+					</div>
+
+					<div class="w3-row w3-margin-top w3-center">
+						<div id="closeFormLogin" class="w3-half w3-button w3-round w3-red">
+							<i class="w3-xlarge fa fa-times"></i>
+						</div>
+						<div id="login" class="w3-half w3-button w3-round w3-green w3-disabled">
+							<i class="w3-xlarge fa fa-check"></i>
+						</div>
+					</div>	
+				</form>
+
+				<h5 id="openFormNewUser" class="w3-button w3-half w3-round">Nouveau compte</h5>
+				<h5 id="openFormLogin" class="w3-button w3-half w3-round">Connexion</h5>
+			</div>
+
+
+
+		</div>
+		<div id="infoSup" class="buttonNav w3-display-bottommiddle w3-center w3-margin-bottom w3-animate-opacity w3-large" style="display: none;">
+			<a href="#info">Plus d'info <i class="fas fa-arrow-down"></i></a>
+		</div>		
+	</div>
+
+	<div id="info">
+		<div class="w3-row w3-large">
+			<h4 data-contentid="infoAdmin"   class="w3-button w3-third onglet">Administrateur</h4>
+			<h4 data-contentid="infoCashier" class="w3-button w3-third onglet ongletSelect">Caissier</h4>
+			<h4 data-contentid="infoMember"  class="w3-button w3-third onglet">Membre simple</h4>
+		</div>
+
+		<div id="infoAdmin" class="infoContent" style="display: none;">
+			<div class="w3-display-middle">
+				<h1>Info administrateur</h1>
+			</div>
+		</div>
+
+		<div id="infoCashier" class="infoContent w3-row">
+
+			<ul class="functionalities w3-ul w3-hoverable w3-large w3-display-left">
+				<li data-functionality="0">Ajoutez un membre</li>
+				<li data-functionality="1">Ajoutez un article</li>
+				<li data-functionality="2">Effectuez une vente</li>
+				<li data-functionality="3">Rendre un article</li>
+				<li data-functionality="4">Effectuer un retour</li>
+			</ul>
+
+			<div class="w3-display-middle w3-large w3-center">
+				<div id="vueCashier">
+					<h2>Vue caissier</h2>
+					<p>La vue caissier permet à des membres choisis par l'administrateur de travailer pour le commerce</p>					
+				</div>
+
+				<div id="functionality0" class="functionality">
+					<h2>Ajoutez un membre</h2>
+					<p>Cliquer sur "membre" pour ajouter un membre</p>
+				</div>
+				<div id="functionality1" class="functionality">
+					<h2>Ajoutez un article</h2>
+					<p>Cliquer sur "article" pour ajouter un membre</p>
+				</div>
+				<div id="functionality2" class="functionality">
+					<h2>Effectuez une vente</h2>
+					<p>Cliquer sur "vente" pour ajouter un membre</p>
+				</div>
+			</div>
+
+			<!--<img class="w3-half w3-round w3-threequarter" src="img/Capture.GIF" alt="CreateAndSaveMember"></img>-->
+		</div>
+
+		<div id="infoMember" class="infoContent" style="display: none;">
+			<div class="w3-display-middle">
+				<h1>Info membre simple</h1>
+			</div>
+		</div>
+
+		<div class="buttonNav w3-display-bottommiddle w3-center w3-margin-bottom w3-animate-opacity w3-large" >
+			<a href="#connexion">Acceuil <i class="fas fa-arrow-up"></i></a>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="javascripts/index.js"></script>
+</body>
+</html>

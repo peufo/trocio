@@ -1,0 +1,90 @@
+html{scroll-behavior: smooth;}
+a:link{text-decoration:none;} 
+body{font-family: Raleway;}
+
+form i{
+	color: white;
+}
+#possibility{
+	width: 170px;
+}
+
+#punchLine{
+
+}
+
+#connexionContent{
+	min-width: 460px;
+}
+
+#info{
+	position: absolute;
+	border-top: 2px solid grey;
+	top: 100%;
+	width: 100%;
+	min-height: 100%;
+}
+
+
+.iconInput{
+	width: 50px
+}
+
+.buttonNav{
+	color: grey;
+}
+
+.onglet{
+	margin: 0px;
+}
+.ongletSelect{
+	background-color: rgb(224, 224, 224);
+	border-bottom: 2px solid grey;
+}
+
+.infoContent{
+	margin-top: 40px;
+}
+
+.functionalities{
+	width: 20%;
+	cursor: default;
+}
+
+.functionality{
+	display: none;
+}
+
+#formNewUser .tooltip {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#formNewUser .tooltip::after {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  margin-left: -20px;
+  border-width: 20px;
+  border-style: solid;
+  border-color: #666 #444 #555 transparent;
+}
+
+#formNewUser .tooltip:hover {
+  visibility: visible;
+  opacity: 1;
+}
+
