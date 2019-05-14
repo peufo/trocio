@@ -2,22 +2,14 @@ var mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 var trocModel = new Schema({
-	name: String,
+	name: {type: String, required: true},
 	address: String,
-	open: Date,
 	close: Date,
 	admin: [{type: Schema.Types.ObjectId, ref: 'user'}],
-	cashier: [{
-		ref: {type: Schema.Types.ObjectId, ref: 'user'},
-		can: {
-			sale: Boolean, 
-			return: Boolean, 
-			payement: Boolean, 
-			create: Boolean, 
-			modify: Boolean
-		}
-	}],
+	cashier: [{type: Schema.Types.ObjectId, ref: 'user'}],
 	art: [{type: Schema.Types.ObjectId, ref: 'article'}]
 })
+
+trocModel.set('timestamps', true)
 
 module.exports = mongoose.model('troc', trocModel);

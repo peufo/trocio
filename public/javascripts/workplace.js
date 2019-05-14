@@ -5,7 +5,6 @@ var member = {},
 	payment = {},
 	modeModifyMember = false
 
-
 	//SideBar
 	$('#openSidebar').click(function(){
 		$('#sidebar').css('display', 'block')

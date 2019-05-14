@@ -24,16 +24,35 @@ var userModel = new Schema({
 	},
 	admin: Boolean,
 	signup: {type: Date, default: Date.now},
-	provide: [{type: Schema.Types.ObjectId, ref: 'article'}],
-	buy: [{type: Schema.Types.ObjectId, ref: 'article'}],
-	pay:[{
+	trocs: [{
 		troc: {type: Schema.Types.ObjectId, ref: 'troc'},
-		amount: Schema.Types.Decimal128,
-		time: Date
-	}],
+		can: {
+			sale: Boolean, 
+			return: Boolean, 
+			payement: Boolean, 
+			create: Boolean, 
+			modify: Boolean
+		},
+		provide: [
+			{type: Schema.Types.ObjectId, ref: 'article'},
+			time: {type: Date, default: Date.now}
+		],
+		buy: [
+			{type: Schema.Types.ObjectId, ref: 'article'},
+			time: {type: Date, default: Date.now}
+		],
+		pay:[{
+			amount: Schema.Types.Decimal128,
+			time: {type: Date, default: Date.now}
+		}]
+
+	}]
+
 	loginAttempts: {type: Number, required: true, default: 0},
 	lockUntil: Number
-});
+})
+
+userModel.set('timestamps', true)
 
 userModel.virtual('isLocked').get(function() {
 	return !!(this.lockUntil && this.lockUntil > Date.now())
