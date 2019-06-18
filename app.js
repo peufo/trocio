@@ -3,58 +3,44 @@ var express = require('express')
 var path = require('path')
 var cookieParser = require('cookie-parser')
 var logger = require('morgan')
-var config = require('./config')
-var uuid = require('uuid/v4')
+var { PORT, DBPATH, SECRET } = require('./config')
 var session = require('express-session')
-var FileStore = require('session-file-store')(session)
-var passport = require('passport')
-var LocalSrategy = require('passport-local').Strategy
-
-
 var mongoose = require('mongoose')
-var db = mongoose.connect(config.database, {useNewUrlParser: true})
+var MongoStore = require('connect-mongo')(session)
 
-passport.serializeUser((user, done) => done(null, user.id))
-passport.deserializeUser((id, done) => {
-	User.findById(id, (err, user) => {
-		done(err, user)
-	})
-})
+//Connection database
+mongoose.connect(DBPATH, {useNewUrlParser: true, useCreateIndex: true})
 
-var indexRouter = require('./routes/index')
-var usersRouter = require('./routes/users')
-var articlesRouter = require('./routes/articles')
-var trocsRouter = require('./routes/trocs')
 
 var app = express()
-app.listen(3000)
+app.listen(PORT, () => {
+	console.log('Trocio listen on ' + PORT)
+})
 
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
-app.set('secret', config.secret)
+app.set('secret', SECRET)
 
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
-
-app.use('/work', session({
-	genid: (req) => {
-		return uuid() // use UUIDs for session IDs
-	},
-	store: new FileStore(),
-	secret: config.secret,
+app.use(session({
+	secret: SECRET,
+	cookie: {maxAge: 72*60*60*1000},
+  	store: new MongoStore({mongooseConnection: mongoose.connection}),
 	resave: false,
 	saveUninitialized: true
 }))
-app.use('/work', passport.initialize())
-app.use('/work', passport.session())
 
-app.use('/', indexRouter)
-app.use('/users', usersRouter)
-app.use('/articles', articlesRouter)
-app.use('/trocs', trocsRouter)
+
+//Routage	
+app.use('/', 			require('./routes/index'))
+app.use('/users', 		require('./routes/users'))
+app.use('/articles', 	require('./routes/articles'))
+app.use('/trocs', 		require('./routes/trocs'))
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -67,9 +53,9 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {}
 
-  // render the error page
-  res.status(err.status || 500)
-  res.render('error')
+  if (req.app.get('env') === 'development') console.log(err)
+
+  res.json({success: false, message: err.message})
 })
 
 module.exports = app

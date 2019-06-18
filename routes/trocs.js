@@ -82,7 +82,7 @@ router
 				troc.art = req.body.art
 				troc.save()
 				res.json(troc)
-			}else next(err || Error('Troc not found')
+			}else next(err || Error('Troc not found'))
 		})
 	})
 	.patch('/:id', (req, res, next) => {
@@ -92,28 +92,28 @@ router
 				for(p in req.body){troc[p] = req.body[p]}
 				troc.save()
 				res.json(troc)
-			}else next(err || Error('Troc not found')
+			}else next(err || Error('Troc not found'))
 		})
 	})
 	.get('/:id/articles', (req, res, next) => {
 		Troc.aggregate([{$match: {_id: ObjectId(req.params.id)}}, lookupArt], (err, troc) => {
 			if(!err && troc){
 				res.json(troc[0])
-			}else next(err || Error('Troc not found')
+			}else next(err || Error('Troc not found'))
 		})
 	})
 	.get('/:id/users', (req, res, next) => {
 		Troc.aggregate([{$match: {_id: ObjectId(req.params.id)}}, lookupAdmin, lookupCashier], (err, troc) => {
 			if (!err && troc) {
 				res.json(troc)
-			}else next(err || Error('Troc not found')
+			}else next(err || Error('Troc not found'))
 		})
 	})
 	.get('/:id/admin', (req, res, next) => {
 		Troc.aggregate([{$match: {_id: ObjectId(req.params.id)}}, lookupAdmin], (err, troc) => {
 			if (!err && troc) {
 				res.json(troc)
-			}else next(err || Error('Troc not found')
+			}else next(err || Error('Troc not found'))
 		})
 	})
 	.post('/:id/admin', (req, res, next) => {
@@ -126,14 +126,14 @@ router
 						res.json(troc)
 					}else next()
 				})
-			}else next(err || Error('User not found')
+			}else next(err || Error('User not found'))
 		})
 	})
 	.get('/:id/cashier', (req, res, next) => {
 		Troc.aggregate([{$match: {_id: ObjectId(req.params.id)}}, lookupCashier], (err, troc) => {
 			if (!err && troc) {
 				res.json(trocs)
-			}else next(err || Error('Troc not found')
+			}else next(err || Error('Troc not found'))
 		})
 	})
 	.post('/:id/cashier', (req, res, next) => {

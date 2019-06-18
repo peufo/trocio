@@ -1,13 +1,13 @@
-var express = require('express');
-var router = express.Router();
+var express = require('express')
+var { checkLogin } = require('../controllers/utils')
+var router = express.Router()
 
-/* GET home page. */
 router
-	.get('/', function(req, res, next) {
-	  res.render('index');
-	})
-	.get('/work', function(req, res, next) {
+	.get('/', checkLogin, (req, res, next) => {
 		res.render('workplace')
+	})
+	.get('/connection', (req, res, next) => {
+		res.render('index');
 	})
 
 module.exports = router;

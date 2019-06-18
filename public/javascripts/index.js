@@ -136,7 +136,10 @@ $(function(){
 	})
 
 	$('#newUser').click(() => CreateNewUser())
-	$('#login').click(() => Login())	
+	$('#login').click(() => Login({
+					mail: $('#userMailLogin').val(),
+					password: $('#password').val()
+	}))	
 
 
 	function CreateNewUser(){
@@ -162,7 +165,7 @@ $(function(){
 	function Login(user){
 		$.post('/users/login', user, function(data, status){
 			if (data.success) {
-				document.location = window.location.origin + '/work'
+				document.location = window.location.origin
 			}else{
 				alert(data.message)
 			}

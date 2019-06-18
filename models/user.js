@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 	bcrypt = require('bcrypt'),
 	passport = require('passport'),
 	SALT_WORK_FACTOR = 10,
-	MAX_LOGIN_ATTEMPTS = 5,
+	MAX_LOGIN_ATTEMPTS = 10,
 	LOCK_TIME = 2*60*60*1000 // 2h
 	EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -33,20 +33,10 @@ var userModel = new Schema({
 			create: Boolean, 
 			modify: Boolean
 		},
-		provide: [
-			{type: Schema.Types.ObjectId, ref: 'article'},
-			time: {type: Date, default: Date.now}
-		],
-		buy: [
-			{type: Schema.Types.ObjectId, ref: 'article'},
-			time: {type: Date, default: Date.now}
-		],
-		pay:[{
-			amount: Schema.Types.Decimal128,
-			time: {type: Date, default: Date.now}
-		}]
-
-	}]
+		provide: [{ type: Schema.Types.ObjectId, ref: 'article' }],
+		buy: [{ type: Schema.Types.ObjectId, ref: 'article' }],
+		pay:[{ amount: Number }]
+	}],
 
 	loginAttempts: {type: Number, required: true, default: 0},
 	lockUntil: Number
@@ -54,16 +44,16 @@ var userModel = new Schema({
 
 userModel.set('timestamps', true)
 
-userModel.virtual('isLocked').get(function() {
+userModel.virtual('isLocked').get(() => {
 	return !!(this.lockUntil && this.lockUntil > Date.now())
 })
 
 userModel.pre('save', function(next){
 	var user = this
 	if (!user.isModified('password')) return next()
-	bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt){
+	bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
 		if (err) return next(err)
-		bcrypt.hash(user.password, salt, function(err, hash){
+		bcrypt.hash(user.password, salt, (err, hash) => {
 			if (err) return next(err)
 			user.password = hash;
 			next()
@@ -71,14 +61,14 @@ userModel.pre('save', function(next){
 	})
 })
 
-userModel.methods.comparePassword = function(candidatePassword, cb){
-	bcrypt.compare(candidatePassword, this.password, function(err, isMatch){
+userModel.methods.comparePassword = function(candidatePassword, cb) {
+	bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
 		if (err) return cb(err)
 		cb(null, isMatch)
 	})
 }
 
-userModel.methods.incLoginAttempts = function(cb){
+userModel.methods.incLoginAttempts = function(cb) {
 	if (this.lockUntil && this.lockUntil < Date.now()) {
 		return this.update({
 			$set: {loginAttempts: 1},
@@ -98,33 +88,35 @@ var reasons = userModel.statics.failedLogin = {
 	MAX_ATTEMPTS: 2
 }
 
-userModel.statics.getAuthenticated = function(mail, password, cb){
+userModel.statics.getAuthenticated = function(mail, password, cb) {
 
-	this.findOne({mail: mail}, function(err, user){
+	this.findOne({mail: mail}, (err, user) => {
+		console.log('matched')
 		if (err) return cb(err)
 		if (!user) return cb(null, null, reasons.NOT_FOUND)
 		if (user.isLocked) {
-			return user.incLoginAttempts(function(err){
+			return user.incLoginAttempts(err =>{
 				if (err) return cb(err)
 				return cb(null, null, reasons.MAX_ATTEMPTS)
 			})
 		}
 
-		user.comparePassword(password, function(err, isMatch){
+		user.comparePassword(password, (err, isMatch) => {
 			if (err) return cb(err)
 			if (isMatch) {
+				console.log('matched')
 				if (!user.loginAttempts && !user.lockUntil) return cb(null, user)
 				var updates = {
 					$set: {loginAttempts: 0},
 					$unset: {lockUntil: 1}
 				}
-				return user.update(updates, function(err){
+				return user.update(updates, err => {
 					if (err) return cb(err)
 					return cb(null, user)
 				})
 			}
 
-			user.incLoginAttempts(function(err){
+			user.incLoginAttempts(err => {
 				if (err) return cd(err)
 				return cb(null, null, reasons.PASSWORD_INCORRECT)
 			})

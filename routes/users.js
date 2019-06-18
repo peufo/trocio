@@ -1,86 +1,35 @@
 var express 	= require('express')
 var User 		= require('../models/user')
 var ObjectId 	= require('mongoose').Types.ObjectId
-var router 		= express.Router()
-var jwt 		= require('jsonwebtoken')
-var config      = require('../config');
-
+var router = express.Router()
+var config = require('../config')
+var { login, checkLogin } = require('../controllers/utils')
 
 var lookupBuy = {$lookup: {from: 'article', foreignField: '_id', localField: 'buy', as: 'buy'}}
 var lookupProvide = {$lookup: {from: 'article', foreignField: '_id', localField: 'provide', as: 'provide'}}
 
-/* GET users listing. */
 router
-	.post('/', (req, res) => {
+	.post('/', (req, res, next) => {
 		var user = new User(req.body);
-		user.save(function(err){
+		user.save(err => {
 			if (!err) {
 				res.status(201).json({success: true, massage: 'Inscritpion réussie!'})
-			}else{
-				res.json({success: false, message: 'Ce mail est déjà utilisé pour un autre compte!'})
-			}
+			}else next(err)
 		})
 	})
-	.post('/login', (req, res) => {
-		User.getAuthenticated(req.body.mail, req.body.password, function(err, user, reason){
-			if (!err) {
-				if (user) {
-					// TODO envoyer l'id
-					var payload = {admin: user.admin}
-					var token = jwt.sign(payload, config.secret, {expiresIn: '24h'})
-					res.json({
-						success: true,
-						message: 'Connecté',
-						token: token
-					})
-				}else{
-					var reasons = User.failedLogin
-					switch(reason){
-						case reasons.NOT_FOUND:
-							res.json({
-								success: false,
-								message: 'Le mail indiqué n\'est pas associé à un compte!'
-							})
-							break
-						case reasons.PASSWORD_INCORRECT:
-							res.json({
-								success: false,
-								message: 'Mot de passe invalide!'
-							})
-							break
-						case reasons.MAX_ATTEMPTS:
-							res.json({
-								success: false,
-								message: 'Ce compte est temporairement verrouillé!'
-							})	
-							break
-						default:
-							res.json({
-								success: false,
-								message: 'Erreur, raison introuvable!'
-							})
-					}
-				}
-			}else{
-				res.json({
-					success: false,
-					message: 'Erreur!'
-				})
-			}
-		})
-	})
-	.get('/', (req, res, next) => {
+	.post('/login', login)
+	.get('/', (req, res, next) => { //doit être sécurisé...
 		User.find({}, (err, users) => {
 			if (!err){
 				res.json(users)
-			}else next()
+			}else next(err)
 		})
 	})
 	.get('/articles', (req, res, next) => {
 		User.aggregate([lookupBuy, lookupProvide], (err, user) => {
 			if (!err){
 				res.json(user)
-			}else next()
+			}else next(err)
 		})
 	})
 	.get('/events', (req, res, next) => {
@@ -89,14 +38,14 @@ router
 				var events = []
 				users.forEach(user => events = [...events, ...GetUserEvents(user)])
 				res.json(events)		
-			}else next()
+			}else next(err)
 		})
 	})
 	.get('/:id', (req, res, next) => {
 		User.findById(req.params.id, (err, user) => {
 			if (!err){
 				res.json(user)
-			}else next()
+			}else next(err)
 		})
 	})
 	.put('/:id', (req, res, next) => {
@@ -108,7 +57,7 @@ router
 				user.mail = req.body.mail
 				user.save()
 				res.json(user)
-			}else next()
+			}else next(err)
 		})
 	})
 	.patch('/:id', (req, res, next) => {
@@ -118,7 +67,7 @@ router
 				for (var p in req.body){user[p] = req.body[p]}
 				user.save()
 				res.json(user)
-			}else next()
+			}else next(err)
 		})
 	})
 	.delete('/:id', (req, res, next) => {
@@ -127,20 +76,16 @@ router
 				user.remove(err => {
 					if (!err) {
 						res.status(204).send('removed')
-					}else{
-						next()
-					}
+					}else next(err)
 				})
-			}else {
-				next()
-			}
+			}else next(err)
 		})
 	})
 	.get('/:id/articles', (req, res, next) => {
 		User.aggregate([{$match: {_id: ObjectId(req.params.id)}}, lookupProvide, lookupBuy], (err, users) => {
 			if (!err && users.length > 0){
 				res.json(users[0])
-			}else next()
+			}else next(err)
 		})
 	})
 	.get('/:id/events', (req, res, next) => {
@@ -148,7 +93,7 @@ router
 			if (!err && users.length > 0){
 				var events = GetUserEvents(users[0])
 				res.json(events)		
-			}else next()
+			}else next(err)
 		})
 	})
 
