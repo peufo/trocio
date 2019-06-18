@@ -3,7 +3,7 @@ var User 		= require('../models/user')
 var ObjectId 	= require('mongoose').Types.ObjectId
 var router = express.Router()
 var config = require('../config')
-var { login, checkLogin } = require('../controllers/utils')
+var { login, checkLogin, logout } = require('../controllers/utils')
 
 var lookupBuy = {$lookup: {from: 'article', foreignField: '_id', localField: 'buy', as: 'buy'}}
 var lookupProvide = {$lookup: {from: 'article', foreignField: '_id', localField: 'provide', as: 'provide'}}
@@ -18,6 +18,11 @@ router
 		})
 	})
 	.post('/login', login)
+	.get('/me', checkLogin, (req, res, next) => {
+		var {name, mail, phone, birth} = req.session.user
+		res.json({name, mail, phone, birth})
+	})
+	.get('/logout', logout)
 	.get('/', (req, res, next) => { //doit être sécurisé...
 		User.find({}, (err, users) => {
 			if (!err){

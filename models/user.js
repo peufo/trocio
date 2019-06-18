@@ -23,7 +23,6 @@ var userModel = new Schema({
 		required: true
 	},
 	admin: Boolean,
-	signup: {type: Date, default: Date.now},
 	trocs: [{
 		troc: {type: Schema.Types.ObjectId, ref: 'troc'},
 		can: {
@@ -91,7 +90,6 @@ var reasons = userModel.statics.failedLogin = {
 userModel.statics.getAuthenticated = function(mail, password, cb) {
 
 	this.findOne({mail: mail}, (err, user) => {
-		console.log('matched')
 		if (err) return cb(err)
 		if (!user) return cb(null, null, reasons.NOT_FOUND)
 		if (user.isLocked) {
@@ -104,7 +102,6 @@ userModel.statics.getAuthenticated = function(mail, password, cb) {
 		user.comparePassword(password, (err, isMatch) => {
 			if (err) return cb(err)
 			if (isMatch) {
-				console.log('matched')
 				if (!user.loginAttempts && !user.lockUntil) return cb(null, user)
 				var updates = {
 					$set: {loginAttempts: 0},

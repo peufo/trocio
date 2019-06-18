@@ -41,6 +41,11 @@ module.exports = {
 				}else next(err)
 			})			
 		}
+	},
+
+	logout: (req, res, next) => {
+		req.session.user = undefined
+		res.redirect('/connection')
 	}
 }
 

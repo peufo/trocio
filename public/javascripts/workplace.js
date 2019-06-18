@@ -5,17 +5,6 @@ var member = {},
 	payment = {},
 	modeModifyMember = false
 
-	//SideBar
-	$('#openSidebar').click(function(){
-		$('#sidebar').css('display', 'block')
-		$('#bodyContent').css('margin-left', '200px')		
-	})
-
-	$('#closeSidebar').click(function(){
-		$('#sidebar').css('display', 'none')
-		$('#bodyContent').css('margin-left', '0px')		
-	})
-
 	//Notification
 	var notifyId = 0
 	function Notify(content, error = false){
