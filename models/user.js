@@ -1,7 +1,6 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	bcrypt = require('bcrypt'),
-	passport = require('passport'),
 	SALT_WORK_FACTOR = 10,
 	MAX_LOGIN_ATTEMPTS = 10,
 	LOCK_TIME = 2*60*60*1000 // 2h

@@ -46,8 +46,8 @@
 
 	{#if menuOpen && $me.trocs}
 		<div id="sidebar" in:fly="{{x: -300}}" class="w3-col m2 w3-theme-d2">
-			<div class="w3-theme-d4 w3-padding w3-large">Mes trocs</div>
 			{#if $me.trocs.length}
+				<div class="w3-theme-d4 w3-padding w3-large">Mes trocs</div>
 				<ul id="trocs" class="w3-ul">
 				{#each $me.trocs as myTroc}
 					<li in:slide
@@ -55,12 +55,12 @@
 						class:w3-theme-d3="{$troc == myTroc.troc}"
 						on:click="{(e) => selectTroc(e, myTroc.troc)}">
 						{myTroc.troc.name}
+						<i class="fa fa-store"></i>
+						
 						<i class="w3-right fa fa-cog w3-xlarge"></i>
 					</li>
 				{/each}
 				</ul>
-			{:else}
-				Vous n'avez encore de troc !
 			{/if}
 
 			<div class="clickable w3-theme-d4 w3-padding w3-large ">
