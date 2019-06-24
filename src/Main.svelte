@@ -55,9 +55,10 @@
 						class:w3-theme-d3="{$troc == myTroc.troc}"
 						on:click="{(e) => selectTroc(e, myTroc.troc)}">
 						{myTroc.troc.name}
-						<i class="fa fa-store"></i>
-						
-						<i class="w3-right fa fa-cog w3-xlarge"></i>
+						<span  class="w3-right w3-xlarge">
+							<i class="fas fa-cash-register"></i>
+							<i class="fa fa-cog"></i>							
+						</span>
 					</li>
 				{/each}
 				</ul>
@@ -98,9 +99,8 @@
 </div>
 
 
-
-
 <svelte:head>
+	<script src="https://kit.fontawesome.com/4eb68e6a9e.js"></script>
 	<style>html, body {height: 100%;}</style>
 </svelte:head>
 
@@ -130,7 +130,7 @@
 	}
 
 	#trocs li:hover i {
-		display: inline;
+		display: inline-block;
 	}
 
 	#trocs i:hover {

@@ -12,11 +12,7 @@ const production = !process.env.ROLLUP_WATCH
 function getInput(name) {
 	return [
 		`src/${name}.js`,
-		'node_modules/w3-css',
-		'node_modules/@fortawesome/fontawesome-free/css/all.css',
-		'node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2',
-		'node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff',
-		'node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2'
+		'node_modules/w3-css'
 	]
 }
 function getOutput(name) {
