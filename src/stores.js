@@ -1,6 +1,7 @@
-import { readable } from 'svelte/store'
+import { writable } from 'svelte/store'
 
-export let me = new readable([], getMe)
+export let me = new writable([], getMe)
+export let troc = new writable({})
 
 function getMe(set) {
 	fetch('users/me').then(res => res.json()).then(set)

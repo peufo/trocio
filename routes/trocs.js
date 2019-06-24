@@ -19,9 +19,22 @@ router
 		})
 	})
 	.post('/', (req, res, next) => {
+		if (!req.session.user) return next(Error('Login required'))
+
 		var troc = new Troc(req.body)
-		troc.save()
-		res.status(201).json(troc)
+		troc.admin = [req.session.user._id]
+		troc.save(err => {
+			if (err) return next(err)
+			
+			User.findOne({_id: req.session.user._id}, (err, user) => {
+				if (err || !user) return next(err || Error('User not found !'))
+				user.trocs.push({ troc: troc._id })
+				user.save(err => {
+					if (err) return next(err)
+					res.status(201).json({success: true, message: troc})
+				})
+			})
+		})
 	})
 	.get('/articles', (req, res, next) => {
 		Troc.aggregate([lookupArt], (err, trocs) => {

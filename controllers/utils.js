@@ -6,7 +6,7 @@ module.exports = {
 		if (req.session.user) {
 			next()
 		}else{
-			res.redirect('connection')
+			res.redirect('/welcome')
 		}
 	},
 
@@ -45,7 +45,7 @@ module.exports = {
 
 	logout: (req, res, next) => {
 		req.session.user = undefined
-		res.redirect('/connection')
+		res.redirect('/welcome')
 	}
 }
 

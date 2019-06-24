@@ -6,7 +6,7 @@ router
 	.get('/', checkLogin, (req, res, next) => {
 		res.render('workplace')
 	})
-	.get('/connection', (req, res, next) => {
+	.get('/welcome', (req, res, next) => {
 		res.render('index');
 	})
 

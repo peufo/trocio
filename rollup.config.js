@@ -45,8 +45,8 @@ const plugins = [
 
 
 export default [{
-	input: getInput('workplace'),
-	output: getOutput('workplace'),
+	input: getInput('main'),
+	output: getOutput('main'),
 	plugins,
 	watch: {clearScreen: false}
 }]

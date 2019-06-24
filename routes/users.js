@@ -19,8 +19,13 @@ router
 	})
 	.post('/login', login)
 	.get('/me', checkLogin, (req, res, next) => {
-		var {name, mail, phone, birth} = req.session.user
-		res.json({name, mail, phone, birth})
+		User.findOne({_id: req.session.user._id}, {name: 1, trocs: 1})
+			.populate('trocs.troc')
+			.exec((err, user) => {
+			if (err || !user) return next(err || Error('User not found !'))
+			res.json(user)
+		})
+
 	})
 	.get('/logout', logout)
 	.get('/', (req, res, next) => { //doit être sécurisé...

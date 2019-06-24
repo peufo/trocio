@@ -12,31 +12,15 @@ var userModel = new Schema({
 	ref: Number, //Old id
 	birth: Date,
 	phone: String,
-	mail: {
-		type: String,		
-		required: true,
-		lowercase: true,
-		unique: true
-	},
-	password: {
-		type: String,
-		required: true
-	},
+	mail: { type: String, required: true, lowercase: true, unique: true },
+	password: { type: String, required: true },
 	admin: Boolean,
 	trocs: [{
 		troc: {type: Schema.Types.ObjectId, ref: 'troc'},
-		can: {
-			sale: Boolean, 
-			return: Boolean, 
-			payement: Boolean, 
-			create: Boolean, 
-			modify: Boolean
-		},
 		provide: [{ type: Schema.Types.ObjectId, ref: 'article' }],
 		buy: [{ type: Schema.Types.ObjectId, ref: 'article' }],
 		pay:[{ amount: Number }]
 	}],
-
 	loginAttempts: {type: Number, required: true, default: 0},
 	lockUntil: Number
 })
