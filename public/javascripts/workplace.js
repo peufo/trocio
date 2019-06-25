@@ -5,20 +5,6 @@ var member = {},
 	payment = {},
 	modeModifyMember = false
 
-	//Notification
-	var notifyId = 0
-	function Notify(content, error = false){
-		var myNotifyId = notifyId
-		notifyId++
-		$('#notifyContener').prepend('<div id="notify'
-			+ 	myNotifyId 
-			+	'" class="w3-right-align w3-round w3-animate-right" style="padding: 5px; margin-bottom: 2px;">'
-			+	content + '</div>')
-		if(error){$('#notify'+ myNotifyId).addClass('w3-red')}
-		else{$('#notify'+ myNotifyId).addClass('w3-theme-l4')}
-		window.setTimeout(function(){$('#notify'+ myNotifyId).remove()}, 4000)
-	}
-
 	//socket.on('notify_error', function(data){Notify(data, true)})
 	//socket.on('connect_error', function(err) {Notify('Connection absente !', true)});
 

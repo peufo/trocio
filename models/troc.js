@@ -15,13 +15,7 @@ var trocModel = new Schema({
 	cashier: [{type: Schema.Types.ObjectId, ref: 'user'}],
 	articles: [{type: Schema.Types.ObjectId, ref: 'article'}],
 	config: {
-		cashiercan: [{
-			sale: Boolean,
-			return: Boolean,
-			payement: Boolean,
-			create: Boolean,
-			modify: Boolean
-		}]
+		
 		//marge, regle, etc
 	}
 })

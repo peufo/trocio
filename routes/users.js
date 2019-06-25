@@ -20,7 +20,7 @@ router
 	.post('/login', login)
 	.get('/me', checkLogin, (req, res, next) => {
 		User.findOne({_id: req.session.user._id}, {name: 1, trocs: 1})
-			.populate('trocs.troc')
+			.populate('trocs.troc', 'name admin cashier')
 			.exec((err, user) => {
 			if (err || !user) return next(err || Error('User not found !'))
 			res.json(user)

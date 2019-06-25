@@ -12,7 +12,7 @@ var lookupProvider = {$lookup: {from: 'users', foreignField: '_id', localField: 
 
 router
 	.get('/', (req, res, next) => {
-		Troc.aggregate([{$match: {}}], (err, trocs) => {
+		Troc.find(req.query, (err, trocs) => {
 			if (!err){
 				res.json(trocs)
 			}else next()
@@ -22,7 +22,7 @@ router
 		if (!req.session.user) return next(Error('Login required'))
 
 		var troc = new Troc(req.body)
-		troc.admin = [req.session.user._id]
+		troc.admin = troc.cashier = [req.session.user._id]
 		troc.save(err => {
 			if (err) return next(err)
 			
@@ -83,29 +83,17 @@ router
 			}else next()
 		})
 	})
-	.put('/:id', (req, res, next) => {
-		Troc.findById(req.params.id, (err, troc) => {
-			if(!err && troc) {
-				troc.name = req.body.name
-				troc.address = req.body.address
-				troc.open = req.body.open
-				troc.close = req.body.close
-				troc.admin = req.body.admin
-				troc.cashier = req.body.cashier
-				troc.art = req.body.art
-				troc.save()
-				res.json(troc)
-			}else next(err || Error('Troc not found'))
-		})
-	})
 	.patch('/:id', (req, res, next) => {
+		if (!req.session.user) return next(Error('Login required'))
 		Troc.findById(req.params.id, (err, troc) => {
-			if(!err && troc){
-				if (req.body._id) delete req.body._id
-				for(p in req.body){troc[p] = req.body[p]}
-				troc.save()
-				res.json(troc)
-			}else next(err || Error('Troc not found'))
+			if(err || !troc) return next(err || Error('Troc not found'))
+			if (req.body._id) delete req.body._id
+			for(p in req.body){troc[p] = req.body[p]}
+			troc.save(err => {
+				if (err) return next(err)
+				res.json({success: true, message: troc})
+			})
+			
 		})
 	})
 	.get('/:id/articles', (req, res, next) => {
