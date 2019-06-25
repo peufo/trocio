@@ -25,11 +25,20 @@ router
 			if (err || !user) return next(err || Error('User not found !'))
 			res.json(user)
 		})
-
 	})
 	.get('/logout', logout)
-	.get('/', (req, res, next) => { //doit être sécurisé...
-		User.find({}, (err, users) => {
+	.get('/', (req, res, next) => {
+		User.find(req.query, {name: 1}, (err, users) => {
+			if (!err){
+				res.json(users)
+			}else next(err)
+		})
+	})
+	.get('/search/:search', (req, res, next) => {
+		var regexp = new RegExp(req.params.search, 'i')
+		User.find({$or: [{name: regexp}, {mail: regexp}]}, {name: 1, mail: 1})
+			.limit(10)
+			.exec((err, users) => {
 			if (!err){
 				res.json(users)
 			}else next(err)
@@ -58,37 +67,15 @@ router
 			}else next(err)
 		})
 	})
-	.put('/:id', (req, res, next) => {
-		User.findById(req.params.id, (err, user) => {
-			if (!err && user){
-				user.name = req.body.name
-				user.birth = req.body.birth
-				user.phone = req.body.phone
-				user.mail = req.body.mail
-				user.save()
-				res.json(user)
-			}else next(err)
-		})
-	})
 	.patch('/:id', (req, res, next) => {
 		User.findById(req.params.id, (err, user) => {
-			if (!err && user){
-				if (req.body._id) delete req.body._id
-				for (var p in req.body){user[p] = req.body[p]}
-				user.save()
+			if (err || !user) return next(err || Error('User not found !'))
+			if (req.body._id) delete req.body._id
+			for (var p in req.body){user[p] = req.body[p]}
+			user.save(err => {
+				if (err) return next(err)
 				res.json(user)
-			}else next(err)
-		})
-	})
-	.delete('/:id', (req, res, next) => {
-		User.findById(req.params.id, (err, user) => {
-			if (!err && user){
-				user.remove(err => {
-					if (!err) {
-						res.status(204).send('removed')
-					}else next(err)
-				})
-			}else next(err)
+			})
 		})
 	})
 	.get('/:id/articles', (req, res, next) => {

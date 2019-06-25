@@ -20,8 +20,10 @@
 		.then(res => res.json())
 		.then(json => {
 			if (json.success) {
-				$me.trocs = [...$me.trocs, {troc: json.message}]
-				$troc = json.message
+				let newTroc = json.message
+				newTroc.admin.name = newTroc.cashier.name = $me.name
+				$me.trocs = [...$me.trocs, {troc: newTroc}]
+				$troc = newTroc
 				open = false
 			}else{
 				//alert(json.message)

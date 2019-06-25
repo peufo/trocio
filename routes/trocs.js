@@ -77,7 +77,10 @@ router
 		})
 	})
 	.get('/:id', (req, res, next) => {
-		Troc.findById(req.params.id, (err, troc) => {
+		Troc.findById(req.params.id)
+			.populate('admin', 'name mail')
+			.populate('cashier', 'name mail')
+			.exec((err, troc) => {
 			if(!err){
 				res.json(troc)
 			}else next()
@@ -85,7 +88,10 @@ router
 	})
 	.patch('/:id', (req, res, next) => {
 		if (!req.session.user) return next(Error('Login required'))
-		Troc.findById(req.params.id, (err, troc) => {
+		Troc.findById(req.params.id)
+			.populate('admin', 'name mail')
+			.populate('cashier', 'name mail')
+			.exec((err, troc) => {
 			if(err || !troc) return next(err || Error('Troc not found'))
 			if (req.body._id) delete req.body._id
 			for(p in req.body){troc[p] = req.body[p]}

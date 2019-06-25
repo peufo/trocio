@@ -6,10 +6,12 @@
 	import Create from './Create.svelte'
 
 
-	let vue = ''
+	let vue = 'ADMIN'
 	let menuOpen = true
 	let openCreate = false
 
+	//Pour test
+	fetch(`/trocs/5d1250880a7b003560d5e001`).then(res => res.json()).then(json => $troc = json)
 
 	function selectTroc(e, myTroc) {
 
@@ -112,7 +114,13 @@
 
 <svelte:head>
 	<script src="https://kit.fontawesome.com/4eb68e6a9e.js"></script>
-	<style>html, body {height: 100%;}</style>
+	<style>
+		html, body {height: 100%;}
+		::-webkit-scrollbar { width: 10px; }
+		::-webkit-scrollbar-track { background: #f1f1f1; }
+		::-webkit-scrollbar-thumb { background: #888; }
+		::-webkit-scrollbar-thumb:hover { background: #555; }
+	</style>
 </svelte:head>
 
 <style>
@@ -126,8 +134,10 @@
 		color: black;
 	}
 	#vue {
-		height: calc(100% - 52px)
+		height: calc(100% - 52px);
+		overflow-y: auto;
 	}
+
 	#sidebar {
 		height: 100%;
 		width: 300px;
@@ -135,6 +145,12 @@
 		z-index: 100;
 		box-shadow: 5px 2px 5px grey;
 	}
+	#sidebar ul {
+		height: calc(100% - 288px);
+		overflow-y: auto;
+
+	}
+
 	#trocSelected {
 		position: fixed;
 		left: 165px;
