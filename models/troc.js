@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const ObjectId = Schema.Types.ObjectId
 
 var trocModel = new Schema({
 	name: {type: String, required: true},
@@ -11,13 +12,19 @@ var trocModel = new Schema({
 	description: {type: String, required: true},
 	open: {type: Date, required: true},
 	close: {type: Date, required: true},
-	admin: [{type: Schema.Types.ObjectId, ref: 'user'}],
-	cashier: [{type: Schema.Types.ObjectId, ref: 'user'}],
-	articles: [{type: Schema.Types.ObjectId, ref: 'article'}],
+	creator: {type: ObjectId, ref: 'user', required: true},
+	admin: [{type: ObjectId, ref: 'user'}],
+	cashier: [{type: ObjectId, ref: 'user'}],
+	articles: [{type: ObjectId, ref: 'article'}],
 	config: {
 		
 		//marge, regle, etc
-	}
+	},
+	payment:[{
+		user : {type: ObjectId, ref: 'user'},
+		time : Date,
+		amount: Number
+	}]	
 })
 
 trocModel.set('timestamps', true)

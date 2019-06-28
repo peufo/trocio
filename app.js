@@ -36,10 +36,10 @@ app.use(session({
 
 
 //Routage	
-app.use('/', 			require('./routes/index'))
-app.use('/users', 		require('./routes/users'))
-app.use('/articles', 	require('./routes/articles'))
-app.use('/trocs', 		require('./routes/trocs'))
+app.use('/', 			    require('./routes/index'))
+app.use('/users', 		require('./routes/user'))
+app.use('/articles', 	require('./routes/article'))
+app.use('/trocs', 		require('./routes/troc'))
 
 
 // catch 404 and forward to error handler

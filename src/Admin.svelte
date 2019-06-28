@@ -3,8 +3,8 @@
 	import { fade } from 'svelte/transition'
 	import EditForm from './EditForm.svelte'
 	import SearchUser from './SearchUser.svelte'
+	import { getHeader, updateTroc } from './utils'
 
-	$: console.log($troc)
 
 	let tabs = ['Informations', 'Travailleurs', 'Tarifications', 'Statistique', 'Correction']
 	let tabSelected = 1
@@ -13,23 +13,36 @@
 	let searchCashier = ''
 
 
-	function save(e) {
-		fetch(`/trocs/${$troc._id}`, {
-			method: 'PATCH',
-			headers: {"Content-Type": "application/json"},
-			body: JSON.stringify(e.detail)
-		})
+	function saveMeta(e) {
+		fetch(`/trocs/${$troc._id}`, getHeader(e.detail, 'PATCH'))
 		.then(res => res.json())
-		.then(json => {
-			if (json.success) {
-				let index = $me.trocs.map(t => t.troc._id).indexOf($troc._id)
-				$me.trocs[index].troc = json.message
-				$troc = json.message
-			}else{
-				alert('Erreur !')
-			}
-		})
+		.then(updateTroc)
 	}
+
+	function addAdmin(e) {
+		fetch(`/trocs/${$troc._id}/admin`, getHeader({admin: e.detail._id}))
+		.then(res => res.json())
+		.then(json => updateTroc(json, () => searchAdmin = ''))
+	}
+
+	function addCashier(e) {
+		fetch(`/trocs/${$troc._id}/cashier`, getHeader({cashier: e.detail._id}))
+		.then(res => res.json())
+		.then(json => updateTroc(json, () => searchCashier = ''))
+	}
+
+	function removeAdmin(admin) {
+		fetch(`/trocs/${$troc._id}/admin/remove`, getHeader({admin: admin._id}))
+		.then(res => res.json())
+		.then(updateTroc)
+	}
+
+	function removeCashier(cashier) {
+		fetch(`/trocs/${$troc._id}/cashier/remove`, getHeader({cashier: cashier._id}))
+		.then(res => res.json())
+		.then(updateTroc)
+	}
+
 
 </script>
 
@@ -50,10 +63,10 @@
 
 	{#if tabSelected == 0}			<!-- Apercu -->
 	<div in:fade>
-		<EditForm on:save={save} />
+		<EditForm on:save={saveMeta} />
 	</div>
 
-	{:else if tabSelected == 1 && $troc.admin}		<!-- Worker  TODO: supprimier le test && $troc.admin-->
+	{:else if tabSelected == 1 && $troc && $troc.admin}		<!-- Worker  TODO: supprimer le test && $troc.admin-->
 	<div in:fade>
 
 		<div class="w3-col m6 w3-padding">
@@ -65,13 +78,15 @@
 						{admin.name}
 						<em class="w3-right w3-small">{admin.mail}</em>						
 					</div>&nbsp;
-					<i class="fa fa-times w3-large w3-right"></i>
+					<i 	on:click="{() => removeAdmin(admin)}"
+						class="fa fa-times w3-large w3-right"></i>
 				</li>
 			{/each}
 				<li>
 					<input bind:value={searchAdmin} type="text" class="w3-input" placeholder="Nouvel administrateur">
 					<SearchUser search={searchAdmin}
-								exepted="{$troc.admin}"/>
+								exepted="{$troc.admin}"
+								on:select={addAdmin}/>
 				</li>
 			</ul>			
 		</div>
@@ -85,14 +100,15 @@
 						{cashier.name}
 						<em class="w3-right w3-small">{cashier.mail}</em>						
 					</div>&nbsp;
-					<i class="fa fa-times w3-large w3-right"></i>
+					<i 	on:click="{() => removeCashier(cashier)}"
+						class="fa fa-times w3-large w3-right"></i>
 				</li>
 			{/each}
 				<li>
 					<input bind:value={searchCashier} type="text" class="w3-input" placeholder="Nouveau caissier">
 					<SearchUser search={searchCashier}
 								exepted="{$troc.cashier}" 
-								on:select="{e => searchCashier = e.detail.mail}"/>
+								on:select={addCashier}/>
 				</li>
 			</ul>			
 		</div>

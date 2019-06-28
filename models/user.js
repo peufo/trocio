@@ -14,12 +14,7 @@ var userModel = new Schema({
 	mail: { type: String, required: true, lowercase: true, unique: true },
 	password: { type: String, required: true },
 	admin: Boolean,
-	trocs: [{
-		troc: {type: Schema.Types.ObjectId, ref: 'troc'},
-		provide: [{ type: Schema.Types.ObjectId, ref: 'article' }],
-		buy: [{ type: Schema.Types.ObjectId, ref: 'article' }],
-		pay:[{ amount: Number }]
-	}],
+	trocs: [{type: Schema.Types.ObjectId, ref: 'troc'}],
 	loginAttempts: {type: Number, required: true, default: 0},
 	lockUntil: Number
 })

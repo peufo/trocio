@@ -11,7 +11,7 @@
 	let openCreate = false
 
 	//Pour test
-	fetch(`/trocs/5d1250880a7b003560d5e001`).then(res => res.json()).then(json => $troc = json)
+	//fetch(`/trocs/5d1250880a7b003560d5e001`).then(res => res.json()).then(json => $troc = json)
 
 	function selectTroc(e, myTroc) {
 
@@ -38,8 +38,8 @@
 	</span>
 
 	<span id="trocSelected">
-	{$troc.name ? $troc.name : ''}
-	{#if $troc.name}
+	{#if $troc}
+		{$troc.name ? $troc.name : ''}
 		{vue == 'WORK' ? ' - Caisse' : ''}
 		{vue == 'ADMIN' ? ' - Configuration' : ''}
 	{/if}
@@ -63,10 +63,17 @@
 				{#each $me.trocs as myTroc}
 					<li class="clickable"
 						class:w3-theme-d3="{$troc == myTroc.troc}"
-						on:click="{(e) => selectTroc(e, myTroc.troc)}">
-						{myTroc.troc.name}
-						<i class="fas fa-cash-register w3-right w3-xlarge"></i>
-						<i class="fa fa-cog w3-right w3-xlarge"></i>							
+						on:click="{(e) => selectTroc(e, myTroc)}">
+						{myTroc.name}
+						<!--
+						{#if myTroc.cashier}
+							<i class="fas fa-cash-register w3-right w3-xlarge"></i>
+						{/if}
+						{#if myTroc.admin}
+							<i class="fas fa-cash-register w3-right w3-xlarge"></i>
+							<i class="fa fa-cog w3-right w3-xlarge"></i>	
+						{/if}
+-->
 					</li>
 				{/each}
 				</ul>
@@ -104,8 +111,7 @@
 			<Admin/>
 		{:else if vue == 'RESUME'}
 			RESUME
-		{:else if vue == 'EXPLORE'}
-			TODO: Lien externe vers la vue exploration
+6trf			TODO: Lien externe vers la vue exploration
 		{/if}
 	</div>
 
@@ -143,7 +149,8 @@
 		width: 300px;
 		position: fixed;
 		z-index: 100;
-		box-shadow: 5px 2px 5px grey;
+		border-right: 1px grey solid;
+		box-shadow: 2px 2px 4px grey;
 	}
 	#sidebar ul {
 		height: calc(100% - 288px);
@@ -159,7 +166,6 @@
 	.flou {
 		filter: blur(2px);
 	}
-
 
 	#trocs .fa-cog {
 		margin-right: 10px;

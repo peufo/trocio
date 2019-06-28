@@ -19,10 +19,11 @@
 		}
 	}
 
+	init()
 	$: $troc ? init() : () => {}
 	$: editTroc.open = editTroc.open ? editTroc.open.substr(0, 10) : ''
 	$: editTroc.close = editTroc.close ? editTroc.close.substr(0, 10) : ''
-	
+
 
 	let valid = false
 	$: {

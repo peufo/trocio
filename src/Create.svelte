@@ -2,6 +2,7 @@
 	import { troc, me } from './stores'
 	import { fade } from 'svelte/transition'
 	import EditForm from './EditForm.svelte'
+	import { getHeader, updateTroc } from './utils'
 
 	export let open = false
 
@@ -12,24 +13,9 @@
 	}
 
 	function create(e) {
-		fetch('/trocs', {
-			method: 'POST',
-			headers: {"Content-Type": "application/json"},
-			body: JSON.stringify(e.detail)
-		})
+		fetch('/trocs', getHeader(e.detail))
 		.then(res => res.json())
-		.then(json => {
-			if (json.success) {
-				let newTroc = json.message
-				newTroc.admin.name = newTroc.cashier.name = $me.name
-				$me.trocs = [...$me.trocs, {troc: newTroc}]
-				$troc = newTroc
-				open = false
-			}else{
-				//alert(json.message)
-				alert('Erreur !')
-			}
-		})
+		.then(json => updateTroc(json, () => open = false))
 	}
 
 

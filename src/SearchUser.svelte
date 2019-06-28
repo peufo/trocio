@@ -5,7 +5,6 @@
 
 	export let search = ''
 	export let exepted = []
-	$: console.log(exepted)
 
 	let users = []
 
@@ -62,6 +61,11 @@
 {/if}
 
 <style>
+	div {
+		margin-top: 4px;
+		box-shadow: 1px 1px 4px grey;
+	}
+
 	li {
 		cursor: pointer;
 	}
