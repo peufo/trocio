@@ -4,6 +4,7 @@
 	import { fly } from 'svelte/transition'
 
 	export let search = ''
+	export let placeholder = 'Chercher un utilisateur'
 	export let exepted = []
 
 	let users = []
@@ -29,6 +30,7 @@
 
 </script>
 
+<input bind:value={search} type="text" class="w3-input" placeholder="{placeholder}">
 {#if search.length > 2}
 <div class="w3-border w3-round w3-padding" in:fly="{{y: 50}}">
 	

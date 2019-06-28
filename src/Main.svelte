@@ -1,18 +1,14 @@
 <script>
 	import { fly, slide } from 'svelte/transition'
 	import { me, troc } from './stores'
-	import { getTroc } from './utils'
 	import Work from './Work.svelte'
 	import Admin from './Admin.svelte'
 	import Create from './Create.svelte'
 
 
 	let vue = 'ADMIN'
-	let menuOpen = true
+	let menuOpen = false
 	let openCreate = false
-
-	//Pour test
-	//fetch(`/trocs/5d1250880a7b003560d5e001`).then(res => res.json()).then(json => $troc = json)
 
 	function selectTroc(e, myTroc) {
 
@@ -40,7 +36,7 @@
 
 	<span id="trocSelected">
 	{#if $troc}
-		{$troc.name}
+		{$troc.name ? $troc.name : ''}
 		{vue == 'WORK' ? ' - Caisse' : ''}
 		{vue == 'ADMIN' ? ' - Configuration' : ''}
 	{/if}
@@ -52,7 +48,7 @@
 	
 </div>
 
-<Create open={openCreate}/>
+<Create bind:open={openCreate}/>
 
 <div id="vue" class="w3-row" on:click="{() => menuOpen = false}">
 
@@ -63,7 +59,7 @@
 				<ul id="trocs" class="w3-ul">
 				{#each $me.trocs as myTroc}
 					<li class="clickable"
-						class:w3-theme-d3="{$troc == myTroc.troc}"
+						class:w3-theme-d3="{$troc._id == myTroc._id}"
 						on:click="{(e) => selectTroc(e, myTroc)}">
 						{myTroc.name}
 						{#if myTroc.cashier}
@@ -83,7 +79,7 @@
 				<i class="fa fa-search"></i> Trouver un troc
 			</div>
 
-			<div on:click="{() => {openCreate = false; menuOpen = false; openCreate = true}}"
+			<div on:click="{() => {openCreate = true; menuOpen = false;}}"
 				class="clickable w3-theme-d4 w3-padding w3-large">
 				<i class="fa fa-plus"></i> Créer votre troc
 			</div>

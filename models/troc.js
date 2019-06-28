@@ -16,10 +16,16 @@ var trocModel = new Schema({
 	admin: [{type: ObjectId, ref: 'user'}],
 	cashier: [{type: ObjectId, ref: 'user'}],
 	articles: [{type: ObjectId, ref: 'article'}],
-	config: {
-		
-		//marge, regle, etc
-	},
+	tarif: [{	
+		name: String, //Standard, professionel, donnateur, spécial, ...
+		default: Boolean,
+		apply: [{type: ObjectId, ref: 'user'}], //Non nécéssaire pour le standard
+		margin: Number,
+		fee: [{
+			price: Number,
+			value: Number
+		}]
+	}],
 	payment:[{
 		user : {type: ObjectId, ref: 'user'},
 		time : Date,

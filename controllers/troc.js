@@ -15,6 +15,16 @@ function createTroc(req, res, next) {
 	var troc = new Troc(req.body)
 	troc.creator = req.session.user._id
 	troc.admin = [req.session.user._id]
+	troc.tarif = {
+		name: 'Standard', 
+		default: true,
+		margin: 0.1,
+		fee: [
+			{price: 0, value: 0.5},
+			{price: 5, value: 1}
+		]
+	}
+
 	troc.save(err => {
 		if (err) return next(err)
 		
@@ -153,8 +163,9 @@ function addInUserList(user, troc, cb) {
 	}else cb()
 }
 
+//Vraiment util ?
 function removeInUserList(user, troc, cb) {
-	var index = user.trocs.map(t => t.troc).indexOf(troc._id)
+	var index = user.trocs.indexOf(troc._id)
 	if (index != -1) {
 		user.trocs.splice(index, 1)
 		user.save(err => {

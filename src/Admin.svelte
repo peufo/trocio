@@ -3,15 +3,18 @@
 	import { fade } from 'svelte/transition'
 	import EditForm from './EditForm.svelte'
 	import SearchUser from './SearchUser.svelte'
+	import Tarif from './Tarif.svelte'
 	import { getHeader } from './utils'
 
 
 	let tabs = ['Informations', 'Travailleurs', 'Tarifications', 'Statistique', 'Correction']
-	let tabSelected = 1
+	let tabSelected = 2
+	
+	//Pour test
+	troc.find('5d166f8de5b28e1958a76f32')
 
 	let searchAdmin = ''
 	let searchCashier = ''
-
 
 	function saveMeta(e) {
 		fetch(`/trocs/${$troc._id}`, getHeader(e.detail, 'PATCH'))
@@ -49,7 +52,7 @@
 			troc.refresh(json.message)
 			if (cb) cb()
 		}else{
-			alert(json.messag)
+			alert(json.message)
 		}
 	}
 
@@ -70,65 +73,79 @@
 	
 	<div class="w3-margin">
 
-	{#if tabSelected == 0}			<!-- Apercu -->
-	<div in:fade>
-		<EditForm on:save={saveMeta} />
-	</div>
+	{#if $troc._id}
+		{#if tabSelected == 0}			<!-- Apercu -->
+			<div in:fade>
+				<EditForm on:save={saveMeta} />
+			</div>
 
-	{:else if tabSelected == 1 && $troc && $troc.admin}		<!-- Worker  TODO: supprimer le test && $troc.admin-->
-	<div in:fade>
+		{:else if tabSelected == 1}		<!-- Worker  TODO: supprimer le test && $troc.admin-->
+			<div in:fade>
 
-		<div class="w3-col m6 w3-padding">
-			<h2 class="w3-center">Administrateurs</h2>
-			<ul class="w3-ul">
-			{#each $troc.admin as admin}
-				<li class="user">
-					<div class="w3-left">
-						{admin.name}
-						<em class="w3-right w3-small">{admin.mail}</em>						
-					</div>&nbsp;
-					<i 	on:click="{() => removeAdmin(admin)}"
-						class="fa fa-times w3-large w3-right"></i>
-				</li>
+				<div class="w3-col m6 w3-padding">
+					<h2 class="w3-center">Administrateurs</h2>
+					<ul class="w3-ul">
+					{#each $troc.admin as admin}
+						<li class="user">
+							<div class="w3-left">
+								{admin.name}
+								<em class:w3-hide="{admin._id != $troc.creator}" 
+									class="w3-tiny w3-border w3-round">
+									Créateur</em>
+								<em class="w3-right w3-small">{admin.mail}</em>	
+							</div>&nbsp;
+							<i 	class:w3-hide="{admin._id == $troc.creator || admin._id == $me._id}" 
+								on:click="{() => removeAdmin(admin)}"
+								class="fa fa-times w3-large w3-right"></i>
+						</li>
+					{/each}
+						<li>
+
+							<SearchUser bind:search={searchAdmin}
+										placeholder="Nouvel administrateur"
+										exepted="{$troc.admin}"
+										on:select={addAdmin}/>
+						</li>
+					</ul>			
+				</div>
+
+				<div class="w3-col m6 w3-padding w3-border-left">
+					<h2 class="w3-center">Caissiers</h2>
+					<ul class="w3-ul">
+					{#each $troc.cashier as cashier}
+						<li class="user">
+							<div class="w3-left">
+								{cashier.name}
+								<em class="w3-right w3-small">{cashier.mail}</em>				
+							</div>&nbsp;
+							<i 	on:click="{() => removeCashier(cashier)}"
+								class="fa fa-times w3-large w3-right"></i>
+						</li>
+					{/each}
+						<li>
+							<SearchUser bind:search={searchCashier}
+										placeholder="Nouveau caissier"
+										exepted="{$troc.cashier}" 
+										on:select={addCashier}/>
+						</li>
+					</ul>			
+				</div>
+			</div>
+
+		{:else if tabSelected == 2 }		<!-- Tarif  -->
+			{#each $troc.tarif as tarif}
+				<Tarif {...tarif}/>
 			{/each}
-				<li>
-					<input bind:value={searchAdmin} type="text" class="w3-input" placeholder="Nouvel administrateur">
-					<SearchUser search={searchAdmin}
-								exepted="{$troc.admin}"
-								on:select={addAdmin}/>
-				</li>
-			</ul>			
-		</div>
 
-		<div class="w3-col m6 w3-padding w3-border-left">
-			<h2 class="w3-center">Caissiers</h2>
-			<ul class="w3-ul">
-			{#each $troc.cashier as cashier}
-				<li class="user">
-					<div class="w3-left">
-						{cashier.name}
-						<em class="w3-right w3-small">{cashier.mail}</em>						
-					</div>&nbsp;
-					<i 	on:click="{() => removeCashier(cashier)}"
-						class="fa fa-times w3-large w3-right"></i>
-				</li>
-			{/each}
-				<li>
-					<input bind:value={searchCashier} type="text" class="w3-input" placeholder="Nouveau caissier">
-					<SearchUser search={searchCashier}
-								exepted="{$troc.cashier}" 
-								on:select={addCashier}/>
-				</li>
-			</ul>			
-		</div>
+		{:else if tabSelected == 3}		<!-- Stats  -->
+			Stats
 
-	</div>
+		{:else if tabSelected == 4}		<!-- Correction  -->
+			Correction
 
-	{:else if tabSelected == 2}		<!-- Tarif  -->
-		Tarif
+		{/if}
+	{/if}
 
-
-	{/if}		
 	</div>
 
 </div>
@@ -157,4 +174,5 @@
 		transform:scale(1.2);
 		color: red;
 	}
+
 </style>

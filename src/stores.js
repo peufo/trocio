@@ -29,7 +29,6 @@ function createTroc() {
 	}
 }
 
-
 function getMeTroc(m, newTroc) {
 	var isAdmin = newTroc.admin.map(a => a._id).indexOf(m._id) != -1
 	var isCashier = newTroc.cashier.map(c => c._id).indexOf(m._id) != -1
