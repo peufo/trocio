@@ -1,6 +1,7 @@
 <script>
 	import { fly, slide } from 'svelte/transition'
 	import { me, troc } from './stores'
+	import { getTroc } from './utils'
 	import Work from './Work.svelte'
 	import Admin from './Admin.svelte'
 	import Create from './Create.svelte'
@@ -15,7 +16,7 @@
 
 	function selectTroc(e, myTroc) {
 
-		fetch(`/trocs/${myTroc._id}`).then(res => res.json()).then(json => $troc = json)
+		troc.find(myTroc._id)
 		
 		let admin = e.target.className.indexOf('fa-cog ') > -1
 		let cashier = e.target.className.indexOf('fa-cash-register ') > -1
@@ -39,7 +40,7 @@
 
 	<span id="trocSelected">
 	{#if $troc}
-		{$troc.name ? $troc.name : ''}
+		{$troc.name}
 		{vue == 'WORK' ? ' - Caisse' : ''}
 		{vue == 'ADMIN' ? ' - Configuration' : ''}
 	{/if}
@@ -65,7 +66,6 @@
 						class:w3-theme-d3="{$troc == myTroc.troc}"
 						on:click="{(e) => selectTroc(e, myTroc)}">
 						{myTroc.name}
-						<!--
 						{#if myTroc.cashier}
 							<i class="fas fa-cash-register w3-right w3-xlarge"></i>
 						{/if}
@@ -73,7 +73,6 @@
 							<i class="fas fa-cash-register w3-right w3-xlarge"></i>
 							<i class="fa fa-cog w3-right w3-xlarge"></i>	
 						{/if}
--->
 					</li>
 				{/each}
 				</ul>
@@ -111,7 +110,7 @@
 			<Admin/>
 		{:else if vue == 'RESUME'}
 			RESUME
-6trf			TODO: Lien externe vers la vue exploration
+			TODO: Lien externe vers la vue exploration
 		{/if}
 	</div>
 

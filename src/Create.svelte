@@ -2,7 +2,7 @@
 	import { troc, me } from './stores'
 	import { fade } from 'svelte/transition'
 	import EditForm from './EditForm.svelte'
-	import { getHeader, updateTroc } from './utils'
+	import { getHeader } from './utils'
 
 	export let open = false
 
@@ -15,7 +15,14 @@
 	function create(e) {
 		fetch('/trocs', getHeader(e.detail))
 		.then(res => res.json())
-		.then(json => updateTroc(json, () => open = false))
+		.then(json => {
+			if (json.success) {
+				open = false
+				troc.refresh(json.message)
+			}else{
+				alert(json.message)
+			}
+		})
 	}
 
 

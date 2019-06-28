@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(session({
 	secret: SECRET,
 	cookie: {maxAge: 72*60*60*1000},
-  	store: new MongoStore({mongooseConnection: mongoose.connection}),
+  store: new MongoStore({mongooseConnection: mongoose.connection}),
 	resave: false,
 	saveUninitialized: true
 }))

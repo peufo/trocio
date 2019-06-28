@@ -3,7 +3,7 @@
 	import { fade } from 'svelte/transition'
 	import EditForm from './EditForm.svelte'
 	import SearchUser from './SearchUser.svelte'
-	import { getHeader, updateTroc } from './utils'
+	import { getHeader } from './utils'
 
 
 	let tabs = ['Informations', 'Travailleurs', 'Tarifications', 'Statistique', 'Correction']
@@ -20,6 +20,7 @@
 	}
 
 	function addAdmin(e) {
+		console.log(e.detail._id)
 		fetch(`/trocs/${$troc._id}/admin`, getHeader({admin: e.detail._id}))
 		.then(res => res.json())
 		.then(json => updateTroc(json, () => searchAdmin = ''))
@@ -43,6 +44,14 @@
 		.then(updateTroc)
 	}
 
+	function updateTroc(json, cb) {
+		if (json.success) {
+			troc.refresh(json.message)
+			if (cb) cb()
+		}else{
+			alert(json.messag)
+		}
+	}
 
 </script>
 

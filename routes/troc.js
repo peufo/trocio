@@ -6,6 +6,7 @@ var ObjectId = require('mongoose').Types.ObjectId
 var router = express.Router()
 
 router
+	//Reserver au super user
 	.get('/', (req, res, next) => {
 		Troc.find(req.query, (err, trocs) => {
 			if (!err){
@@ -14,12 +15,14 @@ router
 		})
 	})
 	.get('/:id', (req, res, next) => {
+		if (!req.session.user) return next(Error('Login required'))
 		ctrl.getTrocUser(req.params.id, (err, troc) => {
 			if(err) return next(err)
 			res.json(troc)
 		})
 	})
 	.post('/', ctrl.createTroc)
+	//TODO: Ajout du contrôle des droit
 	.patch('/:id', (req, res, next) => {
 		if (!req.session.user) return next(Error('Login required'))
 		ctrl.getTrocUser(req.params.id, (err, troc) => {
@@ -33,7 +36,6 @@ router
 			})
 		})
 	})
-	//Ajout du contrôle des droit
 	.post('/:id/admin', ctrl.addAdmin)
 	.post('/:id/cashier', ctrl.addCashier)
 	.post('/:id/admin/remove', ctrl.removeAdmin)

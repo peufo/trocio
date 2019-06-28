@@ -20,7 +20,7 @@ function createTroc(req, res, next) {
 		
 		User.findOne({_id: req.session.user._id}, (err, user) => {
 			if (err || !user) return next(err || Error('User not found !'))
-			user.trocs.push({ troc: troc._id })
+			user.trocs.push(troc._id)
 			user.save(err => {
 				if (err) return next(err)
 				getTrocUser(troc._id, (err, troc) => {
@@ -145,7 +145,7 @@ function addInUserList(user, troc, cb) {
 	//Doit s'assurer que le troc n'éxiste pas déjà
 	var index = user.trocs.map(t => t.troc).indexOf(troc._id)
 	if (index == -1) {
-		user.trocs.push({troc: troc._id})
+		user.trocs.push(troc._id)
 		user.save(err => {
 			if (err) return cb(err)
 			cb()

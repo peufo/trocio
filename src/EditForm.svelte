@@ -19,6 +19,7 @@
 		}
 	}
 
+	//Todo: remplacer par onMount()
 	init()
 	$: $troc ? init() : () => {}
 	$: editTroc.open = editTroc.open ? editTroc.open.substr(0, 10) : ''

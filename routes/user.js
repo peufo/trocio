@@ -20,10 +20,24 @@ router
 	.post('/login', login)
 	.get('/me', checkLogin, (req, res, next) => {
 		User.findOne({_id: req.session.user._id}, {name: 1, trocs: 1})
-			.populate('trocs.troc', 'name admin cashier')
+			.populate('trocs', 'name admin cashier') 
 			.exec((err, user) => {
 			if (err || !user) return next(err || Error('User not found !'))
-			res.json(user)
+			//Admin and cashier becomes booleans
+			var me = {
+				_id: user._id,
+				name: user.name,
+				trocs: user.trocs.map(troc => {
+					return {
+						_id: troc._id,
+						name: troc.name,
+						admin: troc.admin.indexOf(user._id) != -1,
+						cashier: troc.cashier.indexOf(user._id) != -1
+					}
+				})
+			}
+
+			res.json(me)
 		})
 	})
 	.get('/logout', logout)
