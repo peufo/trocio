@@ -5,6 +5,7 @@ var User = require('../models/user')
 function getTrocUser(id, cb){
 	//TODO: populate seulement si admin
 	Troc.findById(id)
+		.populate('creator', 'name mail')
 		.populate('admin', 'name mail')
 		.populate('cashier', 'name mail')
 		.populate('tarif.apply', 'name mail')

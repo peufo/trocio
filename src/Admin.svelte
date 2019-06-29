@@ -86,14 +86,14 @@
 					{#each $troc.admin as admin}
 						<UserLi user={admin} 
 								on:remove="{removeAdmin}"
-								cantRemove="{admin._id == $troc.creator || admin._id == $me._id}"/>
+								cantRemove="{admin._id == $troc.creator._id || admin._id == $me._id}"/>
 					{/each}
 						<li>
 							<SearchUser placeholder="Nouvel administrateur"
 										exepted="{$troc.admin}"
 										on:select={addAdmin}/>
 						</li>
-					</ul>			
+					</ul>
 				</div>
 
 				<div class="w3-col m6 w3-padding w3-border-left">
@@ -105,7 +105,7 @@
 					{/each}
 						<li>
 							<SearchUser placeholder="Nouveau caissier"
-										exepted="{$troc.cashier}" 
+										exepted="{[...$troc.cashier, $troc.creator]}" 
 										on:select={addCashier}/>
 						</li>
 					</ul>			
@@ -115,8 +115,20 @@
 		{:else if tabSelected == 2 }		<!-- Tarif  -->
 			<div in:fade>
 			{#each $troc.tarif as tarif}
-				<Tarif tarif={tarif}/>
+				<Tarif {...tarif}/>
 			{/each}
+				<div id="editTarif" >
+
+					<div class="w3-button w3-border w3-round">
+						Sauvegarder
+					</div>
+
+					<div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"
+						 class="w3-button w3-border w3-round w3-right">
+						Ajouter un tarif
+					</div>
+
+				</div>
 			</div>
 
 		{:else if tabSelected == 3}		<!-- Stats  -->
@@ -143,18 +155,9 @@
 		width: calc(100% - 30px);
 	}
 
-	li i {
-		display: none;
-		cursor: pointer;
-	}
-
-	li:hover i {
-		display: block;
-	}
-
-	li i:hover {
-		transform:scale(1.2);
-		color: red;
+	#editTarif {
+		max-width: 850px;
+		margin: auto;
 	}
 
 </style>

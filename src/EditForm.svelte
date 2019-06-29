@@ -66,7 +66,13 @@
 	<input bind:value={editTroc.societyweb} class="w3-input" type="text" name="societyweb" placeholder="Site internet">
 
 	<br><br>
-	<input on:click={save} class:w3-disabled={!valid} class="w3-button w3-xlarge w3-border w3-round" type="button" name="submit" value="{saveLabel}">
+
+	<div on:click={save} 
+		class:w3-disabled={!valid} 
+		class="w3-button w3-border w3-round">
+		{saveLabel}
+	</div>
+	
 </form>
 
 <style>
