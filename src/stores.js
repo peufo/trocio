@@ -10,7 +10,7 @@ function getMe(set) {
 function createTroc() {
 	const { subscribe, set} = writable({})
 	return {
-		subscribe,
+		subscribe, set,
 		find: id => fetch(`/trocs/${id}`).then(res => res.json()).then(set),
 		refresh: newTroc => {
 			set(newTroc)

@@ -21,6 +21,7 @@
 	function select(user) {
 		if (!isExepted(user)) {
 			dispatch('select', user)
+			search = ''
 		}
 	}
 
@@ -64,6 +65,8 @@
 
 <style>
 	div {
+		position: relative;
+		background: #fff;
 		margin-top: 4px;
 		box-shadow: 1px 1px 4px grey;
 	}

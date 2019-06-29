@@ -3,18 +3,16 @@
 	import { fade } from 'svelte/transition'
 	import EditForm from './EditForm.svelte'
 	import SearchUser from './SearchUser.svelte'
+	import UserLi from './UserLi.svelte'
 	import Tarif from './Tarif.svelte'
 	import { getHeader } from './utils'
 
 
 	let tabs = ['Informations', 'Travailleurs', 'Tarifications', 'Statistique', 'Correction']
 	let tabSelected = 2
-	
+
 	//Pour test
 	troc.find('5d166f8de5b28e1958a76f32')
-
-	let searchAdmin = ''
-	let searchCashier = ''
 
 	function saveMeta(e) {
 		fetch(`/trocs/${$troc._id}`, getHeader(e.detail, 'PATCH'))
@@ -26,23 +24,23 @@
 		console.log(e.detail._id)
 		fetch(`/trocs/${$troc._id}/admin`, getHeader({admin: e.detail._id}))
 		.then(res => res.json())
-		.then(json => updateTroc(json, () => searchAdmin = ''))
+		.then(updateTroc)
 	}
 
 	function addCashier(e) {
 		fetch(`/trocs/${$troc._id}/cashier`, getHeader({cashier: e.detail._id}))
 		.then(res => res.json())
-		.then(json => updateTroc(json, () => searchCashier = ''))
+		.then(updateTroc)
 	}
 
-	function removeAdmin(admin) {
-		fetch(`/trocs/${$troc._id}/admin/remove`, getHeader({admin: admin._id}))
+	function removeAdmin(e) {
+		fetch(`/trocs/${$troc._id}/admin/remove`, getHeader({admin: e.detail._id}))
 		.then(res => res.json())
 		.then(updateTroc)
 	}
 
-	function removeCashier(cashier) {
-		fetch(`/trocs/${$troc._id}/cashier/remove`, getHeader({cashier: cashier._id}))
+	function removeCashier(e) {
+		fetch(`/trocs/${$troc._id}/cashier/remove`, getHeader({cashier: e.detail._id}))
 		.then(res => res.json())
 		.then(updateTroc)
 	}
@@ -86,23 +84,12 @@
 					<h2 class="w3-center">Administrateurs</h2>
 					<ul class="w3-ul">
 					{#each $troc.admin as admin}
-						<li class="user">
-							<div class="w3-left">
-								{admin.name}
-								<em class:w3-hide="{admin._id != $troc.creator}" 
-									class="w3-tiny w3-border w3-round">
-									Créateur</em>
-								<em class="w3-right w3-small">{admin.mail}</em>	
-							</div>&nbsp;
-							<i 	class:w3-hide="{admin._id == $troc.creator || admin._id == $me._id}" 
-								on:click="{() => removeAdmin(admin)}"
-								class="fa fa-times w3-large w3-right"></i>
-						</li>
+						<UserLi user={admin} 
+								on:remove="{removeAdmin}"
+								cantRemove="{admin._id == $troc.creator || admin._id == $me._id}"/>
 					{/each}
 						<li>
-
-							<SearchUser bind:search={searchAdmin}
-										placeholder="Nouvel administrateur"
+							<SearchUser placeholder="Nouvel administrateur"
 										exepted="{$troc.admin}"
 										on:select={addAdmin}/>
 						</li>
@@ -113,18 +100,11 @@
 					<h2 class="w3-center">Caissiers</h2>
 					<ul class="w3-ul">
 					{#each $troc.cashier as cashier}
-						<li class="user">
-							<div class="w3-left">
-								{cashier.name}
-								<em class="w3-right w3-small">{cashier.mail}</em>				
-							</div>&nbsp;
-							<i 	on:click="{() => removeCashier(cashier)}"
-								class="fa fa-times w3-large w3-right"></i>
-						</li>
+						<UserLi user={cashier}
+								on:remove="{removeCashier}"/>
 					{/each}
 						<li>
-							<SearchUser bind:search={searchCashier}
-										placeholder="Nouveau caissier"
+							<SearchUser placeholder="Nouveau caissier"
 										exepted="{$troc.cashier}" 
 										on:select={addCashier}/>
 						</li>
@@ -133,9 +113,11 @@
 			</div>
 
 		{:else if tabSelected == 2 }		<!-- Tarif  -->
+			<div in:fade>
 			{#each $troc.tarif as tarif}
-				<Tarif {...tarif}/>
+				<Tarif tarif={tarif}/>
 			{/each}
+			</div>
 
 		{:else if tabSelected == 3}		<!-- Stats  -->
 			Stats

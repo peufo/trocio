@@ -18,7 +18,7 @@ var trocModel = new Schema({
 	articles: [{type: ObjectId, ref: 'article'}],
 	tarif: [{	
 		name: String, //Standard, professionel, donnateur, spécial, ...
-		default: Boolean,
+		bydefault: Boolean,
 		apply: [{type: ObjectId, ref: 'user'}], //Non nécéssaire pour le standard
 		margin: Number,
 		fee: [{

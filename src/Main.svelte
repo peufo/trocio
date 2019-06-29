@@ -114,9 +114,9 @@
 
 
 <svelte:head>
-	<script src="https://kit.fontawesome.com/4eb68e6a9e.js"></script>
 	<style>
 		html, body {height: 100%;}
+		#waitLoaded { display: none; }
 		::-webkit-scrollbar { width: 10px; }
 		::-webkit-scrollbar-track { background: #f1f1f1; }
 		::-webkit-scrollbar-thumb { background: #888; }

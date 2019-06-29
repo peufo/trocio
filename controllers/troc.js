@@ -3,9 +3,11 @@ var User = require('../models/user')
 
 
 function getTrocUser(id, cb){
+	//TODO: populate seulement si admin
 	Troc.findById(id)
 		.populate('admin', 'name mail')
 		.populate('cashier', 'name mail')
+		.populate('tarif.apply', 'name mail')
 		.exec(cb)
 }
 
@@ -174,7 +176,6 @@ function removeInUserList(user, troc, cb) {
 		})
 	}else cb()
 }
-
 
 module.exports = {
 	getTrocUser,
