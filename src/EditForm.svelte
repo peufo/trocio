@@ -1,77 +1,70 @@
 <script>
 	import { troc } from './stores'
-	import { createEventDispatcher } from 'svelte'
-	const dispatch = createEventDispatcher()
+	import { onMount } from 'svelte'
+	import { getHeader, updateTroc } from './utils'
+	import AutoPatch from './AutoPatch.svelte'
 
 	export let createMode = false
-	let editTroc = createMode ? {} : $troc
-
-
-	let saveLabel = createMode ? 'Créer mon troc' : 'Sauvegarder'
-	let props = ['name', 'address', 'town', 'country', 'description', 'open', 'close', 'society', 'societyweb']
-	let propsOptional = ['society', 'societyweb']
-
-	function init() {
-		if (createMode) {
-			props.forEach(prop => editTroc[prop] = '')
-		}else{
-			props.forEach(prop => editTroc[prop] = $troc[prop])	
-		}
-	}
-
-	//Todo: remplacer par onMount()
-	init()
-	$: $troc ? init() : () => {}
-	$: editTroc.open = editTroc.open ? editTroc.open.substr(0, 10) : ''
-	$: editTroc.close = editTroc.close ? editTroc.close.substr(0, 10) : ''
+	export let name = ''
+	export let address = ''
+	export let town = ''
+	export let country = ''
+	export let description = ''
+	export let open = ''
+	export let close = ''
+	export let society = ''
+	export let societyweb = ''
 
 
 	let valid = false
 	$: {
 		valid = true
-		props.forEach(prop =>  { if (!editTroc[prop] && propsOptional.indexOf(prop) == -1) valid = false })
+		if (!name || !address  || !town || !country || !description || !open || !close) valid = false
 	}
 
-
-	function save() {
-		if (!valid) return
-		dispatch('save', editTroc)
+	//TODO: Traiter la création
+	function create() {
+		if (valid) {
+			console.log('post')
+		}
 	}
-
 
 </script>
 
+{#if !createMode}
+	<AutoPatch valid={valid} body="{{name, address, town, country, description, open, close, society, societyweb}}"/>
+{/if}
 <form class="w3-center">
 	<br>
 	<h3>Mon troc</h3>
-	<input bind:value={editTroc.name} class="w3-input" type="text" name="name" placeholder="Nom de l'évènement">
-	<input bind:value={editTroc.address} class="w3-input" type="text" name="address" placeholder="Adresse">
-	<input bind:value={editTroc.town} class="w3-input" type="text" name="town" placeholder="Ville">
-	<input bind:value={editTroc.country} class="w3-input" type="text" name="country" placeholder="Pays">
-	<textarea bind:value={editTroc.description} class="w3-round" placeholder="Déscription" rows="6"></textarea>
+	<input bind:value={name} class="w3-input" type="text" name="name" placeholder="Nom de l'évènement">
+	<input bind:value={address} class="w3-input" type="text" name="address" placeholder="Adresse">
+	<input bind:value={town} class="w3-input" type="text" name="town" placeholder="Ville">
+	<input bind:value={country} class="w3-input" type="text" name="country" placeholder="Pays">
+	<textarea bind:value={description} class="w3-round" placeholder="Déscription" rows="6"></textarea>
 	<div class="w3-row">
 		<div class="datepicker w3-round w3-col">
 			Ouverture
-			<input bind:value={editTroc.open} class="w3-padding w3-round" type="date" name="open">	
+			<input bind:value={open} class="w3-padding w3-round" type="date" name="open">	
 		</div>
 		<div class="datepicker w3-round w3-right">
 			Fermeture
-			<input bind:value={editTroc.close} class="w3-padding" type="date" name="close">
+			<input bind:value={close} class="w3-padding" type="date" name="close">
 		</div>				
 	</div>
 
 	<br>
 	<h3>Mon organisation <span class="w3-small w3-opacity">Pas obligatoire</span></h3>
-	<input bind:value={editTroc.society} class="w3-input" type="text" name="society" placeholder="Nom">
-	<input bind:value={editTroc.societyweb} class="w3-input" type="text" name="societyweb" placeholder="Site internet">
-
-	<br><br>
-
-	<div on:click={save} 
-		class:w3-disabled={!valid} 
-		class="w3-button w3-border w3-round">
-		{saveLabel}
-	</div>
+	<input bind:value={society} class="w3-input" type="text" name="society" placeholder="Nom">
+	<input bind:value={societyweb} class="w3-input" type="text" name="societyweb" placeholder="Site internet">
+	{#if createMode}
+		<br><br>
+		<div on:click={create} 
+			class:w3-disabled={!valid} 
+			class="w3-button w3-border w3-round">
+			Créer mon troc
+		</div>
+	{/if}
 	
 </form>
 

@@ -1,9 +1,9 @@
 <script>
-	import { fly, slide } from 'svelte/transition'
+	import { fly, slide, fade } from 'svelte/transition'
 	import { me, troc } from './stores'
+	import EditForm from './EditForm.svelte'
 	import Work from './Work.svelte'
 	import Admin from './Admin.svelte'
-	import Create from './Create.svelte'
 
 
 	let vue = 'ADMIN'
@@ -23,6 +23,26 @@
 
 	$: console.log($me)
 	$: console.log($troc)
+
+
+	function closeCreate(e) {
+		if (e.target.className.indexOf('w3-modal ') > -1) {
+			openCreate = false
+		}
+	}
+
+	function create(e) {
+		fetch('/trocs', getHeader(e.detail))
+		.then(res => res.json())
+		.then(json => {
+			if (json.success) {
+				openCreate = false
+				troc.refresh(json.message)
+			}else{
+				alert(json.message)
+			}
+		})
+	}
 
 </script>
 
@@ -48,7 +68,17 @@
 	
 </div>
 
-<Create bind:open={openCreate}/>
+
+<!-- Create troc modal -->
+{#if openCreate}
+<div class="w3-modal" on:click={closeCreate} transition:fade>
+	<div class="w3-modal-content w3-padding w3-center w3-round">
+		<h1>Création d'un nouveau troc</h1>
+		<EditForm createMode on:save={create}/>
+	</div>
+</div>
+{/if}
+
 
 <div id="vue" class="w3-row" on:click="{() => menuOpen = false}">
 
@@ -137,6 +167,10 @@
 	#vue {
 		height: calc(100% - 52px);
 		overflow-y: auto;
+	}
+
+	.w3-modal {
+		display: block;
 	}
 
 	#sidebar {

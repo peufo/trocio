@@ -5,14 +5,15 @@
 	import SearchUser from './SearchUser.svelte'
 	import UserLi from './UserLi.svelte'
 	import Tarif from './Tarif.svelte'
-	import { getHeader } from './utils'
+	import { getHeader, updateTroc } from './utils'
 
 
 	let tabs = ['Informations', 'Travailleurs', 'Tarifications', 'Statistique', 'Correction']
-	let tabSelected = 2
+	let tabSelected = 0
 
 	//Pour test
 	troc.find('5d166f8de5b28e1958a76f32')
+
 
 	function saveMeta(e) {
 		fetch(`/trocs/${$troc._id}`, getHeader(e.detail, 'PATCH'))
@@ -45,14 +46,6 @@
 		.then(updateTroc)
 	}
 
-	function updateTroc(json, cb) {
-		if (json.success) {
-			troc.refresh(json.message)
-			if (cb) cb()
-		}else{
-			alert(json.message)
-		}
-	}
 
 </script>
 
@@ -74,7 +67,7 @@
 	{#if $troc._id}
 		{#if tabSelected == 0}			<!-- Apercu -->
 			<div in:fade>
-				<EditForm on:save={saveMeta} />
+				<EditForm {...$troc} />
 			</div>
 
 		{:else if tabSelected == 1}		<!-- Worker  TODO: supprimer le test && $troc.admin-->

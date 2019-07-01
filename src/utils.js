@@ -7,3 +7,12 @@ export function getHeader(body, verb = 'POST') {
 		body: JSON.stringify(body)
 	}
 }
+
+export function updateTroc(json, cb) {
+	if (json.success) {
+		troc.refresh(json.message)
+		if (cb) cb()
+	}else{
+		alert(json.message)
+	}
+}
