@@ -5,7 +5,7 @@
 
 	export let body = {}
 	export let valid = false
-	export let concerne = ''
+	export let path = ''
 
 
 	let waiting
@@ -19,7 +19,7 @@
 		if (isMounted) {
 			onModify = true
 			clearTimeout(waiting)
-			if (valid) waiting = setTimeout(getPatched, 1000)
+			if (valid) waiting = setTimeout(getPatched, 700)
 		}
 		isMounted = true
 	}
@@ -31,7 +31,7 @@
 
 	async function patch() {
 		patchCount++
-		const res = await fetch(`/trocs/${$troc._id}/${concerne}`, getHeader(body, 'PATCH'))
+		const res = await fetch(path, getHeader(body, 'PATCH'))
 		const json = await res.json()
 		patchCount--
 		if (res.ok && json.success) {
@@ -71,7 +71,7 @@
 <style>
 	div {
 		position: absolute;
-		left: 10px;
-		bottom: 10px;
+		right: 10px;
+		top: 100px;
 	}
 </style>

@@ -5,6 +5,7 @@
 	import AutoPatch from './AutoPatch.svelte'
 
 	export let createMode = false
+	export let _id
 	export let name = ''
 	export let address = ''
 	export let town = ''
@@ -32,7 +33,7 @@
 </script>
 
 {#if !createMode}
-	<AutoPatch valid={valid} body="{{name, address, town, country, description, open, close, society, societyweb}}"/>
+	<AutoPatch path="{`/trocs/${_id}`}" valid={valid} body="{{name, address, town, country, description, open, close, society, societyweb}}"/>
 {/if}
 <form class="w3-center">
 	<br>

@@ -31,11 +31,19 @@
 	}
 
 
-
 	let pourcent = margin * 100
 	//Pas util de calculé à chaque fois
 	$: margin = pourcent / 100
 
+	function checkRangePrice(e, i) {
+		if (e.target.min && fee[i].price < e.target.min) fee[i].price = Number(e.target.min)
+		if (e.target.max && fee[i].price > e.target.max) fee[i].price = Number(e.target.max)
+	}
+
+	function checkRangeValue(e, i) {
+		if (e.target.min && fee[i].value < e.target.min) fee[i].value = Number(e.target.min)
+		if (e.target.max && fee[i].value > e.target.max) fee[i].value = Number(e.target.max)
+	}
 
 
 </script>
@@ -71,9 +79,10 @@
 				<div class="fee">
 					A partir du prix:
 					<div class="number">
-						<input 	bind:value={f.price} 
+						<input 	bind:value={f.price}
 								class="w3-input" 
-								type="number" 
+								type="number"
+								on:keyup="{e => checkRangePrice(e, i)}"
 								min="{i == 0 ? 0 : fee[i - 1].price}" 
 								max="{i == fee.length - 1 ? '' : fee[i + 1].price}">
 					</div>
@@ -82,6 +91,7 @@
 						<input 	bind:value={f.value} 
 								class="w3-input" 
 								type="number" 
+								on:keyup="{e => checkRangeValue(e, i)}"
 								min="{i == 0 ? 0 : fee[i - 1].value}" 
 								max="{i == fee.length - 1 ? '' : fee[i + 1].value}">
 					</div>

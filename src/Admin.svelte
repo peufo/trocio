@@ -9,7 +9,7 @@
 
 
 	let tabs = ['Informations', 'Travailleurs', 'Tarifications', 'Statistique', 'Correction']
-	let tabSelected = 0
+	let tabSelected = 2
 
 	//Pour test
 	troc.find('5d166f8de5b28e1958a76f32')
