@@ -6,7 +6,7 @@ var ObjectId = require('mongoose').Types.ObjectId
 var router = express.Router()
 
 router
-	//Reserver au super user
+	//Reserved for root user
 	.get('/', (req, res, next) => {
 		Troc.find(req.query, (err, trocs) => {
 			if (!err){

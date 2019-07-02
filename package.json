@@ -28,6 +28,7 @@
     "bcrypt": "^3.0.6",
     "connect-mongo": "^2.0.3",
     "cookie-parser": "^1.4.4",
+    "dayjs": "^1.8.14",
     "debug": "~2.6.9",
     "ejs": "~2.5.7",
     "express": "~4.16.0",

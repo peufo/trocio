@@ -10,12 +10,10 @@ var trocModel = new Schema({
 	town: {type: String, required: true},
 	country: {type: String, required: true},
 	description: {type: String, required: true},
-	open: {type: Date, required: true},
-	close: {type: Date, required: true},
+	open: {type: Date, required: true},	//A supprimer
+	close: {type: Date, required: true}, // A supprimer
 	creator: {type: ObjectId, ref: 'user', required: true},
-	admin: [{type: ObjectId, ref: 'user'}],
-	cashier: [{type: ObjectId, ref: 'user'}],
-	articles: [{type: ObjectId, ref: 'article'}],
+	schedule: [{open: Date, close: Date}],
 	tarif: [{	
 		name: String, //Standard, professionel, donnateur, spécial, ...
 		bydefault: Boolean,
@@ -26,6 +24,9 @@ var trocModel = new Schema({
 			value: Number
 		}]
 	}],
+	admin: [{type: ObjectId, ref: 'user'}],
+	cashier: [{type: ObjectId, ref: 'user'}],
+	articles: [{type: ObjectId, ref: 'article'}],	
 	payment:[{
 		user : {type: ObjectId, ref: 'user'},
 		time : Date,

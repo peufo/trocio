@@ -8,7 +8,7 @@
 
 	let vue = 'ADMIN'
 	let menuOpen = false
-	let openCreate = false
+	let openCreate = true
 
 	function selectTroc(e, myTroc) {
 
