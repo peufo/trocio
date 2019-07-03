@@ -1,27 +1,39 @@
 <script>
 	import { troc } from './stores'
-	import { afterUpdate } from 'svelte'
+	import { onMount, onDestroy } from 'svelte'
 	import { getHeader } from './utils'
 
-	export let body = {}
-	export let valid = false
+	export let body = {} 
+	export let source = ''
+	export let invalid = ''
 	export let path = ''
 
 
 	let waiting
-	let isMounted = false
 	let onModify = false
 	let patched
 	let patchCount = 0
 
-	$: {
-		body
-		if (isMounted) {
-			onModify = true
-			clearTimeout(waiting)
-			if (valid) waiting = setTimeout(getPatched, 700)
+	onMount(() => {
+		document.getElementById(source).addEventListener('input', change)
+		document.getElementById(source).addEventListener('click', testChange)
+	})
+	onDestroy(() => {
+		document.getElementById(source).removeEventListener('input', change)
+		document.getElementById(source).removeEventListener('click', testChange)
+	})
+
+	function testChange(e) {
+		if(e.target.classList.contains('w3-button') || e.target.classList.contains('fa-times')) {
+			change()
 		}
-		isMounted = true
+	}
+
+	function change() {
+		onModify = true
+		clearTimeout(waiting)
+		if (!invalid) waiting = setTimeout(getPatched, 600)
+	
 	}
 
 	function getPatched() {
@@ -45,10 +57,10 @@
 
 </script>
 
-<div class="w3-small" on:click="{() => console.log(body)}">
-	{#if !valid}
+<div class="w3-card w3-padding w3-round">
+	{#if !!invalid}
 		<i class="fas fa-exclamation-triangle"></i>
-		Invalide
+		{invalid}
 	{:else if onModify}
 		<i class="far fa-edit"></i>
 		Modification...	
@@ -71,7 +83,8 @@
 <style>
 	div {
 		position: absolute;
-		right: 10px;
-		top: 100px;
+		background: white;
+		left: 10px;
+		bottom: 10px;
 	}
 </style>

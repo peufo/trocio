@@ -10,8 +10,6 @@ var trocModel = new Schema({
 	town: {type: String, required: true},
 	country: {type: String, required: true},
 	description: {type: String, required: true},
-	open: {type: Date, required: true},	//A supprimer
-	close: {type: Date, required: true}, // A supprimer
 	creator: {type: ObjectId, ref: 'user', required: true},
 	schedule: [{open: Date, close: Date}],
 	tarif: [{	

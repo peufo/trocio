@@ -2,8 +2,9 @@
 	import { troc } from './stores'
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
+	import { createEventDispatcher } from 'svelte'
+	const dispatch = createEventDispatcher()
 	import dayjs from 'dayjs'
-	import { getHeader, updateTroc } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 
 	export let createMode = false
@@ -18,6 +19,7 @@
 	export let societyweb = ''
 
 	//Schedule conversion
+	if (!schedule.length) onMount(addSchedule)
 	let scheduleIn = schedule.map(s => {
 		return {
 			day: 	dayjs(s.open).format('YYYY-MM-DD'),
@@ -25,15 +27,8 @@
 			close: 	dayjs(s.close).format('HH:mm')
 		}
 	})
-	
-	$: {
-		schedule = scheduleIn.map(s => {
-			return {
-				open: new Date(`${s.day} ${s.open}`).toISOString(),
-				close: new Date(`${s.day} ${s.close}`).toISOString()
-			}
-		})
-	}
+
+	$: console.log(schedule)
 
 	function addSchedule() {
 		if (scheduleIn.length == 0) {
@@ -50,33 +45,50 @@
 				close: last.close
 			}]
 		}
+		convertSchedule()
 	}
 
 	function removeSchedule(i) {
 		scheduleIn.splice(i, 1)
 		scheduleIn = scheduleIn
+		convertSchedule()
+	}
+
+	function convertSchedule() {
+		schedule = scheduleIn.map(s => {
+			if (s.day && s.open && s.close) {
+				return {
+					open: new Date(`${s.day} ${s.open}`).toISOString(),
+					close: new Date(`${s.day} ${s.close}`).toISOString()
+				}				
+			}
+		})
 	}
 
 	
-	let valid = false
+	let invalid = ''
 	$: {
-		valid = true
-		if (!name || !address  || !town || !country || !description || !schedule.length) valid = false
+		console.log('test')
+		invalid = ''
+		if (!name) invalid = 'Pas de nom'
+		if (!address  || !town || !country ) invalid = 'Adresse incomplette'
+		if (description.length < 10) invalid = 'Déscription pas assez longue'
+		if (!scheduleIn.length) invalid = 'Pas de plage horaire'
+		if (schedule.indexOf(undefined) != -1) invalid = 'Plage horaire incomplette'
 	}
 
-	//TODO: Traiter la création
 	function create() {
-		if (valid) {
-			console.log('post')
+		if (invalid) {
+			dispatch('create', {name, address, town, country, description, schedule, society, societyweb})
 		}
 	}
 
 </script>
 
 {#if !createMode}
-	<AutoPatch path="{`/trocs/${_id}`}" valid={valid} body="{{name, address, town, country, description, schedule, society, societyweb}}"/>
+	<AutoPatch source="editForm" path="{`/trocs/${_id}`}" invalid={invalid} body="{{name, address, town, country, description, schedule, society, societyweb}}"/>
 {/if}
-<form class="w3-center">
+<form id="editForm" class="w3-center">
 	<br>
 	<h3>Mon troc</h3>
 	<input bind:value={name} class="w3-input w3-large" type="text" name="name" placeholder="Nom de l'évènement">
@@ -92,16 +104,25 @@
 
 			<input 	bind:value={day}
 					type="date"
-					class="w3-input">
+					class="w3-input"
+					on:input={convertSchedule}>
 			
 			<div class="w3-row">
 				<div class="w3-col m5">
 					Ouverture
-					<input bind:value={open} max={close} class="w3-padding w3-round" type="time" name="open">	
+					<input 	bind:value={open}
+							type="time"
+							max={close}
+							class="w3-padding w3-round"
+							on:input={convertSchedule}>	
 				</div>
 				<div class="w3-col m5">
 					Fermeture
-					<input bind:value={close} min={open} class="w3-padding" type="time" name="close">
+					<input 	bind:value={close}
+							type="time"
+							min={open}
+							class="w3-padding"
+							on:input={convertSchedule}>
 				</div>
 				<i 	on:click="{() => removeSchedule(i)}"
 					class="fa fa-times w3-col m1 w3-right w3-large w3-padding"></i>	
@@ -121,7 +142,7 @@
 	{#if createMode}
 		<br>
 		<div on:click={create} 
-			class:w3-disabled={!valid} 
+			class:w3-disabled={!!invalid} 
 			class="w3-button w3-border w3-round">
 			Créer mon troc
 		</div>

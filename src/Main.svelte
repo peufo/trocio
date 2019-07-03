@@ -4,11 +4,12 @@
 	import EditForm from './EditForm.svelte'
 	import Work from './Work.svelte'
 	import Admin from './Admin.svelte'
+	import { getHeader, updateTroc } from './utils'
 
 
 	let vue = 'ADMIN'
 	let menuOpen = false
-	let openCreate = true
+	let openCreate = false
 
 	function selectTroc(e, myTroc) {
 
@@ -32,17 +33,12 @@
 	}
 
 	function create(e) {
-		fetch('/trocs', getHeader(e.detail))
+		fetch(`/trocs`, getHeader(e.detail))
 		.then(res => res.json())
-		.then(json => {
-			if (json.success) {
-				openCreate = false
-				troc.refresh(json.message)
-			}else{
-				alert(json.message)
-			}
-		})
+		.then(json => updateTroc(json, () => openCreate = false))
 	}
+
+
 
 </script>
 
@@ -74,7 +70,7 @@
 <div class="w3-modal" on:click={closeCreate} transition:fade>
 	<div class="w3-modal-content w3-padding w3-center w3-round">
 		<h1>Création d'un nouveau troc</h1>
-		<EditForm createMode on:save={create}/>
+		<EditForm createMode on:create={create}/>
 	</div>
 </div>
 {/if}

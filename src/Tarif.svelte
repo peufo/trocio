@@ -74,7 +74,6 @@
 		</div>
 
 		<div class="w3-col m7">
-			<!-- -->
 			{#each fee as f, i}
 				<div class="fee">
 					A partir du prix:
@@ -102,7 +101,7 @@
 
 			<div on:click="{addFee}"
 				class="w3-button w3-border w3-round w3-margin-top w3-right">
-				Ajouter
+				+1 règle
 			</div>
 			
 		</div>

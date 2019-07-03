@@ -13,9 +13,10 @@
 	//3. Utilisé <slot> pour la représentation 
 
 
-	let users
+	let users = []
 	let selected = 0
 	let listhover = false
+	let waiting
 
 	async function searchUser() {
 		const res = await fetch(`/users/search/${search}`)
@@ -24,7 +25,10 @@
 		else Error(res.message)
 	}
 
-	$: if (search.length > 2) users = searchUser()
+	function input(){
+		clearTimeout(waiting)
+		if (search.length > 2) waiting = setTimeout(() => users = searchUser(), 100)
+	}
 
 	function select(user) {
 		if (!isExepted(user)) {
@@ -41,8 +45,9 @@
 	const ENTER = 13, DOWN = 40, UP = 38
 
 	function keydown(e) {
-		if (!users) return 
-		
+
+		if (!users) return
+
 		switch (e.which) {
 			case ENTER:
 				if (selected > -1) {
@@ -85,6 +90,7 @@
 
 <input  bind:value={search}
 		on:keydown={keydown}
+		on:input={input}
 		type="text" 
 		class="w3-input" 
 		placeholder="{placeholder}">

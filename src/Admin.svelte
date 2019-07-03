@@ -3,6 +3,7 @@
 	import { fade } from 'svelte/transition'
 	import EditForm from './EditForm.svelte'
 	import SearchUser from './SearchUser.svelte'
+	import AutoPatch from './AutoPatch.svelte'
 	import UserLi from './UserLi.svelte'
 	import Tarif from './Tarif.svelte'
 	import { getHeader, updateTroc } from './utils'
@@ -12,7 +13,7 @@
 	let tabSelected = 2
 
 	//Pour test
-	troc.find('5d166f8de5b28e1958a76f32')
+	troc.find('5d1ccca6374e323c306901dd')
 
 
 	function saveMeta(e) {
@@ -22,7 +23,6 @@
 	}
 
 	function addAdmin(e) {
-		console.log(e.detail._id)
 		fetch(`/trocs/${$troc._id}/admin`, getHeader({admin: e.detail._id}))
 		.then(res => res.json())
 		.then(updateTroc)
@@ -70,9 +70,8 @@
 				<EditForm {...$troc} />
 			</div>
 
-		{:else if tabSelected == 1}		<!-- Worker  TODO: supprimer le test && $troc.admin-->
+		{:else if tabSelected == 1}		<!-- Worker -->
 			<div in:fade>
-
 				<div class="w3-col m6 w3-padding">
 					<h2 class="w3-center">Administrateurs</h2>
 					<ul class="w3-ul">
@@ -101,7 +100,7 @@
 										exepted="{[...$troc.cashier, $troc.creator]}" 
 										on:select={addCashier}/>
 						</li>
-					</ul>			
+					</ul>
 				</div>
 			</div>
 
@@ -112,17 +111,15 @@
 			{/each}
 				<div id="editTarif" >
 
-					<div class="w3-button w3-border w3-round">
-						Sauvegarder
-					</div>
-
 					<div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"
 						 class="w3-button w3-border w3-round w3-right">
-						Ajouter un tarif
+						+1 tarif
 					</div>
 
 				</div>
 			</div>
+
+
 
 		{:else if tabSelected == 3}		<!-- Stats  -->
 			Stats
