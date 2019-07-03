@@ -8,7 +8,6 @@
 	export let invalid = ''
 	export let path = ''
 
-
 	let waiting
 	let onModify = false
 	let patched
@@ -17,10 +16,6 @@
 	onMount(() => {
 		document.getElementById(source).addEventListener('input', change)
 		document.getElementById(source).addEventListener('click', testChange)
-	})
-	onDestroy(() => {
-		document.getElementById(source).removeEventListener('input', change)
-		document.getElementById(source).removeEventListener('click', testChange)
 	})
 
 	function testChange(e) {
@@ -33,7 +28,6 @@
 		onModify = true
 		clearTimeout(waiting)
 		if (!invalid) waiting = setTimeout(getPatched, 600)
-	
 	}
 
 	function getPatched() {

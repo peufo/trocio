@@ -20,7 +20,7 @@ function createTroc(req, res, next) {
 	troc.admin = [req.session.user._id]
 	troc.tarif = {
 		name: 'Standard', 
-		default: true,
+		bydefault: true,
 		margin: 0.1,
 		fee: [
 			{price: 0, value: 0.5},

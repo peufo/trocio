@@ -28,8 +28,6 @@
 		}
 	})
 
-	$: console.log(schedule)
-
 	function addSchedule() {
 		if (scheduleIn.length == 0) {
 			scheduleIn = [...scheduleIn, {
@@ -68,7 +66,6 @@
 	
 	let invalid = ''
 	$: {
-		console.log('test')
 		invalid = ''
 		if (!name) invalid = 'Pas de nom'
 		if (!address  || !town || !country ) invalid = 'Adresse incomplette'
@@ -78,7 +75,7 @@
 	}
 
 	function create() {
-		if (invalid) {
+		if (!invalid) {
 			dispatch('create', {name, address, town, country, description, schedule, society, societyweb})
 		}
 	}

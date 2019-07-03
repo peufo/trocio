@@ -46,6 +46,11 @@
 		.then(updateTroc)
 	}
 
+	function removeTarif(i) {
+		$troc.tarif.splice(i, 1)
+		$troc.tarif = $troc.tarif
+	}
+
 
 </script>
 
@@ -105,22 +110,27 @@
 			</div>
 
 		{:else if tabSelected == 2 }		<!-- Tarif  -->
-			<div in:fade>
-			{#each $troc.tarif as tarif}
-				<Tarif {...tarif}/>
+			<AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}"/>
+			<div id="editTarif" in:fade>
+			{#each $troc.tarif as tarif, i}
+				<Tarif 	bind:name={tarif.name}
+						bind:apply={tarif.apply}
+						bind:margin={tarif.margin}
+						bind:fee={tarif.fee}
+						bind:bydefault={tarif.bydefault}
+						on:remove="{() => removeTarif(i)}"/>
 			{/each}
-				<div id="editTarif" >
-
+				<div id="addTarif" >
 					<div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"
 						 class="w3-button w3-border w3-round w3-right">
 						+1 tarif
 					</div>
-
 				</div>
+
 			</div>
-
-
-
+			<!--
+			
+			-->
 		{:else if tabSelected == 3}		<!-- Stats  -->
 			Stats
 
@@ -145,7 +155,7 @@
 		width: calc(100% - 30px);
 	}
 
-	#editTarif {
+	#addTarif {
 		max-width: 850px;
 		margin: auto;
 	}

@@ -33,6 +33,7 @@
 	}
 
 	function create(e) {
+		console.log('Tamere')
 		fetch(`/trocs`, getHeader(e.detail))
 		.then(res => res.json())
 		.then(json => updateTroc(json, () => openCreate = false))

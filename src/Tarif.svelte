@@ -1,10 +1,11 @@
 <script>
 	import { troc } from './stores'
+	import { slide } from 'svelte/transition'
+	import { createEventDispatcher } from 'svelte'
+	const dispatch = createEventDispatcher()
 	import SearchUser from './SearchUser.svelte'
 	import UserLi from './UserLi.svelte'
 
-
-	export let _id = ''
 	export let name = ''
 	export let apply = []
 	export let margin = 0
@@ -45,12 +46,23 @@
 		if (e.target.max && fee[i].value > e.target.max) fee[i].value = Number(e.target.max)
 	}
 
+	function remove() {
+		if (confirm(`Etes-vous sur de vouloir supprimer le tarif ${name}`)) {
+			dispatch('remove')
+		}
+	}
+
 
 </script>
 
-<div id="tarif" class="w3-card w3-padding w3-round w3-margin-bottom">
+<div id="tarif" class="w3-card w3-padding w3-round w3-margin-bottom" in:slide>
 
-	<input bind:value={name} type="text" placeholder="Nom du tarif" readonly={bydefault} class="w3-input w3-large w3-center">
+	<input id="name" bind:value={name} type="text" placeholder="Nom du tarif" readonly={bydefault} class="w3-input w3-large w3-center">
+	<i 	id="remove" 
+		on:click="{remove}" 
+		class:w3-hide={bydefault}
+		class="fa fa-times w3-large w3-right w3-padding"></i>
+
 	<br>
 
 	<!-- Margin -->
@@ -62,7 +74,9 @@
 		<div class="number w3-col">
 			<input bind:value="{pourcent}" class="w3-input" type="number" min="0" max="50">			
 		</div>
-		<div class="w3-padding"><i class="fas fa-percent"></i></div>
+		<div class="w3-padding">
+			<i class="fas fa-percent"></i>
+		</div>
 	</div>
 	
 	<hr>
@@ -148,17 +162,37 @@
 		width: 70px;
 		display: inline-block;
 	}
-	.fee i {
-		display: none;
-		cursor: pointer;
-	}
 
+	.fa-times {
+		display: none;
+	}
 	.fee:hover i {
 		display: block;
 	}
 
-	.fee i:hover {
+	i.fa-times {
+		cursor: pointer;
+	}
+	i.fa-times:hover {
 		transform:scale(1.2);
 		color: red;
 	}
+	
+	#name {
+		width: calc(100% - 40px)
+	}
+
+	#tarif {
+		position: relative;
+	}
+	#tarif:hover #remove {
+		display: block;
+	}
+
+	#remove {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+	}
+
 </style>
