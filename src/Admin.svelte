@@ -51,6 +51,8 @@
 		$troc.tarif = $troc.tarif
 	}
 
+	let changeFlag = false //For SearchUser to AutoPatch 
+
 
 </script>
 
@@ -110,7 +112,7 @@
 			</div>
 
 		{:else if tabSelected == 2 }		<!-- Tarif  -->
-			<AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}"/>
+			<AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}" bind:changeFlag={changeFlag}/>
 			<div id="editTarif" in:fade>
 			{#each $troc.tarif as tarif, i}
 				<Tarif 	bind:name={tarif.name}
@@ -118,7 +120,8 @@
 						bind:margin={tarif.margin}
 						bind:fee={tarif.fee}
 						bind:bydefault={tarif.bydefault}
-						on:remove="{() => removeTarif(i)}"/>
+						on:remove="{() => removeTarif(i)}"
+						on:selectUser="{() => changeFlag = true}"/>
 			{/each}
 				<div id="addTarif" >
 					<div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"

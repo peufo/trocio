@@ -52,6 +52,11 @@
 		}
 	}
 
+	function addApply(e) {
+		apply = [...apply, e.detail]
+		dispatch('selectUser')
+	}
+
 
 </script>
 
@@ -141,7 +146,7 @@
 					<UserLi user={a} on:remove="{() => removeApply(i)}"/>
 				{/each}
 				</ul>
-				<SearchUser on:select="{e => apply = [...apply, e.detail]}"
+				<SearchUser on:select="{addApply}"
 							exepted={apply}
 							placeholder="Ajouter un utilisateur soumit au tarif {name}"/>
 			</div>
@@ -152,6 +157,7 @@
 
 
 </div>
+
 
 <style>
 	#tarif {

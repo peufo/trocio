@@ -7,6 +7,7 @@
 	export let source = ''
 	export let invalid = ''
 	export let path = ''
+	export let changeFlag = false
 
 	let waiting
 	let onModify = false
@@ -14,15 +15,29 @@
 	let patchCount = 0
 
 	onMount(() => {
-		document.getElementById(source).addEventListener('input', change)
-		document.getElementById(source).addEventListener('click', testChange)
+		document.getElementById(source).addEventListener('input', testInput)
+		document.getElementById(source).addEventListener('click', testClick)
 	})
 
-	function testChange(e) {
+	$: {
+		changeFlag
+		change()
+		changeFlag = false
+	}
+
+	function testInput(e) {
+		if(!e.target.classList.contains('searchUser')) {
+			change()
+		}
+	}
+
+	function testClick(e) {
 		if(e.target.classList.contains('w3-button') || e.target.classList.contains('fa-times')) {
 			change()
 		}
 	}
+
+
 
 	function change() {
 		onModify = true

@@ -46,7 +46,7 @@
 
 	function keydown(e) {
 
-		if (!users) return
+		if (Array.isArray(users)) return
 
 		switch (e.which) {
 			case ENTER:
@@ -92,7 +92,7 @@
 		on:keydown={keydown}
 		on:input={input}
 		type="text" 
-		class="w3-input" 
+		class="w3-input searchUser" 
 		placeholder="{placeholder}">
 
 {#if search.length > 2}
