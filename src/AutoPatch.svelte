@@ -8,21 +8,29 @@
 	export let invalid = ''
 	export let path = ''
 	export let changeFlag = false
+	export let trocRefresh = false
 
+	const WAIT_FOR_PATCH = 600
 	let waiting
 	let onModify = false
 	let patched
 	let patchCount = 0
+
 
 	onMount(() => {
 		document.getElementById(source).addEventListener('input', testInput)
 		document.getElementById(source).addEventListener('click', testClick)
 	})
 
+
+	let firstChangeFlag = true
 	$: {
-		changeFlag
-		change()
-		changeFlag = false
+		if (!firstChangeFlag) {
+			changeFlag
+			change()
+			changeFlag = false		
+		}
+		firstChangeFlag = false
 	}
 
 	function testInput(e) {
@@ -32,17 +40,15 @@
 	}
 
 	function testClick(e) {
-		if(e.target.classList.contains('w3-button') || e.target.classList.contains('fa-times')) {
+		if(e.target.classList.contains('patchButton')) {
 			change()
 		}
 	}
 
-
-
 	function change() {
 		onModify = true
 		clearTimeout(waiting)
-		if (!invalid) waiting = setTimeout(getPatched, 600)
+		if (!invalid) waiting = setTimeout(getPatched, WAIT_FOR_PATCH)
 	}
 
 	function getPatched() {
@@ -56,7 +62,9 @@
 		const json = await res.json()
 		patchCount--
 		if (res.ok && json.success) {
-			if (patchCount == 0 && !onModify) troc.refresh(json.message)
+			if (patchCount == 0 && !onModify) {
+				if (trocRefresh) troc.refresh(json.message)
+			}
 			return 
 		}else{
 			return Error('Echec de le mise a jour')

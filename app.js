@@ -35,7 +35,8 @@ app.use(session({
 }))
 
 
-//Routage	
+//Routage
+
 app.use('/', 			    require('./routes/index'))
 app.use('/users', 		require('./routes/user'))
 app.use('/articles', 	require('./routes/article'))

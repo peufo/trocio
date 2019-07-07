@@ -8,6 +8,7 @@ export function getHeader(body, verb = 'POST') {
 	}
 }
 
+
 export function updateTroc(json, cb) {
 	if (json.success) {
 		troc.refresh(json.message)

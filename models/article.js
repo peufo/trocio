@@ -6,12 +6,12 @@ var articleModel = new Schema({
 	troc: {type: ObjectId, ref: 'troc', required: true},
 	provider: {type: ObjectId, ref: 'user', required: true},
 	buyer: {type: ObjectId, ref: 'user'},
-	name: {type: String, required: true},
-	price: {type: Number, required: true},
-	fee: {type: Number, required: true},
-	margin: {type: Number, required: true},
+	name: {type: String, default: ''},
+	price: {type: Number, default: 1},
+	fee: {type: Number, default: 0},
+	margin: {type: Number, default: 0},
 	valided: Date, //ou
-	deleted: Date,
+	refused: Date,
 	sold: Date, //ou
 	recover: Date
 })

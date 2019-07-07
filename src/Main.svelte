@@ -4,27 +4,30 @@
 	import EditForm from './EditForm.svelte'
 	import Work from './Work.svelte'
 	import Admin from './Admin.svelte'
+	import Resume from './Resume.svelte'
+	import Trocs from './Trocs.svelte'
 	import { getHeader, updateTroc } from './utils'
 
 
-	let vue = 'ADMIN'
+	let vue = 'EXPLORE'
 	let menuOpen = false
 	let openCreate = false
 
+	//Pour test
+	//troc.find('5d1cfa69aa6e871ce0b44fbe')
+	//$: console.log($me)
+	//$: console.log($troc)	
+
 	function selectTroc(e, myTroc) {
 
-		troc.find(myTroc._id)
-		
 		let admin = e.target.className.indexOf('fa-cog ') > -1
 		let cashier = e.target.className.indexOf('fa-cash-register ') > -1
 		if (admin) vue = 'ADMIN'
 		else if (cashier) vue = 'WORK'
 		else vue = 'RESUME'
+
+		troc.find(myTroc._id)
 	}
-
-	$: console.log($me)
-	$: console.log($troc)
-
 
 	function closeCreate(e) {
 		if (e.target.className.indexOf('w3-modal ') > -1) {
@@ -33,7 +36,6 @@
 	}
 
 	function create(e) {
-		console.log('Tamere')
 		fetch(`/trocs`, getHeader(e.detail))
 		.then(res => res.json())
 		.then(json => updateTroc(json, () => openCreate = false))
@@ -126,14 +128,15 @@
 		</div>
 	{/if}
 
-	<div class="w3-col" class:flou={menuOpen}>
-		{#if vue == 'WORK'}
+	<div class="w3-col" class:blur={menuOpen}>
+		{#if vue === 'WORK'}
 			<Work/>
-		{:else if vue == 'ADMIN'}
-			<Admin/>
-		{:else if vue == 'RESUME'}
-			RESUME
-			TODO: Lien externe vers la vue exploration
+		{:else if vue === 'ADMIN'}
+			<Admin/>			
+		{:else if vue === 'RESUME'}
+			<Resume/>
+		{:else if vue === 'EXPLORE'}
+			<Trocs/>
 		{/if}
 	</div>
 
@@ -159,7 +162,7 @@
 		cursor: pointer;
 	}
 	.clickable:hover {
-		color: black;
+		
 	}
 	#vue {
 		height: calc(100% - 52px);
@@ -189,7 +192,7 @@
 		left: 165px;
 	}
 
-	.flou {
+	.blur {
 		filter: blur(2px);
 	}
 
@@ -198,14 +201,16 @@
 	}
 
 	#trocs i {
-		display: none;
+		display: inline-block;
+		transform: scale(0);
+		transition: all 0.2s ease;
 	}
 
 	#trocs li:hover i {
-		display: inline-block;
+		transform: scale(1);
 	}
 
-	#trocs i:hover {
+	#trocs li:hover i:hover {
 		transform: scale(1.2);
 	}
 

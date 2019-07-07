@@ -62,7 +62,6 @@
 			}
 		})
 	}
-
 	
 	let invalid = ''
 	$: {
@@ -83,7 +82,7 @@
 </script>
 
 {#if !createMode}
-	<AutoPatch source="editForm" path="{`/trocs/${_id}`}" invalid={invalid} body="{{name, address, town, country, description, schedule, society, societyweb}}"/>
+	<AutoPatch source="editForm" path="{`/trocs/${_id}`}" invalid={invalid} body="{{name, address, town, country, description, schedule, society, societyweb}}" trocRefresh/>
 {/if}
 <form id="editForm" class="w3-center">
 	<br>
@@ -122,12 +121,12 @@
 							on:input={convertSchedule}>
 				</div>
 				<i 	on:click="{() => removeSchedule(i)}"
-					class="fa fa-times w3-col m1 w3-right w3-large w3-padding"></i>	
+					class="patchButton fa fa-times w3-col m1 w3-right w3-large w3-padding"></i>	
 			</div>			
 		</div>
 	{/each}
 	<div on:click={addSchedule}
-		 class="w3-button w3-border w3-round w3-right">
+		 class="patchButton w3-button w3-border w3-round w3-right">
 		+1 jour
 	</div>
 
@@ -169,12 +168,13 @@
 	}
 
 	.schedule i {
-		display: none;
+		transform: scale(0);
+		transition: all 0.2s ease;
 		cursor: pointer;
 	}
 
 	.schedule:hover i {
-		display: block;
+		transform: scale(1);
 	}
 
 	.schedule i:hover {

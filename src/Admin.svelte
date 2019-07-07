@@ -12,10 +12,6 @@
 	let tabs = ['Informations', 'Travailleurs', 'Tarifications', 'Statistique', 'Correction']
 	let tabSelected = 2
 
-	//Pour test
-	troc.find('5d1ccca6374e323c306901dd')
-
-
 	function saveMeta(e) {
 		fetch(`/trocs/${$troc._id}`, getHeader(e.detail, 'PATCH'))
 		.then(res => res.json())
@@ -112,7 +108,7 @@
 			</div>
 
 		{:else if tabSelected == 2 }		<!-- Tarif  -->
-			<AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}" bind:changeFlag={changeFlag}/>
+			<AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}" bind:changeFlag={changeFlag} trocRefresh/>
 			<div id="editTarif" in:fade>
 			{#each $troc.tarif as tarif, i}
 				<Tarif 	bind:name={tarif.name}
@@ -125,7 +121,7 @@
 			{/each}
 				<div id="addTarif" >
 					<div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"
-						 class="w3-button w3-border w3-round w3-right">
+						 class="patchButton w3-button w3-border w3-round w3-right">
 						+1 tarif
 					</div>
 				</div>

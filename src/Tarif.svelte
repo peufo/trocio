@@ -114,12 +114,12 @@
 								max="{i == fee.length - 1 ? '' : fee[i + 1].value}">
 					</div>
 					<i 	on:click="{() => removeFee(i)}"
-						class="fa fa-times w3-large w3-right w3-padding"></i>
+						class="patchButton fa fa-times w3-large w3-right w3-padding"></i>
 				</div>
 			{/each}
 
 			<div on:click="{addFee}"
-				class="w3-button w3-border w3-round w3-margin-top w3-right">
+				class="patchButton w3-button w3-border w3-round w3-margin-top w3-right">
 				+1 règle
 			</div>
 			
@@ -170,16 +170,15 @@
 	}
 
 	.fa-times {
-		display: none;
-	}
-	.fee:hover i {
-		display: block;
-	}
-
-	i.fa-times {
+		transform: scale(0);
+		transition: all 0.2s ease;
 		cursor: pointer;
 	}
-	i.fa-times:hover {
+	.fee:hover .fa-times, #tarif:hover #remove {
+		transform: scale(1);
+	}
+
+	.fee .fa-times:hover, #tarif #remove:hover {
 		transform:scale(1.2);
 		color: red;
 	}
@@ -190,9 +189,6 @@
 
 	#tarif {
 		position: relative;
-	}
-	#tarif:hover #remove {
-		display: block;
 	}
 
 	#remove {

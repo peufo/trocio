@@ -13,7 +13,7 @@ var trocModel = new Schema({
 	creator: {type: ObjectId, ref: 'user', required: true},
 	schedule: [{open: Date, close: Date}],
 	tarif: [{	
-		name: String, //Standard, professionel, donnateur, spécial, ...
+		name: String,
 		bydefault: Boolean,
 		apply: [{type: ObjectId, ref: 'user'}], //Non nécéssaire pour le standard
 		margin: Number,
@@ -24,7 +24,6 @@ var trocModel = new Schema({
 	}],
 	admin: [{type: ObjectId, ref: 'user'}],
 	cashier: [{type: ObjectId, ref: 'user'}],
-	articles: [{type: ObjectId, ref: 'article'}],	
 	payment:[{
 		user : {type: ObjectId, ref: 'user'},
 		time : Date,
