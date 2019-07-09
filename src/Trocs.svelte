@@ -1,14 +1,14 @@
 <script>
 	import { onMount } from 'svelte'
-	import lea from 'leaflet'
-
+	import L from 'leaflet'
+	
 	onMount(() => {
-		let map = lea.map('map', {
+		let map = L.map('map', {
 		    center: [47.4013048812248, 7.076493501663209],
 		    zoom: 6
 		})
 
-		lea.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map)
 
@@ -34,8 +34,11 @@
 </svelt:head>
 
 <style>
+
 	#map {
 		height: 400px;
 		border-radius: 5px;
+		z-index: 0;
 	}
+
 </style>

@@ -6,13 +6,13 @@
 	const dispatch = createEventDispatcher()
 	import dayjs from 'dayjs'
 	import AutoPatch from './AutoPatch.svelte'
+	import SearchAddress from './SearchAddress.svelte'
 
 	export let createMode = false
 	export let _id = ''
 	export let name = ''
 	export let address = ''
-	export let town = ''
-	export let country = ''
+	export let location = {}
 	export let description = ''
 	export let schedule = []
 	export let society = ''
@@ -67,7 +67,7 @@
 	$: {
 		invalid = ''
 		if (!name) invalid = 'Pas de nom'
-		if (!address  || !town || !country ) invalid = 'Adresse incomplette'
+		if (!address) invalid = 'Adresse incomplette'				//<-- Nouveau test a faire
 		if (description.length < 10) invalid = 'Déscription pas assez longue'
 		if (!scheduleIn.length) invalid = 'Pas de plage horaire'
 		if (schedule.indexOf(undefined) != -1) invalid = 'Plage horaire incomplette'
@@ -75,24 +75,27 @@
 
 	function create() {
 		if (!invalid) {
-			dispatch('create', {name, address, town, country, description, schedule, society, societyweb})
+			dispatch('create', {name, address, description, schedule, society, societyweb})
 		}
 	}
 
 </script>
 
 {#if !createMode}
-	<AutoPatch source="editForm" path="{`/trocs/${_id}`}" invalid={invalid} body="{{name, address, town, country, description, schedule, society, societyweb}}" trocRefresh/>
+	<AutoPatch source="editForm" path="{`/trocs/${_id}`}" invalid={invalid} body="{{name, address, description, schedule, society, societyweb}}" trocRefresh/>
 {/if}
 <form id="editForm" class="w3-center">
 	<br>
 	<h3>Mon troc</h3>
 	<input bind:value={name} class="w3-input w3-large" type="text" name="name" placeholder="Nom de l'évènement">
-	<input bind:value={address} class="w3-input" type="text" name="address" placeholder="Adresse">
-	<input bind:value={town} class="w3-input" type="text" name="town" placeholder="Ville">
-	<input bind:value={country} class="w3-input" type="text" name="country" placeholder="Pays">
-	<textarea bind:value={description} class="w3-round" placeholder="Déscription" rows="6"></textarea>
-	
+	<textarea bind:value={description} class="w3-round" placeholder="Description" rows="6"></textarea>
+
+	<br>
+	<br>
+	<h3>Lieu</h3>
+	<SearchAddress bind:address={address} bind:location={location}/>
+
+	<br>
 	<br>
 	<h3>Horaire</h3>
 	{#each scheduleIn as {day, open, close}, i}
@@ -148,7 +151,7 @@
 
 <style>
 	form {
-		max-width: 500px;
+		max-width: 600px;
 		margin: auto;
 	}
 

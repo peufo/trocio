@@ -846,7 +846,7 @@ var member = {},
 		filtreSup = false,
 		searchArrayUser = [],
 		searchArrayArticle = []
-	
+	/*
 	$('#searchInput').keyup(function(){
 
 		val.length < $(this).val().length ? filtreSup = true : filtreSup = false
@@ -862,7 +862,8 @@ var member = {},
 		}
 
 	})
-
+	*/
+	
 	var onlyAvailableArticle = false
 	$('#onlyAvailableArticle').click(function(){
 		onlyAvailableArticle = $(this).is(':checked')

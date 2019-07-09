@@ -9,9 +9,9 @@
 	import { getHeader, updateTroc } from './utils'
 
 
-	let vue = 'EXPLORE'
+	let vue = ''
 	let menuOpen = false
-	let openCreate = false
+	let openCreate = true
 
 	//Pour test
 	//troc.find('5d1cfa69aa6e871ce0b44fbe')

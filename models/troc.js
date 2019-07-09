@@ -7,8 +7,10 @@ var trocModel = new Schema({
 	society: String,
 	societyweb: String,
 	address: {type: String, required: true},
-	town: {type: String, required: true},
-	country: {type: String, required: true},
+	location: {
+		lat: {type: Number, required: true},
+		lng: {type: Number, required: true}
+	},
 	description: {type: String, required: true},
 	creator: {type: ObjectId, ref: 'user', required: true},
 	schedule: [{open: Date, close: Date}],
