@@ -10,7 +10,8 @@
 		marker,
 		promise,
 		markers = [],
-		results = []
+		results = [],
+		selected = 0
 		
 
 	onMount(() => {
@@ -75,6 +76,25 @@
 		return `${deg}°${min}'${sec}''`
 	}
 
+	$: console.log(results)
+
+	function keyup(e) {
+		console.log(e.which)
+		switch (e.which) {
+			case 13://ENTER
+				searchLocation()
+				break
+			case 40://DOWN
+				selected++
+				if (selected >= results.length) selected = results.length - 1
+				break
+			case 38://UP
+				selected--
+				if (selected < 0 ) selected = 0
+				break
+		}
+	}
+
 </script>
 
 <div id="container" class="w3-border w3-round">
@@ -88,10 +108,11 @@
 		</div>
 
 		<input  id="searchInput"
-				on:keyup="{e => e.which == 13 && searchLocation()}" 
+				on:keyup={keyup}
 				bind:value={address}
 				class="w3-input w3-large"
 				type="text"
+				autocomplete="off" 
 				placeholder="Adresse, Ville, Pays">	
 
 	</div>
@@ -105,9 +126,31 @@
 	{#if results.length}
 	<div in:slide>
 		<ul class="w3-ul">
-		{#each results as res}
-			<li>
+		{#each results as res, i}
+			<li class:selected="{selected == i}">
+				<i 	class="fa"
+					class:fa-globe-europe="{res._type == 'country' || res._type == 'state' || res._type == 'county'}"
+					class:fa-city="{res._type == 'city' || res._type == 'village' || res._type =='neighbourhood'}"
+					class:fa-money-bill-alt="{res._type == 'bank'}"
+					class:fa-road="{res._type == 'road'}"
+					class:fa-home="{res._type == 'building' || res._type == 'construction'}"
+					class:fa-water="{res._type == 'river' || res._type == 'stream' || res._type == 'weir' || res._type == 'wetland'}"
+					class:fa-swimming-pool="{res._type == 'basin' || res._type == 'swimming_pool'}"
+					class:fa-parking="{res._type == 'parking'}"
+					class:fa-tree="{res._type == 'forest' || res._type == 'park'}"
+					class:fa-train="{res._type == 'station'}"
+					class:fa-bus="{res._type == 'bus_stop'}"
+					class:fa-store="{res._type == 'commercial' || res._type == 'supermarket'}"
+					class:fa-monument="{res._type == 'monument'|| res._type == 'attraction'}"
+					class:fa-tshirt="{res._type == 'clothes' || res._type == 'carpet'}"
+					class:fa-mountain="{res._type == 'peak'}"
+					class:fa-film="{res._type == 'cinema'}"
+					class:fa-utensils="{res._type == 'restaurant'}"
+					class:fa-basketball-ball="{res._type == 'sports'}"
+					class:fa-tractor="{res._type == 'meadow'}"
+					></i>
 				{res.address}
+
 			</li>
 		{/each}
 		</ul>			
@@ -165,6 +208,10 @@
 		background: rgba(255, 255, 255, 0.5);
 		padding-left: 4px;
 		padding-right: 4px;
+	}
+
+	.selected {
+		background: #d8d8d8;
 	}
 
 </style>

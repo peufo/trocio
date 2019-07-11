@@ -17,9 +17,10 @@ router
 			if (!response.body.results) return next(Error('No result'))
 			var formatted = response.body.results.map(r => {
 				return {
-					_type: r.components._type,
 					address: r.formatted,
-					location: r.geometry
+					location: r.geometry,
+					_type: r.components._type,
+					country_code: r.components.country_code
 				}
 			})
 			res.json(formatted)

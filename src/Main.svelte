@@ -29,12 +29,6 @@
 		troc.find(myTroc._id)
 	}
 
-	function closeCreate(e) {
-		if (e.target.className.indexOf('w3-modal ') > -1) {
-			openCreate = false
-		}
-	}
-
 	function create(e) {
 		fetch(`/trocs`, getHeader(e.detail))
 		.then(res => res.json())
@@ -70,8 +64,9 @@
 
 <!-- Create troc modal -->
 {#if openCreate}
-<div class="w3-modal" on:click={closeCreate} transition:fade>
+<div class="w3-modal" transition:fade>
 	<div class="w3-modal-content w3-padding w3-center w3-round">
+		<i on:click="{() => openCreate = false}" class="fa fa-times w3-xlarge w3-right w3-padding"></i>
 		<h1>Création d'un nouveau troc</h1>
 		<EditForm createMode on:create={create}/>
 	</div>
@@ -108,7 +103,7 @@
 				<i class="fa fa-search"></i> Trouver un troc
 			</div>
 
-			<div on:click="{() => {openCreate = true; menuOpen = false;}}"
+			<div on:click="{() => openCreate = true}"
 				class="clickable w3-theme-d4 w3-padding w3-large">
 				<i class="fa fa-plus"></i> Créer votre troc
 			</div>
@@ -211,6 +206,16 @@
 	}
 
 	#trocs li:hover i:hover {
+		transform: scale(1.2);
+	}
+
+	.fa-times {
+		transition: all 0.2s ease;
+		cursor: pointer;
+	}
+
+	.fa-times:hover {
+		color: red;
 		transform: scale(1.2);
 	}
 
