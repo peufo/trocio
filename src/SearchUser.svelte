@@ -139,19 +139,6 @@
 	li {
 		cursor: pointer;
 	}
-	
-	li i {
-		display: none;
-		cursor: pointer;
-	}
 
-	li:hover i {
-		display: block;
-	}
-
-	li i:hover {
-		transform:scale(1.2);
-		color: red;
-	}
 
 </style>

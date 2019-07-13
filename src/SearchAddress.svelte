@@ -11,8 +11,21 @@
 		promise,
 		markers = [],
 		results = [],
-		selected = 0
+		selected = -1
 		
+
+	function setLocation(loc) {
+		location = loc.location
+		address = loc.address
+		marker.setLatLng(location).addTo(map)
+		map.setView(location)
+	}
+
+	function removeResults() {
+		selected = -1
+		results = []
+		markers.forEach(m => m.remove())
+	}
 
 	onMount(() => {
 		map = L.map('map', {
@@ -30,32 +43,28 @@
 
 	})
 
-
 	async function getAddress(e) {
 		marker.setLatLng(e.latlng).addTo(map)
-		location = {lat: e.latlng.lat, lng: e.latlng.lng}
 		let res = await fetch(`/geocode/${location.lat}+${location.lng}`)
 		let json = await res.json()
-		address = json[0].address
+		setLocation({location: e.latlng, address: json[0].address})
 		return
 	}
 
 	function searchLocation() {
 		document.getElementById('searchInput').focus()
 		promise = getLocation()
+
 	}
 
 	async function getLocation() {
-		results = []
-		markers.forEach(m => m.remove())
+		removeResults()
 		let res = await fetch(`/geocode/${address}`)
 		let json = await res.json()
 		results = json
 		if (json.length) {
 			markers = json.map(j => L.marker(j.location, {opacity: 0.5}).addTo(map).bindTooltip(j.address))
 		}
-		console.log(json)
-		console.log(markers)
 		return json
 	}
 
@@ -66,8 +75,8 @@
 		let lng = numberToString(loc.lng)
 		lng += loc.lng >= 0 ? 'E' : 'W'
 		return `${lat} ${lng}`
-		
 	}
+
 	function numberToString(num) {
 		num = Math.abs(num)
 		let deg = Math.floor(num)
@@ -76,24 +85,41 @@
 		return `${deg}°${min}'${sec}''`
 	}
 
-	$: console.log(results)
-
 	function keyup(e) {
-		console.log(e.which)
+		let elem, container, posY
 		switch (e.which) {
 			case 13://ENTER
-				searchLocation()
+				if(selected == -1) {
+					searchLocation()
+				}else{
+					removeResults()
+				}
 				break
 			case 40://DOWN
 				selected++
 				if (selected >= results.length) selected = results.length - 1
+				elem = document.getElementById(`result${selected}`)
+				container = document.getElementById('results')
+				posY = elem.offsetTop - 244 + elem.clientHeight
+				if (container.scrollTop + container.clientHeight < posY) {
+					container.scrollTop = posY - container.clientHeight
+				}
+				setLocation(results[selected])
 				break
 			case 38://UP
 				selected--
 				if (selected < 0 ) selected = 0
+				elem = document.getElementById(`result${selected}`)
+				container = document.getElementById('results')
+				posY = elem.offsetTop - 244
+				if (container.scrollTop > posY) container.scrollTop = posY
+				setLocation(results[selected])
 				break
+			default:
+				removeResults()
 		}
 	}
+
 
 </script>
 
@@ -125,9 +151,12 @@
 
 	{#if results.length}
 	<div in:slide>
-		<ul class="w3-ul">
+		<ul id="results" class="w3-ul">
 		{#each results as res, i}
-			<li class:selected="{selected == i}">
+			<li id="result{i}"
+				class:selected="{selected == i}"
+				on:click="{() => {selected = i; setLocation(res)}}"
+				on:dblclick={removeResults}>
 				<i 	class="fa"
 					class:fa-globe-europe="{res._type == 'country' || res._type == 'state' || res._type == 'county'}"
 					class:fa-city="{res._type == 'city' || res._type == 'village' || res._type =='neighbourhood'}"
@@ -156,7 +185,7 @@
 		</ul>			
 	</div>
 	{/if}
-	
+
 </div>
 
 
@@ -193,6 +222,8 @@
 		text-align: left;
 	}
 
+	ul li {cursor: pointer;}
+
 	#searchButton:hover {
 		background: #d8d8d8;
 	}
@@ -212,6 +243,10 @@
 
 	.selected {
 		background: #d8d8d8;
+	}
+
+	#results {
+		scroll-behavior: smooth;
 	}
 
 </style>
