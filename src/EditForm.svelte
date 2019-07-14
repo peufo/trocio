@@ -67,22 +67,32 @@
 	$: {
 		invalid = ''
 		if (!name) invalid = 'Pas de nom'
-		if (!address) invalid = 'Adresse incomplette'				//<-- Nouveau test a faire
-		if (description.length < 10) invalid = 'Déscription pas assez longue'
-		if (!scheduleIn.length) invalid = 'Pas de plage horaire'
-		if (schedule.indexOf(undefined) != -1) invalid = 'Plage horaire incomplette'
+		else if (!address) invalid = 'Adresse incomplette'
+		else if (!location.lat) invalid =  'Adresse non localisé'
+		else if (description.length < 10) invalid = 'Déscription trop courte'
+		else if (!scheduleIn.length) invalid = 'Pas de plage horaire'
+		else if (schedule.indexOf(undefined) != -1) invalid = 'Plage horaire incomplette'
 	}
 
 	function create() {
 		if (!invalid) {
-			dispatch('create', {name, address, description, schedule, society, societyweb})
+			dispatch('create', {name, description, address, location, schedule, society, societyweb})
 		}
 	}
+
+	//For SearchLocation to Autopatch
+	//Très bof bof, mais ca marche
+	let changeFlag = false 
 
 </script>
 
 {#if !createMode}
-	<AutoPatch source="editForm" path="{`/trocs/${_id}`}" invalid={invalid} body="{{name, address, description, schedule, society, societyweb}}" trocRefresh/>
+	<AutoPatch 	source="editForm"
+				path="{`/trocs/${_id}`}"
+				invalid={invalid}
+				body="{{name, address, description, schedule, society, societyweb}}"
+				trocRefresh
+				bind:changeFlag={changeFlag}/>  
 {/if}
 <form id="editForm" class="w3-center">
 	<br>
@@ -93,7 +103,9 @@
 	<br>
 	<br>
 	<h3>Lieu</h3>
-	<SearchAddress bind:address={address} bind:location={location}/>
+	<SearchAddress 	bind:address={address}
+					bind:location={location}
+					bind:changeFlag={changeFlag}/>
 
 	<br>
 	<br>

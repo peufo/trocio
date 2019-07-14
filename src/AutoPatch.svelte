@@ -21,8 +21,7 @@
 		document.getElementById(source).addEventListener('input', testInput)
 		document.getElementById(source).addEventListener('click', testClick)
 	})
-
-
+	
 	let firstChangeFlag = true
 	$: {
 		if (!firstChangeFlag) {

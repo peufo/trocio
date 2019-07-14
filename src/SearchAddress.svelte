@@ -5,6 +5,7 @@
 
 	export let address = ''
 	export let location = {lat: 0 , lng: 0}
+	export let changeFlag = false
 
 	let map,
 		marker,
@@ -12,13 +13,15 @@
 		markers = [],
 		results = [],
 		selected = -1
-		
 
 	function setLocation(loc) {
 		location = loc.location
 		address = loc.address
+		document.getElementById('searchInput').focus()
 		marker.setLatLng(location).addTo(map)
 		map.setView(location)
+		changeFlag = true
+		setTimeout(() => changeFlag = false, 10) // Mal nécéssaire
 	}
 
 	function removeResults() {
@@ -37,7 +40,11 @@
 		    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map)
 
-		marker = L.marker([0, 0])
+		if (location.lat) {
+			marker = L.marker(location).addTo(map)
+		}else{
+			marker = L.marker([0, 0])
+		}
 
 		map.on('dblclick', e => promise = getAddress(e))
 
@@ -45,7 +52,7 @@
 
 	async function getAddress(e) {
 		marker.setLatLng(e.latlng).addTo(map)
-		let res = await fetch(`/geocode/${location.lat}+${location.lng}`)
+		let res = await fetch(`/geocode/${e.latlng.lat}+${e.latlng.lng}`)
 		let json = await res.json()
 		setLocation({location: e.latlng, address: json[0].address})
 		return
@@ -54,18 +61,20 @@
 	function searchLocation() {
 		document.getElementById('searchInput').focus()
 		promise = getLocation()
-
 	}
 
 	async function getLocation() {
 		removeResults()
 		let res = await fetch(`/geocode/${address}`)
 		let json = await res.json()
-		results = json
-		if (json.length) {
+		if (json.length == 1) {
+			setLocation(json[0])
+			return json
+		}else if (json.length > 1) {
+			results = json
 			markers = json.map(j => L.marker(j.location, {opacity: 0.5}).addTo(map).bindTooltip(j.address))
+			return json
 		}
-		return json
 	}
 
 	function locationString(loc) {
@@ -98,13 +107,16 @@
 			case 40://DOWN
 				selected++
 				if (selected >= results.length) selected = results.length - 1
-				elem = document.getElementById(`result${selected}`)
-				container = document.getElementById('results')
-				posY = elem.offsetTop - 244 + elem.clientHeight
-				if (container.scrollTop + container.clientHeight < posY) {
-					container.scrollTop = posY - container.clientHeight
+				if (selected > -1) {
+					elem = document.getElementById(`result${selected}`)
+					container = document.getElementById('results')
+					posY = elem.offsetTop - 244 + elem.clientHeight
+					if (container.scrollTop + container.clientHeight < posY) {
+						container.scrollTop = posY - container.clientHeight
+					}
+					document.getElementById('searchInput').focus()
+					setLocation(results[selected])					
 				}
-				setLocation(results[selected])
 				break
 			case 38://UP
 				selected--
@@ -140,7 +152,6 @@
 				type="text"
 				autocomplete="off" 
 				placeholder="Adresse, Ville, Pays">	
-
 	</div>
 
 	<div id="map"></div>
