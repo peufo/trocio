@@ -1,6 +1,11 @@
 <script>
 	import { onMount } from 'svelte'
 	import L from 'leaflet'
+	import dayjs from 'dayjs'
+	import Range from './Range.svelte'
+
+	let periode = {start: new Date().toJSON(), end: dayjs().add(20, 'day').toJSON()}
+	console.log(periode)
 	
 	onMount(() => {
 		let map = L.map('map', {
@@ -26,6 +31,9 @@
 <div class="w3-padding w3-center">
 	<h2>Trouve un troc dans la région</h2>
 	<div id="map"></div>
+	<br>
+	<Range/>
+
 </div>
 
 

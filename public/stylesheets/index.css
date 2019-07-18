@@ -2,9 +2,6 @@ html{scroll-behavior: smooth;}
 a:link{text-decoration:none;} 
 body{font-family: Raleway;}
 
-form i{
-	color: white;
-}
 #possibility{
 	width: 170px;
 }
@@ -23,6 +20,7 @@ form i{
 
 
 .iconInput{
+  margin-top: 8px;
 	width: 50px
 }
 

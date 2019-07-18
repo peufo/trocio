@@ -23,49 +23,53 @@
 			<br>
 
 			<div class="w3-row">
-				<form id="formNewUser" action="#" class="w3-card w3-padding w3-margin-bottom w3-theme-l2 w3-animate-bottom w3-round " style="display: none;">
+				<form id="formNewUser" action="#" class="w3-card w3-padding w3-margin-bottom w3-animate-bottom w3-round" style="display: none;">
 
 					<div class="w3-row w3-center">
 						<div class="w3-half">
-							<div class="w3-col iconInput"><i class="w3-xxlarge fa fa-user"></i></div>
+							<div class="w3-col iconInput"><i class="w3-xlarge fa fa-user"></i></div>
 							<div class=" w3-rest">
-								<input id="userNameInput" class="userInput w3-input w3-round" type="text" placeholder="Nom & prénom">
+								<input id="userNameInput" class="userInput w3-input" type="text" placeholder="Nom & prénom">
 							</div>
 						</div>
+						<div class="w3-half">
+							<div class="w3-col iconInput"><i class="w3-xlarge fa fa-envelope"></i></div>
+							<div  class="w3-rest">
+								<input id="userMailInput" class="userInput w3-input" type="email" placeholder="Email">
+							</div>							
+						</div>
+
+
+					</div>
+					
+					<!--
+					<div class="w3-row w3-margin-top w3-center">
 						<div class="w3-half">
 							<div class="w3-col iconInput"><i class="w3-xxlarge fa fa-birthday-cake"></i></div>
 							<div  class="w3-rest">
-								<input id="userBirthdayInput" class="userInput w3-input w3-round" type="date" min="1900-01-01">
+								<input id="userBirthdayInput" class="userInput w3-input" type="date" min="1900-01-01">
 							</div>
-						</div>
-					</div>
-					
-					<div class="w3-row w3-margin-top w3-center">
-						<div class="w3-half">
-							<div class="w3-col iconInput"><i class="w3-xxlarge fa fa-envelope"></i></div>
-							<div  class="w3-rest">
-								<input id="userMailInput" class="userInput w3-input w3-round" type="email" placeholder="Email">
-							</div>							
 						</div>
 						<div class="w3-half">
 							<div class="w3-col iconInput"><i class="w3-xxlarge fa fa-phone"></i></div>
 							<div  class="w3-rest">
-								<input id="userPhoneInput" class="userInput w3-input w3-round" type="tel" placeholder="Téléphone">
+								<input id="userPhoneInput" class="userInput w3-input" type="tel" placeholder="Téléphone">
 							</div>						
 						</div>
 					</div>
+					-->
 
 					<div class="w3-row w3-margin-top w3-center">
 						<div class="w3-half">
-							<div class="w3-col iconInput"><i class="w3-xxlarge fas fa-key"></i></div>
+							<div class="w3-col iconInput"><i class="w3-xlarge fas fa-key"></i></div>
 							<div  class="w3-rest">
-								<input id="userNewPassword" class="userInput w3-input w3-round" type="password" placeholder="Mot de passe">
+								<input id="userNewPassword" class="userInput w3-input" type="password" placeholder="Mot de passe">
 							</div>						
 						</div>
 						<div class="w3-half">
-							<div class="w3-col iconInput"><i class="w3-xxlarge fas fa-key"></i></div>
+							<div class="w3-col iconInput"><i class="w3-xlarge fas fa-key"></i></div>
 							<div  class="w3-rest">
-								<input id="userNewPassword2" class="userInput w3-input w3-round" type="password" placeholder="Pour être sur :)">
+								<input id="userNewPassword2" class="userInput w3-input" type="password" placeholder="Pour être sur :)">
 							</div>						
 						</div>				
 					</div>
@@ -80,19 +84,19 @@
 					</div>	
 				</form>
 
-				<form id="formLogin" action="#" class="w3-card w3-padding w3-margin-bottom w3-theme-l2 w3-animate-bottom w3-round " style="display: none;">
+				<form id="formLogin" action="#" class="w3-card w3-padding w3-margin-bottom w3-animate-bottom w3-round " style="display: none;">
 					
 					<div class="w3-row w3-margin-top w3-center">
 						<div class="w3-half">
-							<div class="w3-col iconInput"><i class="w3-xxlarge fa fa-envelope"></i></div>
+							<div class="w3-col iconInput"><i class="w3-xlarge fa fa-envelope"></i></div>
 							<div  class="w3-rest">
-								<input id="userMailLogin" class="userInput w3-input w3-round" type="email" placeholder="Email">
+								<input id="userMailLogin" class="userInput w3-input" type="email" placeholder="Email">
 							</div>							
 						</div>
 						<div class="w3-half">
-							<div class="w3-col iconInput"><i class="w3-xxlarge fas fa-key"></i></div>
+							<div class="w3-col iconInput"><i class="w3-xlarge fas fa-key"></i></div>
 							<div  class="w3-rest">
-								<input id="password" class="userInput w3-input w3-round" type="password" placeholder="Mot de passe">
+								<input id="password" class="userInput w3-input" type="password" placeholder="Mot de passe">
 							</div>						
 						</div>			
 					</div>

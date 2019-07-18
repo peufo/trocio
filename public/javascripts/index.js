@@ -66,16 +66,16 @@ $(function(){
 
 		msgFNU = ''
 		if ($('#userNameInput').val().length < 3) msgFNU = 'Votre nom est trop court !'
-		
+		/*
 		var birth = new Date($('#userBirthdayInput').val())
 		var age = new Date().getFullYear() - birth.getFullYear()	
 		if (msgFNU == '' && birth == 'Invalid Date') msgFNU = 'Date d\'anniversaire !'
 		if (msgFNU == '' && birth > new Date()) msgFNU = 'Vous venez du futur?'
 		if (msgFNU == '' && birth < new Date('1900-01-01')) msgFNU = 'Vous avez ' + age + ' ans ?'
-		
+		*/
 		if (msgFNU == '' && ($('#userMailInput').val().indexOf('@') < 0 || $('#userMailInput').val().length < 5)) msgFNU = 'Email invalide !'
 		
-		if (msgFNU == '' && $('#userPhoneInput').val().length < 6) msgFNU = 'Téléphone invalide !'
+		//if (msgFNU == '' && $('#userPhoneInput').val().length < 6) msgFNU = 'Téléphone invalide !'
 		
 		if (msgFNU == '' && $('#userNewPassword').val().length < 6) msgFNU = 'Mot de passe trop court !'
 
@@ -145,8 +145,8 @@ $(function(){
 	function CreateNewUser(){
 		var newUser = {
 				name: 		$('#userNameInput').val(),
-				birth: 		new Date($('#userBirthdayInput').val()),
-				phone: 		$('#userPhoneInput').val(),
+				//birth: 		new Date($('#userBirthdayInput').val()),
+				//phone: 		$('#userPhoneInput').val(),
 				mail: 		$('#userMailInput').val(),
 				password: 	$('#userNewPassword').val()
 			}

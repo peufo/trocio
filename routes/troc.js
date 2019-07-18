@@ -1,17 +1,14 @@
 var express = require('express')
 var Troc = require('../models/troc')
 var ctrl = require('../controllers/troc')
-var User = require('../models/user')
-var ObjectId = require('mongoose').Types.ObjectId
 var router = express.Router()
 
 router
 	//Reserved for root user
 	.get('/', (req, res, next) => {
 		Troc.find(req.query, (err, trocs) => {
-			if (!err){
-				res.json(trocs)
-			}else next()
+			if (err) return next(err)
+			res.json(trocs)
 		})
 	})
 	.get('/:id', (req, res, next) => {
