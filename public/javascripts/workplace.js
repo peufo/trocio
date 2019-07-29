@@ -322,6 +322,7 @@ var member = {},
 		CloseFormNewUser()
 	})
 
+		/*
 	var newUser = {},
 		newUserOk = false
 
@@ -365,6 +366,8 @@ var member = {},
 			$('#newUser').css('display', 'none')
 		}		
 	}
+
+	*/
 
 /*
 	socket.on('new_user_ok', function(data){

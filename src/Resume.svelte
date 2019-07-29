@@ -73,9 +73,9 @@
 
 	function getFee(price) {
 		
-		if (tarif) {
+		if (tarif && price > 0) {
 			return tarif.fee.sort((a, b) => b.price - a.price).filter(f => f.price <= price)[0].value
-		}else return 0
+		}
 		
 		return 0
 	}

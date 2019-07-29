@@ -193,11 +193,6 @@
 
 </svg>
 
-<div id="tooltip">
-    tooltip
-</div>
-
-<input type="range">
 <style>
     #slider {
         cursor: pointer;

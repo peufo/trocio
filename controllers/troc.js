@@ -1,5 +1,6 @@
 var Troc = require('../models/troc')
 var User = require('../models/user')
+var formidable = require('formidable')
 
 
 function getTrocUser(id, cb){

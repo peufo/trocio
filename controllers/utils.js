@@ -20,8 +20,7 @@ module.exports = {
 						console.log(`Nouvelle connection de ${user.name}`)
 						req.session.user = user
 						//La redirection ce fait côté client
-						//res.redirect('/')
-						res.json({success: true})
+						res.redirect('/users/me')
 					}else{
 						var reasons = User.failedLogin
 						switch(reason){
@@ -45,7 +44,7 @@ module.exports = {
 
 	logout: (req, res, next) => {
 		req.session.user = undefined
-		res.redirect('/welcome')
+		res.redirect('/')
 	}
 }
 

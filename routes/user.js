@@ -13,12 +13,14 @@ router
 		var user = new User(req.body);
 		user.save(err => {
 			if (!err) {
-				res.status(201).json({success: true, massage: 'Inscritpion réussie!'})
+				res.status(201).json({success: true, message: 'Inscritpion réussie!'})
 			}else next(err)
 		})
 	})
 	.post('/login', login)
-	.get('/me', checkLogin, (req, res, next) => {
+	.get('/me', (req, res, next) => {
+		if (!req.session.user) return res.json({})
+
 		User.findOne({_id: req.session.user._id}, {name: 1, trocs: 1})
 			.populate('trocs', 'name admin cashier') 
 			.exec((err, user) => {

@@ -12,6 +12,7 @@ var trocModel = new Schema({
 		lng: {type: Number, required: true}
 	},
 	description: {type: String, required: true},
+	image: {type: String},
 	creator: {type: ObjectId, ref: 'user', required: true},
 	schedule: [{open: Date, close: Date}],
 	tarif: [{	

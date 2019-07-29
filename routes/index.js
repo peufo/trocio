@@ -1,14 +1,13 @@
 var express = require('express')
-var { checkLogin } = require('../controllers/utils')
 var router = express.Router()
 var got = require('got')
 
 router
-	.get('/', checkLogin, (req, res, next) => {
+	.get('/', (req, res, next) => {
 		res.render('workplace')
 	})
 	.get('/welcome', (req, res, next) => {
-		res.render('index');
+		res.render('index') // sera une version légère de workplace
 	})
 	.get('/geocode/:query', (req, res, next) => {
 		if (!process.env.OCD_API_KEY) return next(Error('Variable environement OCD_API_KEY is undefined ! Please visite https://opencagedata.com/api'))

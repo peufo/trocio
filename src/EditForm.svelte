@@ -5,6 +5,7 @@
 	import { createEventDispatcher } from 'svelte'
 	const dispatch = createEventDispatcher()
 	import dayjs from 'dayjs'
+	import { getHeader, updateTroc } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import SearchAddress from './SearchAddress.svelte'
 
@@ -17,6 +18,7 @@
 	export let schedule = []
 	export let society = ''
 	export let societyweb = ''
+	export let image = ''
 
 	//Schedule conversion
 	if (!schedule.length) onMount(addSchedule)
@@ -76,7 +78,11 @@
 
 	function create() {
 		if (!invalid) {
-			dispatch('create', {name, description, address, location, schedule, society, societyweb})
+
+			fetch(`/trocs`, getHeader({name, address, location, description, schedule, society, societyweb}))
+			.then(res => res.json())
+			.then(json => updateTroc(json, () => dispatch('create')))
+
 		}
 	}
 
@@ -84,20 +90,25 @@
 	//Très bof bof, mais ca marche
 	let changeFlag = false 
 
+	$: console.log(image)
+
 </script>
 
 {#if !createMode}
 	<AutoPatch 	source="editForm"
 				path="{`/trocs/${_id}`}"
 				invalid={invalid}
-				body="{{name, address, description, schedule, society, societyweb}}"
+				body="{{name, address, location, description, schedule, society, societyweb}}"
 				trocRefresh
-				bind:changeFlag={changeFlag}/>  
+				bind:changeFlag={changeFlag}/>
+
+	<!-- Il faudra gerer les mise a jour de l'image en plus !!! -->
 {/if}
-<form id="editForm" class="w3-center">
+
+<form id="editForm" name="editForm" class="w3-center" enctype="multipart/form-data">
 	<br>
 	<h3>Mon troc</h3>
-	<input bind:value={name} class="w3-input w3-large" type="text" name="name" placeholder="Nom de l'évènement">
+	<input bind:value={name} class="w3-input w3-large" type="text" placeholder="Nom de l'évènement">
 	<textarea bind:value={description} class="w3-round" placeholder="Description" rows="6"></textarea>
 
 	<br>
@@ -148,8 +159,9 @@
 	<br>
 	<br>
 	<h3>Mon organisation <span class="w3-small w3-opacity">Pas obligatoire</span></h3>
-	<input bind:value={society} class="w3-input" type="text" name="society" placeholder="Nom">
-	<input bind:value={societyweb} class="w3-input" type="text" name="societyweb" placeholder="Site internet">
+	<input bind:value={society} class="w3-input" type="text" placeholder="Nom">
+	<input bind:value={societyweb} class="w3-input" type="text" placeholder="Site internet">
+
 	{#if createMode}
 		<br>
 		<div on:click={create} 
@@ -169,6 +181,9 @@
 
 	input[type=time] {
 		border: none;
+	}
+	input[type=file]{
+		border: 2px solid black;
 	}
 
 	h3 {

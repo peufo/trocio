@@ -6,17 +6,17 @@
 	import Admin from './Admin.svelte'
 	import Resume from './Resume.svelte'
 	import Trocs from './Trocs.svelte'
-	import { getHeader, updateTroc } from './utils'
-
+	import Login from './Login.svelte'
 
 	let vue = 'EXPLORE'
 	let menuOpen = false
 	let openCreate = false
+	let openUserOption = false
 
 	//Pour test
 	//troc.find('5d1cfa69aa6e871ce0b44fbe')
 	//$: console.log($me)
-	//$: console.log($troc)	
+	//$: console.log($tro  c)	
 
 	function selectTroc(e, myTroc) {
 
@@ -29,25 +29,17 @@
 		troc.find(myTroc._id)
 	}
 
-	function create(e) {
-		fetch(`/trocs`, getHeader(e.detail))
-		.then(res => res.json())
-		.then(json => updateTroc(json, () => openCreate = false))
-	}
-
-
-
 </script>
 
 
-<div class="w3-row w3-theme-d1 w3-padding w3-xlarge">
+<header class="w3-row w3-padding w3-border-bottom" >
 
-	<span class="clickable" on:click="{() => menuOpen = !menuOpen}">
+	<span class="clickable w3-xlarge" on:click="{() => menuOpen = !menuOpen}">
 		TROCIO
 		<i class="fa" class:fa-bars={!menuOpen} class:fa-times={menuOpen}></i>
 	</span>
 
-	<span id="trocSelected">
+	<span id="trocSelected" class="w3-large">
 	{#if $troc}
 		{$troc.name ? $troc.name : ''}
 		{vue == 'WORK' ? ' - Caisse' : ''}
@@ -55,30 +47,59 @@
 	{/if}
 	</span>
 
-	<span class="w3-right">
-		<i class="fa fa-user"></i> {$me.name}
-	</span>
-	
-</div>
+
+	<div id="userButton"
+		class="w3-padding w3-border w3-round w3-right" 
+		class:w3-button={!openUserOption} on:click="{() => openUserOption = true}">
+
+		{@html $me.name ? `<i class="far fa-user"></i> ${$me.name}` : `Login`}
+		
+		{#if openUserOption}
+			<div id="userOption" transition:slide class="w3-border w3-round">
+				
+				{#if $me.name}
+					<h3 class="w3-center"><i class="far fa-user"></i> {$me.name}</h3>
+					<ul class="w3-ul">
+						<li>
+							<a href="users/logout">
+								<div class="w3-padding">
+									<i class="fa fa-arrow-left"></i> Logout
+								</div>		
+							</a>
+						</li>
+					</ul>
+				{/if}
+
+				{#if !$me.name}
+					<Login on:close="{() => openUserOption = false}"/>
+				{/if}
+
+			</div>
+		{/if}
+	</div>
+
+</header>
 
 
 <!-- Create troc modal -->
 {#if openCreate}
-<div class="w3-modal" transition:fade>
-	<div class="w3-modal-content w3-padding w3-center w3-round">
-		<i on:click="{() => openCreate = false}" class="fa fa-times w3-xlarge w3-right w3-padding"></i>
-		<h1>Création d'un nouveau troc</h1>
-		<EditForm createMode on:create={create}/>
+	<div class="w3-modal" transition:fade>
+		<div class="w3-modal-content w3-padding w3-center w3-round">
+			<i on:click="{() => openCreate = false}" class="fa fa-times w3-xlarge w3-right w3-padding"></i>
+			<EditForm createMode on:create="{() => openCreate = false}"/>
+		</div>
 	</div>
-</div>
 {/if}
 
 
-<div id="vue" class="w3-row" on:click="{() => menuOpen = false}">
 
-	{#if menuOpen && $me.trocs}
+
+
+<div id="vue" class="w3-row" on:click="{() => {menuOpen = false; openUserOption = false}}">
+
+	{#if menuOpen && false} <!-- PLANQUER !!! -->
 		<div id="sidebar" transition:fly="{{x: -300}}" class="w3-theme-d2">
-			{#if $me.trocs.length}
+			{#if $me.trocs}
 				<div class="w3-theme-d4 w3-padding w3-large">Mes trocs</div>
 				<ul id="trocs" class="w3-ul">
 				{#each $me.trocs as myTroc}
@@ -123,7 +144,8 @@
 		</div>
 	{/if}
 
-	<div class="w3-col" class:blur={menuOpen}>
+	
+	<div class="w3-col" class:blur={openUserOption}>
 		{#if vue === 'WORK'}
 			<Work/>
 		{:else if vue === 'ADMIN'}
@@ -134,7 +156,7 @@
 			<Trocs/>
 		{/if}
 	</div>
-
+	
 </div>
 
 
@@ -160,13 +182,29 @@
 		
 	}
 	#vue {
-		height: calc(100% - 52px);
+		height: calc(100% - 58px);
 		overflow-y: auto;
 	}
 
 	.w3-modal {
 		display: block;
 	}
+
+	#userButton {
+		position: relative;
+		overflow: visible;
+	}
+
+	#userOption {
+		position: absolute;
+		z-index: 1000;
+		right: -1px;
+		top: -1px;
+		width: 400px;
+		background: #fff;
+		box-shadow: 0px 0px 6px rgba(200, 200, 200, 0.8);
+	}
+
 
 	#sidebar {
 		height: 100%;
@@ -176,10 +214,10 @@
 		border-right: 1px grey solid;
 		box-shadow: 2px 2px 4px grey;
 	}
+
 	#sidebar ul {
 		height: calc(100% - 288px);
 		overflow-y: auto;
-
 	}
 
 	#trocSelected {
@@ -188,6 +226,7 @@
 	}
 
 	.blur {
+		transition: all 1s;
 		filter: blur(2px);
 	}
 
