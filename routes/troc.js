@@ -12,11 +12,10 @@ router
 		})
 	})
 	.get('/search', (req, res, next) => {
-		let {search, start, stop, north, east, sud, west} = req.query
+		let {search, start, end, north, east, sud, west} = req.query
 		let query= {}
 
 		if (search && search.length) {
-			console.log(search)
 			let regexp = new RegExp(search, 'i')
 			query.$or = []
 			query.$or.push({'name': regexp})
@@ -25,14 +24,14 @@ router
 			query.$or.push({'society': 	regexp})
 		}
 
-		if (start || stop || north || east || sud || west) query.$and = []
+		if (start || end || north || east || sud || west) query.$and = []
 
-		if (start) {}
-		if (stop) {}
-		if (!isNaN(north)) query.$and.push({'location.lat': {$lt: north}})
-		if (!isNaN(east))  query.$and.push({'location.lng': {$lt: east}})
-		if (!isNaN(sud))   query.$and.push({'location.lat': {$gt: sud}})
-		if (!isNaN(west))  query.$and.push({'location.lng': {$gt: west}})
+		if (start) 			query.$and.push({'schedule.close': {$gte: start}})
+		if (end) 			query.$and.push({'schedule.open': {$lte: end}})
+		if (!isNaN(north)) 	query.$and.push({'location.lat': {$lt: north}})
+		if (!isNaN(east))  	query.$and.push({'location.lng': {$lt: east}})
+		if (!isNaN(sud))   	query.$and.push({'location.lat': {$gt: sud}})
+		if (!isNaN(west))  	query.$and.push({'location.lng': {$gt: west}})
 
 		console.log(query)
 		console.log(req.query)

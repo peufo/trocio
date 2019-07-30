@@ -21,9 +21,10 @@
 		timeOpen = false,
 		timeFilter = true,
 		search = '',
-		start = '', 
-		stop = ''
+		start = dayjs().format('YYYY-MM-DD'), 
+		end = ''
 
+		console.log(start)
 
 	onMount(() => {
 		map = L.map('map', {
@@ -60,7 +61,8 @@
 		let query = `/trocs/search?search=${search}`
 
 		if (timeFilter) {
-			query += `&start=${start}&stop=${stop}`
+			if (start) query += `&start=${start}`
+			if (end) query += `&end=${end}`
 		}
 
 		if (mapFilter) {
@@ -73,12 +75,23 @@
 		.then(res => res.json())
 		.then(json => {
 			trocs = json
+
+			//Period
+			trocs.forEach(t => {
+				let dates = t.schedule.map(s => new Date(s.open).getTime()).sort((a, b) => a - b)
+				t.start = new Date(dates[0]).toJSON()
+				t.end = new Date(dates[dates.length - 1]).toJSON()
+			})
+
+			//Map
 			markers.forEach(m => m.remove())
-			if (json.length) markers = json.map(j => L.marker(j.location).addTo(map).bindTooltip(j.name))
+			if (trocs.length) markers = trocs.map(j => L.marker(j.location).addTo(map).bindTooltip(j.name))
+
 		})
 	}
 
 	$: console.log($me)
+	$: console.log(trocs)
 
 </script>
 
@@ -120,18 +133,16 @@
 		</div>
 	</div>
 
-
-	
 	{#if timeOpen}
 		<div class="w3-margin w3-center w3-row" transition:slide>
 			<div class="w3-col m5">
-				<input type="date" class="w3-input">
+				<input on:input={loadTrocs} bind:value={start} type="date" class="w3-input">
 			</div>
 			<div class="w3-col m2">
 				<i class="fas fa-arrow-right w3-large w3-margin-top"></i>
 			</div>
 			<div class="w3-col m5">
-				<input type="date" class="w3-input">
+				<input on:input={loadTrocs} bind:value={end} type="date" class="w3-input">
 			</div>
 		</div>
 	{/if}
@@ -141,11 +152,11 @@
 
 
 	<div>
-		{#each trocs as t (t._id)}
+		{#each trocs as t, i (t._id)}
+			
 			<div transition:slide class="card w3-margin-top w3-padding w3-display-container">
 				<span class="w3-large">{t.name}</span>
 				<i>{t.society}</i>
-				
 				<div class="w3-small w3-right">
 					<span class="w3-right w3-round" on:click="{() => t.scheduleOpen = true}">
 						<i class="far fa-clock"></i>
@@ -153,7 +164,7 @@
 					</span>
 
 					{#if t.scheduleOpen}
-						<ul class="w3-ul w3-tiny w3-margin-top">
+						<ul class="w3-ul w3-tiny w3-margin-top w3-center">
 						{#each t.schedule as day}
 							<li>
 								{dayjs(day.open).format('ddd. DD.MM.YY [d]e H[h]mm à ')}
@@ -178,7 +189,6 @@
 					{#if $me.trocs && $me.trocs.map(tr => tr._id).indexOf(t._id) != -1}
 				
 						{#if t.resumeOpen}
-							
 							RESUME
 						{:else}
 							2 achats, 3 ventes
