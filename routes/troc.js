@@ -41,6 +41,13 @@ router
 			res.json(trocs)
 		})
 	})
+	.get('/:id/tarif', (req, res, next) => {
+		if (!req.session.user) return next(Error('Login required'))
+		Troc.findById(req.params.id, {tarif: 1}, (err, troc) => {
+			if(err) return next(err)
+			res.json(troc)
+		})
+	})
 	.get('/:id', (req, res, next) => {
 		if (!req.session.user) return next(Error('Login required'))
 		ctrl.getTrocUser(req.params.id, (err, troc) => {

@@ -6,6 +6,7 @@
     import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
+    export let id = 'login' //For focus()
 
     let newUser = false
     let reset = false
@@ -21,10 +22,10 @@
 
     function focus() {
         setTimeout(() => {
-            document.getElementsByTagName('input')[0].focus()
+            let loginForm = document.getElementById(`loginForm${id}`)
+            loginForm.getElementsByTagName('input')[0].focus()
         }, 450)
     }
-
 
     function submit() {
         if (newUser) {
@@ -59,7 +60,7 @@
 </script>
 
 {#if !close} <!-- Belle rustine-->
-<div class="w3-padding">
+<div id="{`loginForm${id}`}" class="w3-padding">
     {#if newUser}
         <h3 class="w3-center" in:fade>Nouveau compte</h3>
     {:else if reset}
@@ -124,13 +125,17 @@
     <div>
         <div class="w3-margin-top w3-small">
 
-            <div on:click="{() => {newUser = !newUser; reset = false; focus()}}" class="w3-button w3-round">
-                {newUser ? `Déjà un compte ?` : `Nouveau compte ?`} 
+            <div on:click="{() => {newUser = !newUser; reset = false; focus()}}" class="underline-div w3-padding">
+                <span class="underline-span">
+                    {newUser ? `Déjà un compte ?` : `Nouveau compte ?`} 
+                </span>
             </div>
             
             {#if !newUser}
-                <div on:click="{() => {reset = !reset; focus()}}" class="w3-button w3-round">
-                    {reset ? 'Login ?' : 'Oubli ?'} 
+                <div on:click="{() => {reset = !reset; focus()}}" class="underline-div w3-padding">
+                    <span class="underline-span">
+                        {reset ? 'Login ?' : 'Oubli ?'} 
+                    </span>
                 </div>
             {/if}
 
@@ -149,6 +154,20 @@
     margin-top: 12px;
     width: 30px;
     color: #888;
+}
+
+.underline-div {
+    cursor: pointer;
+    display: inline-block;
+}
+
+.underline-div:hover .underline-span {
+    background-size: 100% 100%;
+}
+.underline-span {
+    background: linear-gradient(to top, rgb(150, 150, 150) 0%, rgb(150, 150, 150) 1px, transparent 2px) no-repeat;
+    background-size: 0% 100%;
+    transition: background-size .15s;
 }
 
 </style>

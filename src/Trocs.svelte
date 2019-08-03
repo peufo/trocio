@@ -2,7 +2,7 @@
 	import { me } from './stores'
 	import Resume from './Resume.svelte'
 	import Toggle from './Toggle.svelte'
-	import Slider from './Slider.svelte'
+	import Login from './Login.svelte'
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
 	import L from 'leaflet'
@@ -12,14 +12,13 @@
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
 
-
 	let map,
 		trocs = [],
 		markers = [],
 		mapOpen = true,
 		mapFilter = true,
 		timeOpen = false,
-		timeFilter = true,
+		timeFilter = false,
 		search = '',
 		start = dayjs().format('YYYY-MM-DD'), 
 		end = ''
@@ -90,8 +89,18 @@
 		})
 	}
 
-	$: console.log($me)
-	$: console.log(trocs)
+	$: {
+		if ($me.trocs) {
+			trocs.forEach(t => {
+				let index = $me.trocs.map(tr => tr._id).indexOf(t._id)
+				t.activity = index != -1
+				if (t.activity) {
+					t.isCashier = $me.trocs[index].cashier
+					t.isAdmin = $me.trocs[index].admin
+				}
+			})
+		}
+	}
 
 </script>
 
@@ -151,57 +160,109 @@
 	
 
 
-	<div>
+	<div> <!-- Liste des trocs-->
 		{#each trocs as t, i (t._id)}
 			
-			<div transition:slide class="card w3-margin-top w3-padding w3-display-container">
-				<span class="w3-large">{t.name}</span>
-				<i>{t.society}</i>
-				<div class="w3-small w3-right">
-					<span class="w3-right w3-round" on:click="{() => t.scheduleOpen = true}">
-						<i class="far fa-clock"></i>
-						{dayjs(t.schedule[0].open).fromNow()}
-					</span>
+			<!--  En-tête  -->
+			<div on:mouseenter="{() => t.hover = true}"
+				 on:mouseleave="{() => t.hover = false}"
+				 transition:slide 
+				 class="card w3-margin-top">
+				<div class="w3-row">
+					<div class="w3-col m8 w3-padding">
+						<span class="w3-large">{t.name}</span>
+						<i>{t.society}</i>
+						<br>
+						<span class="w3-small">
+							<i class="fas fa-map-marker-alt"></i>
+							{t.address}
+						</span>
+						<p>{t.description}</p>
+						
+					</div>
 
-					{#if t.scheduleOpen}
-						<ul class="w3-ul w3-tiny w3-margin-top w3-center">
-						{#each t.schedule as day}
-							<li>
-								{dayjs(day.open).format('ddd. DD.MM.YY [d]e H[h]mm à ')}
-								{dayjs(day.close).format('H[h]mm')}
-							</li>
-						{/each}
-						</ul>
-					{/if}
-					
+					<div class="w3-col m4 w3-center schedule">
+						<div class="w3-small w3-padding">
+							<span class="w3-round">
+								<i class="far fa-clock"></i>
+								{dayjs(t.schedule[0].open).fromNow()}
+							</span>
+
+							{#if t.hover}
+								<ul class="w3-ul w3-tiny w3-margin-top" in:slide="{{delay: 400}}" out:slide>
+								{#each t.schedule as day}
+									<li>
+										{dayjs(day.open).format('ddd. DD.MM.YY [d]e H[h]mm à ')}
+										{dayjs(day.close).format('H[h]mm')}
+									</li>
+								{/each}
+								</ul>
+							{/if}
+						</div>
+					</div>
 				</div>
-				<br>
-				<span class="w3-small">
-					<i class="fas fa-map-marker-alt"></i>
-					{t.address}
-				</span>
-
-				<p>{t.description}</p>
-				<span class="w3-small">350 articles proposés</span><br>
-	
-				<div class="w3-display-bottomright">
-
-					{#if $me.trocs && $me.trocs.map(tr => tr._id).indexOf(t._id) != -1}
 				
-						{#if t.resumeOpen}
-							RESUME
+				<!-- Boutons -->
+				<div class="w3-row w3-border-top onglets">
+
+					<div class="w3-col w3-center w3-padding underline-div onglet"
+						 class:s5="{t.isAdmin || t.isCashier}"
+						 class:s6="{!t.isAdmin && !t.isCashier}"
+						 class:actived="{t.ongletOpen == 0}"
+						 on:click="{() => t.ongletOpen = 0}">
+						<span class="underline-span">Voir les 350 articles</span>
+					</div>
+
+					<div class="w3-col s5 w3-center w3-padding underline-div onglet"
+						 class:s5="{t.isAdmin || t.isCashier}"
+						 class:s6="{!t.isAdmin && !t.isCashier}"
+						 class:actived={t.ongletOpen == 1}
+						 on:click="{() => t.ongletOpen = 1}">
+
+						{#if t.activity}
+							<span class="underline-span">Proposer un article</span>
 						{:else}
-							2 achats, 3 ventes
+							<span class="underline-span">Voir mon activité</span>
 						{/if}
 
-					{:else}
-						Participer
+					</div>
+
+					<!--Bontons icon-->
+					{#if t.isAdmin || t.isCashier}
+						<div class="w3-col s1 w3-padding button-icon w3-center">
+							<i class="fa fa-cash-register w3-large"></i>
+						</div>
+					{/if}
+
+					{#if t.isAdmin}
+						<div class="w3-col s1 w3-padding button-icon w3-center">
+							<i class="fa fa-cog w3-large"></i>
+						</div>
 					{/if}
 
 				</div>
-			
+
+				<!-- Contenu supplementaire-->
+				{#if t.ongletOpen === 0}
+					Liste des articles
+				{/if}
+				<!-- :else if beugue... -->
+				{#if t.ongletOpen === 1}
+					<div transition:slide>
+						{#if $me._id}
+							<Resume userId={$me._id} trocId={t._id}/>
+						{:else}
+						<br>
+						<div class="w3-padding" style="width: 400px; margin: auto;">
+							<Login id="{i}"/>
+						</div>
+						<br>
+						{/if}
+					</div>
+				{/if}
+
 			</div>
-		
+
 		{:else}
 			<br>
 			<span class="w3-large">
@@ -247,7 +308,6 @@
 		transform: rotate(90deg);
 	}
 
-
 	.card {
 		box-shadow: 0px 0px 10px rgba(78, 78, 78, 0.2);
 		transition: .2s ease all;
@@ -257,9 +317,54 @@
 	.card:hover {
 		box-shadow: 0px 0px 10px rgba(78, 78, 78, 0.35);
 	}
+
+	.card:last-child {
+		margin-bottom: 80px;
+	}
 	
 	@media screen and (max-width: 600px) {
 		.fa-arrow-right {transform: rotate(90deg);}
+	}
+
+	.schedule {
+		background: #efefef;
+		border-radius: 0px 0px 0px 4px;
+	}
+
+	.underline-div {
+		cursor: pointer;
+	}
+
+	.underline-div:hover .underline-span {
+		background-size: 100% 100%;
+	}
+	.underline-span {
+		background: linear-gradient(to top, rgb(150, 150, 150) 0%, rgb(150, 150, 150) 1px, transparent 2px) no-repeat;
+		background-size: 0% 100%;
+		transition: background-size .15s;
+	}
+
+	.onglets {
+		background: rgb(245, 245, 245);
+	}
+
+	.onglet {
+		background: rgb(245, 245, 245);
+		border-radius: 10px 10px 0px 0px;
+		border: 1px rgb(100, 100, 100);
+	}
+
+	.onglet.actived {
+		background: white;
+	}
+
+	.button-icon {
+		cursor: pointer;
+		transition: all 0.3s;
+	}
+
+	.button-icon:hover {
+		transform: scale(1.2);
 	}
 
 </style>

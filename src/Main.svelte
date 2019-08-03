@@ -93,8 +93,6 @@
 
 
 
-
-
 <div id="vue" class="w3-row" on:click="{() => {menuOpen = false; openUserOption = false}}">
 
 	{#if menuOpen && false} <!-- PLANQUER !!! -->
