@@ -47,7 +47,7 @@
 	}
 
 	function remove() {
-		if (confirm(`Etes-vous sur de vouloir supprimer le tarif ${name}`)) {
+		if (confirm(`Etes-vous sur de vouloir supprimer le tarif "${name}"`)) {
 			dispatch('remove')
 		}
 	}
@@ -148,7 +148,7 @@
 				</ul>
 				<SearchUser on:select="{addApply}"
 							exepted={apply}
-							placeholder="Ajouter un utilisateur soumit au tarif {name}"/>
+							placeholder="{`Ajouter un utilisateur soumit au tarif "${name}"`}"/>
 			</div>
 
 			<br>

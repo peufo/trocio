@@ -17,8 +17,7 @@ app.listen(PORT, () => {
 	console.log('Trocio listen on ' + PORT)
 })
 
-app.set('views', path.join(__dirname, 'views'))
-app.set('view engine', 'ejs')
+
 app.set('secret', SECRET)
 
 app.use(logger('dev'))
@@ -50,13 +49,24 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {}
 
-  if (req.app.get('env') === 'development') console.log(err)
+  //set Status 
+  switch (err.message) {
+    case 'Login required':
+      res.status(401)
+      break;
+    default:
+        res.status(404)
+      break;
+  }
 
-  res.json({success: false, message: err.message})
+  if (req.app.get('env') === 'development'){
+    console.log(err)
+    res.json({success: false, message: err.message})
+  }else{
+    res.json({success: false})
+  }
+  
 })
 
 module.exports = app

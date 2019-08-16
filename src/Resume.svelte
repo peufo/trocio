@@ -14,8 +14,8 @@
 
 	onMount(() => {
 		if (userId && trocId) {
-			getArticles()
 			getTarif()
+			getArticles()
 		}else{
 			console.log('userId and trocId required !')
 		}
@@ -40,7 +40,7 @@
 	function getArticles() {
 		fetch(`/articles?provider=${userId}&troc=${trocId}`)
 		.then(res => res.json())
-		.then(json => articles = json)				
+		.then(json => articles = json)
 	}
 
 	function createArticle() {
@@ -74,16 +74,16 @@
 		.then(json => {
 			let tarifMatched = json.tarif.filter(t => t.apply.map(a => a._id).indexOf(userId) != -1)
 			tarif = tarifMatched[0] || json.tarif[0]
-		})				
+		})
 	}
 
-	function getFee(price) {
-		if (tarif && price > 0) {
-			return tarif.fee.sort((a, b) => b.price - a.price).filter(f => f.price <= price)[0].value
-		}
-		return 0
+	function getFee(art) {
+		if (tarif && art.price > 0) {
+			return art.fee = tarif.fee.sort((a, b) => b.price - a.price).filter(f => f.price <= art.price)[0].value
+		}else if (art.price == 0) {
+			return art.fee = 0
+		}else return art.fee
 	}
-
 
 </script>
 
@@ -184,7 +184,7 @@
 							min="0">
 					</td>
 					<td class:w3-opacity={!article.valided}>
-						{article.fee}
+						{getFee(article)}
 						{article.sold ? ` + ${article.price * article.margin}` : ''}
 					</td>
 					<td>
@@ -209,48 +209,12 @@
 
 </div>
 
-<!--
-	<div transition:fade class="w3-modal" on:click={closeCreatArticle}>
-		<div class="w3-modal-content w3-padding w3-round">
-			<i class="fa fa-times w3-large w3-right w3-margin"></i>
-			<h2 class="w3-center">Nouvel article</h2>
-			<div class="w3-row">
-				<input class="w3-input w3-large w3-col m10" type="text" placeholder="Nom complet">
-				<input class="w3-input w3-large w3-col m2" type="number" placeholder="Prix">
-			</div>
-
-
-			<div>
-				<div class="w3-large w3-button w3-border w3-round w3-right">
-					Proposer
-				</div>
-
-								
-				<div class="note w3-theme-l4 w3-leftbar w3-small w3-margin-top">
-					<p>
-						Vous êtes soumis au tarif "{tarif.name}"
-						<br>Si votre article est vendu, la marge de l'organisateur ce monte à {tarif.margin * 100}%
-					</p>
-				</div>				
-			</div>
-
-		</div>
-	</div>
--->
-
 <style>
 
 	#container {
 		position: relative;
 	}
-	.note {
-		padding: 8px;
-		width: calc(100% - 200px);
-	}
-	.w3-col {
-		padding-left: 5px;
-		padding-right: 5px;
-	}
+
 	.fa-times {
 		transform: scale(0);
 		cursor: pointer;

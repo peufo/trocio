@@ -1,11 +1,16 @@
 <script>
-	import { createEventDispatcher } from 'svelte'
+	import { onMount, createEventDispatcher } from 'svelte'
 	const dispatch = createEventDispatcher()
 	import { fly } from 'svelte/transition'
 
+	export let id = 0
 	export let search = ''
 	export let placeholder = 'Chercher un utilisateur'
 	export let exepted = []
+	export let modeSelect = false
+	export let itemSelected = {} //itemSelected = user
+	export let selectOk = false
+	
 
 	//TODO: Transformer pour aussi servire au article
 	//1. Utilisé ._id au lieu de .mail
@@ -17,6 +22,22 @@
 	let selected = 0
 	let listhover = false
 	let waiting
+	let nextInput
+	let focus = false
+
+	onMount(() => {
+		if (modeSelect) {
+			// Get next Input
+			let inputs = [...document.getElementsByClassName('w3-input')]
+			let input = document.getElementById(`searchUser${id}`)
+			let index = inputs.indexOf(input)
+			if (index < inputs.length - 1) {
+				nextInput = inputs[index + 1]
+			}else {
+				nextInput = inputs[0]
+			}
+		}
+	})
 
 	async function searchUser() {
 		const res = await fetch(`/users/search/${search}`)
@@ -31,16 +52,22 @@
 	}
 
 	function select(user) {
+		
 		if (!isExepted(user)) {
 			dispatch('select', user)
-			search = ''
+			itemSelected = user
+			if (modeSelect) {
+				search = user.name
+				nextInput.focus()
+			}else{
+				search = ''
+			}
 		}
 	}
 
 	function isExepted(user) {
 		return exepted.map(e => e.mail).indexOf(user.mail) > -1
 	}
-
 
 	const ENTER = 13, DOWN = 40, UP = 38
 
@@ -83,54 +110,69 @@
 			default:
 				selected = -1
 		}
+		console.log(selected)
 	}
 
+	$: selectOk = itemSelected.name == search
+
+	function focusout() {
+		setTimeout(() => focus = false, 200)
+	}
 
 </script>
 
-<input  bind:value={search}
-		on:keydown={keydown}
-		on:input={input}
-		type="text" 
-		class="w3-input searchUser" 
-		placeholder="{placeholder}">
+<div style="position: relative;">
+	<input  id="{`searchUser${id}`}"
+			bind:value={search}
+			on:keydown={keydown}
+			on:input={input}
+			on:focusin="{() => focus = true}"
+			on:focusout="{focusout}"
+			type="text" 
+			class="w3-input searchUser"
+			autocomplete="off"
+			placeholder="{placeholder}">
 
-{#if search.length > 2}
-<div class="w3-border w3-round w3-padding" in:fly="{{y: 50}}">
-	
-	{#await users}
-		<i class="fas fa-circle-notch w3-spin"></i>
-		Recherche...
-	{:then users}
-		{#if users.length}
-			<ul class="w3-ul"
-				on:mouseenter="{() => {listhover = true; selected = -1}}"
-				on:mouseleave="{() => listhover = false}">
-				{#each users as user, i}
-				<li class="w3-round"
-					class:w3-opacity="{isExepted(user)}"
-					class:w3-theme-l3="{(selected == i || user.hover) && !isExepted(user)}"
-					on:mouseenter="{() => user.hover = true}"
-					on:mouseleave="{() => user.hover = false}"
-					on:click="{() => select(user)}">
-					{user.name}
-					<em class="w3-small w3-right">{user.mail}</em>
-				</li>
-				{/each}
-			</ul>
+	{#if focus && search.length > 2 && (!modeSelect || !selectOk)}
+	<div id="proposition" class="w3-border w3-round w3-padding" in:fly="{{y: 50}}">
+		
+		{#await users}
+			<i class="fas fa-circle-notch w3-spin"></i>
+			Recherche...
+		{:then users}
+			{#if users.length}
+				<ul class="w3-ul"
+					on:mouseenter="{() => {listhover = true; selected = -1}}"
+					on:mouseleave="{() => listhover = false}">
+					{#each users as user, i}
+					<li class="underline-div without-hover"
+						class:w3-opacity="{isExepted(user)}"
+						class:selected="{selected == i && !isExepted(user)}"
+						on:mouseenter="{() => selected = i}"
+						on:click="{() => select(user)}">
+						<span class="underline-span">{user.name}</span>
+						<em class="w3-small w3-right">{user.mail}</em>
+					</li>
+					{/each}
+				</ul>
 
-		{:else}
-			Aucun résultat pour <b>{search}</b>
-		{/if}		
-	{:catch error}
-		<span class="w3-red">{error}</span>
-	{/await}
+			{:else}
+				Aucun résultat pour <b>{search}</b>
+			{/if}		
+		{:catch error}
+			<span class="w3-red">{error}</span>
+		{/await}
 
+	</div>
+	{/if}
 </div>
-{/if}
+
 
 <style>
-	div {
+
+	#proposition {
+		position: absolute;
+		width: 100%;
 		background: #fff;
 		margin-top: 4px;
 		box-shadow: 1px 1px 4px grey;
@@ -138,7 +180,7 @@
 
 	li {
 		cursor: pointer;
+		border: none;
 	}
-
 
 </style>

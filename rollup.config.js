@@ -4,17 +4,10 @@ import commonjs from 'rollup-plugin-commonjs'
 import livereload from 'rollup-plugin-livereload'
 import { terser } from 'rollup-plugin-terser'
 import scss from 'rollup-plugin-scss'
-import multiEntry from "rollup-plugin-multi-entry"
 import url from 'rollup-plugin-url'
 
 const production = !process.env.ROLLUP_WATCH
 
-function getInput(name) {
-	return [
-		`src/${name}.js`,
-		'node_modules/w3-css'
-	]
-}
 function getOutput(name) {
 	return {
 		sourcemap: true,
@@ -23,9 +16,9 @@ function getOutput(name) {
 		file: `public/assets/${name}.js`
 	}
 }
+
 const plugins = [
 		svelte({dev: !production}),
-		multiEntry(),
 		scss(),
 		url({
 			include: ['**/*.woff2', '**/*.woff'],
@@ -40,9 +33,23 @@ const plugins = [
 	]
 
 
-export default [{
-	input: getInput('main'),
-	output: getOutput('main'),
+export default [
+{
+	input: 'src/admin.js',
+	output: getOutput('admin'),
 	plugins,
 	watch: {clearScreen: false}
-}]
+},
+{
+	input: 'src/trocs.js',
+	output: getOutput('trocs'),
+	plugins,
+	watch: {clearScreen: false}
+},
+{
+	input: 'src/cashier.js',
+	output: getOutput('cashier'),
+	plugins,
+	watch: {clearScreen: false}
+},
+]

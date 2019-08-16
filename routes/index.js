@@ -1,13 +1,17 @@
 var express = require('express')
 var router = express.Router()
 var got = require('got')
+var path = require('path')
 
 router
 	.get('/', (req, res, next) => {
-		res.render('workplace')
+		res.sendFile(path.join(__dirname, '..', 'views', 'trocs.html'))
 	})
-	.get('/welcome', (req, res, next) => {
-		res.render('index') // sera une version légère de workplace
+	.get('/cashier', (req, res, next) => {
+		res.sendFile(path.join(__dirname, '..', 'views', 'cashier.html'))
+	})
+	.get('/admin', (req, res, next) => {
+		res.sendFile(path.join(__dirname, '..', 'views', 'admin.html'))
 	})
 	.get('/geocode/:query', (req, res, next) => {
 		if (!process.env.OCD_API_KEY) return next(Error('Variable environement OCD_API_KEY is undefined ! Please visite https://opencagedata.com/api'))

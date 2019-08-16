@@ -157,17 +157,7 @@
 }
 
 .underline-div {
-    cursor: pointer;
     display: inline-block;
-}
-
-.underline-div:hover .underline-span {
-    background-size: 100% 100%;
-}
-.underline-span {
-    background: linear-gradient(to top, rgb(150, 150, 150) 0%, rgb(150, 150, 150) 1px, transparent 2px) no-repeat;
-    background-size: 0% 100%;
-    transition: background-size .15s;
 }
 
 </style>

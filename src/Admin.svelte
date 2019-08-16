@@ -1,4 +1,5 @@
 <script>
+	import { onMount } from 'svelte'
 	import { me, troc } from './stores'
 	import { fade } from 'svelte/transition'
 	import EditForm from './EditForm.svelte'
@@ -6,11 +7,28 @@
 	import AutoPatch from './AutoPatch.svelte'
 	import UserLi from './UserLi.svelte'
 	import Tarif from './Tarif.svelte'
+	import Cashier from './Cashier.svelte'
 	import { getHeader, updateTroc } from './utils'
 
 
-	let tabs = ['Informations', 'Travailleurs', 'Tarifications', 'Statistique', 'Correction']
-	let tabSelected = 2
+	let tabSelected = 6
+	let tabs = [
+		{name: 'Informations', 	icon: '<i class="fas fa-info-circle"></i>'},
+		{name: 'Collaborateurs', icon: '<i class="fas fa-users"></i>'}, 
+		{name: 'Tarifications', icon: '<i class="fas fa-coins"></i>'},
+		{name: 'Etiquetage', 	icon: '<i class="fas fa-tag"></i>'},
+		{name: 'Statistique', 	icon: '<i class="fas fa-chart-pie"></i>'},
+		{name: 'Correction', 	icon: '<i class="fas fa-eraser"></i>'},
+		{name: 'Caisse', 		icon: '<i class="fas fa-cash-register"></i>'}
+	]
+
+	onMount(() => {
+		if (document.location.hash.substr(1).length == 24) {
+			troc.find(document.location.hash.substr(1))
+		} else {
+			$troc = {failed: true, reason: 'Bad request'}
+		}
+	})
 
 	function saveMeta(e) {
 		fetch(`/trocs/${$troc._id}`, getHeader(e.detail, 'PATCH'))
@@ -52,16 +70,31 @@
 
 </script>
 
+<!-- Check if all is OK ! -->
+{#if $troc.failed}
+	<div class="w3-display-container">
+		<div class="w3-display-middle w3-red w3-padding w3-round w3-large w3-center">
+			<i class="fas fa-bug"></i> Oups ! <br>
+			{#if $troc.reason == 'Not found'}
+				<span>Ce troc n'éxiste pas !</span>
+			{:else if $troc.reason == 'Bad request'}
+				<span>La requête n'est pas valide !</span>
+			{:else}
+				<span>Vous n'avez pas accès à la page administrateur de ce troc !</span>
+			{/if}
+		</div>
+	</div>
+{:else}
 <div in:fade>
 	
-	<div class="w3-bar w3-theme w3-large">
+	<div class="onglets">
 	{#each tabs as tab, i}
-		<button 
-			class="w3-bar-item w3-button" 
-			on:click="{() => tabSelected = i}"
-			class:w3-theme-l5="{tabSelected == i}">
-			{tab}
-		</button>
+		<div class="w3-padding underline-div onglet"
+			 on:click="{() => tabSelected = i}"
+			 class:actived="{tabSelected == i}">
+			 {@html tab.icon}
+			<span class="underline-span">{tab.name}</span>
+		</div>
 	{/each}
 	</div>
 	
@@ -76,7 +109,7 @@
 		{:else if tabSelected == 1}		<!-- Worker -->
 			<div in:fade>
 				<div class="w3-col m6 w3-padding">
-					<h2 class="w3-center">Administrateurs</h2>
+					<h3 class="w3-center">Administrateurs</h3>
 					<ul class="w3-ul">
 					{#each $troc.admin as admin}
 						<UserLi user={admin} 
@@ -92,7 +125,7 @@
 				</div>
 
 				<div class="w3-col m6 w3-padding w3-border-left">
-					<h2 class="w3-center">Caissiers</h2>
+					<h3 class="w3-center">Caissiers</h3>
 					<ul class="w3-ul">
 					{#each $troc.cashier as cashier}
 						<UserLi user={cashier}
@@ -130,33 +163,42 @@
 			<!--
 			
 			-->
-		{:else if tabSelected == 3}		<!-- Stats  -->
+		{:else if tabSelected == 3}		<!-- Etiquetage  -->
+			Etiquetage
+
+		{:else if tabSelected == 4}		<!-- Stats  -->
 			Stats
 
-		{:else if tabSelected == 4}		<!-- Correction  -->
+		{:else if tabSelected == 5}		<!-- Correction  -->
 			Correction
+
+		{:else if tabSelected == 6}		<!-- Caisse  -->
+			<Cashier/>
 
 		{/if}
 	{/if}
 
 	</div>
-
 </div>
+{/if}
 
+<svelt:head>
+	<style>#waitLoaded { display: none; }</style>
+</svelt:head>
 
 <style>
-	
-	button.w3-bar-item  {
-		border-radius: 5px 5px 0px 0px;
-	}
-
-	.user div {
-		width: calc(100% - 30px);
-	}
 
 	#addTarif {
 		max-width: 850px;
 		margin: auto;
+	}
+
+	.underline-div {
+		display: inline-block;
+	}
+
+	.w3-display-container {
+		height: calc(100% - 57px);
 	}
 
 </style>

@@ -5,6 +5,7 @@ const ObjectId = Schema.Types.ObjectId
 var articleModel = new Schema({
 	troc: {type: ObjectId, ref: 'troc', required: true},
 	provider: {type: ObjectId, ref: 'user', required: true},
+	ref: {type: String},
 	buyer: {type: ObjectId, ref: 'user'},
 	name: {type: String, default: ''},
 	price: {type: Number, default: 1},

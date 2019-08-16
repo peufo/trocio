@@ -1,8 +1,37 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+html, body {height: 100%;}
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #888; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+a { text-decoration: none; }
+
+.underline-div {
+    cursor: pointer;
+}
+.underline-div:not(.without-hover):hover .underline-span,
+.underline-div.selected .underline-span {
+    background-size: 100% 100%;
+}
+.underline-div:hover i, .underline-div.selected i {
+    transform: scale(1.4);
+}
+.underline-div i {
+    transition: transform .15s;
+}
+.underline-span {
+    background: linear-gradient(to top, rgb(150, 150, 150) 0%, rgb(150, 150, 150) 1px, transparent 2px) no-repeat;
+    background-size: 0% 100%;
+    transition: background-size .15s;
 }
 
-a {
-  color: #00B7FF;
+.onglets {
+    background: rgb(240, 240, 240);
+}
+.onglet {
+    background: rgb(240, 240, 240);
+    border-radius: 10px 10px 0px 0px;
+    border: 1px rgb(100, 100, 100);
+}
+.onglet.actived {
+    background: white;
 }
