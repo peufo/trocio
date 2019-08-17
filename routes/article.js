@@ -1,7 +1,6 @@
 var express = require('express')
 var Article = require('../models/article')
 var { createArticle, deleteArticle } = require('../controllers/article')
-var ObjectId = require('mongoose').Types.ObjectId
 var router = express.Router()
 
 router
