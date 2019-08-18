@@ -43,7 +43,7 @@
 		const res = await fetch(`/users/search/${search}`)
 		const json = await res.json()
 		if (res.ok)	return json
-		else Error(res.message)
+		else return []
 	}
 
 	function input(){

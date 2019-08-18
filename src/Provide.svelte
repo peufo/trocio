@@ -207,73 +207,13 @@
                     </div>
 
                 </div>
+            {:else}
+                <span class="w3-opacity">Pas d'articles fournis !</span>
             {/each}
         </div>
     </div>
 </div>
 
 <style>
-
-	.clickable{
-		cursor: pointer;
-	}
-	.validButton {
-		cursor: pointer;
-		color: white;
-		background: rgb(76, 175, 80);
-		border: solid 3px;
-		border-color: rgb(76, 175, 80);
-		transition: all .3s;
-		height: 35px;
-		padding: 4px 10px 4px 10px;
-	}
-
-	.validButton:hover {
-		border-color: rgb(76, 130, 80);
-	}
-
-	.list-element {
-		background: rgb(250, 250, 250);
-		border: solid 1px rgb(220, 220, 220);
-		margin-bottom: 10px;
-		border-radius: 4px;
-		overflow-x: hidden;
-	}
-
-	.list-element.valided {
-		background: white;
-	}
-
-	.list-element .fa-trash-alt {
-		transform: translate(30px, 0px);
-		transition: .15s transform ease;
-	}
-
-	.list-element .fa-check {
-		transform: translate(20px, 0px) scale(1);
-		transition: .15s transform ease;
-	}
-
-	.list-element:hover .fa-trash-alt {
-		transform: translate(0px, 0px);
-	}
-	.fa-trash-alt:hover {
-		transform: scale(1.3) !important;
-	}
-
-	.list-element:hover .fa-check {
-		transform: scale(0);
-    }
-    
-    .hide {
-        transition: all .2s;
-        transform: scale(0);
-        opacity: 0;
-    }
-    
-    .visible {
-        transform: scale(1) !important;
-        opacity: 1 !important;
-    }
 
 </style>

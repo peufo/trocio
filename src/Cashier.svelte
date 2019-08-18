@@ -3,12 +3,13 @@
     import { troc } from './stores'
 	import SearchUser from './SearchUser.svelte'
 	import Provide from './Provide.svelte'
+	import Buy from './Buy.svelte'
 
 	let user = {}
 	let userOk = false
 
 
-	let action = 0
+	let action = 1
 	let actions = [
 		{id: 0, name: 'Fournit'},
 		{id: 1, name: 'Achète'},
@@ -47,6 +48,7 @@
 		</div>
 	</div>
 {:else}
+	<br>
 	<div class="w3-card w3-padding w3-round" style="max-width: 850px; margin: auto;">
 		<div class="w3-row w3-margin-top">
 
@@ -77,16 +79,17 @@
 		</div>
 
 		{#if userOk}
-		<div class="w3-row">
-		
+		<div class="w3-row w3-padding">
+		    <br>
+
 			{#if action == 0} <!-- Fournit -->
-				<div class="w3-col w3-padding">
-					<br>
-					<Provide bind:user/>
-				</div>
+				
+				<Provide bind:user/>
 
 			{:else if  action == 1} <!-- Achète -->
-				Achète
+
+				<Buy bind:user/>
+
 			{:else if  action == 2} <!-- Récupère -->
 				Récupère
 			{:else if  action == 3} <!-- Retourne -->

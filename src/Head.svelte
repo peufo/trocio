@@ -26,7 +26,6 @@
 	{/if}
 	</span>
 
-
 	<div id="userButton"
 		class="w3-padding w3-border w3-round w3-right" 
 		class:w3-button={!openUserOption} on:click="{() => openUserOption = true}">

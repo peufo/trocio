@@ -116,7 +116,7 @@
                 bind:value={password2}
                 class="userInput w3-input"
                 type="password"
-                placeholder="Pour être sur :)"
+                placeholder="Pour être sûr :)"
                 on:keyup="{e => e.which == 13 && submit()}">
         </div>						
     </div>

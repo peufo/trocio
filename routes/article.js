@@ -12,6 +12,32 @@ router
 	})
 	.post('/', createArticle)
 	.delete('/:id', deleteArticle)
+	.get('/search', (req, res, next) => {
+		let { search, troc, providernot, available } = req.query
+		let query = {}
+
+		if (troc || providernot) query.$and = []
+		if (troc) query.$and.push({troc})
+		if (providernot) query.$and.push({'provider': {$ne: providernot}})
+		if (available) {
+			query.$and.push({'valided': {$exists: true}})
+			query.$and.push({'sold': {$exists: false}})
+			query.$and.push({'recover': {$exists: false}})
+		}
+
+		if (search && search.length) {
+			let regexp = new RegExp(search, 'i')
+			query.$or = []
+			query.$or.push({'name': regexp})
+			query.$or.push({'ref': 	regexp})
+		}
+		
+		Article.find(query).exec((err, articles) => {
+			if (err) return next(err)
+			res.json(articles)
+		})
+
+	})
 	.get('/:id', (req, res, next) => {
 		Article.findById(req.params.id, (err, art) => {
 			if (err) return next(err)
@@ -32,7 +58,7 @@ router
 				if (err) errors.push(err)
 			})
 			if (errors.length) return next(errors[0])
-			res.json({success: true})
+			res.json({success: true, message: articles})
 		})
 	})
 	.patch('/:id', (req, res, next) => {
