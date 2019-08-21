@@ -207,7 +207,7 @@
             
         </div>
         <br>
-        <div class=" w3-margin-left w3-large">
+        <div class="w3-margin-left w3-large">
             <span>Achats</span>
         </div>
 
@@ -234,7 +234,8 @@
                     </div>
                 </div>
                 
-                
+            {:else}
+                <span class="w3-opacity w3-margin-left">Pas d'achat</span>
             {/each}
         {/await}
 

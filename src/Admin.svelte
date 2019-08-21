@@ -85,7 +85,7 @@
 		</div>
 	</div>
 {:else}
-<div in:fade>
+<div in:fade style="height: calc(100% - 58px);">
 	
 	<div class="onglets">
 	{#each tabs as tab, i}
@@ -97,18 +97,23 @@
 		</div>
 	{/each}
 	</div>
-	
-	<div class="w3-margin">
+
 
 	{#if $troc._id}
-		{#if tabSelected == 0}			<!-- Apercu -->
-			<div in:fade>
+	<div class="tabs" style="height: calc(100% - 38px);">
+					<!-- Apercu -->
+		<div class="tab" class:center={tabSelected == 0} class:left={tabSelected > 0}>
+			<br>
+			<div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
 				<EditForm {...$troc} />
 			</div>
+		</div>
 
-		{:else if tabSelected == 1}		<!-- Worker -->
-			<div in:fade>
-				<div class="w3-col m6 w3-padding">
+				<!-- Worker -->
+		<div class="tab" class:center={tabSelected == 1} class:left={tabSelected > 1} class:right={tabSelected < 1}>
+			<br>
+			<div class="w3-padding w3-card w3-round w3-row" style="max-width: 850px; margin: auto;">
+				<div class="w3-padding w3-col m6" >
 					<h3 class="w3-center">Administrateurs</h3>
 					<ul class="w3-ul">
 					{#each $troc.admin as admin}
@@ -124,7 +129,7 @@
 					</ul>
 				</div>
 
-				<div class="w3-col m6 w3-padding w3-border-left">
+				<div class="w3-padding w3-border-left w3-col m6" >
 					<h3 class="w3-center">Caissiers</h3>
 					<ul class="w3-ul">
 					{#each $troc.cashier as cashier}
@@ -139,8 +144,11 @@
 					</ul>
 				</div>
 			</div>
-
-		{:else if tabSelected == 2 }		<!-- Tarif  -->
+			
+		</div>
+				<!-- Tarif  -->
+		<div class="tab" class:center={tabSelected == 2} class:left={tabSelected > 2} class:right={tabSelected < 2}>
+			<br>
 			<AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}" bind:changeFlag={changeFlag} trocRefresh/>
 			<div id="editTarif" in:fade>
 			{#each $troc.tarif as tarif, i}
@@ -160,25 +168,34 @@
 				</div>
 
 			</div>
-			<!--
-			
-			-->
-		{:else if tabSelected == 3}		<!-- Etiquetage  -->
+		</div>
+				<!-- Etiquetage  -->
+		<div class="tab" class:center={tabSelected == 3} class:left={tabSelected > 3} class:right={tabSelected < 3}>
+			<br>
 			Etiquetage
+		</div>
 
-		{:else if tabSelected == 4}		<!-- Stats  -->
+				<!-- Stats  -->
+		<div class="tab" class:center={tabSelected == 4} class:left={tabSelected > 4} class:right={tabSelected < 4}>
+			<br>
 			Stats
+		</div>
 
-		{:else if tabSelected == 5}		<!-- Correction  -->
+				<!-- Correction  -->
+		<div class="tab" class:center={tabSelected == 5} class:left={tabSelected > 5} class:right={tabSelected < 5}>
+			<br>
 			Correction
+		</div>
 
-		{:else if tabSelected == 6}		<!-- Caisse  -->
+				<!-- Caisse  -->
+		<div class="tab" class:center={tabSelected == 6} class:left={tabSelected > 6} class:right={tabSelected < 6}>
+			<br>
 			<Cashier/>
-
-		{/if}
+		</div>
+		
+	</div>
 	{/if}
 
-	</div>
 </div>
 {/if}
 

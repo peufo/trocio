@@ -8,14 +8,12 @@
 	let user = {}
 	let userOk = false
 
-
 	let action = 1
 	let actions = [
-		{id: 0, name: 'Fournit'},
-		{id: 1, name: 'Achète'},
-		{id: 2, name: 'Récupère'},
-		{id: 3, name: 'Retourne'},
-		{id: 4, name: 'Règle le solde'},
+		{id: 0, name: 'Fournit', icon: '<i></i>'},
+		{id: 1, name: 'Achète', icon: '<i></i>'},
+		{id: 2, name: 'Récupère', icon: '<i></i>'},
+		{id: 3, name: 'Retourne', icon: '<i></i>'},
 	]
 
     onMount(() => {
@@ -48,9 +46,9 @@
 		</div>
 	</div>
 {:else}
-	<br>
-	<div class="w3-card w3-padding w3-round" style="max-width: 850px; margin: auto;">
-		<div class="w3-row w3-margin-top">
+
+	<div class="w3-card w3-round" style="max-width: 850px; margin: auto; height: calc(100% - 45px)">
+		<div class="w3-row w3-padding">
 
 			<!-- Utilisateur -->
 			<div class="w3-col s6 w3-padding">
@@ -67,43 +65,60 @@
 				</div>
 			</div>
 
+			<!-- Règle le solde -->
+			
+			<div class:visible={userOk} class="hide w3-col s6 w3-padding">
+				<div class="validButton w3-right w3-round">Régler le solde de 200.00 </div>
+			</div>
+			
+
+		</div>
+
+
+		
+		<div class:visible={userOk} class="hide" style="height: calc(100% - 126px);">
+
 			<!-- Action -->
-			<div class="w3-col s6 w3-padding">
-				<select bind:value={action} class="w3-input">
-				{#each actions as a}
-					<option value="{a.id}">{a.name}</option>
+			<div class="onglets w3-margin-top w3-border-top">
+				{#each actions as tab, i}
+					<div class="w3-padding underline-div onglet"
+						on:click="{() => action = i}"
+						class:actived="{action == i}">
+						{@html tab.icon}
+						<span class="underline-span">{tab.name}</span>
+					</div>
 				{/each}
-				</select>
+
+			</div>
+
+			
+			<div class="tabs" style="height: 100%;">
+
+				<!-- Fournit -->
+				<div class="tab" class:center={action == 0} class:left={action > 0}>
+					<br>
+					<Provide bind:user/>
+				</div>
+				<!-- Achète -->
+				<div class="tab" class:center={action == 1} class:left={action > 1} class:right={action < 1}>
+					<br>
+					<Buy bind:user/>
+				</div>
+				<!-- Récupère -->
+				<div class="tab" class:center={action == 2} class:left={action > 2} class:right={action < 2}>
+					<br>
+					Récupère
+				</div>
+				<!-- Retourne -->
+				<div class="tab" class:center={action == 3} class:right={action < 3}>
+					<br>
+					Retourne
+				</div>
+
+			
 			</div>
 
 		</div>
-
-		{#if userOk}
-		<div class="w3-row w3-padding">
-		    <br>
-
-			{#if action == 0} <!-- Fournit -->
-				
-				<Provide bind:user/>
-
-			{:else if  action == 1} <!-- Achète -->
-
-				<Buy bind:user/>
-
-			{:else if  action == 2} <!-- Récupère -->
-				Récupère
-			{:else if  action == 3} <!-- Retourne -->
-				Retourne
-			{:else if  action == 4} <!-- Règle le solde -->
-				Règle
-
-			{/if}
-		
-		</div>
-
-		{:else}
-			Choose an user
-		{/if}
 
 	</div>
 
@@ -117,7 +132,12 @@
 <style>
     .w3-display-container {
         height: calc(100% - 57px);
-    }
+	}
+	
+	.tab {
+		padding-left: 32px;
+		padding-right: 32px;
+	}
 
 	.icon {
 		display: inline-block;

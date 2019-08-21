@@ -4,7 +4,6 @@
     import Login from './Login.svelte'
     import EditForm from './EditForm.svelte'
 
-    export let vue = 'EXPLORE' //not used...
 	export let openCreate = false
 	export let openUserOption = false
 
@@ -21,8 +20,6 @@
 	<span id="trocSelected" class="w3-large">
 	{#if $troc}
 		{$troc.name ? $troc.name : ''}
-		{vue == 'WORK' ? ' - Caisse' : ''}
-		{vue == 'ADMIN' ? ' - Configuration' : ''}
 	{/if}
 	</span>
 

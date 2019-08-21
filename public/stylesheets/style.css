@@ -31,6 +31,7 @@ a { text-decoration: none; }
     background: rgb(240, 240, 240);
 }
 .onglet {
+    display: inline-block;
     background: rgb(240, 240, 240);
     border-radius: 10px 10px 0px 0px;
     border: 1px rgb(100, 100, 100);
@@ -97,4 +98,37 @@ a { text-decoration: none; }
 .visible {
     transform: scale(1) !important;
     opacity: 1 !important;
+}
+
+.tabs{
+    position: relative;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+}
+
+.tab {
+    transition: all .45s;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.tab.center {
+    transform: translate(0px, 0px);
+    opacity: 1;
+}
+
+.tab.left {
+    transform: translate(-100%, 0px);
+    opacity: 0;
+    overflow: hidden;
+}
+
+.tab.right {
+    transform: translate(100%, 0px);
+    opacity: 0;
+    overflow: hidden;
 }
