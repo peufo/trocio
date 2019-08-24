@@ -1,10 +1,9 @@
 <script>
     import { onMount } from 'svelte'
     import { troc } from './stores'
-	import { quintOut } from 'svelte/easing'
 	import { crossfade } from 'svelte/transition'
     import { flip } from 'svelte/animate'
-    import { getHeader } from './utils'
+    import { getHeader, crossfadeConfig } from './utils'
     import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
@@ -12,37 +11,17 @@
 	dayjs.extend(relativeTime)
 
     export let user = {}
+    export let purchases = []
+    export let purchasesPromise
 
-    let articles = []
+    let articles = [] //search
     let searchPromise
     let search = ''
     let cart = []
     let buyPromise
     let waiting
-    let purchases = []
-    let purchasesPromise
 
-	const [send, receive] = crossfade({
-		duration: d => Math.sqrt(d * 200),
-		fallback(node, params) {
-			const style = getComputedStyle(node)
-			const transform = style.transform === 'none' ? '' : style.transform
-			return {
-				duration: 600,
-				easing: quintOut,
-				css: t => `
-					transform: ${transform} scale(${t});
-					opacity: ${t}
-				`
-			}
-		}
-    })
-
-    onMount(() => {
-        if (user._id) {
-            purchasesPromise = getPurchases()
-        }
-    })
+    const [send, receive] = crossfade(crossfadeConfig)
 
     async function searchArticle() {
         let res = await fetch(`/articles/search?troc=${$troc._id}&search=${search}&providernot=${user._id}&available=true`)
@@ -50,28 +29,6 @@
         if (res.ok) {
             articles = json.filter(a => cart.map(c => c._id).indexOf(a._id) == -1)
             return 
-        }
-    }
-
-    async function getPurchases() {
-        let res = await fetch(`/articles?buyer=${user._id}`)
-        let json = await res.json()
-        if (res.ok) {
-            purchases = json.map(art => {
-                art.soldTime = new Date(art.sold).getTime()
-                return art
-            })
-            let lastTime = 0
-            
-            purchases = purchases.sort((a, b) => b.soldTime - a.soldTime).map(art => {
-                if (art.soldTime != lastTime) {
-                    lastTime = art.soldTime
-                }else{
-                    art.soldTime = 0
-                }
-                return art
-            })
-            return
         }
     }
 
@@ -212,7 +169,7 @@
         </div>
 
         {#await purchasesPromise}
-            <div class="w3-center w3-large"><i class="fas fa-circle-notch w3-spin"></i></div>
+            <div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
         {:then}
             {#each purchases as article (article._id)}
                 

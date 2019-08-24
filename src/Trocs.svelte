@@ -23,6 +23,13 @@
 		start = dayjs().format('YYYY-MM-DD'), 
 		end = ''
 
+	let icon = L.icon({
+		iconUrl:'images/marker-icon.png',
+		iconRetinaUrl: 'images/marker-icon-2x.png',
+		iconSize: [28, 42],
+		iconAnchor: [14, 42],
+	})
+
 	onMount(() => {
 		map = L.map('map', {
 		    center: [47.4013048812248, 7.076493501663209],
@@ -82,7 +89,7 @@
 
 			//Map
 			markers.forEach(m => m.remove())
-			if (trocs.length) markers = trocs.map(j => L.marker(j.location).addTo(map).bindTooltip(j.name))
+			if (trocs.length) markers = trocs.map(j => L.marker(j.location, {icon}).addTo(map).bindTooltip(j.name))
 
 		})
 	}

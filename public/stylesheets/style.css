@@ -74,18 +74,26 @@ a { text-decoration: none; }
     transform: scale(0);
 }
 
+.button {
+    cursor: pointer;
+    border: solid 2px rgb(76, 175, 80);
+    transition: all .3s;
+    height: 35px;
+    padding: 4px 10px 4px 10px;
+}
+
 .validButton {
     cursor: pointer;
     color: white;
     background: rgb(76, 175, 80);
-    border: solid 3px;
+    border: solid 2px;
     border-color: rgb(76, 175, 80);
     transition: all .3s;
     height: 35px;
     padding: 4px 10px 4px 10px;
 }
 
-.validButton:hover {
+.validButton:hover, .button:hover {
     border-color: rgb(76, 130, 80);
 }
 
@@ -105,7 +113,6 @@ a { text-decoration: none; }
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-
 }
 
 .tab {

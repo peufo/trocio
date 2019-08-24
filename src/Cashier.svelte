@@ -4,17 +4,27 @@
 	import SearchUser from './SearchUser.svelte'
 	import Provide from './Provide.svelte'
 	import Buy from './Buy.svelte'
+	import Recover from './Recover.svelte'
 
 	let user = {}
 	let userOk = false
 
-	let action = 1
+	let action = 2
 	let actions = [
 		{id: 0, name: 'Fournit', icon: '<i></i>'},
 		{id: 1, name: 'Achète', icon: '<i></i>'},
 		{id: 2, name: 'Récupère', icon: '<i></i>'},
 		{id: 3, name: 'Retourne', icon: '<i></i>'},
+		{id: 4, name: 'Aperçue', icon: '<i></i>'},
 	]
+
+	let provided = [] 	//List of articles provided
+	let proposed = []	//List of articles proposed
+	let recovered = [] 	//List of articles recovered
+	let purchases = [] 	//List of articles buyed
+	let providedPromise //and there promise
+	let purchasesPromise
+
 
     onMount(() => {
 		if (document.location.hash.substr(1).length == 24) {
@@ -26,7 +36,55 @@
     
 	function userSelected(e){
 		user = e.detail
-		//getArticles()
+		getArticles()
+	}
+
+	function getArticles() {
+
+		providedPromise = getProvided()
+		purchasesPromise = getPurchases()
+
+	}
+
+	async function getProvided() {
+		let res = await fetch(`/articles?troc=${$troc._id}&provider=${user._id}`)
+		let json = await res.json()
+		if (res.ok) {
+			proposed = addTime(json.filter(art => !art.valided), 'createdAt', 'proposedTime')
+			provided = addTime(json, 'valided', 'validTime')
+			recovered = addTime(json, 'recover', 'recoverTime')
+			console.log(proposed)
+			console.log(provided)
+			console.log(recovered)
+			return
+		}
+	}
+
+	async function getPurchases() {
+        let res = await fetch(`/articles?buyer=${user._id}`)
+        let json = await res.json()
+        if (res.ok) {
+			purchases = addTime(json, 'sold', 'soldTime')
+            return
+        }
+	}
+	
+	function addTime(arr, keyIn, keyOut) {
+		let lastTime = 0
+		let out = arr.filter(elem => elem[keyIn])
+		.map(elem => {
+			elem[keyOut] = new Date(elem[keyIn]).getTime()
+			return elem
+		})
+		.sort((a, b) => b[keyOut] - a[keyOut]).map(elem => {
+			if (elem[keyOut] && elem[keyOut] != lastTime) {
+				lastTime = elem[keyOut]
+			}else{
+				elem[keyOut] = 0
+			}
+			return elem
+		})
+		return out
 	}
 
 </script>
@@ -59,7 +117,7 @@
 					<SearchUser modeSelect 
 								id="1"
 								search=".com"
-								placeholder="Choisissez un utilisateur"
+								placeholder="Trouver un client"
 								bind:selectOk={userOk}
 								on:select="{userSelected}"/>
 				</div>
@@ -75,8 +133,8 @@
 		</div>
 
 
-		
-		<div class:visible={userOk} class="hide" style="height: calc(100% - 126px);">
+		{#if userOk}
+		<div style="height: calc(100% - 126px);">
 
 			<!-- Action -->
 			<div class="onglets w3-margin-top w3-border-top">
@@ -97,28 +155,39 @@
 				<!-- Fournit -->
 				<div class="tab" class:center={action == 0} class:left={action > 0}>
 					<br>
-					<Provide bind:user/>
+					<Provide bind:user bind:provided bind:proposed bind:articlesPromise={providedPromise} />
 				</div>
+
 				<!-- Achète -->
 				<div class="tab" class:center={action == 1} class:left={action > 1} class:right={action < 1}>
 					<br>
-					<Buy bind:user/>
+					<Buy bind:user bind:purchases bind:purchasesPromise/>
 				</div>
+
 				<!-- Récupère -->
 				<div class="tab" class:center={action == 2} class:left={action > 2} class:right={action < 2}>
 					<br>
-					Récupère
+					<Recover bind:user bind:provided bind:recovered articlesPromise={providedPromise}/>
 				</div>
+
 				<!-- Retourne -->
-				<div class="tab" class:center={action == 3} class:right={action < 3}>
+				<div class="tab" class:center={action == 3} class:left={action > 3} class:right={action < 3}>
 					<br>
 					Retourne
 				</div>
-
 			
+				<!-- Aperçue -->
+				<div class="tab" class:center={action == 4} class:right={action < 4}>
+					<br>
+					aperçue
+				</div>
+
 			</div>
 
 		</div>
+		{:else}
+			Choose an user
+		{/if}
 
 	</div>
 
@@ -142,15 +211,6 @@
 	.icon {
 		display: inline-block;
 		padding-top: 10px;
-	}
-
-	select {
-		cursor: pointer;
-		height: 39px;
-	}
-
-	option {
-		cursor: pointer;
 	}
 
 	.iconUser i{

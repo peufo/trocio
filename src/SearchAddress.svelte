@@ -14,6 +14,14 @@
 		results = [],
 		selected = -1
 
+	let icon = L.icon({
+		iconUrl:'images/marker-icon.png',
+		iconRetinaUrl: 'images/marker-icon-2x.png',
+		iconSize: [28, 42],
+		iconAnchor: [14, 42],
+	})
+
+
 	function setLocation(loc) {
 		location = loc.location
 		address = loc.address
@@ -31,6 +39,7 @@
 	}
 
 	onMount(() => {
+
 		map = L.map('map', {
 		    center: [47.4013048812248, 7.076493501663209],
 		    zoom: 4
@@ -40,11 +49,13 @@
 		    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map)
 
+		
 		if (location.lat) {
-			marker = L.marker(location).addTo(map)
+			marker = L.marker(location, {icon}).addTo(map)
+			map.setView(location)
 		}else{
-			marker = L.marker([0, 0])
-		}
+			marker = L.marker([0, 0], {icon})
+		}	
 
 		map.on('dblclick', e => promise = getAddress(e))
 
@@ -72,7 +83,7 @@
 			return json
 		}else if (json.length > 1) {
 			results = json
-			markers = json.map(j => L.marker(j.location, {opacity: 0.5}).addTo(map).bindTooltip(j.address))
+			markers = json.map(j => L.marker(j.location, {icon, opacity: 0.5}).addTo(map).bindTooltip(j.address))
 			return json
 		}
 	}
@@ -210,6 +221,7 @@
 
 	#map {
 		height: 200px;
+		width: 100%;
 		z-index: 0;
 	}
 

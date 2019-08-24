@@ -1,0 +1,66 @@
+<script>
+
+    import { createEventDispatcher } from 'svelte'
+    const dispatch = createEventDispatcher()
+    
+    import dayjs from 'dayjs'
+	import relativeTime from 'dayjs/plugin/relativeTime'
+	import 'dayjs/locale/fr'
+	dayjs.locale('fr')
+    dayjs.extend(relativeTime)
+
+    export let article = {}
+    export let clickable = false
+    export let timeKey = ''
+
+    /*
+        article.isRemovable
+
+    */
+
+    function remove() {
+        dispatch('remove', article)
+    }
+
+    function select() {
+        dispatch('select', article)
+    }
+
+</script>
+
+{#if timeKey && article[timeKey]}
+    <i class="w3-right w3-small" style="transform: translate(0px, 6px);">
+        {dayjs(article[timeKey]).fromNow()}
+    </i>
+    <br>
+{/if}
+
+<div class="list-element w3-padding w3-display-container" on:click={select} class:clickable class:valided={!article.isRemovable}>
+    
+    {article.name}
+    <br>
+    <span class="w3-tiny w3-right" style="line-height: 1;">{article.price.toFixed(2)}</span>
+    
+
+    <div class="w3-display-topright w3-padding">
+        {#if article.isRemovable}
+            
+            <i class="fa fa-check" style="margin-top: 4px;"></i>
+            <i 	class="fa fa-trash-alt clickable"
+                style="margin-top: 4px;"
+                on:click="{() => remove(article._id)}"></i>
+            
+        {:else}
+            <i class="fa fa-tag" style="margin-top: 4px;"></i>
+                ref12353
+        {/if}
+    </div>
+</div>
+
+<style>
+
+    .clickable {
+        cursor: pointer;
+    }
+
+</style>

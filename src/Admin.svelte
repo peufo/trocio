@@ -12,6 +12,7 @@
 
 
 	let tabSelected = 6
+	let oldTabSelected = -1
 	let tabs = [
 		{name: 'Informations', 	icon: '<i class="fas fa-info-circle"></i>'},
 		{name: 'Collaborateurs', icon: '<i class="fas fa-users"></i>'}, 
@@ -67,6 +68,13 @@
 
 	let changeFlag = false //For SearchUser to AutoPatch 
 
+	function selectTab(i) {
+		oldTabSelected = tabSelected
+		tabSelected = i
+		setTimeout(() => oldTabSelected = -1, 450)
+	}
+
+	$: console.log(oldTabSelected)
 
 </script>
 
@@ -90,7 +98,7 @@
 	<div class="onglets">
 	{#each tabs as tab, i}
 		<div class="w3-padding underline-div onglet"
-			 on:click="{() => tabSelected = i}"
+			 on:click="{() => selectTab(i)}"
 			 class:actived="{tabSelected == i}">
 			 {@html tab.icon}
 			<span class="underline-span">{tab.name}</span>
@@ -101,7 +109,8 @@
 
 	{#if $troc._id}
 	<div class="tabs" style="height: calc(100% - 38px);">
-					<!-- Apercu -->
+
+		<!-- Apercu -->
 		<div class="tab" class:center={tabSelected == 0} class:left={tabSelected > 0}>
 			<br>
 			<div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
@@ -109,7 +118,7 @@
 			</div>
 		</div>
 
-				<!-- Worker -->
+		<!-- Worker -->
 		<div class="tab" class:center={tabSelected == 1} class:left={tabSelected > 1} class:right={tabSelected < 1}>
 			<br>
 			<div class="w3-padding w3-card w3-round w3-row" style="max-width: 850px; margin: auto;">
@@ -144,9 +153,9 @@
 					</ul>
 				</div>
 			</div>
-			
 		</div>
-				<!-- Tarif  -->
+
+		<!-- Tarif  -->
 		<div class="tab" class:center={tabSelected == 2} class:left={tabSelected > 2} class:right={tabSelected < 2}>
 			<br>
 			<AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}" bind:changeFlag={changeFlag} trocRefresh/>
@@ -169,25 +178,26 @@
 
 			</div>
 		</div>
-				<!-- Etiquetage  -->
+
+		<!-- Etiquetage  -->
 		<div class="tab" class:center={tabSelected == 3} class:left={tabSelected > 3} class:right={tabSelected < 3}>
 			<br>
 			Etiquetage
 		</div>
 
-				<!-- Stats  -->
+		<!-- Stats  -->
 		<div class="tab" class:center={tabSelected == 4} class:left={tabSelected > 4} class:right={tabSelected < 4}>
 			<br>
 			Stats
 		</div>
 
-				<!-- Correction  -->
+		<!-- Correction  -->
 		<div class="tab" class:center={tabSelected == 5} class:left={tabSelected > 5} class:right={tabSelected < 5}>
 			<br>
 			Correction
 		</div>
 
-				<!-- Caisse  -->
+		<!-- Caisse  -->
 		<div class="tab" class:center={tabSelected == 6} class:left={tabSelected > 6} class:right={tabSelected < 6}>
 			<br>
 			<Cashier/>

@@ -14,6 +14,7 @@
 <header class="w3-row w3-padding w3-border-bottom" >
 
 	<a href="/" class="clickable w3-xlarge">
+		<img src="favicon.ico" alt="logo Trocio" height="35" style="transform: translate(0px, -2px);">
 		TROCIO
 	</a>
 
