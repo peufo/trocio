@@ -4,6 +4,7 @@
     import { flip } from 'svelte/animate'
     import { getHeader, crossfadeConfig } from './utils.js'
     import { crossfade } from 'svelte/transition'
+    import Article from './Article.svelte'
     import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
@@ -118,11 +119,6 @@
         }
     }
 
-
-    
-    $: console.log(proposed)
-    $: console.log(provided)
-
 </script>
 
 <div>
@@ -153,14 +149,10 @@
                 </div>
             {:then}
                 {#each proposed as article (article._id)}
-                    <div class="list-element w3-padding clickable"
-                            in:receive="{{key: article._id}}"
-                            out:send="{{key: article._id}}"
-                            animate:flip="{{duration: 200}}"
-                            on:click="{() => clickProposedArticle(article._id)}">
-                        {article.name}
-                        <br>
-                        <span class="w3-tiny w3-right" style="line-height: 1;">{article.price.toFixed(2)}</span>
+                    <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
+
+                        <Article article={article} clickable on:select="{() => clickProposedArticle(article._id)}"/>
+ 
                     </div>
                 {:else}
                     <span class="w3-opacity">Pas d'articles proposés !</span>
@@ -191,39 +183,9 @@
                 </div>
             {:then}
                 {#each provided.filter(art => !art.sold && !art.recover) as article (article._id)}
-                    <div in:receive="{{key: article._id}}"
-                        out:send="{{key: article._id}}"
-                        animate:flip="{{duration: 200}}">
+                    <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
-                        {#if article.validTime}
-                            <i class="w3-right w3-small" style="transform: translate(0px, 6px);">
-                                {dayjs(article.validTime).fromNow()}
-                            </i>
-                            <br>
-                        {/if}
-
-                        <div class="list-element valided w3-padding w3-display-container" class:valided={!article.isRemovable}>
-                            
-                            {article.name}
-                            <br>
-                            <span class="w3-tiny w3-right" style="line-height: 1;">{article.price.toFixed(2)}</span>
-                            
-
-                            <div class="w3-display-topright w3-padding">
-                                {#if article.isRemovable}
-                                    
-                                    <i class="fa fa-check" style="margin-top: 4px;"></i>
-                                    <i 	class="fa fa-trash-alt clickable"
-                                        style="margin-top: 4px;"
-                                        on:click="{() => removeArticle(article._id)}"></i>
-                                    
-                                {:else}
-                                    <i class="fa fa-tag" style="margin-top: 4px;"></i>
-                                        ref12353
-                                {/if}
-                            </div>
-                        
-                        </div>
+                        <Article article={article} timeKey={'validTime'} on:remove="{() => removeArticle(article._id)}"/>
 
                     </div>
                 {:else}

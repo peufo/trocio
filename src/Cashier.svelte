@@ -50,7 +50,8 @@
 		let res = await fetch(`/articles?troc=${$troc._id}&provider=${user._id}`)
 		let json = await res.json()
 		if (res.ok) {
-			proposed = addTime(json.filter(art => !art.valided), 'createdAt', 'proposedTime')
+			proposed = json.filter(art => !art.valided)
+			//proposed = addTime(json.filter(art => !art.valided), 'createdAt', 'proposedTime')
 			provided = addTime(json, 'valided', 'validTime')
 			recovered = addTime(json, 'recover', 'recoverTime')
 			console.log(proposed)
@@ -124,12 +125,10 @@
 			</div>
 
 			<!-- Règle le solde -->
-			
 			<div class:visible={userOk} class="hide w3-col s6 w3-padding">
 				<div class="validButton w3-right w3-round">Régler le solde de 200.00 </div>
 			</div>
 			
-
 		</div>
 
 

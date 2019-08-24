@@ -4,6 +4,7 @@
 	import { crossfade } from 'svelte/transition'
     import { flip } from 'svelte/animate'
     import { getHeader, crossfadeConfig } from './utils'
+    import Article from './Article.svelte'
     import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
@@ -98,14 +99,10 @@
 
 
         {#each articles as article, index (article._id)}
-            <div class="list-element valided w3-padding clickable w3-margin-right"
-                in:receive="{{key: article._id}}"
-                out:send="{{key: article._id}}"
-                animate:flip="{{duration: 200}}"
-                on:click="{() => buy(index)}">
-                {article.name}
-                <br>
-                <span class="w3-right w3-tiny" style="line-height: 1;">{article.price.toFixed(2)}</span>
+            <div class="w3-margin-right" in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
+
+                <Article article={article} clickable on:select="{() => buy(index)}"/>
+ 
             </div>
         {:else}
             {#await searchPromise}
@@ -139,21 +136,10 @@
             </div>
 
             {#each cart as article, index (article._id)}
-                <div class="w3-display-container list-element valided w3-padding"
-                     in:receive="{{key: article._id}}"
-                     out:send="{{key: article._id}}"
-                     animate:flip="{{duration: 200}}">
-                    {article.name}
-                    <br>
-                    <span class="w3-right w3-tiny" style="line-height: 1;">{article.price.toFixed(2)}</span>
+                <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
-                    <div class="w3-display-topright w3-padding">
-                        
-                        <i 	class="fa fa-trash-alt clickable"
-                            style="margin-top: 4px;"
-                            on:click="{() => removeArticle(index)}"></i>
-                            
-                    </div>
+                    <Article article={article} on:remove="{() => removeArticle(index)}"/>
+
                 </div>
 
             {:else}
@@ -173,22 +159,10 @@
         {:then}
             {#each purchases as article (article._id)}
                 
-                <div in:receive="{{key: article._id}}"
-                     out:send="{{key: article._id}}"
-                     animate:flip="{{duration: 200}}">
+                <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
-                    {#if article.soldTime}
-                        <i class="w3-right w3-small" style="transform: translate(0px, 6px);">
-                            {dayjs(article.soldTime).fromNow()}
-                        </i>
-                        <br>
-                    {/if}
+                    <Article article={article} timeKey={'soldTime'}/>
 
-                    <div class="w3-display-container list-element valided w3-padding w3-margin-left">
-                        {article.name}
-                        <br>
-                        <span class="w3-right w3-tiny" style="line-height: 1;">{article.price.toFixed(2)}</span>
-                    </div>
                 </div>
                 
             {:else}

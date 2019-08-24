@@ -96,7 +96,7 @@
             </div>
         {:then}
             <div class="w3-right w3-round validButton hide" class:visible={recovered.filter(art => art.isRemovable).length} on:click="{() => validPromise = valid()}">
-                Valider {recovered.length <= 1 ? `l'article` : `les ${recovered.filter(art => art.isRemovable).length} articles`}
+                Récupérer {recovered.length <= 1 ? `l'article` : `les ${recovered.filter(art => art.isRemovable).length} articles`}
             </div>
         {/await}
 
