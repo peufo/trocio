@@ -24,6 +24,7 @@
                 art.givebackTime = new Date(time).getTime()
                 return art
             })
+            console.log(givebacks)
         })
     })
 

@@ -34,12 +34,13 @@ router
 		let { search, troc, providernot, available } = req.query
 		let query = {}
 
-		if (troc || providernot) query.$and = []
+		if (troc || providernot || available) query.$and = []
 		if (troc) query.$and.push({troc})
 		if (providernot) query.$and.push({'provider': {$ne: providernot}})
 		if (available) {
 			query.$and.push({'valided': {$exists: true}})
 			query.$and.push({'sold': {$exists: false}})
+			console.log('prout')
 			query.$and.push({'recover': {$exists: false}})
 		}
 
