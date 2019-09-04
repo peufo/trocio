@@ -1,5 +1,4 @@
 <script>
-    import { onMount } from 'svelte'
     import { troc } from './stores'
 	import { crossfade } from 'svelte/transition'
     import { flip } from 'svelte/animate'
@@ -15,6 +14,8 @@
     export let purchases = []
     export let purchasesPromise
 
+    const [send, receive] = crossfade(crossfadeConfig)
+    
     let articles = [] //search
     let searchPromise
     let search = ''
@@ -22,7 +23,6 @@
     let buyPromise
     let waiting
 
-    const [send, receive] = crossfade(crossfadeConfig)
 
     async function searchArticle() {
         let res = await fetch(`/articles/search?troc=${$troc._id}&search=${search}&providernot=${user._id}&available=true`)
@@ -145,30 +145,29 @@
             {:else}
                 <span class="w3-opacity">Le panier de {user.name} est vide</span>
             {/each}
-
-
-            
         </div>
+
         <br>
-        <div class="w3-margin-left w3-large">
-            <span>Achats</span>
+        <div class="w3-margin-left">
+            <span class="w3-large">Achats</span>
+
+            {#await purchasesPromise}
+                <div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+            {:then}
+                {#each purchases as article (article._id)}
+                    
+                    <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
+
+                        <Article article={article} timeKey={'soldTime'}/>
+
+                    </div>
+                    
+                {:else}
+                    <span class="w3-opacity w3-margin-left">Pas d'achat</span>
+                {/each}
+            {/await}
+
         </div>
-
-        {#await purchasesPromise}
-            <div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
-        {:then}
-            {#each purchases as article (article._id)}
-                
-                <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
-
-                    <Article article={article} timeKey={'soldTime'}/>
-
-                </div>
-                
-            {:else}
-                <span class="w3-opacity w3-margin-left">Pas d'achat</span>
-            {/each}
-        {/await}
 
     </div>
 </div>

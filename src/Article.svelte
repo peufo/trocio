@@ -12,6 +12,7 @@
     export let article = {}
     export let clickable = false
     export let timeKey = ''
+    export let comment = ''
 
     /*
         article.isRemovable
@@ -39,8 +40,8 @@
     
     {article.name}
     <br>
+    <span class="w3-tiny" style="line-height: 1;">{comment}</span>
     <span class="w3-tiny w3-right" style="line-height: 1;">{article.price.toFixed(2)}</span>
-    
 
     <div class="w3-display-topright w3-padding">
         {#if article.isRemovable}

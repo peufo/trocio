@@ -2,6 +2,7 @@ var express = require('express')
 var router = express.Router()
 var got = require('got')
 var path = require('path')
+var bwipjs = require('bwip-js')
 
 router
 	.get('/', (req, res, next) => {
@@ -30,6 +31,9 @@ router
 			//res.json(response.body)
 		})
 		.catch(next)
+	})
+	.get('/barcode', (req, res, next) => {
+		bwipjs(req, res)
 	})
 
 module.exports = router;

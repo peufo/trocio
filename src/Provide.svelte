@@ -47,6 +47,8 @@
         let index = provided.map(a => a._id).indexOf(artId)
         if(index > -1) {
             if (!provided[index].isCreated) {
+                provided[index].valided = undefined
+                provided[index].isRemovable = false
                 proposed = [provided[index], ...proposed]
             }
             provided.splice(index, 1)
@@ -195,7 +197,3 @@
         </div>
     </div>
 </div>
-
-<style>
-
-</style>

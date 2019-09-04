@@ -46,6 +46,11 @@ a { text-decoration: none; }
     margin-bottom: 10px;
     border-radius: 4px;
     overflow-x: hidden;
+    transition: .15s box-shadow;
+}
+
+.list-element.clickable:hover {
+    box-shadow: 0px 0px 10px 0px rgba(200,200,200,0.6);
 }
 
 .list-element.valided {

@@ -28,6 +28,7 @@
 		iconRetinaUrl: 'images/marker-icon-2x.png',
 		iconSize: [28, 42],
 		iconAnchor: [14, 42],
+		tooltipAnchor: [14, -30],
 	})
 
 	onMount(() => {

@@ -14,7 +14,8 @@ var articleModel = new Schema({
 	valided: Date, //ou
 	refused: Date,
 	sold: Date, //ou
-	recover: Date
+	recover: Date,
+	giveback: [{sold: Date, back: Date, raison: String, user: {type: ObjectId, ref: 'user', required: true}}]
 })
 
 articleModel.set('timestamps', true)

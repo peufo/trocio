@@ -19,6 +19,7 @@
 		iconRetinaUrl: 'images/marker-icon-2x.png',
 		iconSize: [28, 42],
 		iconAnchor: [14, 42],
+		popupAnchor: [-14, 40],
 	})
 
 

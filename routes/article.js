@@ -11,6 +11,24 @@ router
 		})
 	})
 	.post('/', createArticle)
+	.post('/giveback', (req, res, next) => {
+		var errors = []
+		var ids = req.body.map(a => a._id)
+		Article.find({_id: {$in: ids}}, (err, articles) => {
+			if (err || articles.length != req.body.length) return next(err || Error('Article not found'))
+			console.log(articles);
+			articles.forEach(async (art, index) => {
+				art.giveback.push(req.body[index].giveback)
+				art.sold = undefined
+				art.buyer = undefined
+				let err = await art.save()
+				if (err) errors.push(err)
+				return
+			})
+			if (errors.length) return next(errors[0])
+			res.json({success: true, message: articles})
+		})
+	})
 	.delete('/:id', deleteArticle)
 	.get('/search', (req, res, next) => {
 		let { search, troc, providernot, available } = req.query
@@ -46,16 +64,17 @@ router
 		})
 	})
 	.patch('/', (req, res, next) => {
+		var errors = []
 		var ids = req.body.map(a => a._id)
 		Article.find({_id: {$in: ids}}, (err, articles) => {
 			if (err || !articles.length) return next(err || Error('Article not found'))
-			var errors = []
 			articles.forEach(async art => {
 				var patchedArt = req.body[ids.indexOf(String(art._id))]
 				if (patchedArt._id) delete patchedArt._id
 				for(p in patchedArt) art[p] = patchedArt[p]
 				var err = await art.save()
 				if (err) errors.push(err)
+				return
 			})
 			if (errors.length) return next(errors[0])
 			res.json({success: true, message: articles})

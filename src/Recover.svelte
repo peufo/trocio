@@ -8,7 +8,7 @@
     export let provided = [] //Articles provided
     export let recovered = [] //Articles recovered
     export let articlesPromise
-    export let validPromise
+    let validPromise
 
     const [send, receive] = crossfade(crossfadeConfig)
     
