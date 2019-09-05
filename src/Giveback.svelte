@@ -116,7 +116,7 @@
                     Validation du retour...
                 </div>
             {:then}
-                <div class="w3-right w3-round validButton hide" class:visible={givebacks.length} on:click="{() => validPromise = valid()}">
+                <div class="w3-right w3-round validButton hide" class:visible={givebacks.filter(art => art.isRemovable).length} on:click="{() => validPromise = valid()}">
                     Valider le retour de{givebacks.filter(art => art.isRemovable).length <= 1 ? ` l'article` : `s ${givebacks.filter(art => art.isRemovable).length} articles`}
                 </div>
             {/await}
