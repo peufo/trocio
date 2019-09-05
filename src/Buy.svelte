@@ -46,11 +46,13 @@
     
     function buy(index) {
         cart = [articles[index], ...cart]
+        cart[0].isRemovable = true
         articles.splice(index, 1)
         articles = articles  
     }
 
     function removeArticle(index) {
+        cart[index].isRemovable = false
         articles = [cart[index], ...articles]
         cart.splice(index, 1)
         cart = cart
@@ -118,7 +120,7 @@
 
 
     <div class="w3-col s6">
-        <div class="w3-margin-left w3-border w3-round w3-padding bag">
+        <div class="w3-margin-left w3-border w3-round w3-padding">
             {#await buyPromise}
                 <div class="w3-right w3-round validButton">
                     <i class="fas fa-circle-notch w3-spin"></i>
@@ -176,7 +178,5 @@
 
 
 <style>
-    .bag {
-        background: rgb(250, 250, 250);
-    }
+
 </style>

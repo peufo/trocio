@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
-    import { troc } from './stores'
+	import { troc } from './stores'
 	import SearchUser from './SearchUser.svelte'
 	import Provide from './Provide.svelte'
 	import Buy from './Buy.svelte'
@@ -143,7 +143,7 @@
 
 
 		{#if userOk}
-		<div style="height: calc(100% - 126px);">
+		<div transition:fade style="height: calc(100% - 126px);">
 
 			<!-- Action -->
 			<div class="onglets w3-margin-top w3-border-top">
@@ -195,12 +195,12 @@
 
 		</div>
 		{:else}
-			<div class="w3-display-container" style="z-index: -1;">
-				<div class="w3-display-middle w3-center">
-					<i class="fas fa-cash-register noUserLogo"></i>
-					<br>
-				</div>
+
+			<div class="w3-display-middle w3-center" transition:fade>
+				<i class="fas fa-cash-register noUserLogo"></i>
+				<br>
 			</div>
+
 		{/if}
 
 	</div>
