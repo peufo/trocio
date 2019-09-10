@@ -24,7 +24,6 @@
                 art.givebackTime = new Date(time).getTime()
                 return art
             })
-            console.log(givebacks)
         })
     })
 
@@ -51,7 +50,7 @@
         let index = givebacks.map(art => art._id).indexOf(artId)
         if (index != -1) {
             purchases = [...givebacks.splice(index, 1), ...purchases]
-            console.log(purchases)
+            purchases[0].isRemovable = false
             givebacks = givebacks
         }
     }

@@ -1,13 +1,24 @@
 <script>
     export let value = false
+    export let icon = ''
 
 </script>
 
-<div id="cadre" on:click="{() => value = !value}" on:click>
-    <div id="boule" class:active={value}></div>
+<div id="cadre_exterieur">
+    <div id="cadre" on:click="{() => value = !value}" on:click>
+        <div id="boule" class:active={value}></div>
+    </div> 
+    {#if icon.length}
+        <div id="icon">{@html icon}</div>
+    {/if}
 </div>
 
+
 <style>
+    #cadre, #icon {
+        display: inline-block;
+    }
+
     #cadre {
         cursor: pointer;
         position: relative;
@@ -28,6 +39,10 @@
         background: #aaa;
         border-radius: 50%;
         transition: all .2s;
+    }
+
+    #icon {
+        transform: translate(0px, -6px);
     }
 
     .active {

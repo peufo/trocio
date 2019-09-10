@@ -3,24 +3,35 @@ var Article = require('../models/article')
 function createArticle(req, res, next) {
 	if (!Array.isArray(req.body)) {
 		var art = new Article(req.body)
-		art.save(err => {
+		Article.countDocuments({troc: art.troc}, (err, count) => {
 			if (err) return next(err)
-			res.json({success: true, message: art})
-		})	
+			art.ref = count
+			art.save(err => {
+				if (err) return next(err)
+				res.json({success: true, message: art})
+			})	
+		})
 	}else{
-		req.body.forEach(a => delete a._id)
-		Promise.all(req.body.map(art => {
-			return new Promise((resolve, reject) => {
-				art = new Article(art)
-				art.save(err => {
-					if (err) return reject(err)
-					else return resolve(art)
+		Article.countDocuments({troc: req.body[0].troc}, (err, count) => {
+			if (err) return next(err)
+
+			req.body.forEach(art  => delete art._id)
+
+			Promise.all(req.body.map((art, i) => {
+				return new Promise((resolve, reject) => {
+					art = new Article(art)
+					art.ref = count + i
+					art.save(err => {
+						if (err) return reject(err)
+						else return resolve(art)
+					})
 				})
+			}))			
+			.catch(next)	
+			.then(articles => {
+				res.json({success: true, message: articles})
 			})
-		}))
-		.catch(next)	
-		.then(articles => {
-			res.json({success: true, message: articles})
+			
 		})
 	}
 }

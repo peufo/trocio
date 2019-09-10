@@ -40,8 +40,8 @@
     
     {article.name}
     <br>
+    <b class="w3-tiny w3-right" style="line-height: 1;">{article.price.toFixed(2)}</b>
     <span class="w3-tiny" style="line-height: 1;">{comment}</span>
-    <span class="w3-tiny w3-right" style="line-height: 1;">{article.price.toFixed(2)}</span>
 
     <div class="w3-display-topright w3-padding">
         {#if article.isRemovable}
@@ -53,7 +53,7 @@
             
         {:else}
             <i class="fa fa-tag" style="margin-top: 4px;"></i>
-                ref12353
+            {article.ref}
         {/if}
     </div>
 </div>

@@ -14,8 +14,8 @@
     export let user = {}
     export let proposed = []
     export let provided = []
-    export let articlesPromise
-    let providePromise
+    export let providedPromise
+    let validPromise //Valid button
 
 	let nbNewArticles = 0
 	let newArticle = {name: '', price: null}
@@ -145,7 +145,7 @@
     <div class="w3-col s6">
         <div class="w3-margin-right">
             <h4>Proposés</h4>
-            {#await articlesPromise}
+            {#await providedPromise}
                 <div class="w3-center">
                     <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
                 </div>
@@ -167,19 +167,19 @@
     <div class="w3-col s6">
         <div class="w3-margin-left">
 
-            {#await providePromise}
+            {#await validPromise}
                 <div class="w3-right w3-round validButton">
                     <i class="fas fa-circle-notch w3-spin"></i>
                     Validation de la livraison...
                 </div>
             {:then}
-                <div class="w3-right w3-round validButton hide" class:visible={nbNewArticles > 0} on:click="{() => providePromise = validProvided()}">
+                <div class="w3-right w3-round validButton hide" class:visible={nbNewArticles > 0} on:click="{() => validPromise = validProvided()}">
                     Valider l{nbNewArticles <= 1 ? `'article fourni` : `es ${nbNewArticles} articles fournis`}
                 </div>
             {/await}
 
             <h4>Fournis</h4>
-            {#await articlesPromise}
+            {#await providedPromise}
                 <div class="w3-center">
                     <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
                 </div>

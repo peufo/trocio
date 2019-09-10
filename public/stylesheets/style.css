@@ -144,3 +144,13 @@ a { text-decoration: none; }
     opacity: 0;
     overflow: hidden;
 }
+
+.close-icon {
+    transition: all .15s;
+    cursor: pointer;
+}
+
+.close-icon:hover {
+    transform: scale(1.2);
+    color: red;
+}

@@ -2,26 +2,67 @@
 	import { fade, slide } from 'svelte/transition'
 	import { me } from './stores'
 	import { onMount } from 'svelte'
-	import { getHeader } from './utils'
+	import { flip } from 'svelte/animate'
+	import { crossfade } from 'svelte/transition'
+	import { getHeader, crossfadeConfig } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
+	import Article from './Article.svelte'
 	import dayjs from 'dayjs'
+	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
 	dayjs.locale('fr')
+	dayjs.extend(relativeTime)
 
+	const [send, receive] = crossfade(crossfadeConfig)
 
 	export let userId = false
 	export let trocId = false
 
+	export let sold = 0
+	export let buySum = 0
+	export let paySum = 0
+	export let provideSum = 0
+
+	export let provided = []
+	export let purchases = []
+	export let payments = []
+
+	export let providedPromise
+	export let purchasesPromise
+	export let paymentsPromise
+
 	onMount(() => {
 		if (userId && trocId) {
 			getTarif()
-			getArticles()
 		}else{
 			console.log('userId and trocId required !')
 		}
 	})
 
-	let articles = []
+	$: console.log(provided)
+	
+	$: {//Calcul of sold
+
+		console.log('Calcule ta mere')
+
+		//Purchases
+		if (purchases.length) buySum = -purchases.map(a => a.price).reduce((acc, cur) => acc + cur)
+		else buySum = 0
+
+		//Payments
+		if (payments.length) paySum = payments.map(a => a.amount).reduce((acc, cur) => acc + cur)
+		else paySum = 0
+
+
+		//Provide
+		//TODO
+
+
+		//sold
+		sold = buySum + paySum + provideSum
+
+	}
+
 	let tarif = undefined
 	let modifiedArticles = []
 	let clearModifiedArticles
@@ -36,19 +77,13 @@
 		clearTimeout(clearModifiedArticles)
 		clearModifiedArticles = setTimeout(() => modifiedArticles = [], 700)
 	}
-	
-	function getArticles() {
-		fetch(`/articles?provider=${userId}&troc=${trocId}`)
-		.then(res => res.json())
-		.then(json => articles = json)
-	}
 
 	function createArticle() {
 		fetch('/articles', getHeader({troc: trocId, provider: userId}))
 		.then(res => res.json())
 		.then(json => {
 			if (json.success) {
-				articles = [...articles, json.message]
+				provided = [...provided, json.message]
 				setTimeout(() => {
 					let table = document.getElementById(`tableArticles${trocId}`)
 					table.getElementsByClassName('lastInputName')[0].focus()
@@ -58,12 +93,12 @@
 	}
 
 	function deleteArticle(index) {
-		fetch(`/articles/${articles[index]._id}`, getHeader({}, 'DELETE'))
+		fetch(`/articles/${provided[index]._id}`, getHeader({}, 'DELETE'))
 		.then(res => res.json())
 		.then(json => {
 			if (json.success) {
-				articles.splice(index, 1)
-				articles = articles
+				provided.splice(index, 1)
+				provided = provided
 			}else alert(json.message)
 		})
 	}
@@ -72,6 +107,7 @@
 		fetch(`/trocs/${trocId}/tarif`)
 		.then(res => res.json())
 		.then(json => {
+			//transferer le boulot coté serveur ?
 			let tarifMatched = json.tarif.filter(t => t.apply.map(a => a._id).indexOf(userId) != -1)
 			tarif = tarifMatched[0] || json.tarif[0]
 		})
@@ -87,61 +123,56 @@
 
 </script>
 
-<div id="container" class="w3-padding">
+<div id="container">
 	
 	<div class="w3-row">
-		<div class="w3-large w3-center">
+		<div class="w3-xlarge w3-center">
 			<span class="w3-opacity">Solde actuel </span>
-			<span>100.00</span>
+			<span>{sold.toFixed(2)}</span>
 		</div>
 	</div>
 	<br>
 
 	<div class="w3-row">
-		<span class="w3-large">Achats</span>
 
-		<ul id="buys" class="w3-ul">
-			<li>
-				Article A
-				<span class="w3-right">100.00</span>
-				<br>
-				<span class="w3-small w3-opacity">
-					{dayjs().format('Le DD MMMM YYYY')}
-				</span>
-			</li>
-			<li>
-				Article B
-				<span class="w3-right">50.00</span>
-				<br>
-				<span class="w3-small w3-opacity">
-					{dayjs().format('Le DD MMMM YYYY')}
-				</span>
-			</li>
-			<li>
-				<b class="w3-right w3-border-top">150.00</b>
-			</li>
-		</ul>	
-	</div>
-	<br>
+		<div class="w3-col s6">
+			<div class="w3-margin-right">
+				<span class="w3-right w3-large">{buySum.toFixed(2)}</span>
+				<h4>Achats</h4>
+				{#await purchasesPromise}
+					<div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+				{:then}
+					{#each purchases as article (article._id)}
+						<Article article={article} timeKey={'soldTime'}/>
+					{:else}
+						<span class="w3-opacity w3-margin-left">Pas d'achat</span>
+					{/each}
+				{/await}
+			</div>
+		</div>
 
-	<div class="w3-row">
-		<span class="w3-large">Payments</span>
-
-		<ul class="w3-ul">
-			<li>
-				{dayjs().format('Le DD MMMM YYYY')}
-				<span class="w3-right">50.00</span>
-			</li>
-			<li>
-				{dayjs().format('Le DD MMMM YYYY')}
-				<span class="w3-right">20.00</span>
-			</li>
-
-			<li>
-				<b class="w3-right w3-border-top">70.00</b>
-			</li>
-
-		</ul>
+		<div class="w3-col s6">
+			<div class="w3-margin-left">
+				<span class="w3-right w3-large">{paySum.toFixed(2)}</span>
+				<h4>Paiement</h4>
+				{#await paymentsPromise}
+					<div class="w3-center">
+						<img src="favicon.ico" alt="Logo trocio" class="w3-spin">
+					</div>
+				{:then}
+					{#each payments as payment (payment._id)}
+						<div class="list-element valided w3-padding" in:receive="{{key: payment._id}}"  animate:flip="{{duration: 200}}">
+							{dayjs(payment.createdAt).fromNow()}
+							<br>
+							<b class="w3-tiny w3-right" style="line-height: 1;">{payment.amount.toFixed(2)}</b>
+							<span class="w3-tiny" style="line-height: 1;">{payment.message}</span>
+						</div>
+					{:else}
+						<span class="w3-opacity">Pas de paiements enregistré !</span>
+					{/each}
+				{/await}
+			</div>
+		</div>
 
 	</div>
 	<br>
@@ -159,7 +190,7 @@
 				<th>Frais</th>
 				<th></th>
 			</tr>
-			{#each articles as article, i}
+			{#each provided as article, i}
 
 			{#if !article.valided && !article.refused}
 
@@ -167,7 +198,7 @@
 					<td class="tdInput">
 						<input
 							on:input="{() => addModifiedArticle(article)}"
-							class:lastInputName="{i == articles.length-1}" 
+							class:lastInputName="{i == provided.length-1}" 
 							bind:value={article.name} 
 							type="text" 
 							class="w3-input" 
@@ -198,8 +229,8 @@
 
 		
 		<div in:fade
-				on:click="{() => !articles.filter(a => !a.name.length || !a.price).length && createArticle()}"
-				class:w3-disabled="{articles.filter(a => !a.name.length || !a.price).length}"
+				on:click="{() => !provided.filter(a => !a.name.length || !a.price).length && createArticle()}"
+				class:w3-disabled="{provided.filter(a => !a.name.length || !a.price).length}"
 				class="w3-button w3-border w3-round w3-margin-top w3-right">
 			+1 article
 		</div>
@@ -244,7 +275,7 @@
 		word-break: break-word;
 	}
 	
-	#buys li:not(:last-child){
+	#purchases li:not(:last-child){
 		line-height: 90%;
 	}
 

@@ -33,9 +33,6 @@ router
 		if (!isNaN(sud))   	query.$and.push({'location.lat': {$gt: sud}})
 		if (!isNaN(west))  	query.$and.push({'location.lng': {$gt: west}})
 
-		console.log(query)
-		console.log(req.query)
-
 		Troc.find(query).exec((err, trocs) => {
 			if (err) return next(err)
 			res.json(trocs)

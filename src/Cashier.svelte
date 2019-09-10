@@ -1,17 +1,21 @@
 <script>
 	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
-	import { troc } from './stores'
+	import { me, troc } from './stores'
+	import { getHeader } from './utils'
 	import SearchUser from './SearchUser.svelte'
 	import Provide from './Provide.svelte'
 	import Buy from './Buy.svelte'
 	import Recover from './Recover.svelte'
 	import Giveback from './Giveback.svelte'
+	import Resume from './Resume.svelte'
 
 	let user = {}
+	let searchUser = '.com'
 	let userOk = false
+	let popupPaymentOpen = false
 
-	let action = 3
+	let action = 4
 	let actions = [
 		{id: 0, name: 'Fournit', icon: '<i class="fas fa-sign-in-alt"></i>'},
 		{id: 2, name: 'Récupère', icon: '<i class="fas fa-sign-out-alt"></i>'},
@@ -20,14 +24,21 @@
 		{id: 4, name: 'Aperçue', icon: '<i class="far fa-eye"></i>'},
 	]
 
+	let sold = 0 //bind to Resume.svelte
+	let validPaymentPromise
+
 	let provided = [] 	//List of articles provided
 	let proposed = []	//List of articles proposed
 	let recovered = [] 	//List of articles recovered
-	let purchases = [] 	//List of articles buyed
+	let purchases = [] 	//List of articles purchases
 	let givebacks = []  //List of articles returned
-	let providedPromise //and there promise
-	let purchasesPromise
-	let givebacksPromise
+	let payments = []	//List of payments
+
+	//And there promises
+	let providedPromise 	//Promise provided and proposed
+	let purchasesPromise	//Promise purchases
+	let givebacksPromise	//Promise givebacks
+	let paymentsPromise		//Promise payments
 
 
     onMount(() => {
@@ -47,6 +58,7 @@
 		providedPromise = getProvided()
 		purchasesPromise = getPurchases()
 		givebacksPromise = getGivebacks()
+		paymentsPromise = getPayments()
 	}
 
 	async function getProvided() {
@@ -78,6 +90,32 @@
             return
         }
 	}
+
+	async function getPayments() {
+        let res = await fetch(`/payments?user=${user._id}&troc=${$troc._id}`)
+        let json = await res.json()
+        if (res.ok) {
+			payments = json
+            return
+        }
+	}
+
+	//Post payment
+	async function validPayment() {
+		let payment = {
+			user: user._id,
+			troc: $troc._id,
+			amount: -sold, 
+			message: sold > 0 ? `Versé par ${$me.name}` : `Encaissé par ${$me.name}`
+		}
+		let res = await fetch(`/payments`, getHeader(payment))
+		let json = await res.json()
+		if (res.ok && json.success) {
+			payments = [json.message, ...payments]
+			popupPaymentOpen = false
+			return
+		}
+	}
 	
 	//Filtre et ajoute time
 	function addTime(arr, keyIn, keyOut) {
@@ -97,6 +135,27 @@
 		})
 		return out
 	}
+
+	//Keyboard shortcut listener
+	document.addEventListener('keydown', e => {
+		console.log(e.key)
+		if (e.ctrlKey) {
+			switch(e.key){
+				case 'ArrowLeft':
+					if (action > 0 ) action--
+					break
+
+				case 'ArrowRight':
+					if (action < actions.length - 1) action++
+					break
+				
+				case 'Backspace':
+					searchUser = ''
+					document.getElementById('searchUser1').focus()
+					break
+			}
+		}
+	})
 
 </script>
 
@@ -127,16 +186,18 @@
 				<div class="w3-right" style="width: calc(100% - 22px);">
 					<SearchUser modeSelect 
 								id="1"
-								search=".com"
 								placeholder="Trouver un client"
+								bind:search={searchUser}
 								bind:selectOk={userOk}
 								on:select="{userSelected}"/>
 				</div>
 			</div>
 
 			<!-- Règle le solde -->
-			<div class:visible={userOk} class="hide w3-col s6 w3-padding">
-				<div class="validButton w3-right w3-round">Régler le solde de 200.00 </div>
+			<div class:visible={userOk && sold != 0} class="hide w3-col s6 w3-padding">
+				<div class="button w3-right w3-round" on:click="{() => popupPaymentOpen = true}">
+					Régler le solde de {sold.toFixed(2)}
+				</div>
 			</div>
 			
 		</div>
@@ -164,16 +225,16 @@
 				<!-- Fournit -->
 				<div class="tab" class:center={action == 0} class:left={action > 0}>
 					<br>
-					<Provide bind:user bind:provided bind:proposed bind:articlesPromise={providedPromise} />
-				</div>
-
-				<!-- Achète -->
-				<div class="tab" class:center={action == 1} class:left={action > 1} class:right={action < 1}>
-					<br>
-					<Recover bind:user bind:provided bind:recovered articlesPromise={providedPromise}/>
+					<Provide bind:user bind:provided bind:proposed bind:providedPromise />
 				</div>
 
 				<!-- Récupère -->
+				<div class="tab" class:center={action == 1} class:left={action > 1} class:right={action < 1}>
+					<br>
+					<Recover bind:user bind:provided bind:recovered providedPromise/>
+				</div>
+
+				<!-- Achète -->
 				<div class="tab" class:center={action == 2} class:left={action > 2} class:right={action < 2}>
 					<br>
 					<Buy bind:user bind:purchases bind:purchasesPromise/>
@@ -182,13 +243,19 @@
 				<!-- Retourne -->
 				<div class="tab" class:center={action == 3} class:left={action > 3} class:right={action < 3}>
 					<br>
-					<Giveback bind:user bind:purchases  bind:purchasesPromise bind:givebacks bind:givebacksPromise />
+					<Giveback bind:user
+							bind:purchases  bind:purchasesPromise
+							bind:givebacks bind:givebacksPromise />
 				</div>
 			
 				<!-- Aperçue -->
 				<div class="tab" class:center={action == 4} class:right={action < 4}>
 					<br>
-					aperçue
+					<Resume userId={user._id} trocId={$troc._id}
+							bind:provided bind:providedPromise
+							bind:purchases bind:purchasesPromise
+							bind:payments bind:paymentsPromise 
+							bind:sold/>
 				</div>
 
 			</div>
@@ -205,6 +272,31 @@
 
 	</div>
 
+{/if}
+
+{#if popupPaymentOpen}
+<div class="w3-modal" transition:fade|local={{duration: 150}}>
+	<div class="w3-modal-content w3-padding w3-round">
+		<div class="w3-right w3-padding close-icon" on:click="{() => popupPaymentOpen = false}">
+			<i class="fa fa-times w3-large"></i>
+		</div>
+		<br><br>
+		<div class="w3-center w3-xlarge">
+			{sold > 0 ? `Vous avez versé ${sold.toFixed(2)} à ${user.name}`: `${user.name} vous à versé ${(-sold).toFixed(2)}`}
+		</div>
+		<br>
+		{#await validPaymentPromise}
+			<div class="validButton w3-round w3-right">
+				Validation en cours...
+			</div>
+		{:then}
+			<div class="validButton w3-round w3-right" on:click="{() => validPaymentPromise = validPayment()}">
+				Valider la transaction
+			</div>
+		{/await}
+		<br><br>
+	</div>
+</div>
 {/if}
 
 
@@ -238,6 +330,10 @@
 	.noUserLogo {
 		font-size: 140px;
 		opacity: .08;
+	}
+
+	.w3-modal {
+		display: block;
 	}
 
 </style>

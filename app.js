@@ -40,6 +40,7 @@ app.use('/', 			    require('./routes/index'))
 app.use('/users', 		require('./routes/user'))
 app.use('/articles', 	require('./routes/article'))
 app.use('/trocs', 		require('./routes/troc'))
+app.use('/payments', 		require('./routes/payment'))
 
 
 // catch 404 and forward to error handler

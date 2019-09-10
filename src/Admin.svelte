@@ -12,7 +12,7 @@
 	import { getHeader, updateTroc } from './utils'
 
 
-	let tabSelected = 3
+	let tabSelected = 6
 	let oldTabSelected = -1
 	let tabs = [
 		{name: 'Informations', 	icon: '<i class="fas fa-info-circle"></i>'},

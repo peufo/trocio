@@ -7,8 +7,8 @@
     export let user = {}
     export let provided = [] //Articles provided
     export let recovered = [] //Articles recovered
-    export let articlesPromise
-    let validPromise
+    export let providedPromise
+    let validPromise // valid button
 
     const [send, receive] = crossfade(crossfadeConfig)
     
@@ -71,7 +71,7 @@
 
         <h4>Fournis</h4>
         <div class="w3-margin-right">
-        {#await articlesPromise}
+        {#await providedPromise}
             <div class="w3-center">
                 <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
             </div>
@@ -102,7 +102,7 @@
 
         <h4 class="w3-margin-left">Récupérés</h4>
         <div class="w3-margin-left">
-        {#await articlesPromise}
+        {#await providedPromise}
             <div class="w3-center">
                 <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
             </div>

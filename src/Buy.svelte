@@ -118,7 +118,6 @@
 
     </div>
 
-
     <div class="w3-col s6">
         <div class="w3-margin-left w3-border w3-round w3-padding">
             {#await buyPromise}
@@ -157,13 +156,9 @@
                 <div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
             {:then}
                 {#each purchases as article (article._id)}
-                    
                     <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
-
                         <Article article={article} timeKey={'soldTime'}/>
-
                     </div>
-                    
                 {:else}
                     <span class="w3-opacity w3-margin-left">Pas d'achat</span>
                 {/each}
