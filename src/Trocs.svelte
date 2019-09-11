@@ -53,12 +53,12 @@
 	function onMapMove() {
 		if (mapFilter) {
 			clearTimeout(waiting)
-			waiting = setTimeout(() => loadTrocs(e), 200)
+			waiting = setTimeout(() => loadTrocs(), 200)
 		}
 	}
 	function newSearch() {
 		clearTimeout(waiting)
-		waiting = setTimeout(() => loadTrocs(e), 200)
+		waiting = setTimeout(() => loadTrocs(), 200)
 	}
 
 	function loadTrocs() {

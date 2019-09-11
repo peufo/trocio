@@ -10,7 +10,7 @@ const production = !process.env.ROLLUP_WATCH
 
 function getOutput(name) {
 	return {
-		sourcemap: true,
+		sourcemap: !production,
 		format: 'iife',
 		name: 'app',
 		file: `public/assets/${name}.js`
