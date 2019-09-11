@@ -24,6 +24,8 @@
 	{/if}
 	</span>
 
+	<span class="w3-red">ATTENTION ! APPLICATION EN PHASE DE DEVELOPEMENT ! TOUTE LES DONNEES SONT SUCCEPTIBLE D'ETRE EFFACE !</span>
+
 	<div id="userButton"
 		class="w3-padding w3-border w3-round w3-right" 
 		class:w3-button={!openUserOption} on:click="{() => openUserOption = true}">
