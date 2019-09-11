@@ -14,6 +14,10 @@
     
     const providedFilter = art => !art.sold && !art.recover && !art.isRemovable
 
+    const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
+    let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
+    let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
+
     function recover(e) {
 
         let index = provided.map(art => art._id).indexOf(e.detail._id)
@@ -76,7 +80,7 @@
                 <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
             </div>
         {:then}
-            {#each provided.filter(providedFilter) as article (article._id)}
+            {#each provided.filter(providedFilter).slice(0, LIMIT_LIST_A) as article (article._id)}
                 <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                     <Article article={article} timeKey={'validTime'} clickable on:select="{recover}"/>
@@ -85,6 +89,16 @@
             {:else}
                 <span class="w3-opacity">Pas d'articles fournis en magasin !</span>
             {/each}
+
+            <!-- Bouton pour prolongé la liste -->
+            {#if provided.length > LIMIT_LIST_A}
+                <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
+                    <span class="underline-span w3-opacity">
+                        Afficher plus d'éléments ({provided.length - LIMIT_LIST_A})
+                    </span>
+                </div>
+            {/if}
+
         {/await}
         </div>
     </div>
@@ -107,7 +121,7 @@
                 <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
             </div>
         {:then}
-            {#each recovered as article (article._id)}
+            {#each recovered.slice(0, LIMIT_LIST_B) as article (article._id)}
                 <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                     <Article article={article} timeKey={'recoverTime'} on:remove="{remove}"/>
@@ -116,6 +130,16 @@
             {:else}
                 <span class="w3-opacity">Pas d'articles récupéré !</span>
             {/each}
+
+            <!-- Bouton pour prolongé la liste -->
+            {#if recovered.length > LIMIT_LIST_B}
+                <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
+                    <span class="underline-span w3-opacity">
+                        Afficher plus d'éléments ({recovered.length - LIMIT_LIST_B})
+                    </span>
+                </div>
+            {/if}
+
         {/await}
         </div>
     </div>

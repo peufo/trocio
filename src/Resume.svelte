@@ -15,6 +15,10 @@
 
 	const [send, receive] = crossfade(crossfadeConfig)
 
+    const LIMIT_LIST_INIT = 5 //Nombre d'élément d'une liste afficher initialement
+    let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
+    let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
+
 	export let userId = false
 	export let trocId = false
 
@@ -39,9 +43,7 @@
 		}
 	})
 
-	$: console.log(provided)
-	
-	$: {//Calcul of sold
+	$: {//Calcul of sold -> bof bof
 
 		console.log('Calcule ta mere')
 
@@ -142,11 +144,21 @@
 				{#await purchasesPromise}
 					<div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
 				{:then}
-					{#each purchases as article (article._id)}
+					{#each purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
 						<Article article={article} timeKey={'soldTime'}/>
 					{:else}
 						<span class="w3-opacity w3-margin-left">Pas d'achat</span>
 					{/each}
+
+					<!-- Bouton pour prolongé la liste -->
+					{#if purchases.length > LIMIT_LIST_A}
+						<div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
+							<span class="underline-span w3-opacity">
+								Afficher plus de résultat ({purchases.length - LIMIT_LIST_A})
+							</span>
+						</div>
+					{/if}
+
 				{/await}
 			</div>
 		</div>
@@ -160,7 +172,7 @@
 						<img src="favicon.ico" alt="Logo trocio" class="w3-spin">
 					</div>
 				{:then}
-					{#each payments as payment (payment._id)}
+					{#each payments.slice(0, LIMIT_LIST_B) as payment (payment._id)}
 						<div class="list-element valided w3-padding" in:receive="{{key: payment._id}}"  animate:flip="{{duration: 200}}">
 							{dayjs(payment.createdAt).fromNow()}
 							<br>
@@ -170,6 +182,16 @@
 					{:else}
 						<span class="w3-opacity">Pas de paiements enregistré !</span>
 					{/each}
+
+					<!-- Bouton pour prolongé la liste -->
+					{#if payments.length > LIMIT_LIST_B}
+						<div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
+							<span class="underline-span w3-opacity">
+								Afficher plus de résultat ({payments.length - LIMIT_LIST_B})
+							</span>
+						</div>
+					{/if}
+					
 				{/await}
 			</div>
 		</div>

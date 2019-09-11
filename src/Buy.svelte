@@ -23,6 +23,9 @@
     let buyPromise
     let waiting
 
+    const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
+    let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
+    let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
     async function searchArticle() {
         let res = await fetch(`/articles/search?troc=${$troc._id}&search=${search}&providernot=${user._id}&available=true`)
@@ -100,21 +103,27 @@
         </div>
 
 
-        {#each articles as article, index (article._id)}
-            <div class="w3-margin-right" in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
+        {#await searchPromise}
+            <span class="w3-opacity">Recherche en cours...</span>
+        {:then}
+            {#each articles.slice(0, LIMIT_LIST_A) as article, index}
+                <div class="w3-margin-right">
+                    <Article article={article} clickable on:select="{() => buy(index)}"/>
+                </div>
+            {:else}
+                <span class="w3-opacity">Pas résultat</span>
+            {/each}
 
-                <Article article={article} clickable on:select="{() => buy(index)}"/>
- 
-            </div>
-        {:else}
-            {#await searchPromise}
-                <span class="w3-opacity">Recherche en cours...</span>
-            {:then}
-                {#if search.length}
-                    <span class="w3-opacity">Pas résultat pour le recherche <b>"{search}"</b></span>
-                {/if}
-            {/await}
-        {/each}
+            <!-- Bouton pour prolongé la liste -->
+            {#if articles.length > LIMIT_LIST_A}
+                <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
+                    <span class="underline-span w3-opacity">
+                        Afficher plus de résultat ({articles.length - LIMIT_LIST_A})
+                    </span>
+                </div>
+            {/if}
+            
+        {/await}
 
     </div>
 
@@ -155,14 +164,25 @@
             {#await purchasesPromise}
                 <div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
             {:then}
-                {#each purchases as article (article._id)}
+                {#each purchases.slice(0, LIMIT_LIST_B) as article (article._id)}
                     <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
                         <Article article={article} timeKey={'soldTime'}/>
                     </div>
                 {:else}
                     <span class="w3-opacity w3-margin-left">Pas d'achat</span>
                 {/each}
+                
+                <!-- Bouton pour prolongé la liste -->
+                {#if purchases.length > LIMIT_LIST_B}
+                    <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
+                        <span class="underline-span w3-opacity">
+                            Afficher plus d'éléments ({purchases.length - LIMIT_LIST_B})
+                        </span>
+                    </div>
+                {/if}
+
             {/await}
+
 
         </div>
 

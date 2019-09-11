@@ -20,7 +20,11 @@
 	let nbNewArticles = 0
 	let newArticle = {name: '', price: null}
 
-	const [send, receive] = crossfade(crossfadeConfig)
+    const [send, receive] = crossfade(crossfadeConfig)
+    
+    const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
+    let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
+    let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
     function createArticle() {
 		if (newArticle.name.length > 2 && newArticle.price != null) {
@@ -121,6 +125,7 @@
         }
     }
 
+
 </script>
 
 <div>
@@ -150,7 +155,7 @@
                     <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
                 </div>
             {:then}
-                {#each proposed as article (article._id)}
+                {#each proposed.slice(0, LIMIT_LIST_A) as article (article._id)}
                     <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                         <Article article={article} clickable on:select="{() => clickProposedArticle(article._id)}"/>
@@ -159,6 +164,16 @@
                 {:else}
                     <span class="w3-opacity">Pas d'articles proposés !</span>
                 {/each}
+
+                <!-- Bouton pour prolongé la liste -->
+                {#if proposed.length > LIMIT_LIST_A}
+                    <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
+                        <span class="underline-span w3-opacity">
+                            Afficher plus d'éléments ({proposed.length - LIMIT_LIST_A})
+                        </span>
+                    </div>
+                {/if}
+
             {/await}
         </div>
     </div>
@@ -184,7 +199,7 @@
                     <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
                 </div>
             {:then}
-                {#each provided.filter(art => !art.sold && !art.recover) as article (article._id)}
+                {#each provided.filter(art => !art.sold && !art.recover).slice(0, LIMIT_LIST_B) as article (article._id)}
                     <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                         <Article article={article} timeKey={'validTime'} on:remove="{() => removeArticle(article._id)}"/>
@@ -193,6 +208,16 @@
                 {:else}
                     <span class="w3-opacity">Pas d'articles fournis en magasin !</span>
                 {/each}
+
+                <!-- Bouton pour prolongé la liste -->
+                {#if provided.filter(art => !art.sold && !art.recover).length > LIMIT_LIST_B}
+                    <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
+                        <span class="underline-span w3-opacity">
+                            Afficher plus d'éléments ({provided.filter(art => !art.sold && !art.recover).length - LIMIT_LIST_B})
+                        </span>
+                    </div>
+                {/if}
+
             {/await}
         </div>
     </div>

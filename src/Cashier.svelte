@@ -11,7 +11,7 @@
 	import Resume from './Resume.svelte'
 
 	let user = {}
-	let searchUser = '.com'
+	let searchUser = ''
 	let userOk = false
 	let popupPaymentOpen = false
 

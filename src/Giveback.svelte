@@ -16,6 +16,10 @@
 
     const [send, receive] = crossfade(crossfadeConfig)
 
+    const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
+    let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
+    let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
+
     onMount(() => {
         givebacksPromise.then(() => {
             givebacks = givebacks.map(art => {
@@ -96,13 +100,22 @@
             {#await purchasesPromise}
                 <div class="w3-center"><img src="favicon.ico" alt="Logo Trocio" class="w3-spin"></div>
             {:then}
-                {#each purchases as article (article._id)}
+                {#each purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
                     <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
                         <Article article={article} timeKey={'soldTime'} clickable on:select="{() => select(article._id)}"/>
                     </div>
                 {:else}
                     <span class="w3-opacity">Pas d'achat à retourner</span>
                 {/each}
+
+                <!-- Bouton pour prolongé la liste -->
+                {#if purchases.length > LIMIT_LIST_A}
+                    <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
+                        <span class="underline-span w3-opacity">
+                            Afficher plus d'éléments ({purchases.length - LIMIT_LIST_A})
+                        </span>
+                    </div>
+                {/if}
             {/await}
         </div>
     </div>
@@ -125,7 +138,7 @@
             {#await givebacksPromise}
                 <div class="w3-center"><img src="favicon.ico" alt="Logo Trocio" class="w3-spin"></div>
             {:then}
-                {#each givebacks.sort((a, b) => b.givebackTime - a.givebackTime) as article (article._id)}
+                {#each givebacks.sort((a, b) => b.givebackTime - a.givebackTime).slice(0, LIMIT_LIST_B) as article (article._id)}
                     <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
                         <Article article={article}
                             on:remove="{() => remove(article._id)}"
@@ -134,6 +147,15 @@
                 {:else}
                     <span class="w3-opacity">Pas de retour</span>
                 {/each}
+
+                    <!-- Bouton pour prolongé la liste -->
+                    {#if givebacks.length > LIMIT_LIST_B}
+                        <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
+                            <span class="underline-span w3-opacity">
+                                Afficher plus d'éléments ({givebacks.length - LIMIT_LIST_B})
+                            </span>
+                        </div>
+                    {/if}
             {/await}
         </div>
     </div>
