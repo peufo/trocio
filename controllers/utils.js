@@ -11,8 +11,12 @@ module.exports = {
 	},
 
 	login: (req, res, next) => {
+		let userError = new Error()
+		userError.name ='userError' //userError is followed in production
+
 		if (!req.body.mail || !req.body.password) {
-			return next(Error('Renseignement manquant !'))
+			userError.message = 'Renseignement manquant !'
+			return next(userError)
 		}else{
 			User.getAuthenticated(req.body.mail, req.body.password, (err, user, reason) => {
 				if (!err) {
@@ -25,17 +29,18 @@ module.exports = {
 						var reasons = User.failedLogin
 						switch(reason){
 							case reasons.NOT_FOUND:
-								next(Error('Le mail indiqué n\'est pas associé à un compte!'))
+								userError.message = 'Le mail indiqué n\'est pas associé à un compte!'
 								break
 							case reasons.PASSWORD_INCORRECT:
-								next(Error('Mot de passe invalide!'))
+								userError.message = 'Mot de passe invalide!'
 								break
 							case reasons.MAX_ATTEMPTS:
-								next(Error('Ce compte est temporairement verrouillé!'))
+								userError.message = 'Ce compte est temporairement verrouillé!'
 								break
 							default:
-								next(Error('Erreur, raison introuvable!'))
+								userError.message = 'Erreur, raison inconnue!'
 						}
+						next(userError)
 					}
 				}else next(err)
 			})			

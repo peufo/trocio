@@ -54,14 +54,15 @@ app.use(function(err, req, res, next) {
   //set Status 
   switch (err.message) {
     case 'Login required':
-      res.status(401)
+        res.status(401)
       break;
     default:
         res.status(404)
       break;
   }
 
-  if (req.app.get('env') === 'development'){
+
+  if (req.app.get('env') === 'development' || err.name == 'userError'){
     console.log(err)
     res.json({success: false, message: err.message})
   }else{

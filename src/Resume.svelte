@@ -35,6 +35,7 @@
 	export let purchasesPromise
 	export let paymentsPromise
 
+
 	onMount(() => {
 		if (userId && trocId) {
 			getTarif()
@@ -43,9 +44,9 @@
 		}
 	})
 
-	$: {//Calcul of sold -> bof bof
+	$: console.log(provided)
 
-		console.log('Calcule ta mere')
+	$: {//Calcul of sold -> bof bof
 
 		//Purchases
 		if (purchases.length) buySum = -purchases.map(a => a.price).reduce((acc, cur) => acc + cur)
@@ -121,6 +122,14 @@
 		}else if (art.price == 0) {
 			return art.fee = 0
 		}else return art.fee
+	}
+
+	let status = ['Proposé', 'En vente', 'Vendu', 'Récupéré']
+	function getStatus(art) {
+		if (!art.valided) return status[0]
+		if (art.sold) return status[2]
+		if (art.recover) return status[3]
+		return status[1]
 	}
 
 </script>
@@ -207,44 +216,62 @@
 		<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered">
 			<tr>
 				<th>Articles</th>
-				<th>Status</th><!-- Proposé Fournit Vendu Récupéré -->
+				<th>Status</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
 				<th>Prix</th>
-				<th>Frais</th>
+				<th>Frais <span class="w3-opacity w3-tiny">(traitement + marge)</span></th>
 				<th></th>
 			</tr>
 			{#each provided as article, i}
 
-			{#if !article.valided && !article.refused}
-
 				<tr in:slide>
+
+					<!-- Designation -->
 					<td class="tdInput">
-						<input
-							on:input="{() => addModifiedArticle(article)}"
-							class:lastInputName="{i == provided.length-1}" 
-							bind:value={article.name} 
-							type="text" 
-							class="w3-input" 
-							placeholder="Nom complet">
+						{#if article.valided}
+							{article.name}
+						{:else}
+							<input
+								on:input="{() => addModifiedArticle(article)}"
+								class:lastInputName="{i == provided.length-1}" 
+								bind:value={article.name}
+								type="text" 
+								class="w3-input" 
+								placeholder="Nom complet">
+						{/if}
 					</td>
-					<td>Proposé</td>
-					<td class="tdInput">
-						<input
-							on:input="{() => addModifiedArticle(article)}"
-							bind:value={article.price}
-							type="number"
-							class="w3-input"
-							placeholder="Prix"
-							min="0">
+
+					<!-- Status -->
+					<td>{getStatus(article)}</td>
+
+					<!-- Prix -->
+					<td class="tdInput price">
+						{#if !article.valided}
+							<input
+								on:input="{() => addModifiedArticle(article)}"
+								bind:value={article.price}
+								type="number"
+								class="w3-input"
+								calss:w3-opactiy={!article.sold}
+								placeholder="Prix"
+								min="0">
+						{:else if !article.recover}
+							<div class="w3-padding" class:w3-opacity={!article.sold}>
+								{article.valided & article.price}
+							</div>
+						{/if}
 					</td>
-					<td class:w3-opacity={!article.valided}>
+
+					<!-- Frais -->
+					<td class:w3-opacity={!article.valided} class="fee">
 						{getFee(article)}
-						{article.sold ? ` + ${article.price * article.margin}` : ''}
+						{@html article.sold ? ` <span class="w3-tiny">+</span> ${article.price * article.margin}` : ''}
 					</td>
+
+					<!-- Suppression (uniquement les articles non validé) -->
 					<td>
 						<i on:click="{() => deleteArticle(i)}" class="fa fa-times"></i>
 					</td>
 				</tr>
-			{/if}
 
 			{/each}
 		</table>
@@ -286,9 +313,6 @@
 	.w3-input {
 		border: none;
 	}
-	.w3-ul li {
-		border: none;
-	}
 
 	input[type=number] {
 		width: 6em;
@@ -297,8 +321,13 @@
 		word-break: break-word;
 	}
 	
-	#purchases li:not(:last-child){
-		line-height: 90%;
+	.price {
+		color: green;
 	}
+
+	.fee {
+		color: red;
+	}
+
 
 </style>
