@@ -5,6 +5,13 @@ html, body {height: 100%;}
 ::-webkit-scrollbar-thumb:hover { background: #555; }
 a { text-decoration: none; }
 
+textarea {
+    margin-top: 10px;
+    resize: vertical;
+    border: 1px solid #d6d6d6;
+    width: 100%;
+}
+
 .clickable{
     cursor: pointer;
 }

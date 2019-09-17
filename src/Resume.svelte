@@ -40,6 +40,7 @@
 
 	let modifiedArticles = []
 	let clearModifiedArticles
+	let importArticlesListOpen = false //Modal popup for import list of articles
 
 	onMount(() => {
 		if (userId && trocId) {
@@ -131,7 +132,7 @@
 			arr = provided.filter(a => a.valided).map(a => a.fee)
 			feeSum = arr.length ? -arr.reduce((acc, cur) => acc + cur) : 0
 
-			arr = provided.filter(a => a.sold).map(a => a.price * a.margin)
+			arr = provided.filter(a => a.sold).map(a => a.margin)
 			feeSum -= arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
 		}else{
 			soldSum = 0
@@ -254,7 +255,7 @@
 					</div>
 				{:then}
 					{#each payments.slice(0, LIMIT_LIST_B) as payment (payment._id)}
-						<div class="list-element valided w3-padding" in:receive="{{key: payment._id}}"  animate:flip="{{duration: 200}}">
+						<div class="list-element valided w3-padding" in:receive="{{key: payment._id}}" animate:flip="{{duration: 200}}">
 							{dayjs(payment.createdAt).fromNow()}
 							<br>
 							<b class="w3-tiny w3-right" style="line-height: 1;">{payment.amount.toFixed(2)}</b>
@@ -289,16 +290,21 @@
 			<div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
 		{:then}
 			
-
 			<!-- Bontons puor proposer des articles -->
 			<div on:click={createArticle} class="w3-button w3-border w3-round" style="margin-left: 20px;">
 				Proposer un article
 			</div>
 			<span> ou </span>
-			<div on:click={createArticle} class="w3-button w3-border w3-round">
+			<div on:click="{() => importArticlesListOpen = true}" class="w3-button w3-border w3-round">
 				Proposer plein d'articles
 			</div>
 			
+			{#if importArticlesListOpen}
+				<div class="w3-row" transition:fade>
+					<textarea class="w3-round" rows="10" placeholder="Glisser votre liste dans le format suivant:"></textarea>
+				</div>
+			{/if}
+
 
 			<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />
 			<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered w3-margin-top">
@@ -371,9 +377,8 @@
 		{/await}
 		
 	</div>
-
-
 </div>
+
 
 <style>
 

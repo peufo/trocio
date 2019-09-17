@@ -190,13 +190,6 @@
 		border-bottom: 2px solid #d6d6d6;
 	}
 
-	textarea {
-		margin-top: 10px;
-		resize: vertical;
-		border: 1px solid #d6d6d6;
-		width: 100%;
-	}
-
 	.schedule i {
 		transform: scale(0);
 		transition: all 0.2s ease;

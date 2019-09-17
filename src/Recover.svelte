@@ -11,7 +11,7 @@
 
     const [send, receive] = crossfade(crossfadeConfig)
     
-    const providedFilter = art => !art.sold && !art.recover && !art.isRemovable
+    const providedFilter = art => art.valided && !art.sold && !art.recover && !art.isRemovable
     const recoverFilter = art => art.recover && art.isRemovable && !art.isCreated
 
     const LIMIT_LIST_INIT = 5 //Nombre d'élément d'une liste afficher initialement
