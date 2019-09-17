@@ -73,6 +73,7 @@
 			}
 			return 
 		}else{
+			console.Error(json.message)
 			return Error('Echec de le mise a jour')
 		}
 	}
@@ -112,6 +113,5 @@
 		background: white;
 		left: 10px;
 		bottom: 10px;
-
 	}
 </style>

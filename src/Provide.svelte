@@ -27,6 +27,8 @@
     let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
+    const proposedFilter = art => !art.recover && !art.sold && art.isRemovable && !art.isCreated
+
     function createArticle() {
 		if (newArticle.name.length > 2 && newArticle.price != null) {
 			let art = {
@@ -72,6 +74,10 @@
             provided[index].isRemovable = true
         }
         nbNewArticles++
+    }
+
+    function clickProposedArticleAll() {
+        provided.filter(art => !art.valided).forEach(art => clickProposedArticle(art._id))
     }
 
     function validProvided() {
@@ -159,8 +165,14 @@
     <br>
 
     <div class="w3-col s6">
+        <div class="w3-right w3-margin-right w3-round button"
+             class:visible={provided.filter(art => !art.valided).length}
+             on:click={clickProposedArticleAll}>
+            Tout valider
+        </div>
+
+        <h4>Proposés</h4>
         <div class="w3-margin-right">
-            <h4>Proposés</h4>
             {#await providedPromise}
                 <div class="w3-center">
                     <img src="favicon.ico" alt="Logo trocio" class="w3-spin">

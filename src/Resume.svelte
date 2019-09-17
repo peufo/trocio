@@ -279,87 +279,96 @@
 
 	</div>
 	<br>
+	<br>
 
 	<div class="w3-row">
 		<span class="w3-right w3-large">{(soldSum + feeSum).toFixed(2)}</span>
 		<span class="w3-large">Ventes</span>
 
-		<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />
-	
-		<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered">
-			<tr>
-				<th>Articles</th>
-				<th>Status</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
-				<th>Prix <span class="w3-small sold">{soldSum.toFixed(2)}</span></th>
-				<th>Frais 
-					<span class="w3-opacity w3-tiny">(traitement + marge)</span>
-					<span class="w3-small fee">{feeSum.toFixed(2)}</span>
-				</th>
-				<th></th><!--remove-->
-			</tr>
-			{#each provided.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) as article, i}
+		{#await providedPromise}
+			<div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+		{:then}
+			
 
-				<tr in:slide>
-					
-					<!-- Designation -->
-					<td class="tdInput">
-						<b class="w3-small" style="position: absolute; transform: translate(-28px, 12px);">
-							{!article.isCreated ? article.ref : ''}
-						</b>
-						<input
-							on:input="{() => addModifiedArticle(article)}"
-							class:lastInputName="{i == provided.length-1}"  
-							bind:value={article.name}
-							type="text" 
-							class="w3-input" 
-							readonly={article.valided}
-							class:unvalided={!article.valided}
-							class:recovered={article.recover}
-							placeholder="Nom complet">
-					</td>
+			<!-- Bontons puor proposer des articles -->
+			<div on:click={createArticle} class="w3-button w3-border w3-round" style="margin-left: 20px;">
+				Proposer un article
+			</div>
+			<span> ou </span>
+			<div on:click={createArticle} class="w3-button w3-border w3-round">
+				Proposer plein d'articles
+			</div>
+			
 
-					<!-- Status -->
-					<td>{getStatus(article)}</td>
-
-					<!-- Prix -->
-					<td class="tdInput price">
-						<input
-							on:input="{() => addModifiedArticle(article)}"
-							bind:value={article.price}
-							type="number"
-							class="w3-input"
-							readonly={article.valided}
-							class:unvalided={!article.valided}
-							class:recovered={article.recover}
-							class:sold={article.sold}
-							placeholder="Prix"
-							step="0.05"
-							min="0">
-					</td>
-
-					<!-- Frais -->
-					<td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided}>
-						{article.fee.toFixed(2)}
-						{@html article.sold ? ` <span class="w3-tiny">+</span> ${article.margin.toFixed(2)}` : ''}
-					</td>
-
-					<!-- Suppression (uniquement les articles non validé) -->
-					<td>
-						{#if !article.valided}
-							<i on:click="{() => deleteArticle(i)}" class="fa fa-times"></i>
-						{/if}
-					</td>
+			<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />
+			<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered w3-margin-top">
+				<tr>
+					<th>Articles</th>
+					<th>Status</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
+					<th>Prix <span class="w3-small sold">{soldSum.toFixed(2)}</span></th>
+					<th>Frais 
+						<span class="w3-opacity w3-tiny">(traitement + marge)</span>
+						<span class="w3-small fee">{feeSum.toFixed(2)}</span>
+					</th>
+					<th></th><!--remove-->
 				</tr>
+				{#each provided.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) as article, i}
 
-			{/each}
-		</table>
+					<tr in:slide>
+						
+						<!-- Designation -->
+						<td class="tdInput">
+							<b class="w3-small" style="position: absolute; transform: translate(-28px, 12px);">
+								{!article.isCreated ? article.ref : ''}
+							</b>
+							<input
+								on:input="{() => addModifiedArticle(article)}"
+								class:lastInputName="{i == provided.length-1}"  
+								bind:value={article.name}
+								type="text" 
+								class="w3-input" 
+								readonly={article.valided}
+								class:unvalided={!article.valided}
+								class:recovered={article.recover}
+								placeholder="Nom complet">
+						</td>
 
-		
-		<div in:fade
-				on:click={createArticle}
-				class="w3-button w3-border w3-round w3-margin-top w3-right">
-			+1 article
-		</div>
+						<!-- Status -->
+						<td>{getStatus(article)}</td>
+
+						<!-- Prix -->
+						<td class="tdInput price">
+							<input
+								on:input="{() => addModifiedArticle(article)}"
+								bind:value={article.price}
+								type="number"
+								class="w3-input"
+								readonly={article.valided}
+								class:unvalided={!article.valided}
+								class:recovered={article.recover}
+								class:sold={article.sold}
+								placeholder="Prix"
+								step="0.05"
+								min="0">
+						</td>
+
+						<!-- Frais -->
+						<td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided}>
+							{article.fee.toFixed(2)}
+							{@html article.sold ? ` <span class="w3-tiny">+</span> ${article.margin.toFixed(2)}` : ''}
+						</td>
+
+						<!-- Suppression (uniquement les articles non validé) -->
+						<td>
+							{#if !article.valided}
+								<i on:click="{() => deleteArticle(i)}" class="fa fa-times"></i>
+							{/if}
+						</td>
+					</tr>
+
+				{/each}
+			</table>
+		{/await}
 		
 	</div>
 
