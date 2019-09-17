@@ -1,6 +1,7 @@
 <script>
 	import { troc } from './stores'
 	import { onMount, onDestroy } from 'svelte'
+	import { fly } from 'svelte/transition'
 	import { getHeader } from './utils'
 
 	export let body = {} 
@@ -15,6 +16,9 @@
 	let onModify = false
 	let patched
 	let patchCount = 0
+
+	let waitingOnAction // For hide
+	let onAction = false
 
 
 	onMount(() => {
@@ -46,7 +50,9 @@
 
 	function change() {
 		onModify = true
+		onAction = true
 		clearTimeout(waiting)
+		clearTimeout(waitingOnAction)
 		if (!invalid) waiting = setTimeout(getPatched, WAIT_FOR_PATCH)
 	}
 
@@ -63,6 +69,7 @@
 		if (res.ok && json.success) {
 			if (patchCount == 0 && !onModify) {
 				if (trocRefresh) troc.refresh(json.message)
+				waitingOnAction = setTimeout(() => onAction = false, 1000)
 			}
 			return 
 		}else{
@@ -73,28 +80,31 @@
 
 </script>
 
-<div class="w3-card w3-padding w3-round">
-	{#if !!invalid}
-		<i class="fas fa-exclamation-triangle"></i>
-		{invalid}
-	{:else if onModify}
-		<i class="far fa-edit"></i>
-		Modification...	
-	{:else}
-		{#await patched}
-			<i class="fas fa-sync-alt w3-spin"></i>
-			Sauvegarde...
-		{:then}
-			<i class="fas fa-check"></i>
-			Sauvegardé
-		{:catch error}
-			<i class="fas fa-bug"></i>
-			{error}
-		{/await}
-		
-	{/if}
 
-</div>
+{#if onAction}
+	<div class="w3-card w3-padding w3-round" transition:fly={{x: -100}}>
+		{#if !!invalid}
+			<i class="fas fa-exclamation-triangle"></i>
+			{invalid}
+		{:else if onModify}
+			<i class="far fa-edit"></i>
+			Modification...	
+		{:else}
+			{#await patched}
+				<i class="fas fa-sync-alt w3-spin"></i>
+				Sauvegarde...
+			{:then}
+				<i class="fas fa-check"></i>
+				Sauvegardé
+			{:catch error}
+				<i class="fas fa-bug"></i>
+				{error}
+			{/await}
+			
+		{/if}
+
+	</div>
+{/if}
 
 <style>
 	div {
@@ -102,5 +112,6 @@
 		background: white;
 		left: 10px;
 		bottom: 10px;
+
 	}
 </style>
