@@ -1,10 +1,9 @@
 <script>
 	import { fade, slide } from 'svelte/transition'
-	import { me } from './stores'
 	import { onMount } from 'svelte'
 	import { flip } from 'svelte/animate'
 	import { crossfade } from 'svelte/transition'
-	import { getHeader, crossfadeConfig } from './utils'
+	import { getHeader, crossfadeConfig, getFee, getMargin } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
 	import dayjs from 'dayjs'
@@ -21,28 +20,94 @@
 
 	export let userId = false
 	export let trocId = false
+	export let tarif = undefined
 
-	export let sold = 0
+	export let balance = 0
 	export let buySum = 0
 	export let paySum = 0
-	export let provideSum = 0
+	export let soldSum = 0
+	export let feeSum = 0
 
 	export let provided = []
 	export let purchases = []
+	export let givebacks = []
 	export let payments = []
 
 	export let providedPromise
 	export let purchasesPromise
+	export let givebacksPromise
 	export let paymentsPromise
 
+	let modifiedArticles = []
+	let clearModifiedArticles
 
 	onMount(() => {
 		if (userId && trocId) {
 			getTarif()
+			providedPromise = getProvided()
+			purchasesPromise = getPurchases()
+			givebacksPromise = getGivebacks()
+			paymentsPromise = getPayments()			
 		}else{
 			console.log('userId and trocId required !')
 		}
 	})
+
+	async function getProvided() {
+		let res = await fetch(`/articles?troc=${trocId}&provider=${userId}`)
+		let json = await res.json()
+		if (res.ok) {
+			provided = json
+			return
+		}
+	}
+
+	async function getPurchases() {
+        let res = await fetch(`/articles?buyer=${userId}`)
+        let json = await res.json()
+        if (res.ok) {
+			purchases = addTime(json, 'sold', 'soldTime')
+            return
+        }
+	}
+
+	async function getGivebacks() {
+        let res = await fetch(`/articles?giveback.user=${userId}`)
+        let json = await res.json()
+        if (res.ok) {
+			givebacks = json
+            return
+        }
+	}
+
+	async function getPayments() {
+        let res = await fetch(`/payments?user=${userId}&troc=${trocId}`)
+        let json = await res.json()
+        if (res.ok) {
+			payments = json
+            return
+        }
+	}
+
+	//TODO: à transformer en function de Mappage ?
+ 	//Filtre et ajoute time
+	function addTime(arr, keyIn, keyOut) {
+		let lastTime = 0
+		let out = arr.filter(elem => elem[keyIn])
+		.map(elem => {
+			elem[keyOut] = new Date(elem[keyIn]).getTime()
+			return elem
+		})
+		.sort((a, b) => b[keyOut] - a[keyOut]).map(elem => {
+			if (elem[keyOut] && elem[keyOut] != lastTime) {
+				lastTime = elem[keyOut]
+			}else{
+				elem[keyOut] = 0
+			}
+			return elem
+		})
+		return out
+	}
 
 	$: console.log(provided)
 
@@ -58,20 +123,34 @@
 
 
 		//Provide
-		//TODO
+		//TODO: Deplacer coté serveur
+		if (provided.length) {
+			let arr = provided.filter(a => a.sold).map(a => a.price)
+			soldSum = arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
 
+			arr = provided.filter(a => a.valided).map(a => a.fee)
+			feeSum = arr.length ? -arr.reduce((acc, cur) => acc + cur) : 0
 
-		//sold
-		sold = buySum + paySum + provideSum
+			arr = provided.filter(a => a.sold).map(a => a.price * a.margin)
+			feeSum -= arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
+		}else{
+			soldSum = 0
+			feeSum = 0
+		}
+
+		//balance
+		balance = Math.round((buySum + paySum + soldSum + feeSum) * 100) / 100
 
 	}
 
-	let tarif = undefined
-	let modifiedArticles = []
-	let clearModifiedArticles
-
+	//For AutoPatch
 	function addModifiedArticle(art) {
-		let index = modifiedArticles.map(a => a._id).indexOf(art._id)
+
+		let index = provided.map(a => a._id).indexOf(art._id)
+		provided[index].fee = getFee(art, tarif)
+		provided[index].margin = getMargin(art, tarif)
+
+		index = modifiedArticles.map(a => a._id).indexOf(art._id)
 		if (index == -1) {
 			modifiedArticles = [...modifiedArticles, art]
 		}else{
@@ -89,7 +168,8 @@
 				provided = [...provided, json.message]
 				setTimeout(() => {
 					let table = document.getElementById(`tableArticles${trocId}`)
-					table.getElementsByClassName('lastInputName')[0].focus()
+					//table.getElementsByClassName('lastInputName')[0].focus() //Focus on the last element
+					table.getElementsByClassName('w3-input')[0].focus()	
 				},100)
 			}else alert(json.message)
 		})
@@ -107,21 +187,11 @@
 	}
 	
 	function getTarif() {
-		fetch(`/trocs/${trocId}/tarif`)
+		fetch(`/trocs/${trocId}/tarif/${userId}`)
 		.then(res => res.json())
 		.then(json => {
-			//transferer le boulot coté serveur ?
-			let tarifMatched = json.tarif.filter(t => t.apply.map(a => a._id).indexOf(userId) != -1)
-			tarif = tarifMatched[0] || json.tarif[0]
+			tarif = json
 		})
-	}
-
-	function getFee(art) {
-		if (tarif && art.price > 0) {
-			return art.fee = tarif.fee.sort((a, b) => b.price - a.price).filter(f => f.price <= art.price)[0].value
-		}else if (art.price == 0) {
-			return art.fee = 0
-		}else return art.fee
 	}
 
 	let status = ['Proposé', 'En vente', 'Vendu', 'Récupéré']
@@ -139,7 +209,7 @@
 	<div class="w3-row">
 		<div class="w3-xlarge w3-center">
 			<span class="w3-opacity">Solde actuel </span>
-			<span>{sold.toFixed(2)}</span>
+			<span>{balance.toFixed(2)}</span>
 		</div>
 	</div>
 	<br>
@@ -150,6 +220,7 @@
 			<div class="w3-margin-right">
 				<span class="w3-right w3-large">{buySum.toFixed(2)}</span>
 				<h4>Achats</h4>
+
 				{#await purchasesPromise}
 					<div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
 				{:then}
@@ -176,6 +247,7 @@
 			<div class="w3-margin-left">
 				<span class="w3-right w3-large">{paySum.toFixed(2)}</span>
 				<h4>Paiement</h4>
+
 				{#await paymentsPromise}
 					<div class="w3-center">
 						<img src="favicon.ico" alt="Logo trocio" class="w3-spin">
@@ -209,6 +281,7 @@
 	<br>
 
 	<div class="w3-row">
+		<span class="w3-right w3-large">{(soldSum + feeSum).toFixed(2)}</span>
 		<span class="w3-large">Ventes</span>
 
 		<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />
@@ -217,27 +290,32 @@
 			<tr>
 				<th>Articles</th>
 				<th>Status</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
-				<th>Prix</th>
-				<th>Frais <span class="w3-opacity w3-tiny">(traitement + marge)</span></th>
-				<th></th>
+				<th>Prix <span class="w3-small sold">{soldSum.toFixed(2)}</span></th>
+				<th>Frais 
+					<span class="w3-opacity w3-tiny">(traitement + marge)</span>
+					<span class="w3-small fee">{feeSum.toFixed(2)}</span>
+				</th>
+				<th></th><!--remove-->
 			</tr>
-			{#each provided as article, i}
+			{#each provided.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) as article, i}
 
 				<tr in:slide>
-
+					
 					<!-- Designation -->
 					<td class="tdInput">
-						{#if article.valided}
-							{article.name}
-						{:else}
-							<input
-								on:input="{() => addModifiedArticle(article)}"
-								class:lastInputName="{i == provided.length-1}" 
-								bind:value={article.name}
-								type="text" 
-								class="w3-input" 
-								placeholder="Nom complet">
-						{/if}
+						<b class="w3-small" style="position: absolute; transform: translate(-28px, 12px);">
+							{!article.isCreated ? article.ref : ''}
+						</b>
+						<input
+							on:input="{() => addModifiedArticle(article)}"
+							class:lastInputName="{i == provided.length-1}"  
+							bind:value={article.name}
+							type="text" 
+							class="w3-input" 
+							readonly={article.valided}
+							class:unvalided={!article.valided}
+							class:recovered={article.recover}
+							placeholder="Nom complet">
 					</td>
 
 					<!-- Status -->
@@ -245,31 +323,31 @@
 
 					<!-- Prix -->
 					<td class="tdInput price">
-						{#if !article.valided}
-							<input
-								on:input="{() => addModifiedArticle(article)}"
-								bind:value={article.price}
-								type="number"
-								class="w3-input"
-								calss:w3-opactiy={!article.sold}
-								placeholder="Prix"
-								min="0">
-						{:else if !article.recover}
-							<div class="w3-padding" class:w3-opacity={!article.sold}>
-								{article.valided & article.price}
-							</div>
-						{/if}
+						<input
+							on:input="{() => addModifiedArticle(article)}"
+							bind:value={article.price}
+							type="number"
+							class="w3-input"
+							readonly={article.valided}
+							class:unvalided={!article.valided}
+							class:recovered={article.recover}
+							class:sold={article.sold}
+							placeholder="Prix"
+							step="0.05"
+							min="0">
 					</td>
 
 					<!-- Frais -->
-					<td class:w3-opacity={!article.valided} class="fee">
-						{getFee(article)}
-						{@html article.sold ? ` <span class="w3-tiny">+</span> ${article.price * article.margin}` : ''}
+					<td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided}>
+						{article.fee.toFixed(2)}
+						{@html article.sold ? ` <span class="w3-tiny">+</span> ${article.margin.toFixed(2)}` : ''}
 					</td>
 
 					<!-- Suppression (uniquement les articles non validé) -->
 					<td>
-						<i on:click="{() => deleteArticle(i)}" class="fa fa-times"></i>
+						{#if !article.valided}
+							<i on:click="{() => deleteArticle(i)}" class="fa fa-times"></i>
+						{/if}
 					</td>
 				</tr>
 
@@ -278,8 +356,7 @@
 
 		
 		<div in:fade
-				on:click="{() => !provided.filter(a => !a.name.length || !a.price).length && createArticle()}"
-				class:w3-disabled="{provided.filter(a => !a.name.length || !a.price).length}"
+				on:click={createArticle}
 				class="w3-button w3-border w3-round w3-margin-top w3-right">
 			+1 article
 		</div>
@@ -325,9 +402,18 @@
 		color: green;
 	}
 
-	.fee {
+	.fee:not(.unvalided) {
 		color: red;
 	}
 
+	.unvalided {
+		opacity: .5;
+	}
+	.recovered {
+		text-decoration: line-through;
+	}
+	.sold {
+		color: green;
+	}
 
 </style>

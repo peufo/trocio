@@ -24,15 +24,14 @@
 		{id: 4, name: 'Aperçue', icon: '<i class="far fa-eye"></i>'},
 	]
 
-	let sold = 0 //bind to Resume.svelte
+	let balance = 0 //bind to Resume.svelte
+	let tarif = undefined //bind to Resume.svelte
 	let validPaymentPromise
 
-	let provided = [] 	//List of articles provided
-	let proposed = []	//List of articles proposed
-	let recovered = [] 	//List of articles recovered
-	let purchases = [] 	//List of articles purchases
-	let givebacks = []  //List of articles returned
-	let payments = []	//List of payments
+	let provided = [] 	//List of articles provided from Resume.svelte
+	let purchases = [] 	//List of articles purchases from Resume.svelte
+	let givebacks = []  //List of articles returned from Resume.svelte
+	let payments = []	//List of payments from Resume.svelte
 
 	//And there promises
 	let providedPromise 	//Promise provided and proposed
@@ -51,53 +50,6 @@
     
 	function userSelected(e){
 		user = e.detail
-		getArticles()
-	}
-
-	function getArticles() {
-		providedPromise = getProvided()
-		purchasesPromise = getPurchases()
-		givebacksPromise = getGivebacks()
-		paymentsPromise = getPayments()
-	}
-
-	async function getProvided() {
-		let res = await fetch(`/articles?troc=${$troc._id}&provider=${user._id}`)
-		let json = await res.json()
-		if (res.ok) {
-			proposed = json.filter(art => !art.valided)
-			//proposed = addTime(json.filter(art => !art.valided), 'createdAt', 'proposedTime')
-			provided = addTime(json, 'valided', 'validTime')
-			recovered = addTime(json, 'recover', 'recoverTime')
-			return
-		}
-	}
-
-	async function getPurchases() {
-        let res = await fetch(`/articles?buyer=${user._id}`)
-        let json = await res.json()
-        if (res.ok) {
-			purchases = addTime(json, 'sold', 'soldTime')
-            return
-        }
-	}
-
-	async function getGivebacks() {
-        let res = await fetch(`/articles?giveback.user=${user._id}`)
-        let json = await res.json()
-        if (res.ok) {
-			givebacks = json
-            return
-        }
-	}
-
-	async function getPayments() {
-        let res = await fetch(`/payments?user=${user._id}&troc=${$troc._id}`)
-        let json = await res.json()
-        if (res.ok) {
-			payments = json
-            return
-        }
 	}
 
 	//Post payment
@@ -105,8 +57,8 @@
 		let payment = {
 			user: user._id,
 			troc: $troc._id,
-			amount: -sold, 
-			message: sold > 0 ? `Versé par ${$me.name}` : `Encaissé par ${$me.name}`
+			amount: -balance, 
+			message: balance > 0 ? `Versé par ${$me.name}` : `Encaissé par ${$me.name}`
 		}
 		let res = await fetch(`/payments`, getHeader(payment))
 		let json = await res.json()
@@ -115,25 +67,6 @@
 			popupPaymentOpen = false
 			return
 		}
-	}
-	
-	//Filtre et ajoute time
-	function addTime(arr, keyIn, keyOut) {
-		let lastTime = 0
-		let out = arr.filter(elem => elem[keyIn])
-		.map(elem => {
-			elem[keyOut] = new Date(elem[keyIn]).getTime()
-			return elem
-		})
-		.sort((a, b) => b[keyOut] - a[keyOut]).map(elem => {
-			if (elem[keyOut] && elem[keyOut] != lastTime) {
-				lastTime = elem[keyOut]
-			}else{
-				elem[keyOut] = 0
-			}
-			return elem
-		})
-		return out
 	}
 
 	//Keyboard shortcut listener
@@ -194,9 +127,9 @@
 			</div>
 
 			<!-- Règle le solde -->
-			<div class:visible={userOk && sold != 0} class="hide w3-col s6 w3-padding">
+			<div class:visible={userOk && balance != 0} class="hide w3-col s6 w3-padding">
 				<div class="button w3-right w3-round" on:click="{() => popupPaymentOpen = true}">
-					Régler le solde de {sold.toFixed(2)}
+					Régler le solde de {balance.toFixed(2)}
 				</div>
 			</div>
 			
@@ -225,13 +158,13 @@
 				<!-- Fournit -->
 				<div class="tab" class:center={action == 0} class:left={action > 0}>
 					<br>
-					<Provide bind:user bind:provided bind:proposed bind:providedPromise />
+					<Provide bind:user bind:provided bind:providedPromise bind:tarif/>
 				</div>
 
 				<!-- Récupère -->
 				<div class="tab" class:center={action == 1} class:left={action > 1} class:right={action < 1}>
 					<br>
-					<Recover bind:user bind:provided bind:recovered providedPromise/>
+					<Recover bind:user bind:provided bind:providedPromise/>
 				</div>
 
 				<!-- Achète -->
@@ -244,7 +177,7 @@
 				<div class="tab" class:center={action == 3} class:left={action > 3} class:right={action < 3}>
 					<br>
 					<Giveback bind:user
-							bind:purchases  bind:purchasesPromise
+							bind:purchases bind:purchasesPromise
 							bind:givebacks bind:givebacksPromise />
 				</div>
 			
@@ -255,7 +188,7 @@
 							bind:provided bind:providedPromise
 							bind:purchases bind:purchasesPromise
 							bind:payments bind:paymentsPromise 
-							bind:sold/>
+							bind:balance bind:tarif/>
 				</div>
 
 			</div>
@@ -282,7 +215,7 @@
 		</div>
 		<br><br>
 		<div class="w3-center w3-xlarge">
-			{sold > 0 ? `Vous avez versé ${sold.toFixed(2)} à ${user.name}`: `${user.name} vous à versé ${(-sold).toFixed(2)}`}
+			{balance > 0 ? `Vous avez versé ${balance.toFixed(2)} à ${user.name}`: `${user.name} vous à versé ${(-balance).toFixed(2)}`}
 		</div>
 		<br>
 		{#await validPaymentPromise}

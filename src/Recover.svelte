@@ -6,15 +6,15 @@
 
     export let user = {}
     export let provided = [] //Articles provided
-    export let recovered = [] //Articles recovered
     export let providedPromise
     let validPromise // valid button
 
     const [send, receive] = crossfade(crossfadeConfig)
     
     const providedFilter = art => !art.sold && !art.recover && !art.isRemovable
+    const recoverFilter = art => art.recover && art.isRemovable && !art.isCreated
 
-    const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
+    const LIMIT_LIST_INIT = 5 //Nombre d'élément d'une liste afficher initialement
     let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
@@ -23,7 +23,6 @@
         let index = provided.map(art => art._id).indexOf(e.detail._id)
         provided[index].recover = new Date()
         provided[index].isRemovable = true
-        recovered = [provided[index], ...recovered]
 
     }
 
@@ -32,22 +31,27 @@
         all.forEach((art, i) => {
             art.recover = new Date()
             art.isRemovable = true
-        })
-        recovered = [...all, ...recovered]   
+        }) 
         provided = provided
     }
 
     async function valid() {
         
-        let articlesRecover = recovered.filter(art => art.isRemovable)
+        let articlesRecover = provided.filter(art => art.recover && art.isRemovable && !art.isCreated)
 
         let res = await fetch('/articles', getHeader(articlesRecover, 'PATCH'))
         let json = await res.json()
         if (res.ok && json.success) {
-            recovered = recovered.map(art => {
-                if (art.isRemovable) delete art.isRemovable
-                return art
+            
+            //Fait le lien entre les articles mis à jour et provided
+            let articlesPatched = json.message
+            let providedMapId = provided.map(a => a._id)
+            let providedIndex = articlesPatched.map(art => providedMapId.indexOf(art._id))
+
+            providedIndex.forEach((provIndex, patchedIndex) => {
+                provided[provIndex] = articlesPatched[patchedIndex]
             })
+
             return
         }
 
@@ -55,12 +59,8 @@
 
     function remove(e) {
         
-        let index = recovered.map(art => art._id).indexOf(e.detail._id)
-        recovered.splice(index, 1)
-        recovered = recovered
-
-        index = provided.map(art => art._id).indexOf(e.detail._id)
-        provided[index].recover = undefined
+        let index = provided.map(art => art._id).indexOf(e.detail._id)
+        provided[index].recover = false
         provided[index].isRemovable = false
 
     }
@@ -91,10 +91,10 @@
             {/each}
 
             <!-- Bouton pour prolongé la liste -->
-            {#if provided.length > LIMIT_LIST_A}
+            {#if provided.filter(providedFilter).length > LIMIT_LIST_A}
                 <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
                     <span class="underline-span w3-opacity">
-                        Afficher plus d'éléments ({provided.length - LIMIT_LIST_A})
+                        Afficher plus d'éléments ({provided.filter(providedFilter).length - LIMIT_LIST_A})
                     </span>
                 </div>
             {/if}
@@ -109,8 +109,10 @@
                 Validation de la récupération...
             </div>
         {:then}
-            <div class="w3-right w3-round validButton hide" class:visible={recovered.filter(art => art.isRemovable).length} on:click="{() => validPromise = valid()}">
-                Récupérer {recovered.length <= 1 ? `l'article` : `les ${recovered.filter(art => art.isRemovable).length} articles`}
+            <div class="w3-right w3-round validButton hide"
+                class:visible={provided.filter(art => art.recover && art.isRemovable).length}
+            on:click="{() => validPromise = valid()}">
+                Récupérer {provided.filter(art => art.recover && art.isRemovable).length <= 1 ? `l'article` : `les ${provided.filter(art => art.recover && art.isRemovable).length} articles`}
             </div>
         {/await}
 
@@ -121,7 +123,7 @@
                 <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
             </div>
         {:then}
-            {#each recovered.slice(0, LIMIT_LIST_B) as article (article._id)}
+            {#each provided.filter(art => art.recover).slice(0, LIMIT_LIST_B) as article (article._id)}
                 <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                     <Article article={article} timeKey={'recoverTime'} on:remove="{remove}"/>
@@ -132,10 +134,10 @@
             {/each}
 
             <!-- Bouton pour prolongé la liste -->
-            {#if recovered.length > LIMIT_LIST_B}
+            {#if provided.filter(art => art.recover).length > LIMIT_LIST_B}
                 <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
                     <span class="underline-span w3-opacity">
-                        Afficher plus d'éléments ({recovered.length - LIMIT_LIST_B})
+                        Afficher plus d'éléments ({provided.filter(art => art.recover).length - LIMIT_LIST_B})
                     </span>
                 </div>
             {/if}

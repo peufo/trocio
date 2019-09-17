@@ -44,16 +44,13 @@
     <span class="w3-tiny" style="line-height: 1;">{comment}</span>
 
     <div class="w3-display-topright w3-padding">
+        <i class="fa fa-tag" style="margin-top: 4px;"></i>
+        {!article.isCreated ? article.ref : ''}
+
         {#if article.isRemovable}
-            
-            <i class="fa fa-check" style="margin-top: 4px;"></i>
             <i 	class="fa fa-trash-alt clickable"
                 style="margin-top: 4px;"
                 on:click="{() => remove(article._id)}"></i>
-            
-        {:else}
-            <i class="fa fa-tag" style="margin-top: 4px;"></i>
-            {article.ref}
         {/if}
     </div>
 </div>

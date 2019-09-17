@@ -26,7 +26,8 @@ var trocModel = new Schema({
 		}]
 	}],
 	admin: [{type: ObjectId, ref: 'user'}],
-	cashier: [{type: ObjectId, ref: 'user'}]	
+	cashier: [{type: ObjectId, ref: 'user'}],
+	articlelastref: {type: Number, required: true, default: 0}
 })
 
 trocModel.set('timestamps', true)

@@ -8,7 +8,7 @@ var articleModel = new Schema({
 	ref: {type: String},
 	buyer: {type: ObjectId, ref: 'user'},
 	name: {type: String, default: ''},
-	price: {type: Number, default: 1},
+	price: {type: Number, default: 0},
 	fee: {type: Number, default: 0},
 	margin: {type: Number, default: 0},
 	valided: Date, //ou
@@ -19,5 +19,6 @@ var articleModel = new Schema({
 })
 
 articleModel.set('timestamps', true)
+
 
 module.exports = mongoose.model('article', articleModel);

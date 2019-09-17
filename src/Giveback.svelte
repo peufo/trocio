@@ -16,19 +16,21 @@
 
     const [send, receive] = crossfade(crossfadeConfig)
 
-    const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
+    const LIMIT_LIST_INIT = 5 //Nombre d'élément d'une liste afficher initialement
     let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
     onMount(() => {
-        givebacksPromise.then(() => {
-            givebacks = givebacks.map(art => {
-                let { raison, time} = getMyLastGiveBack(art)
-                art.givebackRaison = raison
-                art.givebackTime = new Date(time).getTime()
-                return art
+        if (givebacksPromise) {
+            givebacksPromise.then(() => {
+                givebacks = givebacks.map(art => {
+                    let { raison, time} = getMyLastGiveBack(art)
+                    art.givebackRaison = raison
+                    art.givebackTime = new Date(time).getTime()
+                    return art
+                })
             })
-        })
+        }
     })
 
     function select(artId) {

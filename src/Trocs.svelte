@@ -258,7 +258,7 @@
 					{/if}
 					<!-- :else if beugue... -->
 					{#if t.ongletOpen === 1}
-						<div transition:slide class="w3-padding">
+						<div transition:slide class="w3-margin w3-padding">
 							{#if $me._id}
 								<Resume userId={$me._id} trocId={t._id}/>
 							{:else}

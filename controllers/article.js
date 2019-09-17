@@ -1,37 +1,49 @@
 var Article = require('../models/article')
+var Troc = require('../models/troc')
 
 function createArticle(req, res, next) {
 	if (!Array.isArray(req.body)) {
 		var art = new Article(req.body)
-		Article.countDocuments({troc: art.troc}, (err, count) => {
+
+		Troc.findOne({_id: art.troc}, (err, troc) => {
 			if (err) return next(err)
-			art.ref = count
-			art.save(err => {
+			art.ref = ++troc.articlelastref //Reference
+			troc.save(err => {
 				if (err) return next(err)
-				res.json({success: true, message: art})
-			})	
+				art.save(err => {
+					if (err) return next(err)
+					res.json({success: true, message: art})
+				})				
+			})
 		})
 	}else{
-		Article.countDocuments({troc: req.body[0].troc}, (err, count) => {
+		var articles = req.body
+
+		Troc.findOne({_id: articles[0].troc}, (err, troc) => {
 			if (err) return next(err)
+			let lastRef = troc.articlelastref + 1 //Reference
+			troc.articlelastref += articles.length
 
-			req.body.forEach(art  => delete art._id)
+			troc.save(err => {
+				if (err) return next(err)
 
-			Promise.all(req.body.map((art, i) => {
-				return new Promise((resolve, reject) => {
-					art = new Article(art)
-					art.ref = count + i
-					art.save(err => {
-						if (err) return reject(err)
-						else return resolve(art)
+				articles.forEach(art  => delete art._id)
+
+				Promise.all(articles.map((art, i) => {
+					return new Promise((resolve, reject) => {
+						art = new Article(art)
+						art.ref = lastRef + i
+						art.save(err => {
+							if (err) return reject(err)
+							else return resolve(art)
+						})
 					})
+				}))			
+				.catch(next)	
+				.then(articles => {
+					res.json({success: true, message: articles})
 				})
-			}))			
-			.catch(next)	
-			.then(articles => {
-				res.json({success: true, message: articles})
 			})
-			
 		})
 	}
 }

@@ -2,7 +2,7 @@
     import { troc } from './stores'
     import { onMount } from 'svelte'
     import { flip } from 'svelte/animate'
-    import { getHeader, crossfadeConfig } from './utils.js'
+    import { getHeader, crossfadeConfig, getFee, getMargin } from './utils.js'
     import { crossfade } from 'svelte/transition'
     import Article from './Article.svelte'
     import dayjs from 'dayjs'
@@ -12,8 +12,9 @@
     dayjs.extend(relativeTime)
 
     export let user = {}
-    export let proposed = []
-    export let provided = []
+    export let provided = [] //proposed => !art.valided
+    export let tarif = undefined //From Resume per Cashier
+
     export let providedPromise
     let validPromise //Valid button
 
@@ -22,7 +23,7 @@
 
     const [send, receive] = crossfade(crossfadeConfig)
     
-    const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
+    const LIMIT_LIST_INIT = 5 //Nombre d'élément d'une liste afficher initialement
     let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
@@ -36,7 +37,9 @@
 				price: newArticle.price,
 				valided: new Date(),
                 isRemovable: true,
-                isCreated: true
+                isCreated: true,
+                fee: 0,
+                margin: 0
 			}
             provided = [art, ...provided]
 			nbNewArticles++
@@ -50,37 +53,46 @@
     function removeArticle(artId) {
         let index = provided.map(a => a._id).indexOf(artId)
         if(index > -1) {
-            if (!provided[index].isCreated) {
+            if (provided[index].isCreated) {
+                provided.splice(index, 1)
+                provided = provided
+            }else {            
                 provided[index].valided = undefined
                 provided[index].isRemovable = false
-                proposed = [provided[index], ...proposed]
             }
-            provided.splice(index, 1)
-            provided = provided
+
             nbNewArticles--
         }
     }
 
     function clickProposedArticle(artId) {
-        let index = proposed.map(a => a._id).indexOf(artId)
+        let index = provided.map(a => a._id).indexOf(artId)
         if (index > -1) {
-            proposed[index].valided = new Date()
-            proposed[index].isRemovable = true
-            provided = [proposed[index], ...provided]
-            proposed.splice(index, 1)
-            proposed = proposed
+            provided[index].valided = new Date()
+            provided[index].isRemovable = true
         }
         nbNewArticles++
     }
 
     function validProvided() {
         
-        let articlesCreated = provided.filter(art => !art.recover && art.isCreated)
-        let articlesValided = provided.filter(art => !art.recover && art.isRemovable && !art.isCreated)
+        let articlesCreated = provided.filter(art => !art.recover && !art.sold && art.isCreated)
+ 
+        let articlesValided = provided.filter(art => !art.recover && !art.sold && art.isRemovable && !art.isCreated)
         
         let date = new Date()
-        articlesCreated.forEach(art => art.valided = date)
-        articlesValided.forEach(art => art.valided = date)
+        articlesCreated.forEach(art => {
+            art.valided = date
+            art.fee = getFee(art, tarif)
+            art.margin = getMargin(art, tarif)
+        })
+        articlesValided.forEach(art => {
+            art.valided = date
+            art.fee = getFee(art, tarif)
+            art.margin = getMargin(art, tarif)
+        })
+
+        console.log('CreatedArticle : ', articlesCreated)
 
         if (articlesCreated.length && articlesValided.length) {
             return Promise.all([
@@ -93,7 +105,6 @@
             return validArticlesValided(articlesValided)
         }
     }
-
 
     async function validArticlesCreated(articlesCreated) {
         let res = await fetch('/articles', getHeader(articlesCreated))
@@ -155,7 +166,7 @@
                     <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
                 </div>
             {:then}
-                {#each proposed.slice(0, LIMIT_LIST_A) as article (article._id)}
+                {#each provided.filter(art => !art.valided).slice(0, LIMIT_LIST_A) as article (article._id)}
                     <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                         <Article article={article} clickable on:select="{() => clickProposedArticle(article._id)}"/>
@@ -166,10 +177,10 @@
                 {/each}
 
                 <!-- Bouton pour prolongé la liste -->
-                {#if proposed.length > LIMIT_LIST_A}
+                {#if provided.filter(art => !art.valided).length > LIMIT_LIST_A}
                     <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
                         <span class="underline-span w3-opacity">
-                            Afficher plus d'éléments ({proposed.length - LIMIT_LIST_A})
+                            Afficher plus d'éléments ({provided.filter(art => !art.valided).length - LIMIT_LIST_A})
                         </span>
                     </div>
                 {/if}
@@ -199,7 +210,8 @@
                     <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
                 </div>
             {:then}
-                {#each provided.filter(art => !art.sold && !art.recover).slice(0, LIMIT_LIST_B) as article (article._id)}
+                {#each provided.filter(art => art.valided && !art.sold && !art.recover)
+                        .slice(0, LIMIT_LIST_B) as article (article._id)}
                     <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                         <Article article={article} timeKey={'validTime'} on:remove="{() => removeArticle(article._id)}"/>
@@ -210,10 +222,10 @@
                 {/each}
 
                 <!-- Bouton pour prolongé la liste -->
-                {#if provided.filter(art => !art.sold && !art.recover).length > LIMIT_LIST_B}
+                {#if provided.filter(art => art.valided && !art.sold && !art.recover).length > LIMIT_LIST_B}
                     <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
                         <span class="underline-span w3-opacity">
-                            Afficher plus d'éléments ({provided.filter(art => !art.sold && !art.recover).length - LIMIT_LIST_B})
+                            Afficher plus d'éléments ({provided.filter(art => art.valided && !art.sold && !art.recover).length - LIMIT_LIST_B})
                         </span>
                     </div>
                 {/if}
