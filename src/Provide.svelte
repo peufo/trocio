@@ -2,7 +2,7 @@
     import { troc } from './stores'
     import { onMount } from 'svelte'
     import { flip } from 'svelte/animate'
-    import { getHeader, crossfadeConfig, getFee, getMargin } from './utils.js'
+    import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt } from './utils.js'
     import { crossfade } from 'svelte/transition'
     import Article from './Article.svelte'
     import dayjs from 'dayjs'
@@ -71,6 +71,7 @@
         let index = provided.map(a => a._id).indexOf(artId)
         if (index > -1) {
             provided[index].valided = new Date()
+            provided[index].updatedAt = new Date()
             provided[index].isRemovable = true
         }
         nbNewArticles++
@@ -216,14 +217,17 @@
                 </div>
             {/await}
 
-            <h4>Fournis</h4>
+            <h4>En vente</h4>
             {#await providedPromise}
                 <div class="w3-center">
                     <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
                 </div>
             {:then}
+
                 {#each provided.filter(art => art.valided && !art.sold && !art.recover)
+                        .sort(sortByUpdatedAt)
                         .slice(0, LIMIT_LIST_B) as article (article._id)}
+
                     <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                         <Article article={article} timeKey={'validTime'} on:remove="{() => removeArticle(article._id)}"/>

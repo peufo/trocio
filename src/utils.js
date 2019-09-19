@@ -49,3 +49,7 @@ export function getMargin(art, tarif) {
 		return art.margin = 0
 	}
 }
+
+export function sortByUpdatedAt(a, b) {
+	return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+}

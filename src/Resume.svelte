@@ -1,9 +1,8 @@
 <script>
-	import { fade, slide } from 'svelte/transition'
-	import { onMount } from 'svelte'
+	import { fade, slide, crossfade } from 'svelte/transition'
+	import { onMount, onDestroy } from 'svelte'
 	import { flip } from 'svelte/animate'
-	import { crossfade } from 'svelte/transition'
-	import { getHeader, crossfadeConfig, getFee, getMargin } from './utils'
+	import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
 	import dayjs from 'dayjs'
@@ -14,9 +13,11 @@
 
 	const [send, receive] = crossfade(crossfadeConfig)
 
-    const LIMIT_LIST_INIT = 5 //Nombre d'élément d'une liste afficher initialement
-    let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
-    let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
+    const LIMIT_LIST_INIT = 3 //Nombre d'élément d'une liste afficher initialement
+    const LIMIT_LIST_INIT_SOLD = 10 //Nombre d'élément d'une liste afficher initialement
+    let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste (Achat)
+    let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste (Paiement)
+    let LIMIT_LIST_C = LIMIT_LIST_INIT_SOLD //Nombre d'élément afficher pour la seconde liste (Vente)
 
 	export let userId = false
 	export let trocId = false
@@ -38,9 +39,18 @@
 	export let givebacksPromise
 	export let paymentsPromise
 
-	let modifiedArticles = []
-	let clearModifiedArticles
-	let importArticlesListOpen = false //Modal popup for import list of articles
+	let modifiedArticles = []			//Array for minimize PATCH request on AutoPatch.svelte
+	let clearModifiedArticles			//Timeout
+
+	let createArticlePromise
+	let createImportArticlesPromise
+	let deleteArticlePromise
+	let articleWaitValidationForDelete = -1
+
+	let importArticlesListOpen = false 	//Modal popup for import list of articles
+	let importArticlesValue = '' 		//Value of textarea
+	let importArticles = [] 			//Array formated
+	let failFormatRaison = ''			//Message if importArticlesValue is unavailable
 
 	onMount(() => {
 		if (userId && trocId) {
@@ -161,30 +171,56 @@
 		clearModifiedArticles = setTimeout(() => modifiedArticles = [], 700)
 	}
 
-	function createArticle() {
-		fetch('/articles', getHeader({troc: trocId, provider: userId}))
-		.then(res => res.json())
-		.then(json => {
-			if (json.success) {
-				provided = [...provided, json.message]
-				setTimeout(() => {
-					let table = document.getElementById(`tableArticles${trocId}`)
-					//table.getElementsByClassName('lastInputName')[0].focus() //Focus on the last element
-					table.getElementsByClassName('w3-input')[0].focus()	
-				},100)
-			}else alert(json.message)
-		})
+	async function createArticle() {
+
+		let res = await fetch('/articles', getHeader({troc: trocId, provider: userId}))
+		let json = await res.json()
+		if (json.success) {
+			
+			provided = [...provided, json.message]
+
+			//Get focus on last add article
+			setTimeout(() => {
+				let table = document.getElementById(`tableArticles${trocId}`)
+				//table.getElementsByClassName('lastInputName')[0].focus() //Focus on the last element
+				table.getElementsByClassName('w3-input')[0].focus()	
+			},100)
+
+			return
+			
+		}else alert(json.message)
+		
 	}
 
-	function deleteArticle(index) {
-		fetch(`/articles/${provided[index]._id}`, getHeader({}, 'DELETE'))
-		.then(res => res.json())
-		.then(json => {
-			if (json.success) {
-				provided.splice(index, 1)
-				provided = provided
-			}else alert(json.message)
-		})
+	async function createImportArticles() {
+
+		//Calcul fee... Bad idea on frontside ???
+		importArticles.forEach(art => art.fee = getFee(art, tarif))
+
+		let res = await fetch('/articles', getHeader(importArticles))
+		let json = await res.json()
+		if (json.success) {
+			
+			provided = [...provided, ...json.message]
+			//Remove importe articles input
+			importArticlesListOpen = false
+			importArticlesValue = ''
+			importArticles = []
+
+			return
+
+		}else alert(json.message)
+
+	}
+
+	async function deleteArticle(index) {
+		let res = await fetch(`/articles/${provided[index]._id}`, getHeader({}, 'DELETE'))
+		let json = await res.json()
+		if (json.success) {
+			provided.splice(index, 1)
+			provided = provided
+			return
+		}else alert(json.message)
 	}
 	
 	function getTarif() {
@@ -202,6 +238,40 @@
 		if (art.recover) return status[3]
 		return status[1]
 	}
+
+	function inputImportArticles() {
+
+		importArticles = []
+		failFormatRaison = ''
+
+		//Input Value parser
+		if (importArticlesValue.trim().length) {
+			let lines = importArticlesValue.split(/[\r\n]/)
+			let cells
+			let price
+			lines.forEach((line, i) => {
+				cells = line.split(/[\t:;]/)
+				if (cells.length >= 2) {
+					price = Number(cells[1].replace(/,/, '.'))
+					if (isNaN(price) || !cells[0].trim().length || !cells[1].trim().length) {
+						failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
+					}
+
+					importArticles = [...importArticles, {
+						name: cells[0].trim(),
+						price,
+						troc: trocId,
+						provider: userId
+					}]
+
+				}
+			})
+		}
+		//Reset if failed
+		if (failFormatRaison.length) importArticles = []
+	}
+
+	$: console.log(createArticlePromise)
 
 </script>
 
@@ -283,25 +353,55 @@
 	<br>
 
 	<div class="w3-row">
-		<span class="w3-right w3-large">{(soldSum + feeSum).toFixed(2)}</span>
-		<span class="w3-large">Ventes</span>
+
 
 		{#await providedPromise}
 			<div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
 		{:then}
-			
-			<!-- Bontons puor proposer des articles -->
-			<div on:click={createArticle} class="w3-button w3-border w3-round" style="margin-left: 20px;">
-				Proposer un article
+
+			<!-- Titre, Boutons propositions et somme -->
+			<div class="w3-row">
+				<span class="w3-right w3-large">{(soldSum + feeSum).toFixed(2)}</span>
+				<span class="w3-large">Ventes</span>
+
+				<!-- Bontons puor proposer des articles -->
+				{#await createArticlePromise}
+					<span class="w3-padding w3-round w3-border" style="margin-left: 20px;">
+						<i class="fas fa-circle-notch w3-spin"></i> Création de l'article ...
+					</span>
+				{:then}
+					<span on:click="{() => createArticlePromise = createArticle()}" class="button w3-round w3-padding" style="margin-left: 20px;">
+						Proposer un article
+					</span>
+				{/await}
+
+				<span> ou </span>
+
+				{#if !importArticlesListOpen}
+					<span on:click="{() => importArticlesListOpen = true}" class="button w3-round w3-padding">
+						Proposer plein d'articles
+					</span>
+				{:else if !importArticles.length}
+					<span on:click="{() => importArticlesListOpen = false}" class="w3-border w3-round w3-padding clickable" >
+						{failFormatRaison.length ? failFormatRaison : `Annuler la proposition`}
+					</span>
+				{:else}
+					<span on:click="{() => createImportArticlesPromise = createImportArticles()}" class="validButton w3-round w3-padding">
+						{#await createImportArticlesPromise}
+							<i class="fas fa-circle-notch w3-spin"></i> Création des articles ...
+						{:then}
+							Valider la proposition des {importArticles.length} articles
+						{/await}
+					</span>
+				{/if}
 			</div>
-			<span> ou </span>
-			<div on:click="{() => importArticlesListOpen = true}" class="w3-button w3-border w3-round">
-				Proposer plein d'articles
-			</div>
 			
+			<!-- Insertion de plein d'article -->
 			{#if importArticlesListOpen}
-				<div class="w3-row" transition:fade>
-					<textarea class="w3-round" rows="10" placeholder="Glisser votre liste dans le format suivant:"></textarea>
+				<div class="w3-row w3-margin-top" transition:fade>
+					<textarea class="w3-round" rows="10" 
+							bind:value={importArticlesValue} on:input={inputImportArticles}
+							placeholder="{'Mon premier article\t20\nMon deuxième article\t15.35\n...\n(Glissez une liste depuis un tableur)'}"></textarea>
 				</div>
 			{/if}
 
@@ -318,9 +418,9 @@
 					</th>
 					<th></th><!--remove-->
 				</tr>
-				{#each provided.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) as article, i}
+				{#each provided.sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i}
 
-					<tr in:slide>
+					<tr>
 						
 						<!-- Designation -->
 						<td class="tdInput">
@@ -365,15 +465,43 @@
 						</td>
 
 						<!-- Suppression (uniquement les articles non validé) -->
-						<td>
+						<td on:mouseleave="{() => articleWaitValidationForDelete = -1}">
 							{#if !article.valided}
-								<i on:click="{() => deleteArticle(i)}" class="fa fa-times"></i>
+								{#if articleWaitValidationForDelete == article._id}
+									{#await deleteArticlePromise}
+										<span class="w3-padding">
+											<i class="fa fa-times w3-spin"></i>
+										</span>
+									{:then}
+										<span class="w3-padding w3-round" on:click="{() => deleteArticlePromise = deleteArticle(i)}" style="background: rgba(255, 0, 0, .2);">
+											<i class="fa fa-times"></i>
+										</span>
+									{/await}
+								{:else}
+									<span class="w3-padding" on:click="{() => articleWaitValidationForDelete = article._id}">
+										<i class="fa fa-times"></i>
+									</span>
+								{/if}
 							{/if}
 						</td>
 					</tr>
 
 				{/each}
 			</table>
+			
+			<br>
+
+			<!-- Bouton pour prolongé la liste -->
+			{#if provided.length > LIMIT_LIST_C}
+				<div on:click="{() => LIMIT_LIST_C += 25}" class="underline-div w3-center">
+					<span class="underline-span w3-opacity">
+						Afficher plus de résultat ({provided.length - LIMIT_LIST_C})
+					</span>
+				</div>
+			{/if}
+
+			<br>
+
 		{/await}
 		
 	</div>

@@ -1,6 +1,6 @@
 <script>
     import { flip } from 'svelte/animate'
-    import { getHeader, crossfadeConfig } from './utils.js'
+    import { getHeader, crossfadeConfig, sortByUpdatedAt } from './utils.js'
     import { crossfade } from 'svelte/transition'
     import Article from './Article.svelte'
 
@@ -22,6 +22,7 @@
 
         let index = provided.map(art => art._id).indexOf(e.detail._id)
         provided[index].recover = new Date()
+        provided[index].updatedAt = new Date()
         provided[index].isRemovable = true
 
     }
@@ -73,7 +74,7 @@
             Tout récupérer
         </div>
 
-        <h4>Fournis</h4>
+        <h4>En vente</h4>
         <div class="w3-margin-right">
         {#await providedPromise}
             <div class="w3-center">
@@ -123,7 +124,7 @@
                 <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
             </div>
         {:then}
-            {#each provided.filter(art => art.recover).slice(0, LIMIT_LIST_B) as article (article._id)}
+            {#each provided.filter(art => art.recover).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_B) as article (article._id)}
                 <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                     <Article article={article} timeKey={'recoverTime'} on:remove="{remove}"/>

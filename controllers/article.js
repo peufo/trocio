@@ -6,7 +6,7 @@ function createArticle(req, res, next) {
 		var art = new Article(req.body)
 
 		Troc.findOne({_id: art.troc}, (err, troc) => {
-			if (err) return next(err)
+			if (err || !troc) return next(err || Error('Troc is not found !'))
 			art.ref = ++troc.articlelastref //Reference
 			troc.save(err => {
 				if (err) return next(err)
@@ -20,7 +20,7 @@ function createArticle(req, res, next) {
 		var articles = req.body
 
 		Troc.findOne({_id: articles[0].troc}, (err, troc) => {
-			if (err) return next(err)
+			if (err || !troc) return next(err || Error('Troc is not found !'))
 			let lastRef = troc.articlelastref + 1 //Reference
 			troc.articlelastref += articles.length
 
