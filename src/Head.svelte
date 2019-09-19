@@ -7,15 +7,13 @@
 	export let openCreate = false
 	export let openUserOption = false
 
-	$: console.log($troc)
-
 </script>
 
 <header class="w3-row w3-padding w3-border-bottom" >
 
 	<a href="/" class="clickable w3-xlarge">
 		<img src="favicon.ico" alt="logo Trocio" height="35" style="transform: translate(0px, -2px);">
-		TROCIO
+		TROCIO<span class="w3-tiny" style="color: red;">alpha</span>
 	</a>
 
 	<span id="trocSelected" class="w3-large">
@@ -24,7 +22,7 @@
 	{/if}
 	</span>
 
-	<span class="w3-red">ATTENTION ! APPLICATION EN PHASE DE DEVELOPEMENT !</span>
+	
 
 	<div id="userButton"
 		class="w3-padding w3-border w3-round w3-right" 
