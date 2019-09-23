@@ -1,13 +1,30 @@
 var User = require('../models/user')
+var mail = require('./mail')
+var randomize = require('randomatic')
+
 
 module.exports = {
 
-	checkLogin: (req, res, next) => {
-		if (req.session.user) {
-			next()
-		}else{
-			res.redirect('/welcome')
-		}
+	createUser: (req, res, next) => {
+		var user = new User(req.body)
+		user.save(err => {
+			if (err) {
+				if ( err.name == 'MongoError' && err.code == 11000) { //dup key
+					err.name = 'userError'
+					err.message = 'Le mail indiqué est déjà utilisé !'
+				}else if ( err.name == 'ValidationError') {
+					err.name = 'userError'
+					err.message = `Renseignement invalide`
+				}
+				return next(err)
+			}
+
+			mail.createUser(user, err => {
+				if (err) return next(err)
+				res.status(201).json({success: true, message: 'Inscritpion réussie!'})
+			})
+
+		})
 	},
 
 	login: (req, res, next) => {
@@ -47,9 +64,32 @@ module.exports = {
 		}
 	},
 
+	checkLogin: (req, res, next) => {
+		if (req.session.user) {
+			next()
+		}else{
+			res.redirect('/welcome')
+		}
+	},
+
 	logout: (req, res, next) => {
 		req.session.user = undefined
 		res.redirect('/')
+	},
+
+	resetpwd: (req, res, next) => {
+		User.findOne({mail: req.body.mail}, (err, user) => {
+			if (err) return next(err)
+			var newPwd = randomize('Aa0', 10)
+			user.password = newPwd
+			user.save(err => {
+				if (err) return next(err)
+				mail.resetpwd(user, newPwd, err => {
+					if (err) return next(err)
+					res.json({success: true, message: 'Password reseted, check your mail box !'})
+				})
+			})
+		})
 	}
 }
 

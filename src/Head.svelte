@@ -21,7 +21,6 @@
 		{$troc.name ? $troc.name : ''}
 	{/if}
 	</span>
-
 	
 
 	<div id="userButton"

@@ -16,6 +16,12 @@
     let password2 = ''
     let close = false
 
+    let submitPromise
+
+    let loginIsValid = false
+    let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+
     onMount(() => {
        focus()
     })
@@ -28,13 +34,28 @@
     }
 
     function submit() {
-        if (newUser) {
-            Register()
-        }else{
-            Login()
+        if (loginIsValid) {
+            if (newUser) {
+                submitPromise = Register()
+            }else if(reset){
+                submitPromise = Reset()
+            }else{
+                submitPromise = Login()
+            }
         }
     }
 
+    async function Register() {
+        let res = await fetch('/users', getHeader({name, mail, password}))
+        let json = await res.json()
+        if (json.success) {
+            await Login()
+            return
+        }else{
+            alert(json.message)
+        }
+    }   
+    
     async function Login(){
         let res = await fetch('/users/login', getHeader({mail, password}))
         let json = await res.json()
@@ -42,29 +63,41 @@
             $me = json
             dispatch('close')
             close = true
+            return
         }else{
             alert(json.message)
         }
     }
-    
-    async function Register() {
-        let res = await fetch('/users', getHeader({name, mail, password}))
+
+    async function Reset(){
+        let res = await fetch('/users/resetpwd', getHeader({mail}))
         let json = await res.json()
-        if (json.success) {
-            Login()
+        if (res.ok) {
+            alert('Votre nouveau mot de passe vous à été envoyé par mail')
+            reset = false
+            return
         }else{
             alert(json.message)
         }
+    }
+
+    $: {
+        loginIsValid = true
+        if (!mail.match(EMAIL_REGEX)) loginIsValid = false
+        if (!reset && password.length < 3) loginIsValid = false
+        if (newUser && name.length < 3) loginIsValid = false
+        if (newUser && password != password2) loginIsValid = false
     }
 
 </script>
 
 {#if !close} <!-- Belle rustine-->
 <div id="{`loginForm${id}`}" class="w3-padding">
+
     {#if newUser}
         <h3 class="w3-center" in:fade>Nouveau compte</h3>
     {:else if reset}
-        <h3 class="w3-center" in:fade>Reset</h3>
+        <h3 class="w3-center" in:fade>Récupération</h3>
     {:else}
         <h3 class="w3-center" in:fade>Login</h3>
     {/if}
@@ -139,7 +172,14 @@
                 </div>
             {/if}
 
-            <input id="submit" on:click={submit} type="submit" class="w3-right w3-button w3-border w3-round">
+            {#await submitPromise}
+                <div class="w3-right w3-button w3-border w3-round">
+                    <i class="fas fa-circle-notch w3-spin"></i>
+                    Validation...
+                </div>
+            {:then}
+                <input id="submit" on:click={submit} type="submit" class="w3-right w3-button w3-border w3-round" class:w3-disabled={!loginIsValid}>
+            {/await}
 
         </div>
     </div>

@@ -3,21 +3,14 @@ var User 		= require('../models/user')
 var ObjectId 	= require('mongoose').Types.ObjectId
 var router = express.Router()
 var config = require('../config')
-var { login, checkLogin, logout } = require('../controllers/utils')
-
+var { createUser, login, checkLogin, logout, resetpwd } = require('../controllers/user')
 var lookupBuy = {$lookup: {from: 'article', foreignField: '_id', localField: 'buy', as: 'buy'}}
 var lookupProvide = {$lookup: {from: 'article', foreignField: '_id', localField: 'provide', as: 'provide'}}
 
 router
-	.post('/', (req, res, next) => {
-		var user = new User(req.body);
-		user.save(err => {
-			if (!err) {
-				res.status(201).json({success: true, message: 'Inscritpion réussie!'})
-			}else next(err)
-		})
-	})
+	.post('/', createUser)
 	.post('/login', login)
+	.post('/resetpwd', resetpwd)
 	.get('/me', (req, res, next) => {
 		if (!req.session.user) return res.json({})
 
