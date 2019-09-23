@@ -8,31 +8,29 @@ var transporter = nodemailer.createTransport({
 	}
 })
 
-
 var mailOptions = {
-    from: 'info@trocio.ch',
-    to: 'jonas.voisard@gmail.com',
+    from: 'info@trocio.ch'
 }
 
 module.exports = {
 
     createUser : (user, cb) => {
-        //mailOptions.to = user.mail
+        mailOptions.to = user.mail
         mailOptions.subject = 'Création de votre compte - TROCIO'
         mailOptions.html = `
-        <h2>Bienvenue sur Trocio</h2>
-        <p>
-        <b>${user.name}</b>, votre inscritpion c'est correctement déroulé.. 
-        </p>
-        <p>
-            Cliquer ici pour accéder votre compte.
-        </p>
-        `
+            <h2>Bienvenue sur Trocio</h2>
+            <p>
+                <b>${user.name}</b>, votre inscritpion c'est correctement déroulé.. 
+            </p>
+            <p>
+                Cliquer ici pour accéder votre compte.
+            </p>
+            `
         transporter.sendMail(mailOptions, cb)
     },
             
     resetpwd: (user, newPwd, cb) => {
-        //mailOptions.to = user.mail
+        mailOptions.to = user.mail
         mailOptions.subject = 'Réinitialisation de votre mot de passe - TROCIO'
         mailOptions.html = `
             <h2>Votre mot de passe à été réinitialisé</h2>
