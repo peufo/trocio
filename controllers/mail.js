@@ -1,15 +1,24 @@
 var nodemailer = require('nodemailer')
 
 var transporter = nodemailer.createTransport({
-	service: 'gmail',
+    host: 'mail.infomaniak.com',
+    port: 587,
 	auth: {
-		user: 'info@trocio.ch',
-		pass: process.env.GMAIL_INFO_PWD
+		user: 'postmaster@trocio.ch',
+		pass: process.env.MAIL_PWD
 	}
 })
 
+transporter.verify(function(error, success) {
+    if (error) {
+      console.log(error)
+    } else {
+      console.log("Server is ready to take our messages")
+    }
+})
+
 var mailOptions = {
-    from: 'info@trocio.ch'
+    from: 'TROCIO <postmaster@trocio.ch>'
 }
 
 module.exports = {

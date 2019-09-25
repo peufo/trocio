@@ -14,6 +14,9 @@ var trocModel = new Schema({
 	description: {type: String, required: true},
 	image: {type: String},
 	creator: {type: ObjectId, ref: 'user', required: true},
+	admin: [{type: ObjectId, ref: 'user'}],
+	cashier: [{type: ObjectId, ref: 'user'}],
+	provider: [{type: ObjectId, ref: 'user'}],
 	schedule: [{open: Date, close: Date}],
 	tarif: [{	
 		name: String,
@@ -25,9 +28,8 @@ var trocModel = new Schema({
 			value: Number
 		}]
 	}],
-	admin: [{type: ObjectId, ref: 'user'}],
-	cashier: [{type: ObjectId, ref: 'user'}],
-	articlelastref: {type: Number, required: true, default: 0}
+	articlelastref: {type: Number, required: true, default: 0},
+
 })
 
 trocModel.set('timestamps', true)

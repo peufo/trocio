@@ -52,6 +52,8 @@
 	let importArticles = [] 			//Array formated
 	let failFormatRaison = ''			//Message if importArticlesValue is unavailable
 
+	let tarifOpen = false
+
 	onMount(() => {
 		if (userId && trocId) {
 			getTarif()
@@ -412,8 +414,7 @@
 					<th>Articles</th>
 					<th>Status</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
 					<th>Prix <span class="w3-small sold">{soldSum.toFixed(2)}</span></th>
-					<th>Frais 
-						<span class="w3-opacity w3-tiny">(traitement + marge)</span>
+					<th on:click="{() => tarifOpen = true}">Frais 
 						<span class="w3-small fee">{feeSum.toFixed(2)}</span>
 					</th>
 					<th></th><!--remove-->
@@ -459,7 +460,7 @@
 						</td>
 
 						<!-- Frais -->
-						<td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided}>
+						<td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided} on:click="{() => tarifOpen = true}">
 							{article.fee.toFixed(2)}
 							{@html article.sold ? ` <span class="w3-tiny">+</span> ${article.margin.toFixed(2)}` : ''}
 						</td>

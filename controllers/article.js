@@ -1,52 +1,70 @@
 var Article = require('../models/article')
+var User = require('../models/user')
 var Troc = require('../models/troc')
 
 function createArticle(req, res, next) {
 	if (!Array.isArray(req.body)) {
 		var art = new Article(req.body)
 
-		Troc.findOne({_id: art.troc}, (err, troc) => {
-			if (err || !troc) return next(err || Error('Troc is not found !'))
-			art.ref = ++troc.articlelastref //Reference
-			troc.save(err => {
+		createArticleContext(art.troc, art.provider, 1, (err, newRef) => {
+			if (err) return next(err)
+			art.ref = newRef
+			art.save(err => {
 				if (err) return next(err)
-				art.save(err => {
-					if (err) return next(err)
-					res.json({success: true, message: art})
-				})				
-			})
+				res.json({success: true, message: art})
+			})						
 		})
+		
 	}else{
 		var articles = req.body
+		createArticleContext(articles[0].troc, articles[0].provider, articles.length, (err, newRef) => {
+			if (err) return next(err)
 
-		Troc.findOne({_id: articles[0].troc}, (err, troc) => {
-			if (err || !troc) return next(err || Error('Troc is not found !'))
-			let lastRef = troc.articlelastref + 1 //Reference
-			troc.articlelastref += articles.length
-
-			troc.save(err => {
-				if (err) return next(err)
-
-				articles.forEach(art  => delete art._id)
-
-				Promise.all(articles.map((art, i) => {
-					return new Promise((resolve, reject) => {
-						art = new Article(art)
-						art.ref = lastRef + i
-						art.save(err => {
-							if (err) return reject(err)
-							else return resolve(art)
-						})
+			articles.forEach(art  => delete art._id)
+	
+			Promise.all(articles.map((art, i) => {
+				return new Promise((resolve, reject) => {
+					art = new Article(art)
+					art.ref = newRef + i
+					art.save(err => {
+						if (err) return reject(err)
+						else return resolve(art)
 					})
-				}))			
-				.catch(next)	
-				.then(articles => {
-					res.json({success: true, message: articles})
 				})
+			}))			
+			.catch(next)	
+			.then(articles => {
+				res.json({success: true, message: articles})
 			})
 		})
 	}
 }
+
+function createArticleContext(trocId, providerId, nombreArticles, cb) {
+	Troc.findOne({_id: trocId}, (err, troc) => {
+		if (err || !troc) return cb(err || Error('Troc is not found !'))
+
+		User.findOne({_id: providerId}, (err, user) => {
+			if (err || !user) return cb(err || Error('Provider is not found !'))
+
+			let newRef = troc.articlelastref + 1 //Reference
+			troc.articlelastref += nombreArticles
+
+			if (user.trocs.indexOf(troc._id) == -1) {
+				user.trocs.push(troc._id)
+				troc.provider.push(user._id)
+				user.save(err => {
+					if (err) return cb(err)
+					troc.save(err => cb(err, newRef, troc, user))
+				})
+			}else{
+				troc.save(err => cb(err, newRef, troc, user))
+			}
+		})
+
+	})
+}
+
 
 //Not used
 function validArticle(req, res, next) {
