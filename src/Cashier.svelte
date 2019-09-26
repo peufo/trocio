@@ -17,11 +17,11 @@
 
 	let action = 4
 	let actions = [
-		{id: 0, name: 'Fournit', icon: '<i class="fas fa-sign-in-alt"></i>'},
-		{id: 2, name: 'Récupère', icon: '<i class="fas fa-sign-out-alt"></i>'},
-		{id: 1, name: 'Achète', icon: '<i class="fas fa-shopping-basket"></i>'},
-		{id: 3, name: 'Retourne', icon: '<i class="fas fa-undo"></i>'},
-		{id: 4, name: 'Aperçue', icon: '<i class="far fa-eye"></i>'},
+		{name: 'Fournit', icon: '<i class="fas fa-sign-in-alt"></i>'},
+		{name: 'Récupère', icon: '<i class="fas fa-sign-out-alt"></i>'},
+		{name: 'Achète', icon: '<i class="fas fa-shopping-basket"></i>'},
+		{name: 'Retourne', icon: '<i class="fas fa-undo"></i>'},
+		{name: 'Aperçue', icon: '<i class="far fa-eye"></i>'},
 	]
 
 	let balance = 0 //bind to Resume.svelte
@@ -149,7 +149,6 @@
 						<span class="underline-span">{tab.name}</span>
 					</div>
 				{/each}
-
 			</div>
 
 			
