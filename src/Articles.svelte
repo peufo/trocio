@@ -1,4 +1,6 @@
 <script>
+    import { fade } from 'svelte/transition'
+
     export let troc = ''
 
     let search = ''
@@ -62,6 +64,10 @@
                     </span>
                 </div>
 
+            {:else if search.length && !articles.length}
+                <div class="w3-center w3-opacity" in:fade={{delay: 200}}>
+                    <span>Aucun article trouvés</span>
+                </div>
             {/if}
 
         </div>
@@ -76,6 +82,6 @@
         width: 300px;
         margin: auto;
         text-align: center;
-        font-size: 1.5em;
+        font-size: 18px;
     }
 </style>
