@@ -7,6 +7,7 @@ module.exports = {
 
 	createUser: (req, res, next) => {
 		var user = new User(req.body)
+
 		user.save(err => {
 			if (err) {
 				if ( err.name == 'MongoError' && err.code == 11000) { //dup key

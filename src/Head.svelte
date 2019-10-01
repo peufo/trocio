@@ -11,17 +11,22 @@
 
 <header class="w3-row w3-padding w3-border-bottom" >
 
-	<a href="/" class="clickable w3-xlarge">
-		<img src="favicon.ico" alt="logo Trocio" height="35" style="transform: translate(0px, -2px);">
-		TROCIO<span class="w3-tiny" style="color: red;">alpha</span>
-	</a>
+	<div class="w3-col s4">
+		<a href="/" class="clickable w3-xlarge">
+			<img src="favicon.ico" alt="logo Trocio" height="35" style="transform: translate(0px, -2px);">
+			TROCIO<span class="w3-tiny" style="color: red;">alpha</span>
+		</a>
+	</div>
 
-	<span id="trocSelected" class="w3-large">
-	{#if $troc}
-		{$troc.name ? $troc.name : ''}
-	{/if}
-	</span>
-	
+	<div class="w3-col s4 w3-center">
+		<div id="trocSelected" class="w3-xlarge">
+			{#if document.location.pathname == '/me'}
+				Mon compte
+			{:else if $troc}
+				{$troc.name ? $troc.name : ''}
+			{/if}
+		</div>
+	</div>
 
 	<div id="userButton"
 		class="w3-padding w3-border w3-round w3-right" 
@@ -32,7 +37,7 @@
 		{#if openUserOption}
 			<div id="userOption" transition:slide class="w3-border w3-round">
 				
-				{#if $me.name}
+				{#if $me._id}
 					<h3 class="w3-center"><i class="far fa-user"></i> {$me.name}</h3>
 					<ul class="w3-ul w3-center">
 						<li>

@@ -39,7 +39,6 @@
 	let givebacksPromise	//Promise givebacks
 	let paymentsPromise		//Promise payments
 
-
     onMount(() => {
 		if (document.location.hash.substr(1).length == 24) {
 			troc.find(document.location.hash.substr(1))

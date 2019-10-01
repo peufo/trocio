@@ -16,8 +16,6 @@
         wait = setTimeout(() => articlesPromise = getArticles(), 200)
     }
 
-
-
     async function getArticles() {
         if (search.length) {
             let res = await fetch(`articles/search?troc=${troc}&search=${search}`)

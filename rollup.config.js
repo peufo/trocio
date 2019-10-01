@@ -3,8 +3,7 @@ import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import livereload from 'rollup-plugin-livereload'
 import { terser } from 'rollup-plugin-terser'
-import scss from 'rollup-plugin-scss'
-import url from 'rollup-plugin-url'
+import postcss from 'rollup-plugin-postcss'
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -18,22 +17,38 @@ function getOutput(name) {
 }
 
 const plugins = [
-		svelte({dev: !production}),
-		scss(),
-		url({
-			include: ['**/*.woff2', '**/*.woff'],
-			publicFiles: './public/assets',
-			fileName: '[dirname][name][extname]'
+		svelte({
+			dev: !production,
+			emitCss: true
 		}),
-		resolve(),
+		resolve({
+			browser: true
+		}),
 		commonjs(),
+		postcss({
+			extract: true,
+			minimize: true,
+			use: [
+			  ['sass', {
+				includePaths: [
+				  './src/theme',
+				  './node_modules'
+				]
+			  }]
+			]
+		}),
 		!production && livereload('public'),
 		production && terser()
-
 	]
 
 
 export default [
+{
+	input: 'src/me.js',
+	output: getOutput('me'),
+	plugins,
+	watch: {clearScreen: false}
+},
 {
 	input: 'src/admin.js',
 	output: getOutput('admin'),

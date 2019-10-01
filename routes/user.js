@@ -14,7 +14,7 @@ router
 	.get('/me', (req, res, next) => {
 		if (!req.session.user) return res.json({})
 
-		User.findOne({_id: req.session.user._id}, {name: 1, trocs: 1})
+		User.findOne({_id: req.session.user._id}, {name: 1, mail: 1, mailvalided: 1, trocs: 1})
 			.populate('trocs', 'name admin cashier') 
 			.exec((err, user) => {
 			if (err || !user) return next(err || Error('User not found !'))
@@ -22,6 +22,8 @@ router
 			var me = {
 				_id: user._id,
 				name: user.name,
+				mail: user.mail,
+				mailvalided: user.mailvalided,
 				trocs: user.trocs.map(troc => {
 					return {
 						_id: troc._id,

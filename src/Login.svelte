@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte'
+    import { onMount, onDestroy } from 'svelte'
     import { slide, fade } from 'svelte/transition'
     import { getHeader } from './utils'
     import { me } from './stores'
@@ -21,13 +21,19 @@
     let loginIsValid = false
     let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
+    let timeout
 
     onMount(() => {
        focus()
     })
 
+    onDestroy(() => {
+        clearTimeout(timeout)
+    })
+
+
     function focus() {
-        setTimeout(() => {
+        timeout = setTimeout(() => {
             let loginForm = document.getElementById(`loginForm${id}`)
             loginForm.getElementsByTagName('input')[0].focus()
         }, 450)
@@ -75,6 +81,8 @@
         if (res.ok) {
             alert('Votre nouveau mot de passe vous à été envoyé par mail')
             reset = false
+            password = ''
+            password2 = ''
             return
         }else{
             alert(json.message)
@@ -103,7 +111,7 @@
     {/if}
 
     {#if newUser}
-    <div transition:slide>
+    <div transition:slide|local>
         <div class="w3-col iconInput"><i class="w3-large far fa-user"></i></div>
         <div class=" w3-rest">
             <input
@@ -128,7 +136,7 @@
     </div>							
 
     {#if !reset}
-    <div transition:slide>
+    <div transition:slide|local>
         <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
         <div class="w3-rest">
             <input
@@ -142,7 +150,7 @@
     {/if}
 
     {#if newUser}
-    <div transition:slide>
+    <div transition:slide|local>
         <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
         <div  class="w3-rest">
             <input

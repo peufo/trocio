@@ -69,7 +69,7 @@
 
 	let changeFlag = false //For SearchUser to AutoPatch 
 
-	function selectTab(i) {
+	function selectTab(i) { //Util ?
 		oldTabSelected = tabSelected
 		tabSelected = i
 		setTimeout(() => oldTabSelected = -1, 450)

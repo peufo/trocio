@@ -8,6 +8,9 @@ router
 	.get('/', (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'trocs.html'))
 	})
+	.get('/me', (req, res, next) => {
+		res.sendFile(path.join(__dirname, '..', 'views', 'me.html'))
+	})
 	.get('/cashier', (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'cashier.html'))
 	})

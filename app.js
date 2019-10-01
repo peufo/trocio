@@ -25,6 +25,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'node_modules', '@material')))
 app.use(session({
 	secret: SECRET,
 	cookie: {maxAge: 72*60*60*1000},
