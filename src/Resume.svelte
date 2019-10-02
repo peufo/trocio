@@ -403,7 +403,7 @@
 				<div class="w3-row w3-margin-top" transition:fade>
 					<textarea class="w3-round" rows="10" 
 							bind:value={importArticlesValue} on:input={inputImportArticles}
-							placeholder="{'Mon premier article ⭢ 20\nMon deuxième article : 15.35\nMon troisième article ; 5,40\n...\n(Glissez ou copier une liste depuis un tableur)'}"></textarea>
+							placeholder="{'Mon premier article ⭢ 20\nMon deuxième article : 15.35\nMon troisième article ; 5,40\n...\n(Glissez ou copiez une liste depuis un tableur)'}"></textarea>
 				</div>
 			{/if}
 

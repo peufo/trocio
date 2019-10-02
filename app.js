@@ -64,6 +64,7 @@ app.use(function(err, req, res, next) {
 
 
   if (req.app.get('env') === 'development' || err.name == 'userError'){
+    console.log(err)
     res.json({success: false, message: err.message})
   }else{
     res.json({success: false})

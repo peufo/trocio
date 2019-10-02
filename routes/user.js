@@ -3,7 +3,7 @@ var User 		= require('../models/user')
 var ObjectId 	= require('mongoose').Types.ObjectId
 var router = express.Router()
 var config = require('../config')
-var { createUser, login, checkLogin, logout, resetpwd } = require('../controllers/user')
+var { createUser, login, checkLogin, logout, resetpwd, sendValidMail, validMail } = require('../controllers/user')
 var lookupBuy = {$lookup: {from: 'article', foreignField: '_id', localField: 'buy', as: 'buy'}}
 var lookupProvide = {$lookup: {from: 'article', foreignField: '_id', localField: 'provide', as: 'provide'}}
 
@@ -11,12 +11,14 @@ router
 	.post('/', createUser)
 	.post('/login', login)
 	.post('/resetpwd', resetpwd)
+	.post('/sendValidmail', sendValidMail)
+	.get('/validmail/:url', validMail)
 	.get('/me', (req, res, next) => {
-		if (!req.session.user) return res.json({})
-
+		if (!req.session.user) return res.json({success: false, message: 'Login required'})
+		
 		User.findOne({_id: req.session.user._id}, {name: 1, mail: 1, mailvalided: 1, trocs: 1})
-			.populate('trocs', 'name admin cashier') 
-			.exec((err, user) => {
+		.populate('trocs', 'name admin cashier') 
+		.exec((err, user) => {
 			if (err || !user) return next(err || Error('User not found !'))
 			//Admin and cashier becomes booleans
 			var me = {
@@ -35,6 +37,22 @@ router
 			}
 
 			res.json(me)
+		})
+	})
+	.patch('/me', (req, res, next) => {
+		if (!req.session.user) return res.json({success: false, message: 'Login required'})
+
+		User.findById(req.session.user._id, (err, user) => {
+			if (err || !user) return next(err || Error('User not found !'))
+			if (req.body._id) delete req.body._id
+			if (req.body.mailvailded) delete req.body.mailvailded
+			if (req.body.trocs) delete req.body.trocs
+			if (req.body.loginAttempts) delete req.body.loginAttempts
+			for (var p in req.body){user[p] = req.body[p]}
+			user.save(err => {
+				if (err) return next(err)
+				res.json({success: true})
+			})
 		})
 	})
 	.get('/logout', logout)
@@ -76,17 +94,6 @@ router
 			if (!err){
 				res.json(user)
 			}else next(err)
-		})
-	})
-	.patch('/:id', (req, res, next) => {
-		User.findById(req.params.id, (err, user) => {
-			if (err || !user) return next(err || Error('User not found !'))
-			if (req.body._id) delete req.body._id
-			for (var p in req.body){user[p] = req.body[p]}
-			user.save(err => {
-				if (err) return next(err)
-				res.json(user)
-			})
 		})
 	})
 	.get('/:id/articles', (req, res, next) => {

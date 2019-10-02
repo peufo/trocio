@@ -1,7 +1,8 @@
 
 <script>
     import { me } from './stores'
-    import { slide } from 'svelte/transition'
+    import { slide, fade } from 'svelte/transition'
+    import { getHeader } from './utils'
 
     import Login from './Login.svelte'
 
@@ -25,6 +26,45 @@
 
     $: console.log($me)
 
+    let patchNamePromise
+    let patchMailPromise
+    let sendMailValidatorPromise
+    let mailValidatorSent = false
+
+    async function patchName() {
+        let res = await fetch('/users/me', getHeader({name: $me.name}, 'PATCH'))
+        let json = await res.json()
+        if (json.success) {
+            changeName = false
+            return
+        }else{
+            alert(json.message)
+        }
+    }
+    
+    async function patchMail() {
+        let res = await fetch('/users/me', getHeader({mail: $me.mail}, 'PATCH'))
+        let json = await res.json()
+        if (json.success) {
+            changeMail = false
+            $me.mailvalided = false
+            return
+        }else{
+            //Pas sur mais ca ira...
+            alert('Le mail indiqué est invalide ou déjà pris !')
+        }
+    }
+
+    async function sendMailValidator() {
+        let res = await fetch('/users/sendvalidmail', getHeader({}))
+        let json = await res.json()
+        if (json.success) {
+            mailValidatorSent = true
+            return
+        }else{
+            alert(json.message)
+        }
+    }
 
 </script>
 
@@ -71,10 +111,25 @@
                     />
 
                     {#if changeName}
-                        <Button variant="raised" class="w3-right w3-margin-top" style="color: white;">
-                            Valider votre nouveau nom & prénom
-                        </Button>
-                        <br><br>
+                        <div in:fade>
+                            {#await patchNamePromise}
+                                <Button
+                                variant="outlined"
+                                color="secondary"
+                                class="w3-right w3-margin-top">
+                                    <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Validation ...
+                                </Button>
+                            {:then}
+                                <Button
+                                on:click="{() => patchNamePromise = patchName()}"
+                                variant="raised"
+                                class="w3-right w3-margin-top"
+                                style="color: white;">
+                                    Valider votre nouveau nom & prénom
+                                </Button>
+                            {/await}
+                            <br><br>
+                        </div>
                     {/if}
                     <br><br>
 
@@ -99,14 +154,49 @@
                     {/if}
 
                     {#if changeMail}
-                        <Button variant="raised" class="w3-right w3-margin-top" style="color: white;">
-                            Valider votre nouveau mail
-                        </Button>
+
+                        <div in:fade>
+                            {#await patchMailPromise}
+                                <Button variant="outlined" color="secondary" class="w3-right w3-margin-top">
+                                    <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Validation ...
+                                </Button>
+                            {:then}
+                                <Button
+                                on:click="{() => patchMailPromise = patchMail()}"
+                                variant="raised"
+                                class="w3-right w3-margin-top"
+                                style="color: white;">
+                                    Valider votre nouveau mail
+                                </Button>
+                            {/await}
+                            <br><br>
+                        </div>
                         <br>
+
                     {:else if !$me.mailvalided}
-                        <Button class="w3-right" color="secondary">
-                            Envoyer un mail de validation ?
-                        </Button>               
+
+                        {#if mailValidatorSent}
+                            <Button color="secondary" class="w3-right">
+                                <i class="fas fa-check"></i>&nbsp;Mail de validation envoyer
+                            </Button>
+                        {:else}
+
+                            {#await sendMailValidatorPromise}
+                                <Button color="secondary" class="w3-right">
+                                    <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Envoie du mail ...
+                                </Button>
+                            {:then}
+                                <Button
+                                on:click="{() => sendMailValidatorPromise = sendMailValidator()}"
+                                class="w3-right"
+                                variant="outlined"
+                                color="secondary">
+                                    Envoyer un mail de validation ?
+                                </Button>   
+                            {/await}
+
+                        {/if}
+                        
                     {/if}
                     <br><br>
                     <br>
@@ -116,8 +206,7 @@
                             <Button
                             on:click="{() => changePassword = true}"
                             color="secondary"
-                            class="w3-margin-top w3-right"
-                            style="margin-left: 43px;">
+                            class="w3-margin-top w3-right">
                                 Changer votre mot de passe ?
                             </Button>
                             <br>
@@ -160,9 +249,19 @@
                                 Valider votre nouveau mot de passe
                             </Button>
 
-                            <br>  
+                            <br>
+
                         </div>
                     {/if}
+                    <br><br><br>
+
+                    <Button
+                    href="/users/logout"
+                    color="secondary"
+                    class="w3-margin-top w3-right">
+                        Déconnection
+                    </Button>
+
                     <br><br><br>
                 </div>
 

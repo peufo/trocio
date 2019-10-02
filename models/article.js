@@ -20,5 +20,4 @@ var articleModel = new Schema({
 
 articleModel.set('timestamps', true)
 
-
 module.exports = mongoose.model('article', articleModel);

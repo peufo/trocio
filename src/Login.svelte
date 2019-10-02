@@ -31,7 +31,6 @@
         clearTimeout(timeout)
     })
 
-
     function focus() {
         timeout = setTimeout(() => {
             let loginForm = document.getElementById(`loginForm${id}`)
@@ -100,7 +99,7 @@
 </script>
 
 {#if !close} <!-- Belle rustine-->
-<div id="{`loginForm${id}`}" class="w3-padding">
+<div id="{`loginForm${id}`}" class="w3-padding" style="min-width: 330px;">
 
     {#if newUser}
         <h3 class="w3-center" in:fade>Nouveau compte</h3>

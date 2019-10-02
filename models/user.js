@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
+	mail = require('../controllers/mail')
 	bcrypt = require('bcrypt'),
 	SALT_WORK_FACTOR = 10,
 	MAX_LOGIN_ATTEMPTS = 10,
@@ -25,7 +26,7 @@ userModel.virtual('isLocked').get(() => {
 	return !!(this.lockUntil && this.lockUntil > Date.now())
 })
 
-userModel.pre('save', function(next){
+userModel.pre('save', function(next) { //Password
 	var user = this
 	if (!user.isModified('password')) return next()
 	bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
@@ -36,6 +37,18 @@ userModel.pre('save', function(next){
 			next()
 		})
 	})
+})
+
+userModel.pre('save', function(next) { //Mail - pre save
+	var user = this
+	if (!user.isModified('mail') || user.isNew) return next()
+	user.mailvalided = false
+	next()
+})
+
+userModel.post('save', function(user, next) { //Mail - post save
+	if (!user.isModified('mail') || user.isNew) return next()
+	mail.sendValidMail(user, next)		
 })
 
 userModel.methods.comparePassword = function(candidatePassword, cb) {
