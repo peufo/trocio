@@ -3,13 +3,14 @@ var User 		= require('../models/user')
 var ObjectId 	= require('mongoose').Types.ObjectId
 var router = express.Router()
 var config = require('../config')
-var { createUser, login, checkLogin, logout, resetpwd, sendValidMail, validMail } = require('../controllers/user')
+var { createUser, login, checkLogin, logout, resetpwd, sendValidMail, validMail, changepwd } = require('../controllers/user')
 var lookupBuy = {$lookup: {from: 'article', foreignField: '_id', localField: 'buy', as: 'buy'}}
 var lookupProvide = {$lookup: {from: 'article', foreignField: '_id', localField: 'provide', as: 'provide'}}
 
 router
 	.post('/', createUser)
 	.post('/login', login)
+	.post('/changepwd', changepwd)
 	.post('/resetpwd', resetpwd)
 	.post('/sendValidmail', sendValidMail)
 	.get('/validmail/:url', validMail)

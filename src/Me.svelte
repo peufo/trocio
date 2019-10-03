@@ -10,6 +10,8 @@
     import HelperText from '@smui/Textfield/helper-text/index'
     import Button from '@smui/Button'
 
+    let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
     let tabSelected = 0
 	let tabs = [
 		{name: 'Mes informations', icon: '<i class="fas fa-info-circle"></i>'},
@@ -63,6 +65,20 @@
             return
         }else{
             alert(json.message)
+        }
+    }
+
+    async function validChangePassword() {
+        let res = await fetch('/users/changepwd', getHeader({oldPassword, newPassword}))
+        let json = await res.json()
+        if (json.success) {
+            changePassword = false
+            oldPassword = ''
+            newPassword = ''
+            newPassword2 = ''
+            alert('Changement du mot de passe accepté')
+        }else {
+            alert('Changement du mot de passe refusé')
         }
     }
 
@@ -123,6 +139,7 @@
                                 <Button
                                 on:click="{() => patchNamePromise = patchName()}"
                                 variant="raised"
+                                disabled={$me.name.trim().length < 2}
                                 class="w3-right w3-margin-top"
                                 style="color: white;">
                                     Valider votre nouveau nom & prénom
@@ -164,6 +181,7 @@
                                 <Button
                                 on:click="{() => patchMailPromise = patchMail()}"
                                 variant="raised"
+                                disabled="{!$me.mail.match(EMAIL_REGEX)}"
                                 class="w3-right w3-margin-top"
                                 style="color: white;">
                                     Valider votre nouveau mail
@@ -199,7 +217,6 @@
                         
                     {/if}
                     <br><br>
-                    <br>
 
                     {#if !changePassword}
                         <div out:slide>
@@ -245,7 +262,12 @@
 
                             <br>
 
-                            <Button variant="raised" class="w3-margin-top w3-right" style="color: white;">
+                            <Button 
+                            variant="raised"
+                            on:click={validChangePassword}
+                            disabled={oldPassword.trim().length < 4 || newPassword.trim().length < 4 || newPassword != newPassword2}
+                            class="w3-margin-top w3-right"
+                            style="color: white;">
                                 Valider votre nouveau mot de passe
                             </Button>
 
@@ -259,7 +281,7 @@
                     href="/users/logout"
                     color="secondary"
                     class="w3-margin-top w3-right">
-                        Déconnection
+                        Déconnexion
                     </Button>
 
                     <br><br><br>
@@ -272,8 +294,8 @@
         <!-- Activités -->
         <div class="tab" class:center={tabSelected == 1} class:right={tabSelected < 1}>
             <br>
-            <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
-                Mes activités
+            <div class="w3-padding w3-card w3-round w3-center" style="max-width: 850px; margin: auto;">
+                Ici, vous pourrez bientôt voir un syntèse de votre activité
             </div>
             <br>
         </div>

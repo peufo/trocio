@@ -65,17 +65,24 @@ module.exports = {
 		}
 	},
 
-	checkLogin: (req, res, next) => {
-		if (req.session.user) {
-			next()
-		}else{
-			res.redirect('/welcome')
-		}
-	},
-
 	logout: (req, res, next) => {
 		req.session.user = undefined
 		res.redirect('/')
+	},
+
+	changepwd: (req, res, next) => {
+		let user = req.session.user
+		let oldPassword = req.body.oldPassword
+		let newPassword = req.body.newPassword
+		if (!user) return next()
+		User.getAuthenticated(user.mail, oldPassword, (err, user, reason) => {
+			if (err) return next()
+			user.password = newPassword
+			user.save(err => {
+				if (err) return next()
+				res.json({success: true, message: 'Password changed !'})
+			})
+		})
 	},
 
 	resetpwd: (req, res, next) => {
