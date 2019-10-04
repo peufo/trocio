@@ -2,11 +2,8 @@
     import { slide, fade } from 'svelte/transition'
     import { me, troc } from './stores'
     import Login from './Login.svelte'
-	import EditForm from './EditForm.svelte'
 	import Button from '@smui/Button'
 	import Dialog, {Title, Content, Actions, InitialFocus} from '@smui/dialog';
-
-	export let openCreate = false
 
 	let dialogLogin
 
@@ -115,47 +112,7 @@
 -->
 
 
-<!-- Create troc modal -->
-{#if openCreate}
-
-	<div class="w3-modal-content w3-padding w3-center w3-round">
-		<i on:click="{() => openCreate = false}" class="fa fa-times w3-xlarge w3-right w3-padding"></i>
-		<EditForm createMode on:create="{() => openCreate = false}"/>
-	</div>
-
-{/if}
 
 <style>
-    .w3-modal {
-		display: block;
-	}
 
-	#userOption ul li div i {
-		margin-top: 5px;
-	}
-
-	#fond {
-		position: absolute;
-		left: 0px;
-		top: 0px;
-		width: 100%;
-		height: 100%;
-		background: rgba(0, 0, 0, .3);
-		z-index: 10;
-	}
-
-	#userButton {
-		position: relative;
-		overflow: visible;
-	}
-
-	#userOption {
-		position: absolute;
-		z-index: 1000;
-		right: -1px;
-		top: -1px;
-		width: 400px;
-		background: #fff;
-		box-shadow: 0px 0px 6px rgba(200, 200, 200, 0.8);
-	}
 </style>

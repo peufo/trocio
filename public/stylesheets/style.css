@@ -109,6 +109,15 @@ textarea {
     border-color: rgb(76, 130, 80);
 }
 
+.button-icon {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.button-icon:hover {
+    transform: scale(1.15);
+}
+
 .hide {
     transition: all .2s;
     transform: scale(0);

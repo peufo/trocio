@@ -124,8 +124,8 @@
 
 	$: console.log(provided)
 
-	$: {//Calcul of sold -> bof bof
-
+	$: {//Calcul of sold
+		
 		//Purchases
 		if (purchases.length) buySum = -purchases.map(a => a.price).reduce((acc, cur) => acc + cur)
 		else buySum = 0
@@ -157,17 +157,23 @@
 	}
 
 	//For AutoPatch
-	function addModifiedArticle(art) {
+	function addModifiedArticle(e, art) {
 
-		let index = provided.map(a => a._id).indexOf(art._id)
-		provided[index].fee = getFee(art, tarif)
-		provided[index].margin = getMargin(art, tarif)
+		console.log('value : ', e.target.value)
 
-		index = modifiedArticles.map(a => a._id).indexOf(art._id)
-		if (index == -1) {
-			modifiedArticles = [...modifiedArticles, art]
-		}else{
-			modifiedArticles[index] = art
+		if (!isNaN(e.target.value)) {
+			art.price = Number(e.target.value)
+			console.log('price : ', art.price)
+			let index = provided.map(a => a._id).indexOf(art._id)
+			provided[index].fee = getFee(art, tarif)
+			provided[index].margin = getMargin(art, tarif)
+			if (provided[index].price == undefined) provided[index].price = 0
+			index = modifiedArticles.map(a => a._id).indexOf(art._id)
+			if (index == -1) {
+				modifiedArticles = [...modifiedArticles, art]
+			}else{
+				modifiedArticles[index] = art
+			}
 		}
 		clearTimeout(clearModifiedArticles)
 		clearModifiedArticles = setTimeout(() => modifiedArticles = [], 700)
@@ -249,8 +255,8 @@
 		//Input Value parser
 		if (importArticlesValue.trim().length) {
 			let lines = importArticlesValue.split(/[\r\n]/)
-			let cells
-			let price
+			let cells = []
+			let price = 0
 			lines.forEach((line, i) => {
 				cells = line.split(/[\t:;]/)
 				if (cells.length >= 2) {
@@ -407,8 +413,8 @@
 				</div>
 			{/if}
 
-
-			<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />
+		
+			<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />	
 			<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered w3-margin-top">
 				<tr>
 					<th>Articles</th>
@@ -445,6 +451,8 @@
 
 						<!-- Prix -->
 						<td class="tdInput price">
+							<!--
+
 							<input
 								on:input="{() => addModifiedArticle(article)}"
 								bind:value={article.price}
@@ -454,7 +462,18 @@
 								class:unvalided={!article.valided}
 								class:recovered={article.recover}
 								class:sold={article.sold}
-								placeholder="Prix"
+								step="0.05"
+								min="0">
+							-->
+							<input
+								on:input="{e => addModifiedArticle(e, article)}"
+								value={article.price}
+								type="number"
+								class="w3-input"
+								readonly={article.valided}
+								class:unvalided={!article.valided}
+								class:recovered={article.recover}
+								class:sold={article.sold}
 								step="0.05"
 								min="0">
 						</td>

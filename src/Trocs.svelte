@@ -223,16 +223,16 @@
 						</div>
 
 						<!--Access butons icon-->
-						{#if troc.isCashier}
-							<div class="w3-right w3-padding button-icon w3-center">
-								<a href="{`/cashier#${troc._id}`}">
-									<i class="fa fa-cash-register w3-large"></i>
-								</a>
-							</div>
-						{:else if troc.isAdmin}
+						{#if troc.isAdmin}
 							<div class="w3-right w3-padding button-icon w3-center">
 								<a href="{`/admin#${troc._id}`}">
 									<i class="fa fa-cog w3-large"></i>
+								</a>
+							</div>
+						{:else if troc.isCashier}
+							<div class="w3-right w3-padding button-icon w3-center">
+								<a href="{`/cashier#${troc._id}`}">
+									<i class="fa fa-cash-register w3-large"></i>
 								</a>
 							</div>							
 						{/if}						
@@ -346,15 +346,6 @@
 
 	.schedule {
 		background: rgb(252, 252, 252);
-	}
-
-	.button-icon {
-		cursor: pointer;
-		transition: all 0.3s;
-	}
-
-	.button-icon:hover {
-		transform: scale(1.2);
 	}
 
 </style>

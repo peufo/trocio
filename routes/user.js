@@ -18,26 +18,17 @@ router
 		if (!req.session.user) return res.json({success: false, message: 'Login required'})
 		
 		User.findOne({_id: req.session.user._id}, {name: 1, mail: 1, mailvalided: 1, trocs: 1})
-		.populate('trocs', 'name admin cashier') 
+		.populate('trocs', 'name description address admin cashier') 
 		.exec((err, user) => {
 			if (err || !user) return next(err || Error('User not found !'))
-			//Admin and cashier becomes booleans
-			var me = {
-				_id: user._id,
-				name: user.name,
-				mail: user.mail,
-				mailvalided: user.mailvalided,
-				trocs: user.trocs.map(troc => {
-					return {
-						_id: troc._id,
-						name: troc.name,
-						admin: troc.admin.indexOf(user._id) != -1,
-						cashier: troc.cashier.indexOf(user._id) != -1
-					}
-				})
-			}
 
-			res.json(me)
+			//Admin and cashier becomes booleans
+			user.trocs.forEach(troc => {
+				troc.admin = troc.admin.indexOf(user._id) != -1,
+				troc.cashier = troc.cashier.indexOf(user._id) != -1
+			})
+			
+			res.json(user)
 		})
 	})
 	.patch('/me', (req, res, next) => {

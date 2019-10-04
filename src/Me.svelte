@@ -5,6 +5,7 @@
     import { getHeader } from './utils'
 
     import Login from './Login.svelte'
+    import Activity from './Activity.svelte'
 
     import Textfield from '@smui/Textfield'
     import HelperText from '@smui/Textfield/helper-text/index'
@@ -12,7 +13,7 @@
 
     let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-    let tabSelected = 0
+    let tabSelected = 1
 	let tabs = [
 		{name: 'Mes informations', icon: '<i class="fas fa-info-circle"></i>'},
 		{name: 'Mes activités', icon: '<i class="far fa-star"></i>'},
@@ -294,8 +295,8 @@
         <!-- Activités -->
         <div class="tab" class:center={tabSelected == 1} class:right={tabSelected < 1}>
             <br>
-            <div class="w3-padding w3-card w3-round w3-center" style="max-width: 850px; margin: auto;">
-                Ici, vous pourrez bientôt voir un syntèse de votre activité
+            <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
+                <Activity/>
             </div>
             <br>
         </div>
