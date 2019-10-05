@@ -418,6 +418,7 @@
 			<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />	
 			<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered w3-margin-top">
 				<tr>
+					<th>#</th>
 					<th>Articles</th>
 					<th>Status</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
 					<th>Prix <span class="w3-small sold">{soldSum.toFixed(2)}</span></th>
@@ -430,11 +431,17 @@
 
 					<tr>
 						
+						<!-- Ref # -->
+						<td>
+							<b class="w3-small">
+								{!article.isCreated ? article.ref : ''}
+							</b>						
+						</td>
+
+
 						<!-- Designation -->
 						<td class="tdInput">
-							<b class="w3-small" style="position: absolute; transform: translate(-28px, 12px);">
-								{!article.isCreated ? article.ref : ''}
-							</b>
+
 							<input
 								on:input="{e => addModifiedArticle(e, article)}"
 								class:lastInputName="{i == provided.length-1}"  

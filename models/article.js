@@ -15,7 +15,7 @@ var articleModel = new Schema({
 	refused: Date,
 	sold: Date, //ou
 	recover: Date,
-	giveback: [{sold: Date, back: Date, raison: String, user: {type: ObjectId, ref: 'user', required: true}}]
+	giveback: [{sold: Date, back: Date, raison: String, user: {type: ObjectId, ref: 'user'}}] //user is not required for anonyme buyer
 })
 
 articleModel.set('timestamps', true)
