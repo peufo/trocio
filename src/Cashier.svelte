@@ -1,6 +1,8 @@
 <script>
 	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
+	import Button from '@smui/button'
+
 	import { me, troc } from './stores'
 	import { getHeader } from './utils'
 	import SearchUser from './SearchUser.svelte'
@@ -10,18 +12,21 @@
 	import Giveback from './Giveback.svelte'
 	import Resume from './Resume.svelte'
 
+
 	let user = {}
 	let searchUser = ''
+	let userPlaceholder = 'Trouver un client'
 	let userOk = false
+	let clientAnonym = false
 	let popupPaymentOpen = false
 
 	let action = 4
 	let actions = [
 		{name: 'Fournit', icon: '<i class="fas fa-sign-in-alt"></i>'},
 		{name: 'Récupère', icon: '<i class="fas fa-sign-out-alt"></i>'},
-		{name: 'Achète', icon: '<i class="fas fa-shopping-basket"></i>'},
-		{name: 'Retourne', icon: '<i class="fas fa-undo"></i>'},
-		{name: 'Aperçue', icon: '<i class="far fa-eye"></i>'},
+		{name: 'Achète', icon: '<i class="fas fa-shopping-basket"></i>', clientAnonymAutorised: true},
+		{name: 'Retourne', icon: '<i class="fas fa-undo"></i>', clientAnonymAutorised: true},
+		{name: 'Aperçue', icon: '<i class="far fa-eye"></i>', clientAnonymAutorised: true},
 	]
 
 	let balance = 0 //bind to Resume.svelte
@@ -108,26 +113,56 @@
 {:else}
 
 	<div class="w3-card w3-round" style="max-width: 850px; margin: auto; height: calc(100% - 45px);">
-		<div class="w3-row w3-padding">
+		<div class="w3-row w3-padding w3-margin-top">
 
 			<!-- Utilisateur -->
-			<div class="w3-col s6 w3-padding">
+			
+			<div class="w3-margin-left" style="display: inline-block">
 				<div class="icon iconUser">
-					<i class:far={!userOk} class:fas={userOk} class="fa-user w3-large"></i>
+					{#if !clientAnonym}
+						<i class:far={!userOk} class:fas={userOk} class="fa-user w3-large"></i>
+					{:else}
+						<i class="fas fa-user-secret w3-large"></i>
+					{/if}
 				</div>
-				<div class="w3-right" style="width: calc(100% - 22px);">
+				<div style="display: inline-block; width: 260px;">
 					<SearchUser modeSelect 
 								id="1"
-								placeholder="Trouver un client"
+								on:input="{() => {clientAnonym = false; userPlaceholder = 'Trouver un client'}}"
+								placeholder={userPlaceholder}
 								bind:search={searchUser}
 								bind:selectOk={userOk}
 								on:select="{userSelected}"/>
 				</div>
 			</div>
 
+			{#if !clientAnonym && !userOk}
+				<div in:fade={{duration: 200}} style="display: inline-block">
+					
+					<!-- TODO: open LOGIN blocked for create account-->
+					<Button
+					color="secondary"
+					variant="outlined"
+					class="w3-margin-left">
+					<i class="fas fa-user-plus w3-large"></i>&nbsp;Nouveau client
+					</Button>	
+
+					<Button
+					on:click="{() => {action = 2; clientAnonym = true; searchUser = ''; userPlaceholder = 'Anonyme'}}"
+					color="secondary"
+					variant="outlined"
+					class="w3-margin-left">
+					<i class="fas fa-user-secret w3-large"></i>&nbsp;Client anonyme
+					</Button>
+
+				</div>
+			{/if}
+
+			
 			<!-- Règle le solde -->
-			<div class:visible={userOk && balance != 0} class="hide w3-col s6 w3-padding">
-				<div class="button w3-right w3-round" on:click="{() => popupPaymentOpen = true}">
+			<div class:visible={userOk && balance != 0} class="hide w3-right w3-padding">
+
+				<div class="button w3-round" on:click="{() => popupPaymentOpen = true}">
 					Régler le solde de {balance.toFixed(2)}
 				</div>
 			</div>
@@ -135,12 +170,12 @@
 		</div>
 
 
-		{#if userOk}
+		{#if userOk || clientAnonym}
 		<div transition:fade style="height: calc(100% - 126px);">
 
 			<!-- Action -->
 			<div class="onglets w3-margin-top w3-border-top">
-				{#each actions as tab, i}
+				{#each actions.filter(a => !clientAnonym || a.clientAnonymAutorised) as tab, i}
 					<div class="w3-padding underline-div onglet"
 						on:click="{() => action = i}"
 						class:actived="{action == i}">

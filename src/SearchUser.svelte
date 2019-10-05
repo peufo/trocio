@@ -2,6 +2,7 @@
 	import { onMount, createEventDispatcher } from 'svelte'
 	const dispatch = createEventDispatcher()
 	import { fly } from 'svelte/transition'
+	import List, {Item, Text, PrimaryText, SecondaryText } from '@smui/list'
 
 	export let id = 0
 	export let search = ''
@@ -47,6 +48,7 @@
 	}
 
 	function input(){
+		dispatch('input')
 		clearTimeout(waiting)
 		if (search.length > 2) waiting = setTimeout(() => users = searchUser(), 100)
 	}
@@ -134,31 +136,41 @@
 			placeholder="{placeholder}">
 
 	{#if focus && search.length > 2 && (!modeSelect || !selectOk)}
-	<div id="proposition" class="w3-border w3-round w3-padding" in:fly="{{y: 50}}">
+	<div id="proposition" class="w3-border w3-round w3-padding" in:fly="{{y: 50}}"  style="min-width: 260px;">
 		
 		{#await users}
 			<i class="fas fa-circle-notch w3-spin"></i>
 			Recherche...
 		{:then users}
-			{#if users.length}
-				<ul class="w3-ul"
-					on:mouseenter="{() => {listhover = true; selected = -1}}"
-					on:mouseleave="{() => listhover = false}">
-					{#each users as user, i}
-					<li class="underline-div without-hover"
-						class:w3-opacity="{isExepted(user)}"
-						class:selected="{selected == i && !isExepted(user)}"
-						on:mouseenter="{() => selected = i}"
-						on:click="{() => select(user)}">
-						<span class="underline-span">{user.name}</span>
-						<em class="w3-small w3-right">{user.mail}</em>
-					</li>
-					{/each}
-				</ul>
 
+		    <List
+			twoLine
+			avatarList
+			singleSelection
+			dense
+			on:mouseenter="{() => {listhover = true; selected = -1}}"
+			on:mouseleave="{() => listhover = false}">
+			{#each users as user, i}
+				<Item 
+				on:mouseenter="{() => selected = i}"
+				role="menuitem"
+				selected={selected === i && !isExepted(user)}
+				disabled={isExepted(user)}
+				on:click="{() => select(user)}">
+					<Text>
+						<PrimaryText>{user.name}</PrimaryText>
+						<SecondaryText>{user.mail}</SecondaryText>
+					</Text>
+				</Item>
 			{:else}
-				Aucun résultat pour <b>{search}</b>
-			{/if}		
+				<div class="w3-center">
+					Aucun résultat pour <b>{search}</b>
+				</div>
+			{/each}
+			</List>
+
+
+
 		{:catch error}
 			<span class="w3-red">{error}</span>
 		{/await}
