@@ -14,10 +14,6 @@
     export let timeKey = ''
     export let comment = ''
 
-    /*
-        article.isRemovable
-
-    */
 
     function remove() {
         dispatch('remove', article)

@@ -159,22 +159,23 @@
 	//For AutoPatch
 	function addModifiedArticle(e, art) {
 
-		console.log('value : ', e.target.value)
+		let index = -1
 
-		if (!isNaN(e.target.value)) {
+		//update price value and compute fee and margin
+		if (e.target.type == 'number' && !isNaN(e.target.value)) {
 			art.price = Number(e.target.value)
-			console.log('price : ', art.price)
-			let index = provided.map(a => a._id).indexOf(art._id)
+			index = provided.map(a => a._id).indexOf(art._id)
 			provided[index].fee = getFee(art, tarif)
 			provided[index].margin = getMargin(art, tarif)
-			if (provided[index].price == undefined) provided[index].price = 0
-			index = modifiedArticles.map(a => a._id).indexOf(art._id)
-			if (index == -1) {
-				modifiedArticles = [...modifiedArticles, art]
-			}else{
-				modifiedArticles[index] = art
-			}
 		}
+
+		index = modifiedArticles.map(a => a._id).indexOf(art._id)
+		if (index == -1) {
+			modifiedArticles = [...modifiedArticles, art]
+		}else{
+			modifiedArticles[index] = art
+		}
+
 		clearTimeout(clearModifiedArticles)
 		clearModifiedArticles = setTimeout(() => modifiedArticles = [], 700)
 	}
@@ -435,7 +436,7 @@
 								{!article.isCreated ? article.ref : ''}
 							</b>
 							<input
-								on:input="{() => addModifiedArticle(article)}"
+								on:input="{e => addModifiedArticle(e, article)}"
 								class:lastInputName="{i == provided.length-1}"  
 								bind:value={article.name}
 								type="text" 
@@ -452,18 +453,7 @@
 						<!-- Prix -->
 						<td class="tdInput price">
 							<!--
-
-							<input
-								on:input="{() => addModifiedArticle(article)}"
-								bind:value={article.price}
-								type="number"
-								class="w3-input"
-								readonly={article.valided}
-								class:unvalided={!article.valided}
-								class:recovered={article.recover}
-								class:sold={article.sold}
-								step="0.05"
-								min="0">
+								bind:value is removed
 							-->
 							<input
 								on:input="{e => addModifiedArticle(e, article)}"
