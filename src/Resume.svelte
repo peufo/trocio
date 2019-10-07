@@ -31,12 +31,10 @@
 
 	export let provided = []
 	export let purchases = []
-	export let givebacks = []
 	export let payments = []
 
 	export let providedPromise
 	export let purchasesPromise
-	export let givebacksPromise
 	export let paymentsPromise
 
 	let modifiedArticles = []			//Array for minimize PATCH request on AutoPatch.svelte
@@ -55,19 +53,22 @@
 	let tarifOpen = false
 
 	onMount(() => {
-		if (userId && trocId) {
+		console.log('Mount Resume')
+		console.log('troc:', trocId)
+		console.log('user:', userId)
+		if (trocId) {
 			getTarif()
-			providedPromise = getProvided()
 			purchasesPromise = getPurchases()
-			givebacksPromise = getGivebacks()
-			paymentsPromise = getPayments()			
+			paymentsPromise = getPayments()
+			if (userId) providedPromise = getProvided()
+			else provided = []	
 		}else{
-			console.log('userId and trocId required !')
+			console.log('trocId required !')
 		}
 	})
 
 	async function getProvided() {
-		let res = await fetch(`/articles?troc=${trocId}&provider=${userId}`)
+		let res = await fetch(`/articles?provider=${userId}&troc=${trocId}`)
 		let json = await res.json()
 		if (res.ok) {
 			provided = json
@@ -76,19 +77,10 @@
 	}
 
 	async function getPurchases() {
-        let res = await fetch(`/articles?buyer=${userId}`)
+        let res = await fetch(`/articles?buyer=${userId}&troc=${trocId}`)
         let json = await res.json()
         if (res.ok) {
 			purchases = addTime(json, 'sold', 'soldTime')
-            return
-        }
-	}
-
-	async function getGivebacks() {
-        let res = await fetch(`/articles?giveback.user=${userId}`)
-        let json = await res.json()
-        if (res.ok) {
-			givebacks = json
             return
         }
 	}
@@ -126,6 +118,7 @@
 
 	$: {//Calcul of sold
 		
+
 		//Purchases
 		if (purchases.length) buySum = -purchases.map(a => a.price).reduce((acc, cur) => acc + cur)
 		else buySum = 0
@@ -137,7 +130,7 @@
 
 		//Provide
 		//TODO: Deplacer coté serveur
-		if (provided.length) {
+		if (userId && provided.length) {
 			let arr = provided.filter(a => a.sold).map(a => a.price)
 			soldSum = arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
 
@@ -153,6 +146,7 @@
 
 		//balance
 		balance = Math.round((buySum + paySum + soldSum + feeSum) * 100) / 100
+		console.log('Calcule: ', balance)
 
 	}
 
@@ -307,7 +301,7 @@
 					{#each purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
 						<Article article={article} timeKey={'soldTime'}/>
 					{:else}
-						<span class="w3-opacity w3-margin-left">Pas d'achat</span>
+						<span class="w3-opacity">Pas d'achat</span>
 					{/each}
 
 					<!-- Bouton pour prolongé la liste -->
@@ -361,6 +355,7 @@
 	<br>
 	<br>
 
+	{#if userId}
 	<div class="w3-row">
 
 
@@ -407,7 +402,7 @@
 			
 			<!-- Insertion de plein d'article -->
 			{#if importArticlesListOpen}
-				<div class="w3-row w3-margin-top" transition:fade>
+				<div class="w3-row w3-margin-top" transition:slide>
 					<textarea class="w3-round" rows="10" 
 							bind:value={importArticlesValue} on:input={inputImportArticles}
 							placeholder="{'Mon premier article ⭢ 20\nMon deuxième article : 15.35\nMon troisième article ; 5,40\n...\n(Glissez ou copiez une liste depuis un tableur)'}"></textarea>
@@ -522,6 +517,8 @@
 		{/await}
 		
 	</div>
+	{/if}
+
 </div>
 
 

@@ -6,7 +6,8 @@
     import { getHeader, crossfadeConfig } from './utils'
     import Article from './Article.svelte'
 
-    export let user = {}
+    export let userId = false
+    export let trocId = false
     export let purchases = []
     export let purchasesPromise
     export let givebacks = []
@@ -21,17 +22,22 @@
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
     onMount(() => {
-        if (givebacksPromise) {
-            givebacksPromise.then(() => {
-                givebacks = givebacks.map(art => {
-                    let { raison, time} = getMyLastGiveBack(art)
-                    art.givebackRaison = raison
-                    art.givebackTime = new Date(time).getTime()
-                    return art
-                })
-            })
-        }
+        givebacksPromise = getGivebacks()
     })
+
+    async function getGivebacks() {
+        let res = await fetch(`/articles?giveback.user=${userId}&troc=${trocId}`)
+		let json = await res.json()		
+        if (res.ok) {
+			givebacks = json.map(art => {
+                let { raison, time} = getMyLastGiveBack(art)
+                art.givebackRaison = raison
+                art.givebackTime = new Date(time).getTime()
+                return art
+            })
+            return
+        }
+	}
 
     function select(artId) {
         let raison = prompt('Quelle est la raison du retour ?')
@@ -40,7 +46,7 @@
             if (index != -1) {
                 let back = purchases[index]
                 if (!back.giveback) back.giveback = []
-                back.giveback = [...back.giveback, {sold: back.sold, back: new Date(), raison, user: user._id}]
+                back.giveback = [...back.giveback, {sold: back.sold, back: new Date(), raison, user: userId}]
                 back.isRemovable = true
                 givebacks = [back, ...givebacks]
                 givebacks[0].givebackRaison = raison
@@ -84,7 +90,12 @@
     }
 
     function getMyLastGiveBack(art) {
-        let backs = art.giveback.filter(back => back.user == user._id)
+        let backs = []
+        if (userId) {
+            backs = art.giveback.filter(back => back.user == userId)
+        }else{
+            backs = art.giveback.filter(back => !back.user)
+        }
         let raison = backs.length == 0 ? '' : backs[backs.length - 1].raison
         let time = backs.length == 0 ? 0 : backs[backs.length - 1].back
         return { raison, time }

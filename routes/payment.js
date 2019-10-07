@@ -6,8 +6,9 @@ var router = express.Router()
 router
     .get('/', (req, res, next) => {
         var { troc, user } = req.query
+        if (user == 'false') user = { $exists: false }
         if (troc && user) {
-            Payment.find({troc, user}, (err, payments) => {
+            Payment.find({troc, user}).sort({updatedAt: -1}).exec((err, payments) => {
                 if (err) return next(err)
                 res.json(payments)
             })

@@ -16,7 +16,8 @@
 	//TODO: Transformer pour aussi servire au article
 	//1. Utilisé ._id au lieu de .mail
 	//2. remplacer user par item
-	//3. Utilisé <slot> pour la représentation 
+	//3. Utilisé <slot> pour la représentation
+	
 
 
 	let users = []

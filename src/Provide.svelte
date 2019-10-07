@@ -166,10 +166,10 @@
     <br>
 
     <div class="w3-col s6">
-        <div class="w3-right w3-margin-right w3-round button"
+        <div class="w3-right w3-margin-right w3-round button hide"
              class:visible={provided.filter(art => !art.valided).length}
              on:click={clickProposedArticleAll}>
-            Tout valider
+            Tout accepter
         </div>
 
         <h4>Proposés</h4>

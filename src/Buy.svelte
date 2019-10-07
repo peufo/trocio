@@ -28,7 +28,7 @@
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
     async function searchArticle() {
-        let res = await fetch(`/articles/search?troc=${$troc._id}&search=${search}&providernot=${user._id}&available=true`)
+        let res = await fetch(`/articles/search?troc=${$troc._id}&search=${search}&available=true${user._id ? `&providernot=${user._id}` :''}`)
         let json = await res.json()
         if (res.ok) {
             articles = json.filter(a => cart.map(c => c._id).indexOf(a._id) == -1)
@@ -111,7 +111,7 @@
                     <Article article={article} clickable on:select="{() => buy(index)}"/>
                 </div>
             {:else}
-                <span class="w3-opacity">Pas résultat</span>
+                <span class="w3-opacity">Pas de résultat</span>
             {/each}
 
             <!-- Bouton pour prolongé la liste -->

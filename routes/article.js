@@ -5,6 +5,13 @@ var router = express.Router()
 
 router
 	.get('/', (req, res, next) => {
+
+		if (req.query['buyer'] == 'false') req.query['buyer'] = { $exists: false }
+		if (req.query['giveback.user'] == 'false') {
+			req.query['giveback'] = {$ne: []}
+			req.query['giveback.user'] = { $exists: false }
+		}
+
 		Article.find(req.query, (err, articles) => {
 			if (err) return next(err)
 			res.json(articles)
@@ -37,10 +44,10 @@ router
 		if (troc || providernot || available) query.$and = []
 		if (troc) query.$and.push({troc})
 		if (providernot) query.$and.push({'provider': {$ne: providernot}})
+		
 		if (available) {
 			query.$and.push({'valided': {$exists: true}})
 			query.$and.push({'sold': {$exists: false}})
-			console.log('prout')
 			query.$and.push({'recover': {$exists: false}})
 		}
 
