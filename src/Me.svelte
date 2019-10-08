@@ -7,9 +7,9 @@
     import Login from './Login.svelte'
     import Activity from './Activity.svelte'
 
-    import Textfield from '@smui/Textfield'
-    import HelperText from '@smui/Textfield/helper-text/index'
-    import Button from '@smui/Button'
+    import Textfield from '@smui/textfield'
+    import HelperText from '@smui/textfield/helper-text/index'
+    import Button from '@smui/button'
 
     let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 

@@ -22,8 +22,7 @@ const plugins = [
 			emitCss: true
 		}),
 		resolve({
-			browser: true,
-			mainField: true
+			browser: true
 		}),
 		commonjs(),
 		postcss({

@@ -2,7 +2,7 @@
     import { slide, fade } from 'svelte/transition'
     import { me, troc } from './stores'
     import Login from './Login.svelte'
-	import Button from '@smui/Button'
+	import Button from '@smui/button'
 	import Dialog from '@smui/dialog'
 
 	let dialogLogin
