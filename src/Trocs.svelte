@@ -180,7 +180,9 @@
 					<div class="w3-row">
 						<div class="w3-col m8 w3-padding">
 							<span class="w3-large">{troc.name}</span>
-							<i>{troc.society}</i>
+							<a href={troc.societyweb}>
+								<i>{troc.society}</i>
+							</a>
 							<br>
 							<span class="w3-small">
 								<i class="fas fa-map-marker-alt"></i>
