@@ -196,9 +196,4 @@
 		box-shadow: 1px 1px 4px grey;
 	}
 
-	li {
-		cursor: pointer;
-		border: none;
-	}
-
 </style>

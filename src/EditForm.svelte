@@ -182,9 +182,6 @@
 	input[type=time] {
 		border: none;
 	}
-	input[type=file]{
-		border: 2px solid black;
-	}
 
 	h3 {
 		border-bottom: 2px solid #d6d6d6;
