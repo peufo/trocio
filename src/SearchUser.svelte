@@ -185,7 +185,6 @@
 	{/if}
 </div>
 
-
 <style>
 
 	#proposition {
