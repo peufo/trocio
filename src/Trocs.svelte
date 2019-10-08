@@ -180,7 +180,7 @@
 					<div class="w3-row">
 						<div class="w3-col m8 w3-padding">
 							<span class="w3-large">{troc.name}</span>
-							<a href={`https://`${troc.societyweb}>
+							<a href={`https://${troc.societyweb}`}>
 								<i>{troc.society}</i>
 							</a>
 							<br>
