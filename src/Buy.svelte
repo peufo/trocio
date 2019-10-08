@@ -106,8 +106,8 @@
         {#await searchPromise}
             <span class="w3-opacity">Recherche en cours...</span>
         {:then}
-            {#each articles.slice(0, LIMIT_LIST_A) as article, index}
-                <div class="w3-margin-right">
+            {#each articles.slice(0, LIMIT_LIST_A) as article, index (article._id)}
+                <div class="w3-margin-right" in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
                     <Article article={article} clickable on:select="{() => buy(index)}"/>
                 </div>
             {:else}
@@ -146,7 +146,7 @@
             </div>
 
             {#each cart as article, index (article._id)}
-                <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
+                <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                     <Article article={article} on:remove="{() => removeArticle(index)}"/>
 
@@ -165,7 +165,7 @@
                 <div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
             {:then}
                 {#each purchases.slice(0, LIMIT_LIST_B) as article (article._id)}
-                    <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
+                    <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
                         <Article article={article} timeKey={'soldTime'}/>
                     </div>
                 {:else}

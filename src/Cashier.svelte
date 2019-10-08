@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
 	import Button from '@smui/button'
+	import Dialog from '@smui/dialog'
 
 	import { me, troc } from './stores'
 	import { getHeader } from './utils'
@@ -11,7 +12,9 @@
 	import Recover from './Recover.svelte'
 	import Giveback from './Giveback.svelte'
 	import Resume from './Resume.svelte'
+	import Login from './Login.svelte'
 
+	let dialogLogin // Create user
 
 	let user = {}
 	let searchUser = ''
@@ -33,10 +36,6 @@
 	let validPaymentPromise
 
 	let balance = 0 //bind to Resume.svelte
-	let buySum = 0
-	let paySum = 0
-	let soldSum = 0
-	let feeSum = 0
 
 	let provided = [] 	//List of articles provided from Resume.svelte
 	let purchases = [] 	//List of articles purchases from Resume.svelte
@@ -66,16 +65,19 @@
 
 	function inputSearchUser() {
 
-		balance = 0
-		buySum = 0
-		paySum = 0
-		soldSum = 0
-		feeSum = 0
+		balance = 0 // not work ?? why?
 
 		user = {}
 		userOk = false
 		clientAnonym = false
 		userPlaceholder = 'Trouver un client'
+	}
+
+	function focusInSearchUser() {
+		userOk = false
+		clientAnonym = false
+		userPlaceholder = 'Trouver un client'
+		searchUser = '' // Malin ou pas ?
 	}
 
 	function clickClientAnonym() {
@@ -175,6 +177,7 @@
 					<SearchUser modeSelect 
 								id="1"
 								on:input={inputSearchUser}
+								on:focusin={focusInSearchUser}
 								placeholder={userPlaceholder}
 								bind:search={searchUser}
 								on:select="{userSelected}"/>
@@ -186,11 +189,15 @@
 					
 					<!-- TODO: open LOGIN blocked for create account-->
 					<Button
+					on:click="{() =>  dialogLogin.open()}"
 					color="secondary"
 					variant="outlined"
 					class="w3-margin-left">
 					<i class="fas fa-user-plus w3-large"></i>&nbsp;Nouveau client
-					</Button>	
+					</Button>
+					<Dialog bind:this={dialogLogin}>
+						<Login id="NewClient"/>
+					</Dialog>
 
 					<Button
 					on:click={clickClientAnonym}
@@ -207,7 +214,7 @@
 
 
 		{#if userOk}
-		<div in:fade={{duration: 200}} style="height: calc(100% - 126px);">
+		<div transition:fade={{duration: 200}} style="height: calc(100% - 126px);">
 
 			<!-- Action -->
 			<div class="onglets w3-margin-top w3-border-top">

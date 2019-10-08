@@ -180,7 +180,7 @@
                 </div>
             {:then}
                 {#each provided.filter(art => !art.valided).slice(0, LIMIT_LIST_A) as article (article._id)}
-                    <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
+                    <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                         <Article article={article} clickable on:select="{() => clickProposedArticle(article._id)}"/>
  
@@ -228,7 +228,7 @@
                         .sort(sortByUpdatedAt)
                         .slice(0, LIMIT_LIST_B) as article (article._id)}
 
-                    <div in:receive="{{key: article._id}}" out:send="{{key: article._id}}" animate:flip="{{duration: 200}}">
+                    <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                         <Article article={article} timeKey={'validTime'} on:remove="{() => removeArticle(article._id)}"/>
 

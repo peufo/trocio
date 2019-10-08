@@ -1,14 +1,15 @@
 <script>
     import { onMount, onDestroy } from 'svelte'
     import { slide, fade } from 'svelte/transition'
-    import { getHeader } from './utils'
+    import { createEventDispatcher } from 'svelte'
+    const dispatch = createEventDispatcher()
     import { me } from './stores'
-    import { createEventDispatcher } from 'svelte';
-	const dispatch = createEventDispatcher();
-
+    import { getHeader } from './utils'
+    import randomize from 'randomatic'
+    
     export let id = 'login' //For focus()
 
-    let newUser = false
+    let newUser = !!$me._id
     let reset = false
     let name = ''
     let mail = ''
@@ -25,6 +26,8 @@
 
     onMount(() => {
        focus()
+        console.log('prout')
+       if (!!$me._id) password = randomize('Aa0', 6)
     })
 
     onDestroy(() => {
@@ -101,7 +104,7 @@
 {#if !close} <!-- Belle rustine-->
 <div id="{`loginForm${id}`}" class="w3-padding" style="min-width: 330px;">
 
-    {#if newUser}
+    {#if newUser || $me._id}
         <h3 class="w3-center" in:fade>Nouveau compte</h3>
     {:else if reset}
         <h3 class="w3-center" in:fade>Récupération</h3>
@@ -134,7 +137,7 @@
             on:keyup="{e => e.which == 13 && submit()}">
     </div>							
 
-    {#if !reset}
+    {#if !reset && !$me._id}
     <div transition:slide|local>
         <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
         <div class="w3-rest">
@@ -148,7 +151,7 @@
     </div>					
     {/if}
 
-    {#if newUser}
+    {#if newUser && !$me._id}
     <div transition:slide|local>
         <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
         <div  class="w3-rest">
@@ -162,21 +165,42 @@
     </div>
     {/if}
 
+    {#if !!$me._id}
+    <div transition:slide|local>
+        <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
+        <div  class="w3-rest">
+            <input
+                bind:value={password}
+                class="userInput w3-input"
+                type="text"
+                readonly
+                on:keyup="{e => e.which == 13 && submit()}">
+        </div>						
+    </div>
+    {/if}
+
     <div>
         <div class="w3-margin-top w3-small">
 
-            <div on:click="{() => {newUser = !newUser; reset = false; focus()}}" class="underline-div w3-padding">
-                <span class="underline-span">
-                    {newUser ? `Déjà un compte ?` : `Nouveau compte ?`} 
-                </span>
-            </div>
-            
-            {#if !newUser}
-                <div on:click="{() => {reset = !reset; focus()}}" class="underline-div w3-padding">
+            {#if !$me._id}
+                <div on:click="{() => {newUser = !newUser; reset = false; focus()}}" class="underline-div w3-padding">
                     <span class="underline-span">
-                        {reset ? 'Login ?' : 'Oubli ?'} 
+                        {newUser ? `Déjà un compte ?` : `Nouveau compte ?`} 
                     </span>
                 </div>
+                
+                {#if !newUser}
+                    <div on:click="{() => {reset = !reset; focus()}}" class="underline-div w3-padding">
+                        <span class="underline-span">
+                            {reset ? 'Login ?' : 'Oubli ?'} 
+                        </span>
+                    </div>
+                {/if}
+            {:else}
+
+                <span class="w3-padding">
+                    Transmettez le mot de passe au client ! 
+                </span>
             {/if}
 
             {#await submitPromise}

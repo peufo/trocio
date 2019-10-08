@@ -17,7 +17,7 @@
 	//1. Utilisé ._id au lieu de .mail
 	//2. remplacer user par item
 	//3. Utilisé <slot> pour la représentation
-	
+
 
 
 	let users = []
@@ -118,6 +118,11 @@
 
 	$: selectOk = itemSelected.name == search
 
+	function focusin() {
+		focus = true
+		dispatch('focusin')
+	}
+
 	function focusout() {
 		setTimeout(() => focus = false, 200)
 	}
@@ -129,7 +134,7 @@
 			bind:value={search}
 			on:keydown={keydown}
 			on:input={input}
-			on:focusin="{() => focus = true}"
+			on:focusin="{focusin}"
 			on:focusout="{focusout}"
 			type="text" 
 			class="w3-input searchUser"

@@ -3,7 +3,7 @@
     import { me, troc } from './stores'
     import Login from './Login.svelte'
 	import Button from '@smui/Button'
-	import Dialog, {Title, Content, Actions, InitialFocus} from '@smui/dialog';
+	import Dialog from '@smui/dialog'
 
 	let dialogLogin
 
