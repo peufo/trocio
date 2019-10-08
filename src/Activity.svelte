@@ -1,7 +1,7 @@
 <script>
     import { me } from './stores'
     import EditForm from './EditForm.svelte'
-	import Button from '@smui/Button'
+	import Button from '@smui/button'
     import Dialog, {Title, Content, Actions, InitialFocus} from '@smui/dialog';
     import List, {Item, Text, PrimaryText, SecondaryText, Meta} from '@smui/list';
 
