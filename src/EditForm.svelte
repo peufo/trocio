@@ -1,5 +1,5 @@
 <script>
-	import { troc } from './stores'
+	import { me, troc } from './stores'
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
 	import { createEventDispatcher } from 'svelte'
@@ -81,7 +81,10 @@
 
 			fetch(`/trocs`, getHeader({name, address, location, description, schedule, society, societyweb}))
 			.then(res => res.json())
-			.then(json => updateTroc(json, () => dispatch('create')))
+			.then(json => updateTroc(json, () => {
+				$me.creditTroc--
+				dispatch('create')
+			}))
 
 		}
 	}

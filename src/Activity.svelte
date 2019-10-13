@@ -44,6 +44,7 @@
 variant="outlined"
 color="secondary"
 class="w3-padding"
+disabled={!$me.creditTroc}
 on:click="{() => dialogCreateTroc.open()}"
 >
     Organiser mon troc
