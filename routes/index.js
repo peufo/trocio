@@ -4,13 +4,12 @@ var got = require('got')
 var path = require('path')
 var bwipjs = require('bwip-js')
 var { checkCashier, checkAdmin } = require('../controllers/troc')
-var { checkLogin } = require('../controllers/user')
 
 router
 	.get('/', (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'trocs.html'))
 	})
-	.get('/me', checkLogin, (req, res, next) => {
+	.get('/me', (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'me.html'))
 	})
 	.get('/cashier/:id', checkCashier, (req, res, next) => {
