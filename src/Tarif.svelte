@@ -10,6 +10,7 @@
 	export let apply = []
 	export let margin = 0
 	export let fee = []
+	export let maxarticles = 0
 	export let bydefault = false		
 	
 
@@ -127,6 +128,23 @@
 
 	</div>
 	
+	<hr>
+
+	<!-- Nombre maximum d'article autorisé (maxarticles) -->
+	<div class="w3-row">
+		<div class="w3-col m5 w3-padding">
+			Nombre maximum d'article autorisés:
+		</div>
+
+		<div class="w3-col number">
+			<input bind:value={maxarticles} class="w3-input" type="number" max="9999">
+		</div>
+		<div class="w3-padding">
+			<i class="fas fa-cube"></i>
+		</div>
+
+	</div>
+
 	<hr>
 
 	<!-- Apply -->

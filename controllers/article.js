@@ -109,8 +109,26 @@ function deleteArticle(req, res, next) {
 	})
 }
 
+function getAutorization(userId, art, cb) {
+
+	//Verifie si l'utilisateur doit être caissier ou admin
+	Troc.findOne({_id: art.troc}, {admin: 1, cashier: 1}, (err, troc) => { // TODO: Pas très efficient
+		if (err || !troc) return cb(err || Error('troc not found !'))
+		let isAdmin = troc.admin.map(a => a.toString()).indexOf(userId) != -1
+		let isCashier = troc.cashier.map(a => a.toString()).indexOf(userId) != -1
+		let isProvider = !art.valided && art.provider.toString() == userId
+
+		if (isAdmin || isCashier) return cb(null, 'cashier')
+		if (isProvider) return cb(null, 'provider')
+		return cb(Error('Not authorized'))
+		
+	})
+	
+}
+
 module.exports = {
 	createArticle,
 	validArticle,
-	deleteArticle
+	deleteArticle,
+	getAutorization
 }

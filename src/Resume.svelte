@@ -2,9 +2,11 @@
 	import { fade, slide, crossfade } from 'svelte/transition'
 	import { onMount, onDestroy } from 'svelte'
 	import { flip } from 'svelte/animate'
+	import Dialog, {Title, Content} from '@smui/dialog'
 	import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
+
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
@@ -50,7 +52,7 @@
 	let importArticles = [] 			//Array formated
 	let failFormatRaison = ''			//Message if importArticlesValue is unavailable
 
-	let tarifOpen = false
+	let tarifInfoDialog
 
 	onMount(() => {
 		console.log('Mount Resume')
@@ -231,6 +233,7 @@
 		.then(res => res.json())
 		.then(json => {
 			tarif = json
+			console.log(tarif)
 		})
 	}
 
@@ -417,7 +420,7 @@
 					<th>Articles</th>
 					<th>Status</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
 					<th>Prix <span class="w3-small sold">{soldSum.toFixed(2)}</span></th>
-					<th on:click="{() => tarifOpen = true}">Frais 
+					<th on:click="{() => tarifInfoDialog.open()}">Frais 
 						<span class="w3-small fee">{feeSum.toFixed(2)}</span>
 					</th>
 					<th></th><!--remove-->
@@ -471,7 +474,7 @@
 						</td>
 
 						<!-- Frais -->
-						<td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided} on:click="{() => tarifOpen = true}">
+						<td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided} on:click="{() => tarifInfoDialog.open()}">
 							{article.fee.toFixed(2)}
 							{@html article.sold ? ` <span class="w3-tiny">+</span> ${article.margin.toFixed(2)}` : ''}
 						</td>
@@ -521,6 +524,30 @@
 
 </div>
 
+{#if tarif}
+<Dialog bind:this={tarifInfoDialog}>
+	<Title>Vous êtes soumis au tarif <b>{tarif.name}</b>: </Title>
+	<Content>
+		<h5>Frais de traitement
+			<span class="w3-small w3-opacity">Appliqué au dépot de l'article</span>
+		</h5>
+		{#each tarif.fee as fee}
+			A partir de {fee.price} <i class="fas fa-arrow-right"></i> {fee.value} <br>
+		{/each}
+		
+		<br>
+		<h5>Marge
+			<span class="w3-small w3-opacity">Appliquée à la vente de l'article</span>
+		</h5>
+		{tarif.margin * 100} <i class="fas fa-percent"></i>
+		
+		<br>
+		<h5>Nombre maximum d'article</h5>
+		{tarif.maxarticles}
+
+	</Content>
+</Dialog>
+{/if}
 
 <style>
 

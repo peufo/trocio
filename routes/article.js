@@ -1,6 +1,8 @@
 var express = require('express')
 var Article = require('../models/article')
-var { createArticle, deleteArticle } = require('../controllers/article')
+var Troc = require('../models/troc')
+var { createArticle, deleteArticle, getAutorization } = require('../controllers/article')
+var { checkLogin } = require('../controllers/user')
 var router = express.Router()
 
 router
@@ -71,32 +73,96 @@ router
 
 		})
 	})
-	.patch('/', (req, res, next) => {
+	.patch('/', checkLogin, (req, res, next) => {
+		//Verifie si le les article vienne tous du même fournisseur
+		var uniqueProvider = req.body.map(a => a.provider).filter((v, i, self) => self.indexOf(v) === i).length == 1
+		if (!uniqueProvider) return next(Error('provideur is not unique'))
+
+		//Verifie si le les article vienne tous du même troc
+		var uniqueTroc = req.body.map(a => a.troc).filter((v, i, self) => self.indexOf(v) === i).length == 1
+		if (!uniqueTroc) return next(Error('Troc is not unique'))
+
 		var errors = []
 		var ids = req.body.map(a => a._id)
 		Article.find({_id: {$in: ids}}, (err, articles) => {
 			if (err || !articles.length) return next(err || Error('Article not found'))
-			articles.forEach(async art => {
-				var patchedArt = req.body[ids.indexOf(String(art._id))]
-				if (patchedArt._id) delete patchedArt._id
-				for(p in patchedArt) art[p] = patchedArt[p]
-				var err = await art.save()
-				if (err) errors.push(err)
-				return
+
+			getAutorization(req.session.user._id, articles[0], (err, authorization) => {
+				if (err) return next(err)
+
+				if (authorization == 'provider') {
+					articles.forEach(async art => {
+						var patchedArt = req.body[ids.indexOf(String(art._id))]
+						if (patchedArt._id) delete patchedArt._id
+						if (patchedArt.provider) delete patchedArt.provider
+
+						//PATCH
+						if (patchedArt.name) art.name = patchedArt.name
+						if (patchedArt.price) art.price = patchedArt.price
+						//TODO: Changer par un calcule interne
+						if (patchedArt.fee) art.fee = patchedArt.fee
+						if (patchedArt.margin) art.margin = patchedArt.margin
+
+						var err = await art.save()
+						if (err) errors.push(err)
+						return
+					})
+
+				}else if(authorization == 'cashier') {
+					articles.forEach(async art => {
+						var patchedArt = req.body[ids.indexOf(String(art._id))]
+						if (patchedArt._id) delete patchedArt._id
+						if (patchedArt.provider) delete patchedArt.provider
+
+						//PATCH
+						for(p in patchedArt) art[p] = patchedArt[p]
+
+						var err = await art.save()
+						if (err) errors.push(err)
+						return
+					})
+
+				}else {
+					return next(Error('Authorization unknow'))
+				}
+
+				if (errors.length) return next(errors[0])
+				res.json({success: true, message: articles})
+
 			})
-			if (errors.length) return next(errors[0])
-			res.json({success: true, message: articles})
+
 		})
 	})
-	.patch('/:id', (req, res, next) => {
+	.patch('/:id', checkLogin, (req, res, next) => {
+		
 		Article.findById(req.params.id, (err, art) => {
 			if(err || !art) return next(err || Error('Article not found'))
 			if (req.body._id) delete req.body._id
-			for(p in req.body) art[p] = req.body[p]
-			art.save(err => {
+			if (req.body.provider) delete req.body.provider
+
+
+			getAutorization(req.session.user._id, art, (err, authorization) => {
 				if (err) return next(err)
-				res.json(art)
-			})
+
+				if (authorization == 'provider') {
+					if (req.body.name) art.name = req.body.name
+					if (req.body.price) art.price = req.body.price
+					//TODO: Changer par un calcule interne
+					if (req.body.fee) art.fee = req.body.fee
+					if (req.body.margin) art.margin = req.body.margin
+
+				}else if(authorization == 'cashier'){ //=> modification limiter au prix et au nom
+					for(p in patchedArt) art[p] = patchedArt[p]
+
+				}else{
+					return next(Error('Authorization unknow'))
+				}
+
+				art.save(err => {
+					if (err) return next(err)
+					res.json({success: true, message: art})
+				})
+			})	
 		})
 	})
 

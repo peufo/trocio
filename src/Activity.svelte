@@ -2,7 +2,7 @@
     import { me } from './stores'
     import EditForm from './EditForm.svelte'
 	import Button from '@smui/button'
-    import Dialog, {Title, Content, Actions, InitialFocus} from '@smui/dialog';
+    import Dialog, {Title, Content} from '@smui/dialog';
     import List, {Item, Text, PrimaryText, SecondaryText, Meta} from '@smui/list';
 
     let dialogCreateTroc
@@ -50,7 +50,10 @@ on:click="{() => dialogCreateTroc.open()}"
 </Button>
 
 <Dialog bind:this={dialogCreateTroc}>
-	<EditForm createMode on:create="{() => dialogCreateTroc.close()}"/>
+    <Title>Nouveau troc</Title>
+    <Content>
+	    <EditForm createMode on:create="{() => dialogCreateTroc.close()}"/>
+    </Content>
 </Dialog>
 
 <Button variant="outlined" color="secondary" class="w3-padding" href="/">

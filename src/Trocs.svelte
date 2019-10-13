@@ -213,7 +213,7 @@
 						</div>
 
 						<div class="w3-padding underline-div onglet" on:click="{() => troc.tabSelect = 1}" class:actived="{troc.tabSelect == 1}">
-							<span class="underline-span">{troc.activity ? `Voir mon activité` : `Proposer un article`}</span>
+							<span class="underline-span">Voir mon activité</span>
 						</div>
 
 						<!--Access butons icon-->

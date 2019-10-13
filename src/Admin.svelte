@@ -161,6 +161,7 @@
 						bind:apply={tarif.apply}
 						bind:margin={tarif.margin}
 						bind:fee={tarif.fee}
+						bind:maxarticles={tarif.maxarticles}
 						bind:bydefault={tarif.bydefault}
 						on:remove="{() => removeTarif(i)}"
 						on:selectUser="{() => changeFlag = true}"/>

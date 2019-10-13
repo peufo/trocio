@@ -52,17 +52,6 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
 
-  //set Status 
-  switch (err.message) {
-    case 'Login required':
-        res.status(401)
-      break;
-    default:
-        res.status(404)
-      break;
-  }
-
-
   if (req.app.get('env') === 'development' || err.name == 'Error'){
     console.log(err.name)
     console.log(err)

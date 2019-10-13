@@ -26,7 +26,8 @@ var trocModel = new Schema({
 		fee: [{
 			price: Number,
 			value: Number
-		}]
+		}],
+		maxarticles: {type: Number, default: 100}
 	}],
 	articlelastref: {type: Number, required: true, default: 0},
 

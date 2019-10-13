@@ -66,14 +66,14 @@
 		const res = await fetch(path, getHeader(body, 'PATCH'))
 		const json = await res.json()
 		patchCount--
-		if (res.ok && json.success) {
+		if (json.success) {
 			if (patchCount == 0 && !onModify) {
 				if (trocRefresh) troc.refresh(json.message)
 				waitingOnAction = setTimeout(() => onAction = false, 1000)
 			}
 			return 
 		}else{
-			return Error('Echec de le mise a jour')
+			throw Error(json.message)
 		}
 	}
 

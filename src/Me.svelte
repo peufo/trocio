@@ -4,7 +4,6 @@
     import { slide, fade } from 'svelte/transition'
     import { getHeader } from './utils'
 
-    import Login from './Login.svelte'
     import Activity from './Activity.svelte'
 
     import Textfield from '@smui/textfield'
@@ -89,8 +88,8 @@
 {#if !$me._id}
 
     <div class="w3-display-container" style="height: calc(100% - 96px);">
-        <div class="w3-display-middle w3-card w3-round" style="width: 400px;">
-            <Login/>
+        <div class="w3-display-middle">
+            <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
         </div>
     </div>
 
