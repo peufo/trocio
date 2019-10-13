@@ -43,8 +43,7 @@ function getTrocUser(id, cb){
 
 function createTroc(req, res, next) {
 	if (!req.session.user) return next(Error('Login required'))
-	if (!req.session.user.creditTroc) return next(Error('No credit'))
-
+	
 	var troc = new Troc(req.body)
 	troc.creator = req.session.user._id
 	troc.admin = [req.session.user._id]
@@ -57,12 +56,15 @@ function createTroc(req, res, next) {
 			{price: 5, value: 1}
 		]
 	}
+	
+	User.findOne({_id: req.session.user._id}, (err, user) => {
+		if (err || !user) return next(err || Error('User not found !'))
+		if (user.creditTroc) return next(Error('No credit'))
 
-	troc.save(err => {
-		if (err) return next(err)
+		troc.save(err => {
+			if (err) return next(err)
 		
-		User.findOne({_id: req.session.user._id}, (err, user) => {
-			if (err || !user) return next(err || Error('User not found !'))
+		
 			user.trocs.push(troc._id)
 			user.creditTroc--
 			user.save(err => {
