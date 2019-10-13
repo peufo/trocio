@@ -121,8 +121,8 @@ module.exports = {
 				user.mailvalided = true
 				user.save(err => {
 					if (err) return next(err)
-					
-					res.redirect('/me')
+					if (req.session.user) res.redirect('/me')
+					else res.redirect('/')
 				})
 			})
 		})
