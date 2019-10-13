@@ -7,7 +7,7 @@ router
     })
     .get('/addCredit/:userId', checkSuperAdmin, (req, res, next) => {
         User.findOne({_id: req.params.userId}, {mail: 1, creditTroc: 1}, (err, user) => {
-            if (err) return next(Error('User not found'))
+            if (err || !user) return next(err || Error('User not found'))
             if (user.creditTroc) user.creditTroc++
             else user.creditTroc = 1
             user.save(err => {
