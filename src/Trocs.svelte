@@ -206,7 +206,6 @@
 					
 					<!-- Onglets -->
 					<div class="onglets w3-border-top">
-
 						
 						<div class="w3-padding underline-div onglet" on:click="{() => troc.tabSelect = 0}" class:actived="{troc.tabSelect == 0}">
 							<span class="underline-span">Fouiller les articles ({troc.articlelastref})</span>

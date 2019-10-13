@@ -178,6 +178,12 @@
 
 	async function createArticle() {
 
+		if (tarif && provided.length + 1 > tarif.maxarticles) {
+			alert(`Désolé, vous avez proposé trop d'article`)
+			tarifInfoDialog.open()
+			return
+		}
+
 		let res = await fetch('/articles', getHeader({troc: trocId, provider: userId}))
 		let json = await res.json()
 		if (json.success) {
@@ -198,6 +204,12 @@
 	}
 
 	async function createImportArticles() {
+
+		if (tarif && provided.length + importArticles.length > tarif.maxarticles) {
+			alert(`Désolé, vous avez proposé trop d'article`)
+			tarifInfoDialog.open()
+			return
+		}
 
 		//Calcul fee... Bad idea on frontside ???
 		importArticles.forEach(art => art.fee = getFee(art, tarif))
@@ -393,13 +405,15 @@
 						{failFormatRaison.length ? failFormatRaison : `Annuler la proposition`}
 					</span>
 				{:else}
-					<span on:click="{() => createImportArticlesPromise = createImportArticles()}" class="validButton w3-round w3-padding">
-						{#await createImportArticlesPromise}
+					{#await createImportArticlesPromise}
+						<span class="validButton w3-round w3-padding">
 							<i class="fas fa-circle-notch w3-spin"></i> Création des articles ...
-						{:then}
+						</span>
+					{:then}
+						<span on:click="{() => createImportArticlesPromise = createImportArticles()}" class="validButton w3-round w3-padding">
 							Valider la proposition des {importArticles.length} articles
-						{/await}
-					</span>
+						</span>
+					{/await}
 				{/if}
 			</div>
 			
@@ -528,11 +542,15 @@
 <Dialog bind:this={tarifInfoDialog}>
 	<Title>Vous êtes soumis au tarif <b>{tarif.name}</b>: </Title>
 	<Content>
+		<h5>Nombre maximum d'article proposés</h5>
+		{tarif.maxarticles} <i class="fas fa-cube"></i>
+		<br><br>
+
 		<h5>Frais de traitement
 			<span class="w3-small w3-opacity">Appliqué au dépot de l'article</span>
 		</h5>
 		{#each tarif.fee as fee}
-			A partir de {fee.price} <i class="fas fa-arrow-right"></i> {fee.value} <br>
+			A partir de {fee.price.toFixed(2)} <i class="fas fa-arrow-right"></i> {fee.value.toFixed(2)} <br>
 		{/each}
 		
 		<br>
@@ -540,10 +558,6 @@
 			<span class="w3-small w3-opacity">Appliquée à la vente de l'article</span>
 		</h5>
 		{tarif.margin * 100} <i class="fas fa-percent"></i>
-		
-		<br>
-		<h5>Nombre maximum d'article</h5>
-		{tarif.maxarticles}
 
 	</Content>
 </Dialog>
