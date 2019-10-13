@@ -56,10 +56,10 @@ function createTroc(req, res, next) {
 			{price: 5, value: 1}
 		]
 	}
-	
+
 	User.findOne({_id: req.session.user._id}, (err, user) => {
 		if (err || !user) return next(err || Error('User not found !'))
-		if (user.creditTroc) return next(Error('No credit'))
+		if (!user.creditTroc) return next(Error('No credit'))
 
 		troc.save(err => {
 			if (err) return next(err)
