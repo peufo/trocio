@@ -7,7 +7,9 @@ module.exports = {
 
 	checkLogin: (req, res, next) => {
 		if (req.session.user) return next()
-		else return next(Error('Login required'))
+		else {
+			return next(Error('Login required')
+		)}
 	},
 
 	createUser: (req, res, next) => {
@@ -16,10 +18,10 @@ module.exports = {
 		user.save(err => {
 			if (err) {
 				if ( err.name == 'MongoError' && err.code == 11000) { //dup key
-					err.name = 'userError'
+					err.name = 'Error'
 					err.message = 'Le mail indiqué est déjà utilisé !'
 				}else if ( err.name == 'ValidationError') {
-					err.name = 'userError'
+					err.name = 'Error'
 					err.message = `Renseignement invalide`
 				}
 				return next(err)
@@ -34,36 +36,33 @@ module.exports = {
 	},
 
 	login: (req, res, next) => {
-		let userError = new Error()
-		userError.name ='userError' //userError is followed in production
+
 
 		if (!req.body.mail || !req.body.password) {
-			userError.message = 'Renseignement manquant !'
-			return next(userError)
+			return next(Error('Renseignement manquant !'))
 		}else{
 			User.getAuthenticated(req.body.mail, req.body.password, (err, user, reason) => {
 				if (!err) {
 					if (user) {
 						console.log(`Nouvelle connection de ${user.name}`)
 						req.session.user = user
-						//La redirection ce fait côté client
+						//La redirection se fait côté client
 						res.redirect('/users/me')
 					}else{
 						var reasons = User.failedLogin
 						switch(reason){
 							case reasons.NOT_FOUND:
-								userError.message = 'Le mail indiqué n\'est pas associé à un compte!'
+								next(Error('Le mail indiqué n\'est pas associé à un compte!'))
 								break
 							case reasons.PASSWORD_INCORRECT:
-								userError.message = 'Mot de passe invalide!'
+								next(Error('Mot de passe invalide!'))
 								break
 							case reasons.MAX_ATTEMPTS:
-								userError.message = 'Ce compte est temporairement verrouillé!'
+								next(Error('Ce compte est temporairement verrouillé!'))
 								break
 							default:
-								userError.message = 'Erreur, raison inconnue!'
+								next(Error('Erreur, raison inconnue!'))
 						}
-						next(userError)
 					}
 				}else next(err)
 			})			
@@ -106,7 +105,7 @@ module.exports = {
 	},
 
 	sendValidMail:(req, res, next) => {
-		if (!req.session.user) return next(err)
+		if (!req.session.user) return next(Error('Login required'))
 		mail.sendValidMail(req.session.user, err => {
 			if (err) return next(err)
 			res.json({success: true, message: `Mail sent for validation on address ${req.session.user.mail}`})
@@ -114,7 +113,7 @@ module.exports = {
 	},
 
 	validMail:(req, res, next) => {
-		if (!req.session.user) return next(err)
+		if (!req.session.user) return next(Error('Login required'))
 		Mailvalidator.findOne({user: req.session.user._id}, (err, mv) => {
 			if (err || !mv) return next(err || Error(`MailValidator not exist`))
 			if (req.params.url != mv.url) return next(Error(`Url isn't correct`))

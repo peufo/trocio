@@ -81,7 +81,7 @@ function getUrlValidMail(user, cb) {
     Mailvalidator.findOne({user: user._id}, (err, mv) => {
         if (err) return next(err)
         if (mv) {
-            mv.validity = +new Date() + 2*60*60*1000
+            mv.validity = +new Date() + 10*60*60*1000
             mv.url = randomize('a0', 256)
             mv.save(err => {
                 if (err) return next(err)
