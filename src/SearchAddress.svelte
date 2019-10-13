@@ -15,8 +15,8 @@
 		selected = -1
 
 	let icon = L.icon({
-		iconUrl:'images/marker-icon.png',
-		iconRetinaUrl: 'images/marker-icon-2x.png',
+		iconUrl:'/images/marker-icon.png',
+		iconRetinaUrl: '/images/marker-icon-2x.png',
 		iconSize: [28, 42],
 		iconAnchor: [14, 42],
 		popupAnchor: [-14, 40],

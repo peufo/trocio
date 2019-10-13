@@ -4,7 +4,7 @@ export let troc = createTroc()
 export let me = writable({}, getMe)
 
 function getMe(set) {
-	fetch('users/me').then(res => res.json()).then(set)
+	fetch('/users/me').then(res => res.json()).then(set)
 }
 
 function createTroc() {

@@ -5,6 +5,11 @@ var randomize = require('randomatic')
 
 module.exports = {
 
+	checkLogin: (req, res, next) => {
+		if (req.session.user) return next()
+		else return next(Error('Login required'))
+	},
+
 	createUser: (req, res, next) => {
 		var user = new User(req.body)
 

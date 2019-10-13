@@ -1,5 +1,6 @@
 <script>
 	import { me } from './stores'
+	import Button from '@smui/button'
 	import Resume from './Resume.svelte'
 	import Articles from './Articles.svelte'
 	import Toggle from './Toggle.svelte'
@@ -101,19 +102,6 @@
 		})
 	}
 
-	$: { //Check if user as admin or cashier
-		if ($me.trocs) {
-			trocs.forEach(troc => {
-				let index = $me.trocs.map(tr => tr._id).indexOf(troc._id)
-				troc.activity = index != -1
-				if (troc.activity) {
-					troc.isCashier = $me.trocs[index].cashier
-					troc.isAdmin = $me.trocs[index].admin
-				}
-			})
-		}
-	}
-
 </script>
 
 <div id="vue">
@@ -180,7 +168,7 @@
 					<div class="w3-row">
 						<div class="w3-col m8 w3-padding">
 							<span class="w3-large">{troc.name}</span>
-							<a href={`https://${troc.societyweb}`}>
+							<a href={troc.societyweb ? `https://${troc.societyweb}` : ''}>
 								<i>{troc.society}</i>
 							</a>
 							<br>
@@ -189,6 +177,10 @@
 								{troc.address}
 							</span>
 							<p>{troc.description}</p>
+							
+							<Button href={`https://${troc.societyweb}`} dense color="secondary">
+								<i class="fas fa-globe"></i>&nbsp;{troc.societyweb}
+							</Button>
 							
 						</div>
 
@@ -227,13 +219,13 @@
 						<!--Access butons icon-->
 						{#if troc.isAdmin}
 							<div class="w3-right w3-padding button-icon w3-center">
-								<a href="{`/admin#${troc._id}`}">
+								<a href="{`/admin/${troc._id}`}">
 									<i class="fa fa-cog w3-large"></i>
 								</a>
 							</div>
 						{:else if troc.isCashier}
 							<div class="w3-right w3-padding button-icon w3-center">
-								<a href="{`/cashier#${troc._id}`}">
+								<a href="{`/cashier/${troc._id}`}">
 									<i class="fa fa-cash-register w3-large"></i>
 								</a>
 							</div>							

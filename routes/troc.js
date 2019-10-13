@@ -33,8 +33,21 @@ router
 		if (!isNaN(sud))   	query.$and.push({'location.lat': {$gt: sud}})
 		if (!isNaN(west))  	query.$and.push({'location.lng': {$gt: west}})
 
-		Troc.find(query).exec((err, trocs) => {
+		Troc.find(query).lean().exec((err, trocs) => {
 			if (err) return next(err)
+
+			//Admin and cashier becomes booleans
+			if (req.session.user) {
+				trocs.forEach(troc => {
+					troc.isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+					troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(req.session.user._id.toString()) != -1
+				})
+			}else{
+				trocs.forEach(troc => {
+					delete troc.admin
+					delete troc.cashier
+				})
+			}
 			res.json(trocs)
 		})
 	})
@@ -54,18 +67,43 @@ router
 		})
 	})
 	.get('/:id', (req, res, next) => {
-		if (!req.session.user) return next(Error('Login required'))
-		ctrl.getTrocUser(req.params.id, (err, troc) => {
-			if (err || !troc) return next(err || Error('Not found'))
-			res.json(troc)
-		})
+		if (req.session.user) {
+
+			Troc.findOne({_id: req.params.id}).lean().exec((err, troc) => {
+				if (err || !troc) return next(err || Error('Not found'))
+
+				let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+				
+				if (isAdmin) {
+					ctrl.getTrocUser(req.params.id, (err, troc) => {
+						if (err || !troc) return next(err || Error('Not found'))
+						troc.isAdmin = true
+						troc.isCashier = false
+						res.json(troc)
+					})
+				}else{
+					troc.isAdmin = false
+					troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(req.session.user._id.toString()) != -1
+					res.json(troc)
+				}
+			})
+	
+		}else{
+			Troc.findOne({_id: req.params.id}).lean().exec((err, troc) => {
+				if (err || !troc) return next(err || Error('Not found'))
+				delete troc.admin
+				delete troc.cashier
+				res.json(troc)
+			})
+		}
+		
 	})
 	.post('/', ctrl.createTroc)
-	//TODO: Ajout du contrôle des droit
-	.patch('/:id', (req, res, next) => {
+	.patch('/:id', ctrl.checkAdmin, (req, res, next) => {
 		if (!req.session.user) return next(Error('Login required'))
-		ctrl.getTrocUser(req.params.id, (err, troc) => {
+		Troc.findOne({_id: req.params.id}).exec((err, troc) => {
 			if(err || !troc) return next(err || Error('Not found'))
+			
 			if (req.body._id) delete req.body._id
 			if (req.body.__v) delete req.body.__v
 			for(p in req.body){troc[p] = req.body[p]}
@@ -75,9 +113,10 @@ router
 			})
 		})
 	})
-	.post('/:id/admin', ctrl.addAdmin)
-	.post('/:id/cashier', ctrl.addCashier)
-	.post('/:id/admin/remove', ctrl.removeAdmin)
-	.post('/:id/cashier/remove', ctrl.removeCashier)
+	.post('/:id/admin', ctrl.checkAdmin, ctrl.addAdmin)
+	.post('/:id/cashier', ctrl.checkAdmin, ctrl.addCashier)
+	.post('/:id/admin/remove', ctrl.checkAdmin, ctrl.removeAdmin)
+	.post('/:id/cashier/remove', ctrl.checkAdmin, ctrl.removeCashier)
+
 
 module.exports = router

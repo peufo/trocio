@@ -26,7 +26,6 @@
 
     onMount(() => {
        focus()
-        console.log('prout')
        if (!!$me._id) password = randomize('Aa0', 6)
     })
 

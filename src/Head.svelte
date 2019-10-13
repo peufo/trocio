@@ -13,7 +13,7 @@
 
 	<div class="w3-col s4">
 		<a href="/" class="clickable w3-xlarge">
-			<img src="favicon.ico" alt="logo Trocio" height="35" style="transform: translate(0px, -2px);">
+			<img src="/favicon.ico" alt="logo Trocio" height="35" style="transform: translate(0px, -2px);">
 			TROCIO<span class="w3-tiny" style="color: red;">alpha</span>
 		</a>
 	</div>

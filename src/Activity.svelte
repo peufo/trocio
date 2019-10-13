@@ -9,7 +9,7 @@
 
     let trocSelectionIndex
 
-
+    $: console.log($me)
 </script>
 
 {#if $me._id}
@@ -21,12 +21,12 @@
                 <SecondaryText>{troc.address}</SecondaryText>
             </Text>
             <Meta>
-                {#if troc.admin}
-                    <a href="{`/admin#${troc._id}`}">
+                {#if troc.isAdmin}
+                    <a href="{`/admin/${troc._id}`}">
                         <i class="fa fa-cog button-icon w3-large w3-padding"></i>
                     </a>
-                {:else if troc.cashier}
-                    <a href="{`/cashier#${troc._id}`}">
+                {:else if troc.isCashier}
+                    <a href="{`/cashier/${troc._id}`}">
                         <i class="fa fa-cash-register w3-large w3-padding"></i>
                     </a>
                 {/if}

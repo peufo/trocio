@@ -153,7 +153,7 @@
                 </div>
 
             {:else}
-                <span class="w3-opacity">Le panier de {user.name} est vide</span>
+                <span class="w3-opacity">Le panier {user.name ? `de ${user.name}` : ''} est vide</span>
             {/each}
         </div>
 

@@ -25,11 +25,8 @@
 	]
 
 	onMount(() => {
-		if (document.location.hash.substr(1).length == 24) {
-			troc.find(document.location.hash.substr(1))
-		} else {
-			$troc = {failed: true, reason: 'Bad request'}
-		}
+		console.log('HEY')
+		troc.find(location.pathname.replace('/admin/',''))
 	})
 
 	function saveMeta(e) {
@@ -69,13 +66,11 @@
 
 	let changeFlag = false //For SearchUser to AutoPatch 
 
-	function selectTab(i) { //Util ?
+	function selectTab(i) { //TODO: Util ?
 		oldTabSelected = tabSelected
 		tabSelected = i
 		setTimeout(() => oldTabSelected = -1, 450)
 	}
-
-	$: console.log(oldTabSelected)
 
 </script>
 
@@ -106,7 +101,6 @@
 		</div>
 	{/each}
 	</div>
-
 
 	{#if $troc._id}
 	<div class="tabs" style="height: calc(100% - 38px);">
@@ -202,7 +196,7 @@
 		<!-- Caisse  -->
 		<div class="tab" class:center={tabSelected == 6} class:left={tabSelected > 6} class:right={tabSelected < 6}>
 			<br>
-			<Cashier/>
+			<Cashier adminIntegration/>
 		</div>
 		
 	</div>

@@ -14,6 +14,8 @@
 	import Resume from './Resume.svelte'
 	import Login from './Login.svelte'
 
+	export let adminIntegration = false //For not reload troc
+
 	let dialogLogin // Create user
 
 	let user = {}
@@ -50,11 +52,7 @@
 
 
     onMount(() => {
-		if (document.location.hash.substr(1).length == 24) {
-			troc.find(document.location.hash.substr(1))
-		} else {
-			$troc = {failed: true, reason: 'Bad request'}
-		}
+		if (!adminIntegration) troc.find(location.pathname.replace('/cashier/',''))
     })
     
 	function userSelected(e){

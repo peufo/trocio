@@ -3,18 +3,20 @@ var router = express.Router()
 var got = require('got')
 var path = require('path')
 var bwipjs = require('bwip-js')
+var { checkCashier, checkAdmin } = require('../controllers/troc')
+var { checkLogin } = require('../controllers/user')
 
 router
 	.get('/', (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'trocs.html'))
 	})
-	.get('/me', (req, res, next) => {
+	.get('/me', checkLogin, (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'me.html'))
 	})
-	.get('/cashier', (req, res, next) => {
+	.get('/cashier/:id', checkCashier, (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'cashier.html'))
 	})
-	.get('/admin', (req, res, next) => {
+	.get('/admin/:id', checkAdmin, (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'admin.html'))
 	})
 	.get('/geocode/:query', (req, res, next) => {

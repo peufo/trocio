@@ -3,13 +3,40 @@ var User = require('../models/user')
 var formidable = require('formidable')
 
 
+function checkAdmin(req, res, next) {
+	if (!req.session.user) return next(Error('Login required'))
+	Troc.findOne({_id: req.params.id}, (err, troc) => {
+		if (err || !troc) return next(err || Error('troc not found !'))
+		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+		if (isAdmin) {
+			next()
+		}else{
+			return next(Error('Sorry, you are not a administrator of this troc'))
+		}
+	})
+}
+
+function checkCashier(req, res, next) {
+	if (!req.session.user) return next(Error('Login required'))
+	Troc.findOne({_id: req.params.id}, (err, troc) => {
+		if (err || !troc) return next(err || Error('troc not found !'))
+		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+		let isCashier = troc.cashier.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+		if (isAdmin || isCashier) {
+			next()
+		}else{
+			return next(Error('Sorry, you are not a cashier of this troc'))
+		}
+	})
+}
+
 function getTrocUser(id, cb){
-	//TODO: populate seulement si admin
 	Troc.findById(id)
 		.populate('creator', 'name mail')
 		.populate('admin', 'name mail')
 		.populate('cashier', 'name mail')
 		.populate('tarif.apply', 'name mail')
+		.lean()
 		.exec(cb)
 }
 
@@ -181,6 +208,8 @@ function removeInUserList(user, troc, cb) {
 
 module.exports = {
 	getTrocUser,
+	checkAdmin,
+	checkCashier,
 	createTroc,
 	resTrocUser,
 	addAdmin,
