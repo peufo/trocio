@@ -36,8 +36,10 @@ app.use(session({
 
 
 //Routage
-
 app.use('/', 			    require('./routes/index'))
+app.use('/superadmin', require('./routes/admin'))
+
+//Routage REST
 app.use('/users', 		require('./routes/user'))
 app.use('/articles', 	require('./routes/article'))
 app.use('/trocs', 		require('./routes/troc'))

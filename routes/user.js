@@ -13,7 +13,7 @@ router
 	.post('/changepwd', changepwd)
 	.post('/resetpwd', resetpwd)
 	.post('/sendValidmail', sendValidMail)
-	.get('/validmail/:url', validMail)
+	.get('/validmail/:id/:url', validMail)
 	.get('/me', (req, res, next) => {
 		if (!req.session.user) return res.json({success: false, message: 'Login required'})
 		

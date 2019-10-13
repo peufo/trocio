@@ -36,7 +36,7 @@ module.exports = {
                     <b>${user.name}</b>, votre inscritpion c'est correctement déroulé.. 
                 </p>
                 <p>
-                    <a href="${baseUrl}/${mailValidator.url}">
+                    <a href="${baseUrl}/${user._id}/${mailValidator.url}">
                         Cliquer ici pour valider votre adresse mail et accéder votre compte.
                     </a>
                 </p>
@@ -65,7 +65,7 @@ module.exports = {
             mailOptions.html = `
                 <h2>Validation de votre adresse mail</h2>
                 <p>
-                    <a href="${baseUrl}/${mailValidator.url}">
+                    <a href="${baseUrl}/${user._id}/${mailValidator.url}">
                         Cliquer ici pour valider votre adresse mail.
                     </a>
                 </p>

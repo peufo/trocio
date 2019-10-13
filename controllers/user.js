@@ -13,8 +13,8 @@ module.exports = {
 	},
 
 	createUser: (req, res, next) => {
+		req.body.creditTroc = 0
 		var user = new User(req.body)
-
 		user.save(err => {
 			if (err) {
 				if ( err.name == 'MongoError' && err.code == 11000) { //dup key
@@ -113,6 +113,20 @@ module.exports = {
 	},
 
 	validMail:(req, res, next) => {
+
+		Mailvalidator.findOne({user: req.params.id, url: req.params.url}, (err, mv) => {
+			if (err || !mv) return next(err || Error(`MailValidator not exist`))
+			User.findOne({_id: req.params.id}, (err, user) => {
+				if (err || !user) return next(err || Error('You are not found !'))
+				user.mailvalided = true
+				user.save(err => {
+					if (err) return next(err)
+					res.redirect('/me')
+				})
+			})
+		})
+		
+		/* NOT WORK EVERY TIME
 		if (!req.session.user) return next(Error('Login required'))
 		Mailvalidator.findOne({user: req.session.user._id}, (err, mv) => {
 			if (err || !mv) return next(err || Error(`MailValidator not exist`))
@@ -128,6 +142,7 @@ module.exports = {
 			})
 
 		})
+		*/
 	}
 }
 
