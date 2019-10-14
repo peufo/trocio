@@ -116,13 +116,17 @@ module.exports = {
 
 		Mailvalidator.findOne({user: req.params.id, url: req.params.url}, (err, mv) => {
 			if (err || !mv) return next(err || Error(`MailValidator not exist`))
+			
 			User.findOne({_id: req.params.id}, (err, user) => {
 				if (err || !user) return next(err || Error('You are not found !'))
 				user.mailvalided = true
 				user.save(err => {
 					if (err) return next(err)
-					if (req.session.user) res.redirect('/me')
-					else res.redirect('/')
+					mv.remove(err => {
+						if (err) return next(err)
+						if (req.session.user) res.redirect('/me')
+						else res.redirect('/mailConfirmation')
+					})					
 				})
 			})
 		})
