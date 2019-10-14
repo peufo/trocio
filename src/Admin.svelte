@@ -15,13 +15,13 @@
 	let tabSelected = 6
 	let oldTabSelected = -1
 	let tabs = [
-		{name: 'Informations', 	icon: '<i class="fas fa-info-circle"></i>'},
-		{name: 'Collaborateurs', icon: '<i class="fas fa-users"></i>'}, 
-		{name: 'Tarifications', icon: '<i class="fas fa-coins"></i>'},
-		{name: 'Etiquetage', 	icon: '<i class="fas fa-tag"></i>'},
-		{name: 'Statistique', 	icon: '<i class="fas fa-chart-pie"></i>'},
-		{name: 'Correction', 	icon: '<i class="fas fa-eraser"></i>'},
-		{name: 'Caisse', 		icon: '<i class="fas fa-cash-register"></i>'}
+		{num: 0, name: 'Informations', 	icon: '<i class="fas fa-info-circle"></i>'},
+		{num: 1, name: 'Collaborateurs', icon: '<i class="fas fa-users"></i>'}, 
+		{num: 2, name: 'Tarifications', icon: '<i class="fas fa-coins"></i>'},
+		{num: 3, name: 'Etiquetage', 	icon: '<i class="fas fa-tag"></i>'},
+		{num: 4, name: 'Statistique', 	icon: '<i class="fas fa-chart-pie"></i>'},
+		{num: 5, name: 'Correction', 	icon: '<i class="fas fa-eraser"></i>'},
+		{num: 6, name: 'Caisse', 		icon: '<i class="fas fa-cash-register"></i>'}
 	]
 
 	onMount(() => {
@@ -66,12 +66,6 @@
 
 	let changeFlag = false //For SearchUser to AutoPatch 
 
-	function selectTab(i) { //TODO: Util ?
-		oldTabSelected = tabSelected
-		tabSelected = i
-		setTimeout(() => oldTabSelected = -1, 450)
-	}
-
 </script>
 
 <!-- Check if all is OK ! -->
@@ -92,10 +86,10 @@
 <div in:fade style="height: calc(100% - 58px);">
 	
 	<div class="onglets">
-	{#each tabs as tab, i}
+	{#each tabs as tab}
 		<div class="w3-padding underline-div onglet"
-			 on:click="{() => selectTab(i)}"
-			 class:actived="{tabSelected == i}">
+			 on:click="{() => tabSelected = tab.num}"
+			 class:actived="{tabSelected == tab.num}">
 			 {@html tab.icon}
 			<span class="underline-span">{tab.name}</span>
 		</div>

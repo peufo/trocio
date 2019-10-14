@@ -14,8 +14,8 @@
 
     let tabSelected = 1
 	let tabs = [
-		{name: 'Mes informations', icon: '<i class="fas fa-info-circle"></i>'},
-		{name: 'Mes activités', icon: '<i class="far fa-star"></i>'},
+		{num: 0, name: 'Mes informations', icon: '<i class="fas fa-info-circle"></i>'},
+		{num: 1, name: 'Mes activités', icon: '<i class="far fa-star"></i>'},
     ]
 
     let changePassword = false
@@ -96,10 +96,10 @@
 {:else}
 
     <div class="onglets">
-        {#each tabs as tab, i}
+        {#each tabs as tab}
             <div class="w3-padding underline-div onglet"
-                on:click="{() => tabSelected = i}"
-                class:actived="{tabSelected == i}">
+                on:click="{() => tabSelected = tab.num}"
+                class:actived="{tabSelected == tab.num}">
                 {@html tab.icon}
                 <span class="underline-span">{tab.name}</span>
             </div>
