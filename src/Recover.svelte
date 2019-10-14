@@ -131,7 +131,7 @@
 
                 </div>
             {:else}
-                <span class="w3-opacity">Pas d'articles récupéré !</span>
+                <span class="w3-opacity">Pas d'articles récupérés !</span>
             {/each}
 
             <!-- Bouton pour prolongé la liste -->

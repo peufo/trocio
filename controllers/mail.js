@@ -37,7 +37,7 @@ module.exports = {
                 </p>
                 <p>
                     <a href="${baseUrl}/${user._id}/${mailValidator.url}">
-                        Cliquer ici pour valider votre adresse mail et accéder votre compte.
+                        Cliquer ici pour valider votre adresse mail.
                     </a>
                 </p>
                 `

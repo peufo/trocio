@@ -350,7 +350,7 @@
 							<span class="w3-tiny" style="line-height: 1;">{payment.message}</span>
 						</div>
 					{:else}
-						<span class="w3-opacity">Pas de paiements enregistré !</span>
+						<span class="w3-opacity">Pas de paiement enregistré !</span>
 					{/each}
 
 					<!-- Bouton pour prolongé la liste -->
@@ -398,7 +398,7 @@
 
 				{#if !importArticlesListOpen}
 					<span on:click="{() => importArticlesListOpen = true}" class="button w3-round w3-padding">
-						Proposer plein d'articles
+						Proposer plusieurs articles
 					</span>
 				{:else if !importArticles.length}
 					<span on:click="{() => importArticlesListOpen = false}" class="w3-border w3-round w3-padding clickable" >
@@ -432,7 +432,7 @@
 				<tr>
 					<th>#</th>
 					<th>Articles</th>
-					<th>Status</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
+					<th>Statuts</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
 					<th>Prix <span class="w3-small sold">{soldSum.toFixed(2)}</span></th>
 					<th on:click="{() => tarifInfoDialog.open()}">Frais 
 						<span class="w3-small fee">{feeSum.toFixed(2)}</span>

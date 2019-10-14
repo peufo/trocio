@@ -31,7 +31,7 @@
 		{num: 1, name: 'Récupère', icon: '<i class="fas fa-sign-out-alt"></i>'},
 		{num: 2, name: 'Achète', icon: '<i class="fas fa-shopping-basket"></i>', clientAnonymAutorised: true},
 		{num: 3, name: 'Retourne', icon: '<i class="fas fa-undo"></i>', clientAnonymAutorised: true},
-		{num: 4, name: 'Aperçue', icon: '<i class="far fa-eye"></i>', clientAnonymAutorised: true},
+		{num: 4, name: 'Aperçu', icon: '<i class="far fa-eye"></i>', clientAnonymAutorised: true},
 	]
 
 	let tarif = undefined //bind to Resume.svelte
@@ -291,11 +291,11 @@
 		<br><br>
 		{#if clientAnonym}
 			<div class="w3-center w3-xlarge">
-				{`Un client vous à versé ${(-balance).toFixed(2)}`}
+				{`Un client vous a versé ${(-balance).toFixed(2)}`}
 			</div>
 		{:else}
 			<div class="w3-center w3-xlarge">
-				{balance > 0 ? `Vous avez versé ${balance.toFixed(2)} à ${user.name}`: `${user.name} vous à versé ${(-balance).toFixed(2)}`}
+				{balance > 0 ? `Vous avez versé ${balance.toFixed(2)} à ${user.name}`: `${user.name} vous a versé ${(-balance).toFixed(2)}`}
 			</div>
 		{/if}
 		<br>
