@@ -82,6 +82,11 @@
         }
     }
 
+    function selectTab(num) {
+        console.log('Tab selected: ', num)
+        tabSelected = num
+    }
+
 </script>
 
 
@@ -98,7 +103,7 @@
     <div class="onglets">
         {#each tabs as tab}
             <div class="w3-padding underline-div onglet"
-                on:click="{() => tabSelected = tab.num}"
+                on:click="{() => selectTab(tab.num)}"
                 class:actived="{tabSelected == tab.num}">
                 {@html tab.icon}
                 <span class="underline-span">{tab.name}</span>

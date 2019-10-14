@@ -191,7 +191,7 @@
 					color="secondary"
 					variant="outlined"
 					class="w3-margin-left">
-					<i class="fas fa-user-plus w3-large"></i>&nbsp;Nouveau client
+					<i class="fas fa-user-plus w3-large"></i>&nbsp;Nouveau
 					</Button>
 					<Dialog bind:this={dialogLogin}>
 						<Login id="NewClient"/>
@@ -202,7 +202,7 @@
 					color="secondary"
 					variant="outlined"
 					class="w3-margin-left">
-					<i class="fas fa-user-secret w3-large"></i>&nbsp;Client anonyme
+					<i class="fas fa-user-secret w3-large"></i>&nbsp;Anonyme
 					</Button>
 
 				</div>
