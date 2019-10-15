@@ -16,8 +16,8 @@
 
     let tabSelected = 0
 	let tabs = [
-		{num: 0, name: 'Mes informations', icon: '<i class="fas fa-info-circle"></i>'},
-		{num: 1, name: 'Mes activités', icon: '<i class="far fa-star"></i>'},
+		{num: 0, name: 'Mes activités', icon: '<i class="far fa-star"></i>'},
+		{num: 1, name: 'Mes informations', icon: '<i class="fas fa-info-circle"></i>'},
     ]
 
     let changePassword = false
@@ -139,6 +139,15 @@
 
         <!-- Informations personel -->
         <div class="tab" class:center={tabSelected == 0} class:left={tabSelected > 0}>
+            <br>
+            <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
+                <Activity/>
+            </div>
+            <br>
+        </div>
+
+        <!-- Activités -->
+        <div class="tab" class:center={tabSelected == 1} class:right={tabSelected < 1}>
             <br>
             <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
 
@@ -316,15 +325,6 @@
                     <br><br><br>
                 </div>
 
-            </div>
-            <br>
-        </div>
-
-        <!-- Activités -->
-        <div class="tab" class:center={tabSelected == 1} class:right={tabSelected < 1}>
-            <br>
-            <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
-                <Activity/>
             </div>
             <br>
         </div>

@@ -398,7 +398,7 @@
 
 				{#if !importArticlesListOpen}
 					<span on:click="{() => importArticlesListOpen = true}" class="button w3-round w3-padding">
-						Proposer plusieurs articles
+						Proposer une liste d'articles
 					</span>
 				{:else if !importArticles.length}
 					<span on:click="{() => importArticlesListOpen = false}" class="w3-border w3-round w3-padding clickable" >
@@ -454,16 +454,18 @@
 						<!-- Designation -->
 						<td class="tdInput">
 
-							<input
+							<textarea
+								rows="2" style="resize: none;"
 								on:input="{e => addModifiedArticle(e, article)}"
 								class:lastInputName="{i == provided.length-1}"  
 								bind:value={article.name}
 								type="text" 
-								class="w3-input" 
+								class="w3-input"
 								readonly={article.valided}
 								class:unvalided={!article.valided}
 								class:recovered={article.recover}
-								placeholder="Nom complet">
+								placeholder="Nom complet"></textarea>
+							
 						</td>
 
 						<!-- Status -->

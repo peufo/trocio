@@ -68,8 +68,9 @@
 		waiting = setTimeout(() => loadTrocs(), 200)
 	}
 
-	function loadTrocs() {
+	//$: $me._id && loadTrocs() //DANGEREUX, ENGENDRE UNE DOUBLE REQUETE QUAND ON EST LOGE ET SERT QU'AU LOGIN (RAFR ISADMIN ET ISCASHIER)
 
+	function loadTrocs() {
 		let query = `/trocs/search?search=${search}`
 
 		if (timeFilter) {
