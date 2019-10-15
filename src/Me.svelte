@@ -1,5 +1,7 @@
 
 <script>
+    import queryString from 'query-string'
+    import { onMount } from 'svelte'
     import { me } from './stores'
     import { slide, fade } from 'svelte/transition'
     import { getHeader } from './utils'
@@ -12,7 +14,7 @@
 
     let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-    let tabSelected = 1
+    let tabSelected = 0
 	let tabs = [
 		{num: 0, name: 'Mes informations', icon: '<i class="fas fa-info-circle"></i>'},
 		{num: 1, name: 'Mes activités', icon: '<i class="far fa-star"></i>'},
@@ -32,6 +34,35 @@
     let patchMailPromise
     let sendMailValidatorPromise
     let mailValidatorSent = false
+
+
+    //NAVIGATION GESTION
+
+    onMount(importHash)
+    window.addEventListener("hashchange", importHash)
+
+    function importHash() {
+        let query = queryString.parse(location.hash)
+        let num = query.tab
+        if (isNaN(num)) num = 0
+        else if (num < 0) num = 0
+        else if (num >= tabs.length) num = tabs.length - 1
+        tabSelected = num
+    }
+
+    function exportHash(num) {
+        let query = queryString.parse(location.hash)
+        query.tab = num
+        location.hash = queryString.stringify(query)
+    }
+
+    function selectTab(num) {
+        exportHash(num)
+        tabSelected = num
+    }
+
+
+    // FETCH FUNCTION
 
     async function patchName() {
         let res = await fetch('/users/me', getHeader({name: $me.name}, 'PATCH'))
@@ -80,11 +111,6 @@
         }else {
             alert('Changement du mot de passe refusé')
         }
-    }
-
-    function selectTab(num) {
-        console.log('Tab selected: ', num)
-        tabSelected = num
     }
 
 </script>
