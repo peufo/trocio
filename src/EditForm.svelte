@@ -57,10 +57,17 @@
 	function convertSchedule() {
 		schedule = scheduleIn.map(s => {
 			if (s.day && s.open && s.close) {
-				return {
-					open: new Date(`${s.day} ${s.open}`).toISOString(),
-					close: new Date(`${s.day} ${s.close}`).toISOString()
-				}				
+				let open = new Date(`${s.day} ${s.open}`)
+				let close = new Date(`${s.day} ${s.close}`)
+				if (open && close) { //Pas sur du foncionnement sur safari
+					return {
+						open: open.toISOString(),
+						close: close.toISOString()
+					}
+				}else{
+					return {open: null, close: null}
+				}
+							
 			}
 		})
 	}
