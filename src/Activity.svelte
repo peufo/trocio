@@ -9,7 +9,6 @@
 
     let trocSelectionIndex
 
-    $: console.log($me)
 </script>
 
 {#if $me._id}

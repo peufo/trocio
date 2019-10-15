@@ -28,8 +28,6 @@
     let changeMail = false
     let changeName = false
 
-    $: console.log($me)
-
     let patchNamePromise
     let patchMailPromise
     let sendMailValidatorPromise

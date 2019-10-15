@@ -100,8 +100,6 @@
 	//Très bof bof, mais ca marche
 	let changeFlag = false 
 
-	$: console.log(image)
-
 </script>
 
 {#if !createMode}
