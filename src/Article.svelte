@@ -34,15 +34,15 @@
 
 <div class="list-element w3-padding w3-display-container" on:click={select} class:clickable class:valided={!article.isRemovable}>
     
-    {article.name}
-    <br>
+    <div style="padding-right: 55px">
+        {article.name}
+    </div>
 
     <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
     <span class="w3-tiny" style="line-height: 1;">{comment}</span>
 
     <div class="w3-display-topright w3-padding">
-        <i class="fa fa-tag" style="margin-top: 4px;"></i>
-        {!article.isCreated ? article.ref : ''}
+        <b style="margin-top: 4px;">#</b>{!article.isCreated ? article.ref : ''}
 
         {#if article.isRemovable}
             <i 	class="fa fa-trash-alt clickable"

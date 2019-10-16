@@ -3,6 +3,7 @@
 	import { onMount, onDestroy } from 'svelte'
 	import { flip } from 'svelte/animate'
 	import Dialog, {Title, Content} from '@smui/dialog'
+	import Button from '@smui/button'
 	import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
@@ -55,9 +56,6 @@
 	let tarifInfoDialog
 
 	onMount(() => {
-		console.log('Mount Resume')
-		console.log('troc:', trocId)
-		console.log('user:', userId)
 		if (trocId) {
 			getTarif()
 			purchasesPromise = getPurchases()
@@ -289,8 +287,50 @@
 		if (failFormatRaison.length) importArticles = []
 	}
 
+	function clickDownladCSV() {
+
+		let list = provided.map(p => {
+			return {
+				ref: p.ref,
+				name: p.name,
+				statuts: getStatus(p),
+				price: p.price,
+				fee: p.fee,
+				margin: p.margin,
+				createdAt: p.createdAt.replace('T', ' ').replace('Z', ''),
+				updatedAt: p.updatedAt.replace('T', ' ').replace('Z', '')
+			}
+		})
+
+		let { parse } = json2csv
+		let options = { 
+			delimiter: '\t',
+			quote: '',
+			withBOM: true,
+			fields: ['ref', 'name', 'statuts', 'price', 'fee', 'margin', 'createdAt', 'updatedAt']
+		}
+		
+		let csv = parse(list, options)
+		downloadCSV('Export Trocio.txt', csv)
+	}
+
+	function downloadCSV(filename, text) {
+		var element = document.createElement('a')
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
+		element.setAttribute('download', filename)
+		element.style.display = 'none'
+		document.body.appendChild(element)
+		element.click()
+		document.body.removeChild(element)
+	}
+
 
 </script>
+
+<svelte:head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
+</svelte:head>
+
 
 <div id="container">
 	
@@ -381,39 +421,49 @@
 			<div class="w3-row">
 				<span class="w3-right w3-large">{(soldSum + feeSum).toFixed(2)}</span>
 				<span class="w3-large">Ventes</span>
+				{#if provided.length}
+					<Button
+					on:click={clickDownladCSV}
+					color="secondary">
+						<i class="fas fa-download"></i>
+					</Button>
+				{/if}
 
 				<!-- Bontons puor proposer des articles -->
 				{#await createArticlePromise}
-					<span class="w3-padding w3-round w3-border" style="margin-left: 20px;">
-						<i class="fas fa-circle-notch w3-spin"></i> Création de l'article ...
-					</span>
+					<Button color="secondary" variant="outlined" style="margin-left: 20px;">
+						<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
+					</Button>
 				{:then}
-					<span on:click="{() => createArticlePromise = createArticle()}" class="button w3-round w3-padding" style="margin-left: 20px;">
+					<Button
+					on:click="{() => createArticlePromise = createArticle()}"
+					style="margin-left: 20px;"
+					variant="outlined">
 						Proposer un article
-					</span>
+					</Button>
 				{/await}
 
-				<span> ou </span>
-
 				{#if !importArticlesListOpen}
-					<span on:click="{() => importArticlesListOpen = true}" class="button w3-round w3-padding">
-						Proposer une liste d'articles
-					</span>
+					<Button on:click="{() => importArticlesListOpen = true}" variant="outlined">
+						<i class="fas fa-list"></i>
+					</Button>
 				{:else if !importArticles.length}
-					<span on:click="{() => importArticlesListOpen = false}" class="w3-border w3-round w3-padding clickable" >
+					<Button on:click="{() => importArticlesListOpen = false}" variant="outlined" color="secondary">
 						{failFormatRaison.length ? failFormatRaison : `Annuler la proposition`}
-					</span>
+					</Button>
 				{:else}
 					{#await createImportArticlesPromise}
-						<span class="validButton w3-round w3-padding">
-							<i class="fas fa-circle-notch w3-spin"></i> Création des articles ...
-						</span>
+						<Button variant="outlined" color="secondary">
+							<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création des articles ...
+						</Button>
 					{:then}
-						<span on:click="{() => createImportArticlesPromise = createImportArticles()}" class="validButton w3-round w3-padding">
+						<Button on:click="{() => createImportArticlesPromise = createImportArticles()}" variant="raised" style="color: white;">
 							Valider la proposition des {importArticles.length} articles
-						</span>
+						</Button>
 					{/await}
 				{/if}
+
+
 			</div>
 			
 			<!-- Insertion de plein d'article -->
@@ -421,7 +471,7 @@
 				<div class="w3-row w3-margin-top" transition:slide>
 					<textarea class="w3-round" rows="10" 
 							bind:value={importArticlesValue} on:input={inputImportArticles}
-							placeholder="{'Mon premier article ⭢ 20\nMon deuxième article : 15.35\nMon troisième article ; 5,40\n...\n(Glissez ou copiez une liste depuis un tableur)'}"></textarea>
+							placeholder="{'\n\t\t-- Glissez ou copiez une liste depuis un tableur --\n\t\t-- [ Désignation ] [ Prix ] --\n\n\nMon premier article ⭢ 20\nMon deuxième article : 15.35\nMon troisième article ; 5,40\n...'}"></textarea>
 				</div>
 			{/if}
 
@@ -454,7 +504,7 @@
 						<td class="tdInput">
 
 							<textarea
-								rows="2" style="resize: none; overflow: hidden;"
+								rows="3" style="resize: none; min-width: 320px;"
 								on:input="{e =>  addModifiedArticle(e, article)}"
 								class:lastInputName="{i == provided.length-1}"  
 								bind:value={article.name}
@@ -463,7 +513,7 @@
 								readonly={article.valided}
 								class:unvalided={!article.valided}
 								class:recovered={article.recover}
-								placeholder="Nom complet"></textarea>
+								placeholder="Désignation"></textarea>
 
 							
 						</td>
