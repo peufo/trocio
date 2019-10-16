@@ -39,7 +39,7 @@
     <br><br>
 
     {#await articlesPromise}
-        <div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+        <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
     {:then}
         <div class="w3-row w3-margin-left">
 

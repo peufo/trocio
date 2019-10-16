@@ -78,7 +78,7 @@
         <div class="w3-margin-right">
         {#await providedPromise}
             <div class="w3-center">
-                <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
+                <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
             </div>
         {:then}
             {#each provided.filter(providedFilter).slice(0, LIMIT_LIST_A) as article (article._id)}
@@ -121,7 +121,7 @@
         <div class="w3-margin-left">
         {#await providedPromise}
             <div class="w3-center">
-                <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
+                <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
             </div>
         {:then}
             {#each provided.filter(art => art.recover).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_B) as article (article._id)}

@@ -310,7 +310,7 @@
 				<h4>Achats</h4>
 
 				{#await purchasesPromise}
-					<div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+					<div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
 				{:then}
 					{#each purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
 						<Article article={article} timeKey={'soldTime'}/>
@@ -338,7 +338,7 @@
 
 				{#await paymentsPromise}
 					<div class="w3-center">
-						<img src="favicon.ico" alt="Logo trocio" class="w3-spin">
+						<img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
 					</div>
 				{:then}
 					{#each payments.slice(0, LIMIT_LIST_B) as payment (payment._id)}
@@ -374,7 +374,7 @@
 
 
 		{#await providedPromise}
-			<div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+			<div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
 		{:then}
 
 			<!-- Titre, Boutons propositions et somme -->

@@ -111,7 +111,7 @@
             <h4>Achats</h4>
         
             {#await purchasesPromise}
-                <div class="w3-center"><img src="favicon.ico" alt="Logo Trocio" class="w3-spin"></div>
+                <div class="w3-center"><img src="/favicon.ico" alt="Logo Trocio" class="w3-spin"></div>
             {:then}
                 {#each purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
                     <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
@@ -149,7 +149,7 @@
             <h4>Retours</h4>
 
             {#await givebacksPromise}
-                <div class="w3-center"><img src="favicon.ico" alt="Logo Trocio" class="w3-spin"></div>
+                <div class="w3-center"><img src="/favicon.ico" alt="Logo Trocio" class="w3-spin"></div>
             {:then}
                 {#each givebacks.sort((a, b) => b.givebackTime - a.givebackTime).slice(0, LIMIT_LIST_B) as article (article._id)}
                     <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">

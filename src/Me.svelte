@@ -118,7 +118,7 @@
 
     <div class="w3-display-container" style="height: calc(100% - 96px);">
         <div class="w3-display-middle">
-            <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
+            <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
         </div>
     </div>
 

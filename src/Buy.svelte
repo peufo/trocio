@@ -162,7 +162,7 @@
             <span class="w3-large">Achats</span>
 
             {#await purchasesPromise}
-                <div class="w3-center"><img src="favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+                <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
             {:then}
                 {#each purchases.slice(0, LIMIT_LIST_B) as article (article._id)}
                     <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">

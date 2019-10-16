@@ -176,7 +176,7 @@
         <div class="w3-margin-right">
             {#await providedPromise}
                 <div class="w3-center">
-                    <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
+                    <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
                 </div>
             {:then}
                 {#each provided.filter(art => !art.valided).slice(0, LIMIT_LIST_A) as article (article._id)}
@@ -220,7 +220,7 @@
             <h4>En vente</h4>
             {#await providedPromise}
                 <div class="w3-center">
-                    <img src="favicon.ico" alt="Logo trocio" class="w3-spin">
+                    <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
                 </div>
             {:then}
 
