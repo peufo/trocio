@@ -4,13 +4,6 @@ var ctrl = require('../controllers/troc')
 var router = express.Router()
 
 router
-	//Reserved for root user
-	.get('/', (req, res, next) => {
-		Troc.find(req.query, (err, trocs) => {
-			if (err) return next(err)
-			res.json(trocs)
-		})
-	})
 	.get('/search', (req, res, next) => {
 		let {search, start, end, north, east, sud, west} = req.query
 		let query= {}
@@ -72,6 +65,11 @@ router
 			Troc.findOne({_id: req.params.id}).lean().exec((err, troc) => {
 				if (err || !troc) return next(err || Error('Not found'))
 
+				lookupIfAdmin(troc, req.session.user._id.toString(), (err, troc) => {
+					if (err || !troc) return next(err || Error('Not found'))
+					res.json(troc)
+				})
+/*
 				let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
 				
 				if (isAdmin) {
@@ -86,6 +84,7 @@ router
 					troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(req.session.user._id.toString()) != -1
 					res.json(troc)
 				}
+*/
 			})
 	
 		}else{
@@ -109,7 +108,11 @@ router
 			for(p in req.body){troc[p] = req.body[p]}
 			troc.save(err => {
 				if (err) return next(err)
-				res.json({success: true, message: troc})
+				
+				lookupIfAdmin(troc, req.session.user._id.toString(), (err, troc) => {
+					if (err || !troc) return next(err || Error('Not found'))
+					res.json({success: true, message: troc})
+				})
 			})
 		})
 	})
@@ -118,5 +121,21 @@ router
 	.post('/:id/admin/remove', ctrl.checkAdmin, ctrl.removeAdmin)
 	.post('/:id/cashier/remove', ctrl.checkAdmin, ctrl.removeCashier)
 
+
+	function lookupIfAdmin(troc, userId, cb) {
+		let isAdmin = troc.admin.map(a => a.toString()).indexOf(userId) != -1
+		if (isAdmin) {
+			ctrl.getTrocUser(troc._id, (err, troc) => {
+				if (err || !troc) return cb(err || Error('Not found'))
+				troc.isAdmin = true
+				troc.isCashier = false
+				cb(null, troc)
+			})
+		}else{
+			troc.isAdmin = false
+			troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(userId) != -1
+			cb(null, troc)
+		}
+	}
 
 module.exports = router

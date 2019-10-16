@@ -158,7 +158,8 @@
 						bind:maxarticles={tarif.maxarticles}
 						bind:bydefault={tarif.bydefault}
 						on:remove="{() => removeTarif(i)}"
-						on:selectUser="{() => changeFlag = true}"/>
+						on:selectUser="{() => changeFlag = true}"
+						on:removeUser="{() => changeFlag = true}"/>
 			{/each}
 				<div id="addTarif" >
 					<div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"

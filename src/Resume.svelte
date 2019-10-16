@@ -289,7 +289,6 @@
 		if (failFormatRaison.length) importArticles = []
 	}
 
-	$: console.log(createArticlePromise)
 
 </script>
 
@@ -455,16 +454,17 @@
 						<td class="tdInput">
 
 							<textarea
-								rows="2" style="resize: none;"
-								on:input="{e => addModifiedArticle(e, article)}"
+								rows="2" style="resize: none; overflow: hidden;"
+								on:input="{e =>  addModifiedArticle(e, article)}"
 								class:lastInputName="{i == provided.length-1}"  
 								bind:value={article.name}
 								type="text" 
-								class="w3-input"
+								class="w3-input" 
 								readonly={article.valided}
 								class:unvalided={!article.valided}
 								class:recovered={article.recover}
 								placeholder="Nom complet"></textarea>
+
 							
 						</td>
 
@@ -592,9 +592,6 @@
 
 	input[type=number] {
 		width: 6em;
-	}
-	input[type=text] {
-		word-break: break-word;
 	}
 	
 	.price {

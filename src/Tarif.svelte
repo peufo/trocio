@@ -13,6 +13,7 @@
 	export let maxarticles = 0
 	export let bydefault = false		
 	
+	$: console.log($troc)
 
 	function removeFee(i) {
 		fee.splice(i, 1)
@@ -20,6 +21,7 @@
 	}
 	function removeApply(i) {
 		apply.splice(i, 1)
+		dispatch('removeUser')
 		apply = apply
 	}
 

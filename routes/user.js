@@ -48,13 +48,6 @@ router
 		})
 	})
 	.get('/logout', logout)
-	.get('/', (req, res, next) => {
-		User.find(req.query, {name: 1}, (err, users) => {
-			if (!err){
-				res.json(users)
-			}else next(err)
-		})
-	})
 	.get('/search/:search', (req, res, next) => {
 		var regexp = new RegExp(req.params.search, 'i')
 		User.find({$or: [{name: regexp}, {mail: regexp}]}, {name: 1, mail: 1})
