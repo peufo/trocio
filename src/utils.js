@@ -35,11 +35,11 @@ export const crossfadeConfig = {
 }
 
 export function getFee(art, tarif) {
-	if (tarif && art.price > 0) {
-		return art.fee = tarif.fee.sort((a, b) => b.price - a.price).filter(f => f.price <= art.price)[0].value
+	if (tarif && tarif.fee.length && art.price > 0) {
+		return art.fee = tarif.fee.sort((a, b) => b.price - a.price).filter(f => f.price <= art.price)[0].value 
 	}else if (art.price == 0) {
 		return art.fee = 0
-	}else return art.fee
+	}else return art.fee || 0
 }
 
 export function getMargin(art, tarif) {
