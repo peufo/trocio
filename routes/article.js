@@ -40,7 +40,7 @@ router
 	})
 	.delete('/:id', deleteArticle)
 	.get('/search', (req, res, next) => {
-		let { search, troc, providernot, available } = req.query
+		let { search, troc, providernot, available, limit, skip } = req.query
 		let query = {}
 
 		if (troc || providernot || available) query.$and = []
@@ -60,7 +60,11 @@ router
 			query.$or.push({'ref': 	regexp})
 		}
 		
-		Article.find(query).exec((err, articles) => {
+		if (!skip) skip = 0
+		if (!limit) limit = 40
+		else if(limit > 100) limit = 100
+
+		Article.find(query).skip(skip).limit(skip + limit).exec((err, articles) => {
 			if (err) return next(err)
 			res.json(articles)
 		})

@@ -546,7 +546,7 @@
 						</td>
 
 						<!-- Suppression (uniquement les articles non validé) -->
-						<td on:mouseleave="{() => articleWaitValidationForDelete = -1}">
+						<td on:mouseleave="{() => articleWaitValidationForDelete = -1}" class="removeCell">
 							{#if !article.valided}
 								{#if articleWaitValidationForDelete == article._id}
 									{#await deleteArticlePromise}
@@ -554,12 +554,12 @@
 											<i class="fa fa-times w3-spin"></i>
 										</span>
 									{:then}
-										<span class="w3-padding w3-round" on:click="{() => deleteArticlePromise = deleteArticle(i)}" style="background: rgba(255, 0, 0, .2);">
+										<span class="w3-padding w3-round clickable" on:click="{() => deleteArticlePromise = deleteArticle(i)}" style="background: rgba(255, 0, 0, .2);">
 											<i class="fa fa-times"></i>
 										</span>
 									{/await}
 								{:else}
-									<span class="w3-padding" on:click="{() => articleWaitValidationForDelete = article._id}">
+									<span class="w3-padding clickable" on:click="{() => articleWaitValidationForDelete = article._id}">
 										<i class="fa fa-times"></i>
 									</span>
 								{/if}
@@ -616,6 +616,11 @@
 {/if}
 
 <style>
+
+	.removeCell {
+		position: absolute;
+    	right: 0px;
+	}
 
 	#container {
 		position: relative;

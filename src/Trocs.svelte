@@ -236,30 +236,27 @@
 					<!-- Contenu des onglets -->
 					{#if troc.tabSelect > -1}
 
-						<div class="tabs" transition:slide style="height: 650px;">
+						<div class="tabs" transition:slide style="height: 500px;">
 
 							<!-- Liste d'articles -->
-							<div class="tab" class:center={troc.tabSelect == 0} class:left={troc.tabSelect > 0}>
-								<br>
+							<div class="tab" class:center={troc.tabSelect === 0} class:left={troc.tabSelect > 0}>
 								<Articles troc={troc._id}/>
-
 							</div>
 
 							<!-- Resume -->
-							<div class="tab w3-padding-large" class:center={troc.tabSelect == 1} class:right={troc.tabSelect < 1}>
+							<div class="tab w3-padding-large" class:center={troc.tabSelect === 1} class:right={troc.tabSelect < 1}>
 								<br>
 								{#if $me._id}
 									<Resume userId={$me._id} trocId={troc._id}/>
 								{:else}
-								<br>
-								<div style="width: 400px; margin: auto;">
-									<Login id="{i}"/>
-								</div>
-								<br>
+									<br>
+									<div style="width: 400px; margin: auto;">
+										<Login id="{i}"/>
+									</div>
+									<br>
 								{/if}					
 							</div>
 						</div>
-
 
 					{/if}
 				</div>
