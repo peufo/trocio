@@ -61,11 +61,11 @@ router
 			query.$or.push({'ref': 	regexp})
 		}
 		
+		skip = Number(skip)
+		limit = Number(limit)
 		if (!skip) skip = 0
 		if (!limit) limit = 40
 		else if(limit > 100) limit = 100
-		skip = Number(skip)
-		limit = Number(limit)
 
 		Article.find(query).skip(skip).limit(limit).exec((err, articles) => {
 			if (err) return next(err)
