@@ -35,7 +35,7 @@
         let json = await res.json()
         if(res.ok) {
 
-            if (search.length && json.length < LIMIT) noMoreResults = true
+            if (json.length < LIMIT) noMoreResults = true
             else noMoreResults = false
 
             if (!!skip) {
