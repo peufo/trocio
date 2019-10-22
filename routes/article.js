@@ -66,8 +66,6 @@ router
 		else if(limit > 100) limit = 100
 		skip = Number(skip)
 		limit = Number(limit)
-		
-		console.log(query)
 
 		Article.find(query).skip(skip).limit(limit).exec((err, articles) => {
 			if (err) return next(err)
