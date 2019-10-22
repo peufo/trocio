@@ -1,4 +1,5 @@
 <script>
+    import { onMount } from 'svelte'
     import { fade } from 'svelte/transition'
     import Textfield from '@smui/textfield'
 
@@ -8,33 +9,50 @@
     let wait //Timeout
     let articles = []
     let articlesPromise
+    let moreResultsPromise
 
-    const LIMIT_LIST_INIT = 20 //Nombre d'élément d'une liste afficher initialement
-    let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
+    let noMoreResults = false
+    const LIMIT = 30
+    let skip = 0
+
+    onMount(() => {
+        articlesPromise = getArticles()
+    })
 
     function searchInput() {
+        skip = 0
         if (wait) clearTimeout(wait)
         wait = setTimeout(() => articlesPromise = getArticles(), 200)
     }
 
+    function getMoreResults() {
+        skip += LIMIT
+        moreResultsPromise = getArticles()
+    }
+
     async function getArticles() {
-        if (search.length) {
-            let res = await fetch(`articles/search?troc=${troc}&search=${search}`)
-            let json = await res.json()
-            if(res.ok) {
-                LIMIT_LIST_A = LIMIT_LIST_INIT
+        let res = await fetch(`articles/search?troc=${troc}&search=${search}&limit=${LIMIT}&skip=${skip}`)
+        let json = await res.json()
+        if(res.ok) {
+
+            if (search.length && json.length < LIMIT) noMoreResults = true
+            else noMoreResults = false
+
+            if (!!skip) {
+                articles = [...articles, ...json]
+            }else{
                 articles = json
-                return
             }
-        }else{
-            articles = []
+
             return
         }
     }
 
+    $: console.log(articles)
+
 </script>
 
-<div class="w3-margin" style="display: inline-block;">
+<div class="w3-margin">
 
     <div style="width: 400px; margin: auto;">
         <Textfield
@@ -43,7 +61,7 @@
             class="shaped-outlined w3-margin-top"
             label="Recherche"
             variant="outlined"
-            style="width: 400px;"
+            style="width: 100%;"
             />
     </div>
 
@@ -54,33 +72,42 @@
     {:then}
         <div class="w3-margin-left">
 
-            {#each articles.slice(0, LIMIT_LIST_A) as article}
-                    <div class="list-element w3-padding w3-margin-right w3-display-container valided">
-                        {article.name}
-                        <br>
-                        <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
-                    </div>
+            {#each articles as article}
+                <div class="list-element w3-padding w3-margin-right w3-display-container valided">
+                    {article.name}
+                    <br>
+                    <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
+                </div>
             {/each}
 
-            {#if articles.length > LIMIT_LIST_A}
-                <!-- Bonton pour alonger la liste -->
-                <br>
-                <div class="w3-col underline-div w3-center w3-opacity" on:click="{() => LIMIT_LIST_A += 20}">
-                    <span class="underline-span">
-                        Afficher plus d'article ?
-                    </span>
+            <br>
+
+            {#if !articles.length && search.length}
+
+                <div class="w3-center w3-opacity" in:fade={{delay: 200}}>
+                    <span>Aucun article trouvé</span>
                 </div>
 
-            {:else if search.length && !articles.length}
-                <div class="w3-center w3-opacity" in:fade={{delay: 200}}>
-                    <span>Aucun article trouvés</span>
-                </div>
+            {:else if articles.length}
+
+                {#if !noMoreResults}
+                    {#await moreResultsPromise}
+                        <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+                    {:then}
+                        <!-- Bonton pour plus de résultats-->
+                        <div class="w3-col underline-div w3-center w3-opacity" on:click={getMoreResults}>
+                            <span class="underline-span">Plus de résultats</span>
+                        </div>
+                    {/await}
+                {/if}
+
             {/if}
+
+            <br>
 
         </div>
 
     {/await}
-
 
 </div>
 
@@ -88,7 +115,8 @@
 
     .list-element {
         display: inline-block;
-        max-width: calc(50% - 16px);
+        width: calc(33.3% - 16px);
+        
     }
 
   * :global(.shaped-outlined .mdc-text-field__input) {

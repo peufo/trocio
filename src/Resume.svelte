@@ -324,13 +324,11 @@
 		document.body.removeChild(element)
 	}
 
-
 </script>
 
 <svelte:head>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
 </svelte:head>
-
 
 <div id="container">
 	

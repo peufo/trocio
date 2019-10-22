@@ -1,18 +1,21 @@
 <script>
+	import { onMount } from 'svelte'
+	import { slide } from 'svelte/transition'
 	import { me } from './stores'
 	import Button from '@smui/button'
 	import Resume from './Resume.svelte'
 	import Articles from './Articles.svelte'
 	import Toggle from './Toggle.svelte'
 	import Login from './Login.svelte'
-	import { onMount } from 'svelte'
-	import { slide } from 'svelte/transition'
+	import Dialog from '@smui/dialog'
 	import L from 'leaflet'
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
+
+
 
 	let map,
 		trocs = [],
@@ -23,7 +26,8 @@
 		timeFilter = false,
 		search = '',
 		start = dayjs().format('YYYY-MM-DD'), 
-		end = ''
+		end = '',
+		dialogLogin
 
 	let icon = L.icon({
 		iconUrl:'images/marker-icon.png',
@@ -160,120 +164,121 @@
 		<div id="map" class="show" class:hide={!mapOpen}></div>
 		
 		
-		<div> <!-- Liste des trocs-->
-			{#each trocs as troc, i (troc._id)}
-				
-				<!--  En-tête  -->
-				<div transition:slide class="card">
+		{#each trocs as troc, i (troc._id)}
+			
+			<!--  En-tête  -->
+			<div transition:slide class="card">
 
-					<div class="w3-row">
-						<div class="w3-col m8 w3-padding">
-							<span class="w3-large">{troc.name}</span>
-							<a href={troc.societyweb ? `https://${troc.societyweb}` : ''}>
-								<i>{troc.society}</i>
-							</a>
-							<br>
-							<span class="w3-small">
-								<i class="fas fa-map-marker-alt"></i>
-								{troc.address}
+				<div class="w3-row">
+					<div class="w3-col m8 w3-padding">
+						<span class="w3-large">{troc.name}</span>
+						<a href={troc.societyweb ? `https://${troc.societyweb}` : ''}>
+							<i>{troc.society}</i>
+						</a>
+						<br>
+						<span class="w3-small">
+							<i class="fas fa-map-marker-alt"></i>
+							{troc.address}
+						</span>
+						<p>{troc.description}</p>
+						
+						<Button href={`https://${troc.societyweb}`} dense color="secondary">
+							<i class="fas fa-globe"></i>&nbsp;{troc.societyweb}
+						</Button>
+						
+					</div>
+
+					<div class="w3-col m4 w3-center schedule">
+						<div class="w3-small w3-padding">
+							<span class="w3-round">
+								<i class="far fa-clock"></i>
+								{dayjs(troc.schedule[0].open).fromNow()}
 							</span>
-							<p>{troc.description}</p>
-							
-							<Button href={`https://${troc.societyweb}`} dense color="secondary">
-								<i class="fas fa-globe"></i>&nbsp;{troc.societyweb}
-							</Button>
-							
-						</div>
 
-						<div class="w3-col m4 w3-center schedule">
-							<div class="w3-small w3-padding">
-								<span class="w3-round">
-									<i class="far fa-clock"></i>
-									{dayjs(troc.schedule[0].open).fromNow()}
-								</span>
-
-								<ul class="w3-ul w3-tiny w3-margin-top">
-								{#each troc.schedule as day}
-									<li>
-										{dayjs(day.open).format('ddd. DD.MM.YY [d]e H[h]mm à ')}
-										{dayjs(day.close).format('H[h]mm')}
-									</li>
-								{/each}
-								</ul>
-								
-							</div>
+							<ul class="w3-ul w3-tiny w3-margin-top">
+							{#each troc.schedule as day}
+								<li>
+									{dayjs(day.open).format('ddd. DD.MM.YY [d]e H[h]mm à ')}
+									{dayjs(day.close).format('H[h]mm')}
+								</li>
+							{/each}
+							</ul>
+							
 						</div>
 					</div>
+				</div>
+				
+				<!-- Onglets -->
+				<div class="onglets w3-border-top">
 					
-					<!-- Onglets -->
-					<div class="onglets w3-border-top">
-						
-						<div class="w3-padding underline-div onglet" on:click="{() => troc.tabSelect = 0}" class:actived="{troc.tabSelect == 0}">
-							<span class="underline-span">Fouiller les articles ({troc.articlelastref})</span>
-						</div>
+					<div class="w3-padding underline-div onglet" on:click="{() => troc.tabSelect = 0}" class:actived="{troc.tabSelect == 0}">
+						<span class="underline-span">Fouiller les articles ({troc.articlelastref})</span>
+					</div>
 
+					{#if $me._id}
 						<div class="w3-padding underline-div onglet" on:click="{() => troc.tabSelect = 1}" class:actived="{troc.tabSelect == 1}">
 							<span class="underline-span">Voir mon activité</span>
 						</div>
-
-						<!--Access butons icon-->
-						{#if troc.isAdmin}
-							<div class="w3-right w3-padding button-icon w3-center">
-								<a href="{`/admin/${troc._id}`}">
-									<i class="fa fa-cog w3-large"></i>
-								</a>
-							</div>
-						{:else if troc.isCashier}
-							<div class="w3-right w3-padding button-icon w3-center">
-								<a href="{`/cashier/${troc._id}`}">
-									<i class="fa fa-cash-register w3-large"></i>
-								</a>
-							</div>							
-						{/if}						
-					</div>
-
-
-					<!-- Contenu des onglets -->
-					{#if troc.tabSelect > -1}
-
-						<div class="tabs" transition:slide style="height: 500px;">
-
-							<!-- Liste d'articles -->
-							<div class="tab" class:center={troc.tabSelect === 0} class:left={troc.tabSelect > 0}>
-								<Articles troc={troc._id}/>
-							</div>
-
-							<!-- Resume -->
-							<div class="tab w3-padding-large" class:center={troc.tabSelect === 1} class:right={troc.tabSelect < 1}>
-								<br>
-								{#if $me._id}
-									<Resume userId={$me._id} trocId={troc._id}/>
-								{:else}
-									<br>
-									<div style="width: 400px; margin: auto;">
-										<Login id="{i}"/>
-									</div>
-									<br>
-								{/if}					
-							</div>
+					{:else}
+						<div class="w3-padding underline-div onglet" on:click="{() => dialogLogin.open()}">
+							<span class="underline-span">Voir mon activité</span>
 						</div>
-
 					{/if}
+
+					<!--Access butons icon-->
+					{#if troc.isAdmin}
+						<div class="w3-right w3-padding button-icon w3-center">
+							<a href="{`/admin/${troc._id}`}">
+								<i class="fa fa-cog w3-large"></i>
+							</a>
+						</div>
+					{:else if troc.isCashier}
+						<div class="w3-right w3-padding button-icon w3-center">
+							<a href="{`/cashier/${troc._id}`}">
+								<i class="fa fa-cash-register w3-large"></i>
+							</a>
+						</div>							
+					{/if}						
 				</div>
 
 
+				<!-- Contenu des onglets -->
+				{#if troc.tabSelect > -1}
+
+					<div class="tabs" transition:slide style="height: 650px;">
+
+						<!-- Liste d'articles -->
+						<div class="tab" class:center={troc.tabSelect === 0} class:left={troc.tabSelect > 0}>
+							<Articles troc={troc._id}/>
+						</div>
+
+						<!-- Resume -->
+						{#if $me._id}
+							<div class="tab w3-padding-large" class:center={troc.tabSelect === 1} class:right={troc.tabSelect < 1}>
+								<br>
+								<Resume userId={$me._id} trocId={troc._id}/>
+							</div>
+						{/if}					
+					</div>
+
+				{/if}
+			</div>
 
 
-			{:else}
-				<br>
-				<span class="w3-large">
-					Aucun troc ne correspond à la recherche
-					<i class="far fa-tired"></i>
-				</span>
-			{/each}
-		</div>
+		{:else}
+			<br>
+			<span class="w3-large">
+				Aucun troc ne correspond à la recherche
+				<i class="far fa-tired"></i>
+			</span>
+		{/each}
+	
 	</div>
 </div>
+
+<Dialog bind:this={dialogLogin}>
+	<Login on:close="{() => dialogLogin.close()}"/>
+</Dialog>
 
 <svelt:head>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css">
@@ -283,7 +288,7 @@
 <style>
 
 	#vue {
-		height: calc(100% - 58px);
+		height: calc(100% - 55px);
 		overflow-y: auto;
 	}
 

@@ -48,8 +48,7 @@
 			Login
 		</Button>
 
-		<Dialog
-		bind:this={dialogLogin}>
+		<Dialog bind:this={dialogLogin}>
 			<Login/>
 		</Dialog>
 
