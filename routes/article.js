@@ -43,7 +43,8 @@ router
 		let { search, troc, providernot, available, limit, skip } = req.query
 		let query = {}
 
-		if (troc || providernot || available) query.$and = []
+		//if (troc || providernot || available) query.$and = []
+		query.$and = [{name : {$ne: ""}}] //not article without name
 		if (troc) query.$and.push({troc})
 		if (providernot) query.$and.push({'provider': {$ne: providernot}})
 		
