@@ -122,7 +122,7 @@
     }
 
     .flex .list-element {
-        max-width: calc(50% - 16px);
+        /*max-width: calc(50% - 16px);*/
         flex-grow: 1;
     }
 

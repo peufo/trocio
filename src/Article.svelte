@@ -35,7 +35,7 @@
 <div class="list-element w3-padding w3-display-container" on:click={select} class:clickable class:valided={!article.isRemovable}>
     
     <div style="padding-right: 55px">
-        {article.name}
+        {@html article.name.length ? article.name : `<span style="color: red;">Pas de désignation !</span>`}
     </div>
 
     <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
