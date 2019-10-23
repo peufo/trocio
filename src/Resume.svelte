@@ -387,7 +387,7 @@
 							<span class="w3-tiny" style="line-height: 1;">{payment.message}</span>
 						</div>
 					{:else}
-						<span class="w3-opacity">Pas de paiement enregistré !</span>
+						<span class="w3-opacity">Pas de paiement</span>
 					{/each}
 
 					<!-- Bouton pour prolongé la liste -->

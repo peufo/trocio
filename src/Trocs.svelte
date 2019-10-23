@@ -288,7 +288,7 @@
 <style>
 
 	#vue {
-		height: calc(100% - 55px);
+		height: calc(100% - 56px);
 		overflow-y: auto;
 	}
 

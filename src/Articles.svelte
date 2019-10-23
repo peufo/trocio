@@ -72,13 +72,15 @@
     {:then}
         <div class="w3-margin-left">
 
-            {#each articles as article}
-                <div class="list-element w3-padding w3-margin-right w3-display-container valided">
-                    {article.name}
-                    <br>
-                    <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
-                </div>
-            {/each}
+            <div class="flex">
+                {#each articles as article}
+                    <div class="list-element w3-padding w3-margin-right w3-display-container valided">
+                        {article.name}
+                        <br>
+                        <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
+                    </div>
+                {/each}
+            </div>
 
             <br>
 
@@ -113,10 +115,15 @@
 
 <style>
 
-    .list-element {
-        display: inline-block;
-        width: calc(33.3% - 16px);
-        
+    .flex {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .flex .list-element {
+        max-width: calc(50% - 16px);
+        flex-grow: 1;
     }
 
   * :global(.shaped-outlined .mdc-text-field__input) {
