@@ -5,10 +5,10 @@ var User = require('../models/user')
 
 
 router
-    .get('/', checkSuperAdmin, (req, res, next) => {
+    .get('/', (req, res, next) => {
         res.json('Hey super admin')
     })
-    .post('/addCredit/:userId', checkSuperAdmin, (req, res, next) => {
+    .post('/addCredit/:userId', (req, res, next) => {
         User.findOne({_id: req.params.userId}, {mail: 1, creditTroc: 1}, (err, user) => {
             if (err || !user) return next(err || Error('User not found'))
             if (user.creditTroc) user.creditTroc++
@@ -26,19 +26,12 @@ router
 			}else next(err)
 		})
 	})
-    .get('/trocs', checkSuperAdmin, (req, res, next) => {
+    .get('/trocs', (req, res, next) => {
 		Troc.find(req.query, (err, trocs) => {
 			if (err) return next(err)
 			res.json(trocs)
 		})
     })
     
-
-function checkSuperAdmin(req, res, next) {
-    if (!req.session.user) return next(Error('Login required'))
-    if (!process.env.TROCIO_ADMIN) return next(Error('The environment variable TROCIO_ADMIN is undefined'))
-    if (process.env.TROCIO_ADMIN != req.session.user.mail) return next(Error('Access denied'))
-    next()
-}
 
 module.exports = router

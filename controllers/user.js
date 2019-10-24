@@ -6,10 +6,15 @@ var randomize = require('randomatic')
 module.exports = {
 
 	checkLogin: (req, res, next) => {
-		if (req.session.user) return next()
-		else {
-			return next(Error('Login required')
-		)}
+		if (!req.session.user) return next(Error('Login required'))
+		next()
+	},
+
+	checkSuperAdmin: (req, res, next) => {
+		if (!req.session.user) return next(Error('Login required'))
+		if (!process.env.TROCIO_ADMIN) return next(Error('The environment variable TROCIO_ADMIN is undefined'))
+		if (process.env.TROCIO_ADMIN != req.session.user.mail) return next(Error('Access denied'))
+		next()
 	},
 
 	createUser: (req, res, next) => {
@@ -130,24 +135,6 @@ module.exports = {
 				})
 			})
 		})
-		
-		/* NOT WORK EVERY TIME
-		if (!req.session.user) return next(Error('Login required'))
-		Mailvalidator.findOne({user: req.session.user._id}, (err, mv) => {
-			if (err || !mv) return next(err || Error(`MailValidator not exist`))
-			if (req.params.url != mv.url) return next(Error(`Url isn't correct`))
-
-			User.findOne({_id: req.session.user._id}, (err, user) => {
-				if (err || !user) return next(err || Error('You are not found !'))
-				user.mailvalided = true
-				user.save(err => {
-					if (err) return next(err)
-					res.redirect('/me')
-				})
-			})
-
-		})
-		*/
 	}
 }
 
