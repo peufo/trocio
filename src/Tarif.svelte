@@ -1,5 +1,4 @@
 <script>
-	import { troc } from './stores'
 	import { slide } from 'svelte/transition'
 	import { createEventDispatcher } from 'svelte'
 	const dispatch = createEventDispatcher()
@@ -12,8 +11,6 @@
 	export let fee = []
 	export let maxarticles = 0
 	export let bydefault = false		
-	
-	$: console.log($troc)
 
 	function removeFee(i) {
 		fee.splice(i, 1)

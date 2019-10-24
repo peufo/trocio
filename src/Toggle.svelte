@@ -1,6 +1,7 @@
 <script>
     export let value = false
     export let icon = ''
+    export let patchButton = false
 
 </script>
 
@@ -8,8 +9,8 @@
     {#if icon.length}
         <div id="icon">{@html icon}</div>
     {/if}
-    <div id="cadre" on:click="{() => value = !value}" on:click>
-        <div id="boule" class:active={value}></div>
+    <div id="cadre" class:patchButton on:click="{() => value = !value}" on:click>
+        <div id="boule" class:patchButton class:active={value}></div>
     </div> 
 </div>
 

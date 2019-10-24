@@ -25,7 +25,6 @@
 	]
 
 	onMount(() => {
-		console.log('HEY')
 		troc.find(location.pathname.replace('/admin/',''))
 	})
 
@@ -65,6 +64,7 @@
 	}
 
 	let changeFlag = false //For SearchUser to AutoPatch 
+	let tag = {} // For tag edit
 
 </script>
 
@@ -161,7 +161,7 @@
 						on:selectUser="{() => changeFlag = true}"
 						on:removeUser="{() => changeFlag = true}"/>
 			{/each}
-				<div id="addTarif" >
+				<div id="addTarif">
 					<div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"
 						 class="patchButton w3-button w3-border w3-round w3-right">
 						+1 tarif
@@ -174,7 +174,10 @@
 		<!-- Etiquetage  -->
 		<div class="tab" class:center={tabSelected == 3} class:left={tabSelected > 3} class:right={tabSelected < 3}>
 			<br>
-			<TagEdit/>
+			<AutoPatch source="tagEdit" body="{{tag: $troc.tag}}" path="{`/trocs/${$troc._id}`}" trocRefresh/>
+			<div id="tagEdit">
+				<TagEdit bind:width={$troc.tag.width} bind:height={$troc.tag.height} bind:padding={$troc.tag.padding} bind:border={$troc.tag.border}/>
+			</div>
 		</div>
 
 		<!-- Stats  -->

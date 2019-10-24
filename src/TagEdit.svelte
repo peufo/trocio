@@ -4,17 +4,19 @@
     import { goPrint } from './utils'
     import Tag from './Tag.svelte'
     import Button from '@smui/button'
+    import AutoPatch from './AutoPatch.svelte'
 
-    let width = 90
-    let height = 29
-    let padding = 2
-    let border = true
+    export let width = 90
+    export let height = 29
+    export let padding = 2
+    export let border = true
 
     let articles = [
         {name: 'Article test A', ref: '123', price: 99},
         {name: 'Article test B qui a une désignation un peu longue', ref: '231', price: 45},
-        {name: 'Art C', ref: '321', price: 900},
+        {name: 'Art C', ref: '321', price: 900}
     ]
+
 
 </script>
 
@@ -39,7 +41,7 @@
         </div>
 
         <div class="dimInput">
-            <Toggle bind:value={border} icon={`<i class="far fa-square w3-large"></i>`}/>
+            <Toggle patchButton bind:value={border} icon={`<i class="far fa-square w3-large"></i>`}/>
         </div>
     </div>
 
@@ -58,6 +60,8 @@
             tester
         </Button>
     </div>
+
+    <br><br><br>
 
 </div>
 

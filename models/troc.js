@@ -30,6 +30,12 @@ var trocModel = new Schema({
 		maxarticles: {type: Number, default: 100}
 	}],
 	articlelastref: {type: Number, required: true, default: 0},
+	tag: {
+		width: {type: Number, default: 90},
+		height: {type: Number, default: 29},
+		padding: {type: Number, default: 2},
+		border: {type: Boolean, default: true}
+	}
 
 })
 
