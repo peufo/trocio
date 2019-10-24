@@ -1,3 +1,4 @@
+import printJS from 'print-js'
 import { troc } from './stores'
 import { quintOut } from 'svelte/easing'
 
@@ -52,4 +53,12 @@ export function getMargin(art, tarif) {
 
 export function sortByUpdatedAt(a, b) {
 	return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+}
+
+export function goPrint() {
+	printJS({
+		printable: 'tagsPrint',
+		type: 'html',
+		targetStyles: ['*']
+	})
 }

@@ -5,14 +5,13 @@
 </script>
 
 <div id="cadre_exterieur">
-    <div id="cadre" on:click="{() => value = !value}" on:click>
-        <div id="boule" class:active={value}></div>
-    </div> 
     {#if icon.length}
         <div id="icon">{@html icon}</div>
     {/if}
+    <div id="cadre" on:click="{() => value = !value}" on:click>
+        <div id="boule" class:active={value}></div>
+    </div> 
 </div>
-
 
 <style>
     #cadre, #icon {

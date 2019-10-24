@@ -1,55 +1,56 @@
 <script>
-    import Toggle from './Toggle.svelte'
-    
-    export let width = 6
-    export let height = 2
+
+    export let name = `Nom de l'article`
+    export let ref = '123'
+    export let price = 99
+
+    export let width = 80
+    export let height = 22
+    export let padding = 2
+    export let border = false
 
 </script>
 
-<div class="w3-card w3-round" style="max-width: 850px; margin: auto; height: calc(100% - 45px);">
-
-
-    <div class="dimInput" style="width: 84px; transform: translate(calc({width / 2}cm + 50% + 5px), 3cm);">
-        <input type="number" class="w3-input w3-right" bind:value={height} step="0.1">
-        <i class="fas fa-arrows-alt-v w3-large"></i>
-    </div>
-
-    <div class="dimInput" style="width: 90px;">
-        <input type="number" class="w3-input w3-right" bind:value={width} step="0.1">
-        <i class="fas fa-arrows-alt-h w3-large"></i>
-    </div>
-
-    <div id="tag" class="w3-round w3-border w3-padding" style="width: {width}cm; height: {height}cm;">
-        Nom de l'article
-        <br>
-        <span class="w3-tiny w3-right" style="line-height: 1;">99.00</span>
-    </div>
-
-    <div class="w3-small" style="margin: auto; width: 75px; transform: translate(calc(-{width / 2}cm + 50%), 0cm);">
-        <Toggle icon={'<i class="fas fa-barcode w3-large"></i>'}/>
-    </div>
-    
+<div class="tag" class:border style="{`width: ${width}mm; height: ${height}mm; padding: ${padding}mm;`}">
+    <span class="ref">
+        <b>#</b>{ref}
+    </span>
+        {name}
     <br><br>
-
+    <img src="/favicon.ico" alt="Logo trocio" height="30" width="30" style="{`bottom: ${padding}mm; left: ${padding}mm;`}">
+    <div class="price" style="{`bottom: ${padding}mm; right: ${padding}mm;`}">
+        {price.toFixed(2)}
+    </div>
 </div>
 
 <style>
-    #tag {
-        margin: auto;
+    .tag {
+        page-break-before: always;
+        position: relative;
     }
 
-    .dimInput {
-        height: 39px;
-        margin: auto;
-    }
-    .dimInput input {
-        width: 70px;
-    }
-    .dimInput i {
-        transform: translate(0px, 9px);
+    .tag.border {
+        border: 2px solid #ccc;
+        border-radius: 4px;
     }
 
-    input {
-        border: none;
+    .tag:not(:first-child) {
+        margin-top: 1mm;
+    }
+
+    .ref {
+        float: right;
+    }
+
+    .ref b {
+        margin-top: 4px;
+    
+    }
+    .price {
+        position: absolute;
+        line-height: 1;
+    }
+    img {
+        position: absolute;
     }
 </style>

@@ -193,6 +193,7 @@
 		background: #fff;
 		margin-top: 4px;
 		box-shadow: 1px 1px 4px grey;
+		z-index: 99;
 	}
 
 </style>

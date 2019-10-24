@@ -8,11 +8,11 @@
 	import UserLi from './UserLi.svelte'
 	import Tarif from './Tarif.svelte'
 	import Cashier from './Cashier.svelte'
-	import Tag from './Tag.svelte'
+	import TagEdit from './TagEdit.svelte'
 	import { getHeader, updateTroc } from './utils'
 
 
-	let tabSelected = 6
+	let tabSelected = 3
 	let oldTabSelected = -1
 	let tabs = [
 		{num: 0, name: 'Informations', 	icon: '<i class="fas fa-info-circle"></i>'},
@@ -174,7 +174,7 @@
 		<!-- Etiquetage  -->
 		<div class="tab" class:center={tabSelected == 3} class:left={tabSelected > 3} class:right={tabSelected < 3}>
 			<br>
-			<Tag/>
+			<TagEdit/>
 		</div>
 
 		<!-- Stats  -->

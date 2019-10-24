@@ -43,6 +43,7 @@
     "morgan": "~1.9.0",
     "node-sass": "^4.12.0",
     "nodemailer": "^6.3.0",
+    "print-js": "^1.0.61",
     "query-string": "^6.8.3",
     "randomatic": "^3.1.1",
     "svelte-material-ui": "^1.0.0-beta.15"

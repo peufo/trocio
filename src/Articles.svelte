@@ -12,7 +12,7 @@
     let moreResultsPromise
 
     let noMoreResults = false
-    const LIMIT = 30
+    const LIMIT = 20
     let skip = 0
 
     onMount(() => {
