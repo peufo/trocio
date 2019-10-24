@@ -245,7 +245,7 @@
 				<!-- Contenu des onglets -->
 				{#if troc.tabSelect > -1}
 
-					<div class="tabs" transition:slide style="height: 650px;">
+					<div class="tabs" transition:slide style="height: 850px;">
 
 						<!-- Liste d'articles -->
 						<div class="tab" class:center={troc.tabSelect === 0} class:left={troc.tabSelect > 0}>

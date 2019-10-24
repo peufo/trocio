@@ -1,7 +1,7 @@
 var router 	= require('express').Router()
 var User = require('../models/user')
 var Troc = require('../models/troc')
-var User = require('../models/user')
+var Article = require('../models/article')
 
 
 router
@@ -20,7 +20,7 @@ router
         })
     })
     .get('/users', (req, res, next) => {
-		User.find(req.query, {name: 1}, (err, users) => {
+		User.find(req.query, (err, users) => {
 			if (!err){
 				res.json(users)
 			}else next(err)
@@ -30,6 +30,12 @@ router
 		Troc.find(req.query, (err, trocs) => {
 			if (err) return next(err)
 			res.json(trocs)
+		})
+    })
+    .get('/articles', (req, res, next) => {
+		Article.find(req.query, (err, articles) => {
+			if (err) return next(err)
+			res.json(articles)
 		})
     })
     
