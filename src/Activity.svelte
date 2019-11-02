@@ -46,7 +46,7 @@ class="w3-padding"
 disabled={!$me.creditTroc}
 on:click="{() => dialogCreateTroc.open()}"
 >
-    Organiser mon troc
+    Organiser un troc
 </Button>
 
 <Dialog bind:this={dialogCreateTroc}>
@@ -56,6 +56,6 @@ on:click="{() => dialogCreateTroc.open()}"
     </Content>
 </Dialog>
 
-<Button variant="outlined" color="secondary" class="w3-padding" href="/">
+<Button variant="outlined" color="secondary" class="w3-padding" href="/search">
     Trouver un troc
 </Button>

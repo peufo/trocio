@@ -7,6 +7,9 @@ var { checkCashier, checkAdmin } = require('../controllers/troc')
 
 router
 	.get('/', (req, res, next) => {
+		res.sendFile(path.join(__dirname, '..', 'views', 'welcome.html'))
+	})
+	.get('/search', (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'trocs.html'))
 	})
 	.get('/me', (req, res, next) => {

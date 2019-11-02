@@ -67,4 +67,10 @@ export default [
 	plugins,
 	watch: {clearScreen: false}
 },
+{
+	input: 'src/welcome.js',
+	output: getOutput('welcome'),
+	plugins,
+	watch: {clearScreen: false}
+},
 ]

@@ -45,7 +45,7 @@
 		class="w3-right w3-padding"
 		on:click="{() => dialogLogin.open()}"
 		>
-			Login
+			Connexion
 		</Button>
 
 		<Dialog bind:this={dialogLogin}>

@@ -33,7 +33,7 @@ module.exports = {
             mailOptions.html = `
                 <h2>Bienvenue sur Trocio</h2>
                 <p>
-                    <b>${user.name}</b>, votre inscritpion c'est correctement déroulé.. 
+                    <b>${user.name}</b>, votre inscription s'est correctement déroulé. 
                 </p>
                 <p>
                     <a href="${baseUrl}/${user._id}/${mailValidator.url}">
