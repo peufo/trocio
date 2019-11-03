@@ -50,7 +50,7 @@ module.exports = {
         mailOptions.to = user.mail
         mailOptions.subject = 'Réinitialisation de votre mot de passe - TROCIO'
         mailOptions.html = `
-            <h2>Votre mot de passe à été réinitialisé</h2>
+            <h2>Votre mot de passe a été réinitialisé</h2>
             <p>
                 ${user.name}, votre nouveau mot de passe est désormais : <b>${unchiffredPwd}</b>
             </p>
