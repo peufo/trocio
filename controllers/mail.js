@@ -1,14 +1,15 @@
 var nodemailer = require('nodemailer')
 var Mailvalidator = require('../models/mailvalidator')
 var randomize = require('randomatic')
+var {SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = require('../config')
 const baseUrl = process.env.NODE_ENV == 'development' ? 'http://localhost:3001/users/validmail' : 'https://trocio.ch/users/validmail'
 
 var transporter = nodemailer.createTransport({
-    host: 'mail.infomaniak.com',
-    port: 587,
+    host: SMTP_HOST,
+    port: SMTP_PORT,
 	auth: {
-		user: 'postmaster@trocio.ch',
-		pass: process.env.MAIL_PWD
+		user: SMTP_USER,
+		pass: SMTP_PASS	
 	}
 })
 
