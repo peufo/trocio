@@ -104,6 +104,7 @@
 
     <hr>
     <div id="buy">
+
         <Button
         href="/search"
         variant="outlined"
@@ -114,11 +115,13 @@
         <span class="w3-xlarge">Acheter</span>
         <p>Trouve un troc qui correspond à tes attentes près de chez toi et regarde les articles qui y sont proposés.</p>
         <p>Rends-toi à l'évenement pour effectuer tes achats.</p>
+        
     </div>
 
 
     <br><hr>
     <div id="sale">
+
         <Button
         href="/search"
         variant="outlined"
@@ -126,25 +129,28 @@
         class="w3-right w3-large w3-margin-left">
             Trouver un troc
         </Button>
+
         <span class="w3-xlarge">Vendre</span>
         <p>Trouve un troc dans ta région qui correspond aux objets dont tu souhaites te débarraser</p>
         <p>Propose tes articles avant l'événement en leur donnant une désignation et un prix</p>
         <p>Rends-toi à l'ouverture de l'événement pour les fournir à un bénévole</p>
         <p>Suis en temps réel l'état de tes ventes</p>
-        <p>Récupère tes gains et tes invendus quand tu le souaites</p>
+        <p>Récupère tes gains ou tes invendus quand tu le souaites</p>
 
     </div>
 
 
     <br><hr>
     <div id="organize">
+
         <Button
         variant="outlined"
         color="secondary"
         disabled
         class="w3-right w3-large">
             Organiser un troc
-        </Button>  
+        </Button>
+
         <span id="organize" class="w3-xlarge">Organiser</span>
         <p>Définis le lieu et la date de ton évenement</p>
         <p>Monte ton équipe et définis tes tarifs</p>

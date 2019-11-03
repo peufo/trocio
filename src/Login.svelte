@@ -5,7 +5,6 @@
     const dispatch = createEventDispatcher()
     import { me } from './stores'
     import { getHeader } from './utils'
-    import randomize from 'randomatic'
     
     export let id = 'login' //For focus()
 
@@ -19,14 +18,13 @@
 
     let submitPromise
 
-    let loginIsValid = false
+    let loginError = ''
     let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
     let timeout
 
     onMount(() => {
        focus()
-       if (!!$me._id) password = randomize('Aa0', 6)
     })
 
     onDestroy(() => {
@@ -41,8 +39,8 @@
     }
 
     function submit() {
-        if (loginIsValid) {
-            if (newUser) {
+        if (!loginError) {
+            if (newUser || $me._id) {
                 submitPromise = Register()
             }else if(reset){
                 submitPromise = Reset()
@@ -56,7 +54,12 @@
         let res = await fetch('/users', getHeader({name, mail, password}))
         let json = await res.json()
         if (json.success) {
-            await Login()
+            if ($me._id) {//Un Cassier à créer un utilisateur
+                alert(`Le mot de passe de ${json.message.name} est ${json.message.password}`)
+                dispatch('newClient', json.message)
+            }else{
+                await Login()
+            }
             return
         }else{
             alert(json.message)
@@ -91,11 +94,11 @@
     }
 
     $: {
-        loginIsValid = true
-        if (!mail.match(EMAIL_REGEX)) loginIsValid = false
-        if (!reset && password.length < 3) loginIsValid = false
-        if (newUser && name.length < 3) loginIsValid = false
-        if (newUser && password != password2) loginIsValid = false
+        loginError = ''
+        if (!mail.match(EMAIL_REGEX)) loginError = 'Mail invalide !'
+        if (!newUser && !reset && password.length < 3) loginError = 'Mot de passe trop court'
+        if (newUser && name.length < 3) loginError = 'Nom trop court'
+        if (!$me._id && newUser && password != password2) loginError = 'Mot de passe de confirmation pas identique'
     }
 
 </script>
@@ -103,7 +106,7 @@
 {#if !close} <!-- Belle rustine-->
 <div id="{`loginForm${id}`}" class="w3-padding" style="min-width: 330px;">
 
-    {#if newUser || $me._id}
+    {#if newUser}
         <h3 class="w3-center" in:fade>Nouveau compte</h3>
     {:else if reset}
         <h3 class="w3-center" in:fade>Récupération</h3>
@@ -164,20 +167,6 @@
     </div>
     {/if}
 
-    {#if !!$me._id}
-    <div transition:slide|local>
-        <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
-        <div  class="w3-rest">
-            <input
-                bind:value={password}
-                class="userInput w3-input"
-                type="text"
-                readonly
-                on:keyup="{e => e.which == 13 && submit()}">
-        </div>						
-    </div>
-    {/if}
-
     <div>
         <div class="w3-margin-top w3-small">
 
@@ -195,11 +184,6 @@
                         </span>
                     </div>
                 {/if}
-            {:else}
-
-                <span class="w3-padding">
-                    Transmettez le mot de passe au client ! 
-                </span>
             {/if}
 
             {#await submitPromise}
@@ -208,7 +192,7 @@
                     Validation...
                 </div>
             {:then}
-                <input id="submit" on:click={submit} type="submit" class="w3-right w3-button w3-border w3-round" class:w3-disabled={!loginIsValid}>
+                <input id="submit" on:click={submit} type="submit" class="w3-right w3-button w3-border w3-round" class:w3-disabled={!!loginError}>
             {/await}
 
         </div>

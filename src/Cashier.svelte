@@ -56,6 +56,7 @@
     })
     
 	function userSelected(e){
+		searchUser = e.detail.name
 		userOk = true
 		clientAnonym = false
 		user = e.detail
@@ -194,7 +195,7 @@
 					<i class="fas fa-user-plus w3-large"></i>&nbsp;Nouveau
 					</Button>
 					<Dialog bind:this={dialogLogin}>
-						<Login id="NewClient"/>
+						<Login id="NewClient" on:newClient={userSelected}/>
 					</Dialog>
 
 					<Button
