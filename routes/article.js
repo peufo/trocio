@@ -8,7 +8,11 @@ var router = express.Router()
 router
 	.get('/', (req, res, next) => {
 
-		if (req.query['buyer'] == 'false') req.query['buyer'] = { $exists: false }
+		if (req.query['buyer'] == 'false') { //For anonyme client
+			req.query['buyer'] = { $exists: false }
+			if (req.session.user) req.query['seller'] = req.session.user._id
+		}
+
 		if (req.query['giveback.user'] == 'false') {
 			req.query['giveback'] = {$ne: []}
 			req.query['giveback.user'] = { $exists: false }

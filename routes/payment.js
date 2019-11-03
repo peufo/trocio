@@ -5,10 +5,14 @@ var router = express.Router()
 
 router
     .get('/', (req, res, next) => {
-        var { troc, user } = req.query
-        if (user == 'false') user = { $exists: false }
-        if (troc && user) {
-            Payment.find({troc, user}).sort({updatedAt: -1}).exec((err, payments) => {
+
+        if (req.query.user == 'false') { //For anonyme client
+			req.query.user = { $exists: false }
+			if (req.session.user) req.query.acceptor = req.session.user._id
+		}
+
+        if (req.query.troc && req.query.user) {
+            Payment.find(req.query).sort({updatedAt: -1}).exec((err, payments) => {
                 if (err) return next(err)
                 res.json(payments)
             })
