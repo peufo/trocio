@@ -127,11 +127,11 @@
         </Button>
 
         <span class="w3-xlarge">Vendre</span>
-        <p>Trouve un troc dans ta région qui correspond aux objets dont tu souhaites te débarrasser</p>
-        <p>Propose tes articles avant l'événement en leur donnant une désignation et un prix</p>
-        <p>Rends-toi à l'ouverture de l'événement pour les fournir à un bénévole</p>
-        <p>Suis en temps réel l'état de tes ventes</p>
-        <p>Récupère tes gains ou tes invendus quand tu le souhaites</p>
+        <p>Trouve un troc dans ta région qui correspond aux objets dont tu souhaites te débarrasser.</p>
+        <p>Propose tes articles avant l'événement en leur donnant une désignation et un prix.</p>
+        <p>Rends-toi à l'ouverture de l'événement pour les fournir à un bénévole.</p>
+        <p>Suis en temps réel l'état de tes ventes.</p>
+        <p>Récupère tes gains ou tes invendus quand tu le souhaites.</p>
 
     </div>
 
@@ -148,10 +148,10 @@
         </Button>
 
         <span id="organize" class="w3-xlarge">Organiser</span>
-        <p>Définis le lieu et la date de ton événement</p>
-        <p>Monte ton équipe et définis tes tarifs</p>
+        <p>Définis le lieu et la date de ton événement.</p>
+        <p>Monte ton équipe et définis tes tarifs.</p>
         <p>Gère les dépôts, les récupérations, les achats, les retours et les paiements sur une interface simple et accessible.</p>
-        <p>Accède à une vue d'ensemble du trafic de ton événement</p>
+        <p>Accède à une vue d'ensemble du trafic de ton événement.</p>
     </div>
 
 </div>

@@ -1,5 +1,5 @@
 <script>
-    import { troc } from './stores'
+    import { troc, me } from './stores'
     import { onMount } from 'svelte'
     import { flip } from 'svelte/animate'
     import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt } from './utils.js'
@@ -37,7 +37,8 @@
 				provider: user._id,
 				name: newArticle.name,
 				price: newArticle.price,
-				valided: new Date(),
+                valided: new Date(),
+                validator: $me._id,
                 isRemovable: true,
                 isCreated: true,
                 fee: 0,
