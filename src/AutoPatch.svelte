@@ -43,7 +43,6 @@
 	}
 
 	function testClick(e) {
-		console.log('prout')
 		if(e.target.classList.contains('patchButton')) {
 			change()
 		}

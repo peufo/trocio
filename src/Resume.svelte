@@ -114,8 +114,6 @@
 		return out
 	}
 
-	$: console.log(provided)
-
 	$: {//Calcul of sold
 		
 
@@ -146,7 +144,6 @@
 
 		//balance
 		balance = Math.round((buySum + paySum + soldSum + feeSum) * 100) / 100
-		console.log('Calcule: ', balance)
 
 	}
 
@@ -243,7 +240,6 @@
 		.then(res => res.json())
 		.then(json => {
 			tarif = json
-			console.log(tarif)
 		})
 	}
 
