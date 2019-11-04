@@ -148,7 +148,7 @@
         </Button>
 
         <span id="organize" class="w3-xlarge">Organiser</span>
-        <p>Définis le lieu et la date de ton événement.</p>
+        <p>Définit le lieu et la date de ton événement.</p>
         <p>Monte ton équipe et définis tes tarifs.</p>
         <p>Gère les dépôts, les récupérations, les achats, les retours et les paiements sur une interface simple et accessible.</p>
         <p>Accède à une vue d'ensemble du trafic de ton événement.</p>
