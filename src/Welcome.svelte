@@ -111,10 +111,7 @@
         <span class="w3-xlarge">Acheter</span>
         <p>Trouve un troc qui correspond à tes attentes près de chez toi et regarde les articles qui y sont proposés.</p>
         <p>Rends-toi à l'événement pour effectuer tes achats.</p>
-<<<<<<< 
-=======
-        
->>>>>>> 
+     
     </div>
 
 
@@ -130,23 +127,11 @@
         </Button>
 
         <span class="w3-xlarge">Vendre</span>
-<<<<<<< HEAD
         <p>Trouve un troc dans ta région qui correspond aux objets dont tu souhaites te débarrasser</p>
         <p>Propose tes articles avant l'événement en leur donnant une désignation et un prix</p>
         <p>Rends-toi à l'ouverture de l'événement pour les fournir à un bénévole</p>
         <p>Suis en temps réel l'état de tes ventes</p>
-<<<<<<< 
         <p>Récupère tes gains et tes invendus quand tu le souhaites</p>
-=======
-        <p>Récupère tes gains ou tes invendus quand tu le souhaites</p>
->>>>>>> 
-=======
-        <p>Trouve un troc dans ta région qui correspond aux objets dont tu souhaites te débarrasser.</p>
-        <p>Propose tes articles avant l'événement en leur donnant une désignation et un prix.</p>
-        <p>Rends-toi à l'ouverture de l'événement pour les fournir à un bénévole.</p>
-        <p>Suis en temps réel l'état de tes ventes.</p>
-        <p>Récupère tes gains ou tes invendus quand tu le souhaites.</p>
->>>>>>> origin/master
 
     </div>
 
