@@ -8,7 +8,11 @@ var router = express.Router()
 router
 	.get('/', (req, res, next) => {
 
-		if (req.query['buyer'] == 'false') req.query['buyer'] = { $exists: false }
+		if (req.query['buyer'] == 'false') { //For anonyme client
+			req.query['buyer'] = { $exists: false }
+			if (req.session.user) req.query['seller'] = req.session.user._id
+		}
+
 		if (req.query['giveback.user'] == 'false') {
 			req.query['giveback'] = {$ne: []}
 			req.query['giveback.user'] = { $exists: false }
@@ -25,7 +29,6 @@ router
 		var ids = req.body.map(a => a._id)
 		Article.find({_id: {$in: ids}}, (err, articles) => {
 			if (err || articles.length != req.body.length) return next(err || Error('Article not found'))
-			console.log(articles);
 			articles.forEach(async (art, index) => {
 				art.giveback.push(req.body[index].giveback)
 				art.sold = undefined
@@ -87,7 +90,7 @@ router
 
 		//Verifie si le les article vienne tous du même troc
 		var uniqueTroc = req.body.map(a => a.troc).filter((v, i, self) => self.indexOf(v) === i).length == 1
-		if (!uniqueTroc) return next(Error('Troc is not unique'))
+		if (!uniqueTroc) return next(Error('All articles not becomes from the same troc'))
 
 		var errors = []
 		var ids = req.body.map(a => a._id)
@@ -120,6 +123,12 @@ router
 						var patchedArt = req.body[ids.indexOf(String(art._id))]
 						if (patchedArt._id) delete patchedArt._id
 						if (patchedArt.provider) delete patchedArt.provider
+
+						//Add author signature
+						if (patchedArt.validator) delete patchedArt.validator
+						if (patchedArt.seller) delete patchedArt.seller
+						if (patchedArt.valided != art.valided || patchedArt.refused != art.refused) art.validator = req.session.user._id 
+						if (patchedArt.sold != art.sold || patchedArt.recover != art.recover) art.seller = req.session.user._id 
 
 						//PATCH
 						for(p in patchedArt) art[p] = patchedArt[p]

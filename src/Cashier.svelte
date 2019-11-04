@@ -91,6 +91,7 @@
 	//Post payment
 	async function validPayment() {
 		let payment = {
+			acceptor: $me._id,
 			user: user._id,
 			troc: $troc._id,
 			amount: -balance, 

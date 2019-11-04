@@ -12,7 +12,7 @@ function createArticle(req, res, next) {
 			art.save(err => {
 				if (err) return next(err)
 				res.json({success: true, message: art})
-			})						
+			})
 		})
 		
 	}else{

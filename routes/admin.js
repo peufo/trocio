@@ -2,6 +2,7 @@ var router 	= require('express').Router()
 var User = require('../models/user')
 var Troc = require('../models/troc')
 var Article = require('../models/article')
+var Payment = require('../models/payment')
 
 
 router
@@ -36,6 +37,12 @@ router
 		Article.find(req.query, (err, articles) => {
 			if (err) return next(err)
 			res.json(articles)
+		})
+    })
+    .get('/payments', (req, res, next) => {
+		Payment.find(req.query, (err, payments) => {
+			if (err) return next(err)
+			res.json(payments)
 		})
     })
     

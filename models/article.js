@@ -15,9 +15,12 @@ var articleModel = new Schema({
 	refused: Date,
 	sold: Date, //ou
 	recover: Date,
-	giveback: [{sold: Date, back: Date, raison: String, user: {type: ObjectId, ref: 'user'}}] //user is not required for anonyme buyer
+	giveback: [{sold: Date, back: Date, raison: String, user: {type: ObjectId, ref: 'user'}}], //user is not required for anonyme buyer
+	validator: {type: ObjectId, ref: 'user'}, //For valided or refused
+	seller: {type: ObjectId, ref: 'user'} //For sold or recover
 })
 
 articleModel.set('timestamps', true)
+
 
 module.exports = mongoose.model('article', articleModel);

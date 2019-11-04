@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId
 
 var paymentModel = new Schema({
+    acceptor: {type: ObjectId, ref: 'user'},
     user: {type: ObjectId, ref: 'user'},
     troc: {required: true, type: ObjectId, ref: 'troc'},
     amount: {required: true, type: Number},

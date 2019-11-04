@@ -44,8 +44,6 @@
             articles = []
         }
 	}
-
-    $: console.log(articles)
     
     function buy(index) {
         cart = [articles[index], ...cart]
