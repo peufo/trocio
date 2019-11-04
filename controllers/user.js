@@ -20,6 +20,16 @@ module.exports = {
 
 	createUser: (req, res, next) => {
 		req.body.creditTroc = 0
+
+		//Dans le cas ou l'utilisateur est déjà connecté
+		//il sagit d'un cassier qui créer un compte pour un client 
+		//Un mot de passe est générer et returné
+		var genPwd = ''
+		if (req.session.user) {
+			genPwd = randomize('0', 6)
+			req.body.password = genPwd
+		}
+
 		var user = new User(req.body)
 		user.save(err => {
 			if (err) {
@@ -34,9 +44,16 @@ module.exports = {
 			}
 
 			mail.createUser(user, err => {
-				if (err) return next(err)
-				res.status(201).json({success: true, message: 'Inscritpion réussie!'})
+				//if (err) return next(err)
+				if (err) console.log(err)
 			})
+
+			if (req.session.user) {
+				user.password = genPwd
+				res.status(201).json({success: true, message: user})
+			}else{
+				res.status(201).json({success: true, message: 'Inscritpion réussie!'})
+			}
 
 		})
 	},

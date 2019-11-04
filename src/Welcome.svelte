@@ -8,8 +8,6 @@
 <img class="participeImg" class:w3-hide={!!$me._id} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
 
 <div class="content">
-
-
     
     <span class="w3-jumbo">TROCIO</span>
 
@@ -33,8 +31,6 @@
             Organiser un troc
         </Button>          
     </p>
-    
-
 
     <div class="w3-row">
         <div class="w3-col l6">
@@ -104,6 +100,7 @@
 
     <hr>
     <div id="buy">
+
         <Button
         href="/search"
         variant="outlined"
@@ -114,11 +111,16 @@
         <span class="w3-xlarge">Acheter</span>
         <p>Trouve un troc qui correspond à tes attentes près de chez toi et regarde les articles qui y sont proposés.</p>
         <p>Rends-toi à l'événement pour effectuer tes achats.</p>
+<<<<<<< 
+=======
+        
+>>>>>>> 
     </div>
 
 
     <br><hr>
     <div id="sale">
+
         <Button
         href="/search"
         variant="outlined"
@@ -126,25 +128,32 @@
         class="w3-right w3-large w3-margin-left">
             Trouver un troc
         </Button>
+
         <span class="w3-xlarge">Vendre</span>
         <p>Trouve un troc dans ta région qui correspond aux objets dont tu souhaites te débarrasser</p>
         <p>Propose tes articles avant l'événement en leur donnant une désignation et un prix</p>
         <p>Rends-toi à l'ouverture de l'événement pour les fournir à un bénévole</p>
         <p>Suis en temps réel l'état de tes ventes</p>
+<<<<<<< 
         <p>Récupère tes gains et tes invendus quand tu le souhaites</p>
+=======
+        <p>Récupère tes gains ou tes invendus quand tu le souhaites</p>
+>>>>>>> 
 
     </div>
 
 
     <br><hr>
     <div id="organize">
+
         <Button
         variant="outlined"
         color="secondary"
         disabled
         class="w3-right w3-large">
             Organiser un troc
-        </Button>  
+        </Button>
+
         <span id="organize" class="w3-xlarge">Organiser</span>
         <p>Définis le lieu et la date de ton événement</p>
         <p>Monte ton équipe et définis tes tarifs</p>
