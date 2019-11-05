@@ -28,7 +28,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.static(path.join(__dirname, 'node_modules', '@material')))
 app.use(session({
-	secret: SECRET_STRING_COOKIE,
+	secret: process.env.SECRET_STRING_COOKIE,
 	cookie: {maxAge: 72*60*60*1000},
   store: new MongoStore({mongooseConnection: mongoose.connection}),
 	resave: false,
