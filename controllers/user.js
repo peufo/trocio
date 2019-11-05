@@ -2,6 +2,7 @@ var User = require('../models/user')
 var Mailvalidator = require('../models/mailvalidator')
 var mail = require('./mail')
 var randomize = require('randomatic')
+var {TROCIO_ADMIN} = require('../config')
 
 module.exports = {
 
@@ -12,8 +13,8 @@ module.exports = {
 
 	checkSuperAdmin: (req, res, next) => {
 		if (!req.session.user) return next(Error('Login required'))
-		if (!process.env.TROCIO_ADMIN) return next(Error('The environment variable TROCIO_ADMIN is undefined'))
-		if (process.env.TROCIO_ADMIN != req.session.user.mail) return next(Error('Access denied'))
+		if (!TROCIO_ADMIN) return next(Error('The environment variable TROCIO_ADMIN is undefined'))
+		if (TROCIO_ADMIN != req.session.user.mail) return next(Error('Access denied'))
 		next()
 	},
 
