@@ -10,15 +10,14 @@
 <div class="content">
     
     <span class="w3-jumbo">TROCIO</span>
-
+    
     <p class="w3-xxlarge" style="margin-top: 6px; margin-bottom: 66px;">
-
         Pour troquer organisé
-
         <Button
         href="/search"
         variant="outlined"
         color="secondary"
+        style="transform: translate(0px, 10px);"
         class="w3-right w3-large w3-margin-left">
             Trouver un troc
         </Button>
@@ -27,9 +26,10 @@
         variant="outlined"
         color="secondary"
         disabled
+        style="transform: translate(0px, 10px);"
         class="w3-right w3-large">
             Organiser un troc
-        </Button>          
+        </Button> 
     </p>
 
     <div class="w3-row">
@@ -156,9 +156,6 @@
 
 </div>
 
-<svelt:head>
-	<style>#waitLoaded { display: none; }</style>
-</svelt:head>
 
 <style>
 
@@ -167,7 +164,6 @@
             padding: 50px 100px 100px 50px;
         }
     }
-
     @media only screen and (max-width: 850px) {
         .content {
             padding: 10px;

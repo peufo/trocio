@@ -1,117 +1,47 @@
 <script>
-    import { slide, fade } from 'svelte/transition'
     import { me, troc } from './stores'
     import Login from './Login.svelte'
 	import Button from '@smui/button'
 	import Dialog from '@smui/dialog'
+	import TopAppBar, {Row, Section, Title} from '@smui/top-app-bar'
 
 	let dialogLogin
 
 </script>
 
-<header class="w3-row w3-padding w3-border-bottom" >
+<TopAppBar variant="static" color="secondary" dense>
+	<Row>
 
-	<div class="w3-col s4">
-		<a href="/" class="clickable w3-xlarge">
-			<img src="/favicon.ico" alt="logo Trocio" height="35" style="transform: translate(0px, -2px);">
-			TROCIO<span class="w3-tiny" style="color: red;">alpha</span>
-		</a>
-	</div>
+		<Section>
+			<a href="/"><img src="/favicon.ico" alt="logo Trocio" height="35"></a>
+			<a href="/">
+				<Title>
+					TROCIO
+					{#if document.location.pathname == '/me'}
+						<i>- Mon compte</i>
+					{:else if $troc._id}
+						<i>- {$troc.name}</i>
+					{/if}
+				</Title>
+			</a>
+		</Section>
 
-	<div class="w3-col s4 w3-center">
-		<div id="trocSelected" class="w3-xlarge">
-			{#if document.location.pathname == '/me'}
-				Mon compte
-			{:else if $troc}
-				{$troc._id ? $troc.name : ''}
-			{/if}
-		</div>
-	</div>
-
-
-	{#if $me._id}
-		<Button
-		variant="outlined"
-		color="secondary"
-		class="w3-right w3-padding"
-		href="/me"
-		>
-			<i class="far fa-user w3-large"></i>&nbsp;{$me.name}
-		</Button>
-	{:else}
-		<Button
-		variant="outlined"
-		color="secondary"
-		class="w3-right w3-padding"
-		on:click="{() => dialogLogin.open()}"
-		>
-			Connexion
-		</Button>
-
-		<Dialog bind:this={dialogLogin}>
-			<Login/>
-		</Dialog>
-
-	{/if}
-
-
-	<!--
-	<div id="userButton"
-		class="w3-padding w3-border w3-round w3-right" 
-		class:w3-button={!openUserOption} on:click="{() => openUserOption = true}">
-
-		{@html $me._id ? `<i class="far fa-user"></i> ${$me.name}` : `Login`}
-		
-		{#if openUserOption}
-			<div id="userOption" transition:slide class="w3-border w3-round">
+		<Section align="end" toolbar>
+			{#if $me._id}
+				<Button color="secondary" class="w3-right w3-padding" href="/me">
+					<i class="fas fa-user w3-large"></i>&nbsp;{$me.name}
+				</Button>
+			{:else}
+				<Button color="secondary" class="w3-right w3-padding" on:click="{() => dialogLogin.open()}">
+					<i class="far fa-user w3-large"></i>&nbsp;Connexion
+				</Button>
 				
-				{#if $me._id}
-					<h3 class="w3-center"><i class="far fa-user"></i> {$me.name}</h3>
-					<ul class="w3-ul w3-center">
-						<li>
-							<div class="underline-div" on:click|stopPropagation="{() => {openCreate = true; openUserOption = false;}}">
-								<i class="far fa-plus-square w3-left" style="margin-left: 2px;"></i>
-								<span class="underline-span">Créer mon troc</span>
-							</div>
-						</li>
-						<li>
-							<div class="underline-div">
-								<i class="far fa-eye w3-left"></i>
-								<span class="underline-span">Voir mes trocs</span>
-							</div>
-						</li>
-						<li>
-							<a href="users/logout">
-								<div class="underline-div">
-									<i class="fa fa-arrow-left w3-left" style="margin-left: 2px;"></i>
-									<span class="underline-span">Logout</span>
-								</div>		
-							</a>
-						</li>
-					</ul>
-				{/if}
+			{/if}
+		</Section>
 
-				{#if !$me._id}
-					<Login on:close="{() => openUserOption = false}"/>
-				{/if}
+	</Row>
+</TopAppBar>
 
-			</div>
-		{/if}
-	</div>
-
-	-->
-
-</header>
-
-<!--
-	<div id="fond"
-		on:click="{() => openUserOption = false}"
-		class:w3-hide={!openUserOption}>
-	</div>
--->
-
-
-
-<style>
-
-</style>
+<Dialog bind:this={dialogLogin}>
+	<Login/>
+</Dialog>
