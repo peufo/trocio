@@ -2,7 +2,6 @@
     import { me } from './stores'
     import Button from '@smui/button'
 
-
 </script>
 
 <img class="participeImg" class:w3-hide={!!$me._id} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
@@ -140,7 +139,7 @@
         </Button>
 
         <span id="organize" class="w3-xlarge">Organiser</span>
-        <p>Définit le lieu et la date de ton événement.</p>
+        <p>Définis le lieu et la date de ton événement.</p>
         <p>Monte ton équipe et définis tes tarifs.</p>
         <p>Gère les dépôts, les récupérations, les achats, les retours et les paiements sur une interface simple et accessible.</p>
         <p>Accède à une vue d'ensemble du trafic de ton événement.</p>
