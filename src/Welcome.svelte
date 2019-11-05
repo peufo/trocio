@@ -22,14 +22,6 @@
             Trouver un troc
         </Button>
         
-        <Button
-        variant="outlined"
-        color="secondary"
-        disabled
-        style="transform: translate(0px, 10px);"
-        class="w3-right w3-large">
-            Organiser un troc
-        </Button> 
     </p>
 
     <div class="w3-row">
@@ -56,7 +48,7 @@
         </div>
 
         <div class="w3-col l6">
-            <div id="is" class="w3-card-4">
+            <div id="isnt" class="w3-card-4">
                 <div class="w3-xlarge w3-red w3-padding w3-center">
                     Ce n'est pas ...
                 </div>
@@ -188,6 +180,13 @@
         } 
     }
 
+    @media only screen and (max-width: 500px) {
+        #is li , #isnt li {
+            margin: 30px 5px 30px 5px;
+            padding: 0px;
+        }
+    }
+
     .content {
         max-width: 1200px;
         margin: auto;
@@ -197,28 +196,29 @@
         margin: 30px;
     }
 
-    #is {
+    #is, #isnt {
        border-radius: 10px;
     }
 
-    #is li {
+    #is li , #isnt li {
         border: none;
+    }
+
+    #is div, #isnt div {
+        border-radius: 10px 10px 0px 0px;
+    }
+
+    #is ul, #isnt ul {
+        border-radius: 0px 0px 10px 10px;
     }
 
     #is li .fa-check {
         color: #4CAF50;
     }
 
-    #is li .fa-times {
+    #isnt li .fa-times {
         color: #F44336;
     }
 
-    #is div {
-        border-radius: 10px 10px 0px 0px;
-    }
-
-    #is ul {
-        border-radius: 0px 0px 10px 10px;
-    }
 
 </style>
