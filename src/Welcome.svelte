@@ -37,7 +37,7 @@
                     </li>
                     <li>
                         <i class="fas fa-check w3-xlarge"></i>&nbsp;
-                        <b>Un moyen d'offrir une nouvelle vie à vos objets</b>
+                        <b>Un moyen d'offrir une nouvelle vie à tes objets</b>
                     </li>
                     <li>
                         <i class="fas fa-check w3-xlarge"></i>&nbsp;
