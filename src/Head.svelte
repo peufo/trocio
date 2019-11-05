@@ -43,5 +43,5 @@
 </TopAppBar>
 
 <Dialog bind:this={dialogLogin}>
-	<Login/>
+	<Login on:close="{() => dialogLogin.close()}"/>
 </Dialog>

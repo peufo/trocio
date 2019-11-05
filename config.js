@@ -12,7 +12,7 @@ var dev = process.env.NODE_ENV == 'development'
 *	SMTP_PORT               port of your SMTP server						=>	587
 *	SMTP_USER               user of your SMTP server						=>	postmaster@trocio.ch
 *	SMTP_PASS               password of your SMTP							=>	1234XYZ
-*	BASE_MAIL_URL           basic link send in the mails					=>	http://localhost:3001/users/validmail
+*	BASE_MAIL_URL           basic link send in the mails					=>	https://localhost:3001/users/validmail
 *
 */
 
