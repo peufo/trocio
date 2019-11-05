@@ -102,10 +102,10 @@ module.exports = {
 		let newPassword = req.body.newPassword
 		if (!user) return next()
 		User.getAuthenticated(user.mail, oldPassword, (err, user, reason) => {
-			if (err) return next()
+			if (err || !user) return next(err || "User not found")
 			user.password = newPassword
 			user.save(err => {
-				if (err) return next()
+				if (err) return next(err)
 				res.json({success: true, message: 'Password changed !'})
 			})
 		})
@@ -113,7 +113,7 @@ module.exports = {
 
 	resetpwd: (req, res, next) => {
 		User.findOne({mail: req.body.mail}, (err, user) => {
-			if (err) return next(err)
+			if (err || !user) return next(err || "User not found")
 			var unchiffredPwd = randomize('Aa0', 10)
 			user.password = unchiffredPwd
 			user.save(err => {
