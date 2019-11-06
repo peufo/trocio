@@ -17,7 +17,12 @@ var dev = process.env.NODE_ENV == 'development'
 *	(TROCIO_PORT)			personalized PORT Number
 */
 
-let PORT = parseInt(process.env.TROCIO_PORT || dev ? '3001' : '3000', 10)
+let PORT = 0
+if (process.env.TROCIO_PORT) {
+	PORT = parseInt(process.env.TROCIO_PORT, 10)
+}else{
+	PORT = dev ? 3001 : 3000
+}
 
 let DBPATH = 'mongodb://localhost:27017/'
 if (process.env.TROCIO_DB) {
