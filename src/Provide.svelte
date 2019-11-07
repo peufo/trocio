@@ -4,6 +4,7 @@
     import { flip } from 'svelte/animate'
     import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt } from './utils.js'
     import { crossfade } from 'svelte/transition'
+    import Button from '@smui/button'
     import Article from './Article.svelte'
     import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
@@ -167,11 +168,12 @@
     <br>
 
     <div class="w3-col s6">
-        <div class="w3-right w3-margin-right w3-round button hide"
-             class:visible={provided.filter(art => !art.valided).length}
-             on:click={clickProposedArticleAll}>
-            Tout accepter
-        </div>
+
+        {#if provided.filter(art => !art.valided).length}
+            <Button on:click={clickProposedArticleAll} class="w3-right w3-margin-right" variant="outlined">
+                Tout accepter
+            </Button>
+        {/if}
 
         <h4>Proposés</h4>
         <div class="w3-margin-right">

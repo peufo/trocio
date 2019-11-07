@@ -1,5 +1,6 @@
 <script>
     import { flip } from 'svelte/animate'
+    import Button from '@smui/button'
     import { getHeader, crossfadeConfig, sortByUpdatedAt } from './utils.js'
     import { crossfade } from 'svelte/transition'
     import Article from './Article.svelte'
@@ -70,9 +71,12 @@
 
 <div class="w3-row">
     <div class="w3-col m6">
-        <div class="w3-right w3-margin-right w3-round button hide" class:visible={provided.filter(providedFilter).length} on:click={recoverAll}>
-            Tout récupérer
-        </div>
+
+        {#if provided.filter(providedFilter).length}
+            <Button on:click={recoverAll} class="w3-right w3-margin-right" variant="outlined">
+                Tout récupérer
+            </Button>
+        {/if}
 
         <h4>En vente</h4>
         <div class="w3-margin-right">
