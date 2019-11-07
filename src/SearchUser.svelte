@@ -51,7 +51,7 @@
 	function input(){
 		dispatch('input')
 		clearTimeout(waiting)
-		if (search.length > 2) waiting = setTimeout(() => users = searchUser(), 100)
+		if (search.length > 1) waiting = setTimeout(() => users = searchUser(), 100)
 	}
 
 	function select(user) {
