@@ -141,7 +141,7 @@
 			autocomplete="off"
 			placeholder="{placeholder}">
 
-	{#if focus && search.length > 2 && (!modeSelect || !selectOk)}
+	{#if focus && search.length > 1 && (!modeSelect || !selectOk)}
 	<div id="proposition" class="w3-border w3-round w3-padding" in:fly="{{y: 50}}"  style="min-width: 260px;">
 		
 		{#await users}
