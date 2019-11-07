@@ -1,10 +1,13 @@
 <script>
+    import { formatPrice } from './utils'
     import { troc, me } from './stores'
     import { onMount } from 'svelte'
     import { flip } from 'svelte/animate'
     import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt } from './utils.js'
     import { crossfade } from 'svelte/transition'
     import Button from '@smui/button'
+    import Textfield from '@smui/textfield'
+    import Dialog , { Title, Content } from '@smui/dialog'
     import Article from './Article.svelte'
     import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
@@ -19,8 +22,10 @@
     export let providedPromise
     let validPromise //Valid button
 
+    let addArticleDialog
+
 	let nbNewArticles = 0
-	let newArticle = {name: '', price: null}
+	let newArticle = {name: '', price: ''}
 
     const [send, receive] = crossfade(crossfadeConfig)
     
@@ -31,27 +36,28 @@
     const proposedFilter = art => !art.recover && !art.sold && art.isRemovable && !art.isCreated
 
     function createArticle() {
-		if (newArticle.name.length > 2 && newArticle.price != null) {
-			let art = {
-				_id: new Date().getTime(),
-				troc: $troc._id, 
-				provider: user._id,
-				name: newArticle.name,
-				price: newArticle.price,
-                valided: new Date(),
-                validator: $me._id,
-                isRemovable: true,
-                isCreated: true,
-                fee: 0,
-                margin: 0
-			}
-            provided = [art, ...provided]
-			nbNewArticles++
-			newArticle = {name: '', price: null}
 		
-			document.getElementById('inputNewArticle').focus()
+        addArticleDialog.close()
 
-		}
+        let art = {
+            _id: new Date().getTime(),
+            troc: $troc._id, 
+            provider: user._id,
+            name: newArticle.name,
+            price: Number(newArticle.price),
+            valided: new Date(),
+            validator: $me._id,
+            isRemovable: true,
+            isCreated: true,
+            fee: 0,
+            margin: 0
+        }
+        provided = [art, ...provided]
+        nbNewArticles++
+        newArticle = {name: '', price: ''}
+    
+        document.getElementById('inputNewArticle').focus()
+		
     }
 
     function removeArticle(artId) {
@@ -101,8 +107,6 @@
             art.margin = getMargin(art, tarif)
         })
 
-        console.log('CreatedArticle : ', articlesCreated)
-
         if (articlesCreated.length && articlesValided.length) {
             return Promise.all([
                 validArticlesCreated(articlesCreated),
@@ -148,35 +152,61 @@
 
 </script>
 
-<div>
+<Dialog bind:this={addArticleDialog}>
 
-    <input 	id="inputNewArticle"
-            bind:value={newArticle.name} 
-            on:keydown="{e => e.which == 13 && createArticle()}"
-            type="text" class="w3-input"
-            placeholder="Nouvel article fourni"
-            style="display: inline-block; width: 78%;">
+    <Title>Ajouter un article</Title>
 
-    <input 	bind:value={newArticle.price}
-            on:keydown="{e => e.which == 13 && createArticle()}"
-            type="number" min="0"
-            class="w3-input w3-right"
-            placeholder="Prix"
-            style="display: inline-block; width: 20%;">
+    <Content>
+        <br>
 
-    <br>
-    <br>
+        <Textfield
+        id="inputNewArticle"
+        bind:value={newArticle.name} 
+        type="text"
+        label="Désignation"
+        class="shaped-outlined"
+        style="width: 100%;"
+        variant="outlined"/>
+
+        <br><br>
+
+        <Textfield
+        bind:value={newArticle.price}
+        on:input={formatPrice}
+        type="text"
+        label="Prix"
+        class="shaped-outlined"
+        variant="outlined"/>
+
+        <Button
+        disabled={newArticle.name.length <= 2 || !newArticle.price.length}
+        on:click={createArticle}
+        style="transform: translate(0px, 20px);"
+        variant="outlined" color="secondary" class="w3-right w3-margin-left">
+            Ajouter
+        </Button>
+
+    </Content>
+
+</Dialog>
+
+<div class="w3-row">
 
     <div class="w3-col s6">
-
-        {#if provided.filter(art => !art.valided).length}
-            <Button on:click={clickProposedArticleAll} class="w3-right w3-margin-right" variant="outlined">
-                Tout accepter
-            </Button>
-        {/if}
-
-        <h4>Proposés</h4>
         <div class="w3-margin-right">
+
+            {#if provided.filter(art => !art.valided).length}
+                <Button on:click={clickProposedArticleAll} class="w3-right" variant="outlined" color="secondary">
+                    Tout accepter
+                </Button>
+            {/if}
+
+            <Button on:click="{() => addArticleDialog.open()}" class="w3-right w3-margin-right" variant="outlined" color="secondary">
+                Ajouter
+            </Button>
+
+            <h4>Proposés</h4>
+
             {#await providedPromise}
                 <div class="w3-center">
                     <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
@@ -210,14 +240,16 @@
         <div class="w3-margin-left">
 
             {#await validPromise}
-                <div class="w3-right w3-round validButton">
+                <Button variant="raised" class="w3-right" style="color: white;">
                     <i class="fas fa-circle-notch w3-spin"></i>
                     Validation de la livraison...
-                </div>
+                </Button>
             {:then}
-                <div class="w3-right w3-round validButton hide" class:visible={nbNewArticles > 0} on:click="{() => validPromise = validProvided()}">
-                    Valider l{nbNewArticles <= 1 ? `'article fourni` : `es ${nbNewArticles} articles fournis`}
-                </div>
+                {#if nbNewArticles > 0}
+                    <Button variant="raised" class="w3-right" on:click="{() => validPromise = validProvided()}" style="color: white;">
+                        Valider l{nbNewArticles <= 1 ? `'article fourni` : `es ${nbNewArticles} articles fournis`}
+                    </Button>
+                {/if}
             {/await}
 
             <h4>En vente</h4>

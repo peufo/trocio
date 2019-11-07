@@ -70,16 +70,17 @@
 </script>
 
 <div class="w3-row">
+
     <div class="w3-col m6">
+        <div class="w3-margin-right">
 
         {#if provided.filter(providedFilter).length}
-            <Button on:click={recoverAll} class="w3-right w3-margin-right" variant="outlined">
+            <Button on:click={recoverAll} class="w3-right" variant="outlined" color="secondary">
                 Tout récupérer
             </Button>
         {/if}
 
         <h4>En vente</h4>
-        <div class="w3-margin-right">
         {#await providedPromise}
             <div class="w3-center">
                 <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
@@ -107,47 +108,49 @@
         {/await}
         </div>
     </div>
+
     <div class="w3-col m6">
-        {#await validPromise}
-            <div class="w3-right w3-round validButton">
-                <i class="fas fa-circle-notch w3-spin"></i>
-                Validation de la récupération...
-            </div>
-        {:then}
-            <div class="w3-right w3-round validButton hide"
-                class:visible={provided.filter(art => art.recover && art.isRemovable).length}
-            on:click="{() => validPromise = valid()}">
-                Récupérer {provided.filter(art => art.recover && art.isRemovable).length <= 1 ? `l'article` : `les ${provided.filter(art => art.recover && art.isRemovable).length} articles`}
-            </div>
-        {/await}
-
-        <h4 class="w3-margin-left">Récupérés</h4>
         <div class="w3-margin-left">
-        {#await providedPromise}
-            <div class="w3-center">
-                <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
-            </div>
-        {:then}
-            {#each provided.filter(art => art.recover).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_B) as article (article._id)}
-                <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
+            {#await validPromise}
+                <Button variant="raised" class="w3-right" style="color: white;">
+                    <i class="fas fa-circle-notch w3-spin"></i>
+                    Validation de la récupération...
+                </Button>
+            {:then}
+                {#if provided.filter(art => art.recover && art.isRemovable).length}
+                    <Button variant="raised" class="w3-right" on:click="{() => validPromise = valid()}" style="color: white;">
+                        Récupérer {provided.filter(art => art.recover && art.isRemovable).length <= 1 ? `l'article` : `les ${provided.filter(art => art.recover && art.isRemovable).length} articles`}
+                    </Button>
+                {/if}
+            {/await}
 
-                    <Article article={article} timeKey={'recoverTime'} on:remove="{remove}"/>
-
+            <h4>Récupérés</h4>
+            {#await providedPromise}
+                <div class="w3-center">
+                    <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
                 </div>
-            {:else}
-                <span class="w3-opacity">Pas d'articles récupérés !</span>
-            {/each}
+            {:then}
+                {#each provided.filter(art => art.recover).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_B) as article (article._id)}
+                    <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
-            <!-- Bouton pour prolongé la liste -->
-            {#if provided.filter(art => art.recover).length > LIMIT_LIST_B}
-                <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
-                    <span class="underline-span w3-opacity">
-                        Afficher plus d'éléments ({provided.filter(art => art.recover).length - LIMIT_LIST_B})
-                    </span>
-                </div>
-            {/if}
+                        <Article article={article} timeKey={'recoverTime'} on:remove="{remove}"/>
 
-        {/await}
+                    </div>
+                {:else}
+                    <span class="w3-opacity">Pas d'articles récupérés !</span>
+                {/each}
+
+                <!-- Bouton pour prolongé la liste -->
+                {#if provided.filter(art => art.recover).length > LIMIT_LIST_B}
+                    <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
+                        <span class="underline-span w3-opacity">
+                            Afficher plus d'éléments ({provided.filter(art => art.recover).length - LIMIT_LIST_B})
+                        </span>
+                    </div>
+                {/if}
+
+            {/await}
         </div>
     </div>
+
 </div>

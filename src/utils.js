@@ -62,3 +62,13 @@ export function goPrint() {
 		targetStyles: ['*']
 	})
 }
+
+export function formatPrice(e) {
+	let val = e.target.value.match(/\d+([,\.]\d{0,2})?/)
+	if (val) {
+		val = val[0].replace(',', '.')
+	}else{
+		val = ''
+	} 
+	e.target.value = val
+}
