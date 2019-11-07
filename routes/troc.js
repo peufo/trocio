@@ -122,20 +122,20 @@ router
 	.post('/:id/cashier/remove', ctrl.checkAdmin, ctrl.removeCashier)
 
 
-	function lookupIfAdmin(troc, userId, cb) {
-		let isAdmin = troc.admin.map(a => a.toString()).indexOf(userId) != -1
-		if (isAdmin) {
-			ctrl.getTrocUser(troc._id, (err, troc) => {
-				if (err || !troc) return cb(err || Error('Not found'))
-				troc.isAdmin = true
-				troc.isCashier = false
-				cb(null, troc)
-			})
-		}else{
-			troc.isAdmin = false
-			troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(userId) != -1
+function lookupIfAdmin(troc, userId, cb) {
+	let isAdmin = troc.admin.map(a => a.toString()).indexOf(userId) != -1
+	if (isAdmin) {
+		ctrl.getTrocUser(troc._id, (err, troc) => {
+			if (err || !troc) return cb(err || Error('Not found'))
+			troc.isAdmin = true
+			troc.isCashier = false
 			cb(null, troc)
-		}
+		})
+	}else{
+		troc.isAdmin = false
+		troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(userId) != -1
+		cb(null, troc)
 	}
+}
 
 module.exports = router
