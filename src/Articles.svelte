@@ -52,9 +52,9 @@
 
 </script>
 
-<div class="w3-margin">
+<div id="articles">
 
-    <div style="width: 400px; margin: auto;">
+    <div style="max-width: 400px; margin: auto;">
         <Textfield
             bind:value="{search}"
             on:input="{searchInput}"
@@ -70,50 +70,65 @@
     {#await articlesPromise}
         <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
     {:then}
-        <div class="w3-margin-left">
+    
+        <div class="flex" style="width: calc(100% + 5px);">
+            {#each articles as article}
+                <div class="list-element w3-padding w3-display-container valided" style="margin-right: 5px;">
+                    {article.name}
+                    <br>
+                    <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
+                </div>
+            {/each}
+        </div>
 
-            <div class="flex">
-                {#each articles as article}
-                    <div class="list-element w3-padding w3-margin-right w3-display-container valided">
-                        {article.name}
-                        <br>
-                        <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
-                    </div>
-                {/each}
+        <br>
+
+        {#if !articles.length && search.length}
+
+            <div class="w3-center w3-opacity" in:fade={{delay: 200}}>
+                <span>Aucun article trouvé</span>
             </div>
 
-            <br>
+        {:else if articles.length}
 
-            {#if !articles.length && search.length}
-
-                <div class="w3-center w3-opacity" in:fade={{delay: 200}}>
-                    <span>Aucun article trouvé</span>
-                </div>
-
-            {:else if articles.length}
-
-                {#if !noMoreResults}
-                    {#await moreResultsPromise}
-                        <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
-                    {:then}
-                        <!-- Bonton pour plus de résultats-->
-                        <div class="w3-col underline-div w3-center w3-opacity" on:click={getMoreResults}>
-                            <span class="underline-span">Plus de résultats</span>
-                        </div>
-                    {/await}
-                {/if}
-
+            {#if !noMoreResults}
+                {#await moreResultsPromise}
+                    <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+                {:then}
+                    <!-- Bonton pour plus de résultats-->
+                    <div class="w3-col underline-div w3-center w3-opacity" on:click={getMoreResults}>
+                        <span class="underline-span">Plus de résultats</span>
+                    </div>
+                {/await}
             {/if}
 
-            <br>
+        {/if}
 
-        </div>
+        <br>
 
     {/await}
 
 </div>
 
 <style>
+
+    #articles {
+        width: 480px;
+        min-height: 550px;
+    }
+
+    @media screen and (max-width: 600px) {
+         #articles {width: 450px;}
+    }
+    @media screen and (max-width: 550px) {
+         #articles {width: 400px;}
+    }
+    @media screen and (max-width: 500px) {
+         #articles {width: 350px;}
+    }
+    @media screen and (max-width: 450px) {
+         #articles {width: 300px;}
+    }
 
     .flex {
         display: flex;

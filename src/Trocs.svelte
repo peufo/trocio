@@ -7,7 +7,7 @@
 	import Articles from './Articles.svelte'
 	import Toggle from './Toggle.svelte'
 	import Login from './Login.svelte'
-	import Dialog from '@smui/dialog'
+	import Dialog, {Title, Content} from '@smui/dialog'
 	import L from 'leaflet'
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
@@ -15,10 +15,10 @@
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
 
-
-
 	let map,
 		trocs = [],
+		trocSelected = '',
+		trocSelectedName = '',
 		markers = [],
 		mapOpen = true,
 		mapFilter = true,
@@ -26,8 +26,10 @@
 		timeFilter = false,
 		search = '',
 		start = dayjs().format('YYYY-MM-DD'), 
-		end = '',
-		dialogLogin
+		end = ''
+
+	//Dialogs
+	let dialogLogin, dialogArticles, dialogResume
 
 	let icon = L.icon({
 		iconUrl:'images/marker-icon.png',
@@ -168,7 +170,7 @@
 		{#each trocs as troc, i (troc._id)}
 			
 			<!--  En-tête  -->
-			<div transition:slide class="card">
+			<div transition:slide class="card" on:click="{() => {trocSelected = troc._id; trocSelectedName = troc.name}}">
 
 				<div class="w3-row">
 					<div class="w3-col m8 w3-padding">
@@ -189,7 +191,7 @@
 						
 					</div>
 
-					<div class="w3-col m4 w3-center schedule">
+					<div class="w3-col m4 w3-center">
 						<div class="w3-small w3-padding">
 							<span class="w3-round">
 								<i class="far fa-clock"></i>
@@ -209,9 +211,37 @@
 					</div>
 				</div>
 				
-				<!-- Onglets -->
+				<!-- Button -->
+				<div class="w3-center w3-padding">
+					<Button
+					on:click="{() => dialogArticles.open()}"
+					color="secondary" variant="outlined" style="margin-top: 5px;">
+						Fouiller les articles
+					</Button>
+
+					<Button
+					on:click="{() => dialogResume.open()}"
+					color="secondary" variant="outlined" style="margin-top: 5px;">
+						Voir mon activité
+					</Button>
+
+					{#if troc.isAdmin}
+						<Button href="{`/admin/${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
+							<i class="fa fa-cog w3-large"></i>
+						</Button>
+					{:else if troc.isCashier}
+						<Button href="{`/cashier/${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
+							<i class="fa fa-cash-register w3-large"></i>
+						</Button>
+					{/if}
+
+				</div>
+
+				<!--
 				<div class="onglets w3-border-top">
 					
+					
+
 					<div class="w3-padding underline-div onglet" on:click="{() => troc.tabSelect = 0}" class:actived="{troc.tabSelect == 0}">
 						<span class="underline-span">Fouiller les articles ({troc.articlelastref})</span>
 					</div>
@@ -226,7 +256,7 @@
 						</div>
 					{/if}
 
-					<!--Access butons icon-->
+					<!--Access butons icon
 					{#if troc.isAdmin}
 						<div class="w3-right w3-padding button-icon w3-center">
 							<a href="{`/admin/${troc._id}`}">
@@ -241,7 +271,7 @@
 						</div>							
 					{/if}						
 				</div>
-
+				-->
 
 				<!-- Contenu des onglets -->
 				{#if troc.tabSelect > -1}
@@ -277,8 +307,26 @@
 	</div>
 </div>
 
+<!-- Dialogs -->
+
 <Dialog bind:this={dialogLogin}>
-	<Login on:close="{() => dialogLogin.close()}"/>
+	<Content>
+		<Login on:close="{() => dialogLogin.close()}"/>
+	</Content>
+</Dialog>
+
+<Dialog bind:this={dialogArticles} style="min-height: 430px;">
+	<Title>Fouiller les articles dans <i>{trocSelectedName}</i></Title>
+	<Content>
+		<Articles troc={trocSelected}/>
+	</Content>
+</Dialog>
+
+<Dialog bind:this={dialogResume}>
+	<Title>Mon activité sur <i>{trocSelectedName}</i></Title>
+	<Content>
+		<Resume userId={$me._id} trocId={trocSelected}/>
+	</Content>
 </Dialog>
 
 <svelt:head>
@@ -339,10 +387,6 @@
 	
 	@media screen and (max-width: 600px) {
 		.fa-arrow-right {transform: rotate(90deg);}
-	}
-
-	.schedule {
-		background: rgb(252, 252, 252);
 	}
 
 </style>

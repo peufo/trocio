@@ -2,7 +2,7 @@
     import { me, troc } from './stores'
     import Login from './Login.svelte'
 	import Button from '@smui/button'
-	import Dialog from '@smui/dialog'
+	import Dialog, {Content} from '@smui/dialog'
 	import TopAppBar, {Row, Section, Title} from '@smui/top-app-bar'
 
 	let dialogLogin
@@ -44,7 +44,9 @@
 </TopAppBar>
 
 <Dialog bind:this={dialogLogin}>
-	<Login on:close="{() => dialogLogin.close()}"/>
+	<Content>
+		<Login on:close="{() => dialogLogin.close()}"/>
+	</Content>
 </Dialog>
 
 <style>

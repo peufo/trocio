@@ -55,7 +55,7 @@
 
 	let tarifInfoDialog
 
-	onMount(() => {
+	$:{
 		if (trocId) {
 			getTarif()
 			purchasesPromise = getPurchases()
@@ -65,7 +65,7 @@
 		}else{
 			console.log('trocId required !')
 		}
-	})
+	}
 
 	async function getProvided() {
 		let res = await fetch(`/articles?provider=${userId}&troc=${trocId}`)
@@ -290,9 +290,9 @@
 				ref: p.ref,
 				name: p.name,
 				statuts: getStatus(p),
-				price: p.price,
-				fee: p.fee,
-				margin: p.margin,
+				price: p.price.toFixed(2),
+				fee: p.fee.toFixed(2),
+				margin: p.margin.toFixed(2),
 				createdAt: p.createdAt.replace('T', ' ').replace('Z', ''),
 				updatedAt: p.updatedAt.replace('T', ' ').replace('Z', '')
 			}
@@ -425,16 +425,17 @@
 
 				<!-- Bontons puor proposer des articles -->
 				{#await createArticlePromise}
-					<Button color="secondary" variant="outlined" style="margin-left: 20px;">
+					<Button color="secondary" variant="outlined">
 						<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
 					</Button>
 				{:then}
-					<Button
-					on:click="{() => createArticlePromise = createArticle()}"
-					style="margin-left: 20px;"
-					variant="outlined">
-						Proposer un article
-					</Button>
+					{#if !importArticlesListOpen}
+						<Button
+						on:click="{() => createArticlePromise = createArticle()}"
+						variant="outlined">
+							Proposer un article
+						</Button>
+					{/if}
 				{/await}
 
 				{#if !importArticlesListOpen}
@@ -498,7 +499,7 @@
 						<td class="tdInput">
 
 							<textarea
-								rows="3" style="resize: none; min-width: 320px;"
+								rows="3" style="resize: none;"
 								on:input="{e =>  addModifiedArticle(e, article)}"
 								class:lastInputName="{i == provided.length-1}"  
 								bind:value={article.name}
@@ -509,7 +510,6 @@
 								class:recovered={article.recover}
 								placeholder="Désignation"></textarea>
 
-							
 						</td>
 
 						<!-- Status -->
