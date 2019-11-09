@@ -51,48 +51,47 @@ router
 		var regexp = new RegExp(req.params.search, 'i')
 		User.find({$or: [{name: regexp}, {mail: regexp}]}, {name: 1, mail: 1})
 			.limit(10)
+			.lean()
 			.exec((err, users) => {
-			if (!err){
-				res.json(users)
-			}else next(err)
+			if (err) return next(err)
+
+			users.forEach(hideMail)
+
+			res.json(users)
 		})
 	})
 	.get('/articles', (req, res, next) => {
 		User.aggregate([lookupBuy, lookupProvide], (err, user) => {
-			if (!err){
-				res.json(user)
-			}else next(err)
+			if (err) return next(err)
+			res.json(user)
 		})
 	})
 	.get('/events', (req, res, next) => {
 		User.aggregate([{$match: {}}, lookupProvide, lookupBuy], (err, users) => {
-			if (!err){
-				var events = []
-				users.forEach(user => events = [...events, ...GetUserEvents(user)])
-				res.json(events)		
-			}else next(err)
+			if (err) return next(err)
+			var events = []
+			users.forEach(user => events = [...events, ...GetUserEvents(user)])
+			res.json(events)		
 		})
 	})
 	.get('/:id', (req, res, next) => {
-		User.findById(req.params.id, (err, user) => {
-			if (!err){
-				res.json(user)
-			}else next(err)
+		User.findById(req.params.id).lean().exec((err, user) => {
+			if (err) return next(err)
+			hideMail(user)
+			res.json(user)
 		})
 	})
 	.get('/:id/articles', (req, res, next) => {
 		User.aggregate([{$match: {_id: ObjectId(req.params.id)}}, lookupProvide, lookupBuy], (err, users) => {
-			if (!err && users.length > 0){
-				res.json(users[0])
-			}else next(err)
+			if (err || !users.length) return next(err || Error('Not found'))
+			res.json(users[0])
 		})
 	})
 	.get('/:id/events', (req, res, next) => {
 		User.aggregate([{$match: {_id: ObjectId(req.params.id)}}, lookupProvide, lookupBuy], (err, users) => {
-			if (!err && users.length > 0){
-				var events = GetUserEvents(users[0])
-				res.json(events)		
-			}else next(err)
+			if (err || !users.length) return next(err || Error('Not found'))
+			var events = GetUserEvents(users[0])
+			res.json(events)		
 		})
 	})
 
@@ -113,5 +112,13 @@ function GetArtEvents(art){
 	return events;
 }
 
+function hideMail(user) {
+	let index = user.mail.indexOf('@')
+	if (index > -1) {
+		user.mail = user.mail.replace(user.mail.slice(2, index - 1), '*'.repeat(index - 3))
+	}else {
+		user.mail = 'Invalid mail'
+	}
+}
 
 module.exports = router

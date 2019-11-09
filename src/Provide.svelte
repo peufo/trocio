@@ -235,7 +235,6 @@
         </div>
     </div>
 
-
     <div class="w3-col s6">
         <div class="w3-margin-left">
 
