@@ -29,13 +29,14 @@
 		<Section align="end" toolbar>
 			{#if $me._id}
 				<Button color="secondary" class="w3-right w3-padding" href="/me">
-					<i class="fas fa-user w3-large"></i>&nbsp;{$me.name}
+					<i class="fas fa-user w3-large"></i>
+					<span class="userName">&nbsp;{$me.name}</span>
 				</Button>
 			{:else}
 				<Button color="secondary" class="w3-right w3-padding" on:click="{() => dialogLogin.open()}">
-					<i class="far fa-user w3-large"></i>&nbsp;Connexion
+					<i class="far fa-user w3-large"></i>
+					<span class="userName">&nbsp;Connexion</span>
 				</Button>
-				
 			{/if}
 		</Section>
 
@@ -45,3 +46,11 @@
 <Dialog bind:this={dialogLogin}>
 	<Login on:close="{() => dialogLogin.close()}"/>
 </Dialog>
+
+<style>
+
+	@media screen and (max-width: 500px) {
+		.userName{display: none;}
+	}
+
+</style>
