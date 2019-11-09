@@ -109,6 +109,19 @@
 		})
 	}
 
+	function clickActivity() {
+		if ($me._id) {
+			dialogResume.open()
+		}else{
+			dialogLogin.open()
+		}
+	}
+
+	function loginClose() {
+		dialogLogin.close()
+		setTimeout(() => clickActivity(), 100)
+	}
+
 </script>
 
 
@@ -220,7 +233,7 @@
 					</Button>
 
 					<Button
-					on:click="{() => dialogResume.open()}"
+					on:click="{clickActivity}"
 					color="secondary" variant="outlined" style="margin-top: 5px;">
 						Voir mon activité
 					</Button>
@@ -311,7 +324,7 @@
 
 <Dialog bind:this={dialogLogin}>
 	<Content>
-		<Login on:close="{() => dialogLogin.close()}"/>
+		<Login on:close={loginClose}/>
 	</Content>
 </Dialog>
 
@@ -322,12 +335,14 @@
 	</Content>
 </Dialog>
 
-<Dialog bind:this={dialogResume}>
-	<Title>Mon activité sur <i>{trocSelectedName}</i></Title>
-	<Content>
-		<Resume userId={$me._id} trocId={trocSelected}/>
-	</Content>
-</Dialog>
+{#if $me._id}
+	<Dialog bind:this={dialogResume}>
+		<Title>Mon activité sur <i>{trocSelectedName}</i></Title>
+		<Content>
+			<Resume userId={$me._id} trocId={trocSelected}/>
+		</Content>
+	</Dialog>
+{/if}
 
 <svelt:head>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css">
