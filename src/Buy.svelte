@@ -2,6 +2,7 @@
     import { troc } from './stores'
 	import { crossfade } from 'svelte/transition'
     import { flip } from 'svelte/animate'
+    import Button from '@smui/button'
     import { getHeader, crossfadeConfig } from './utils'
     import Article from './Article.svelte'
     import dayjs from 'dayjs'
@@ -128,19 +129,21 @@
     <div class="w3-col s6">
         <div class="w3-margin-left w3-border w3-round w3-padding">
             {#await buyPromise}
-                <div class="w3-right w3-round validButton">
+                <Button class="w3-right" variant="outlined">
                     <i class="fas fa-circle-notch w3-spin"></i>
                     Validation de l'achat...
-                </div>
+                </Button>
             {:then}
-                <div class="w3-right w3-round validButton hide" class:visible={cart.length > 0} on:click="{() => buyPromise = validBuy()}">
-                    Valider l'achat de{cart.length <= 1 ? ` l'article` : `s ${cart.length} articles`}
-                </div>
+                {#if cart.length}
+                    <Button on:click="{() => buyPromise = validBuy()}" class="w3-right" variant="outlined">
+                        Valider l'achat de{cart.length <= 1 ? ` l'article` : `s ${cart.length} articles`}
+                    </Button>
+                {/if}
             {/await}
 
             <div class="w3-margin-bottom w3-large">
                 <i class="fas fa-shopping-basket"></i>
-                <span>Panier</span>
+                <span>{cart.length ? '' : 'Panier'}</span>
             </div>
 
             {#each cart as article, index (article._id)}
