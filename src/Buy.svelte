@@ -95,6 +95,7 @@
             </div>
             <input  bind:value={search}
                     on:input={input}
+                    on:focusin="{() => search = ''}"
                     style="width: calc(100% - 22px)"
                     class="w3-input w3-right"
                     type="text"

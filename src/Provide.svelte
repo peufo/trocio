@@ -1,24 +1,27 @@
 <script>
+
     import { formatPrice } from './utils'
     import { troc, me } from './stores'
     import { onMount } from 'svelte'
     import { flip } from 'svelte/animate'
-    import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt } from './utils.js'
     import { crossfade } from 'svelte/transition'
     import Button from '@smui/button'
     import Textfield from '@smui/textfield'
     import Dialog , { Title, Content } from '@smui/dialog'
-    import Article from './Article.svelte'
     import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
 	dayjs.locale('fr')
     dayjs.extend(relativeTime)
 
+    import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint } from './utils.js'
+    import TagsPrint from './TagsPrint.svelte'
+    import Article from './Article.svelte'
+
     export let user = {}
     export let provided = [] //proposed => !art.valided
     export let tarif = undefined //From Resume per Cashier
-
+    export let optionAutoPrintTag = true
     export let providedPromise
     let validPromise //Valid button
 
@@ -34,6 +37,8 @@
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
     const proposedFilter = art => !art.recover && !art.sold && art.isRemovable && !art.isCreated
+
+    let articlesToPrint = []
 
     function createArticle() {
 		
@@ -117,6 +122,13 @@
         }else if (articlesValided.length) {
             return validArticlesValided(articlesValided)
         }
+
+        //Impression des étiquettes
+        if (optionAutoPrintTag) {
+            articlesToPrint = [...articlesCreated, ...articlesValided]
+            goPrint()
+        }
+
     }
 
     async function validArticlesCreated(articlesCreated) {
@@ -151,6 +163,10 @@
 
 
 </script>
+
+{#if $troc.tag}
+    <TagsPrint articles={articlesToPrint} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
+{/if}
 
 <Dialog bind:this={addArticleDialog}>
 

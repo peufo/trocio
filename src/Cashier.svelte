@@ -1,9 +1,10 @@
 <script>
 	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
+	import Switch from '@smui/switch'
+	import FormField from '@smui/form-field'
 	import Button from '@smui/button'
 	import Dialog from '@smui/dialog'
-
 	import { me, troc } from './stores'
 	import { getHeader } from './utils'
 	import SearchUser from './SearchUser.svelte'
@@ -14,7 +15,7 @@
 	import Resume from './Resume.svelte'
 	import Login from './Login.svelte'
 
-	export let adminIntegration = false //For not reload troc
+	export let adminIntegration = false //For not reload troc on admin.svelte
 
 	let dialogLogin // Create user
 
@@ -49,6 +50,9 @@
 	let purchasesPromise	//Promise purchases
 	let paymentsPromise		//Promise payments
 	let givebacksPromise	//Promise givebacks
+
+	//Options
+	let optionAutoPrintTag = true
 
 
     onMount(() => {
@@ -154,14 +158,14 @@
 			
 			<!-- Règle le solde -->
 			{#if userOk && balance != 0}
-			<div in:fade={{duration: 200}} style="display: inline-block; transform: translate(0px, 5px);" class="w3-right">
-				<Button 
-				variant="raised"
-				style="color: white;"
-				on:click="{() => popupPaymentOpen = true}">
-					Régler le solde de {balance.toFixed(2)}
-				</Button>
-			</div>
+				<div in:fade={{duration: 200}} style="display: inline-block; transform: translate(0px, 5px);" class="w3-right">
+					<Button 
+					variant="raised"
+					style="color: white;"
+					on:click="{() => popupPaymentOpen = true}">
+						Régler le solde de {balance.toFixed(2)}
+					</Button>
+				</div>
 			{/if}
 
 			<!--  -->
@@ -214,70 +218,86 @@
 
 
 		{#if userOk}
-		<div transition:fade={{duration: 200}} style="height: calc(100% - 126px);">
+			<div style="height: calc(100% - 126px);">
 
-			<!-- Action -->
-			<div class="onglets w3-margin-top w3-border-top">
-				{#each actions.filter(a => !clientAnonym || a.clientAnonymAutorised) as tab}
-					<div class="w3-padding underline-div onglet"
-						on:click="{() => action = tab.num}"
-						class:actived="{action == tab.num}">
-						{@html tab.icon}
-						<span class="underline-span">{tab.name}</span>
-					</div>
-				{/each}
-			</div>
+				<!-- Action -->
+				<div class="onglets w3-margin-top w3-border-top">
+					{#each actions.filter(a => !clientAnonym || a.clientAnonymAutorised) as tab}
+						<div class="w3-padding underline-div onglet"
+							on:click="{() => action = tab.num}"
+							class:actived="{action == tab.num}">
+							{@html tab.icon}
+							<span class="underline-span">{tab.name}</span>
+						</div>
+					{/each}
+				</div>
 
-			
-			<div class="tabs" style="height: 100%;">
-				{#if !clientAnonym}
-					<!-- Fournit -->
-					<div class="tab" class:center={action == 0} class:left={action > 0}>
+				
+				<div class="tabs" style="height: 100%;">
+					{#if !clientAnonym}
+						<!-- Fournit -->
+						<div class="tab" class:center={action == 0} class:left={action > 0}>
+							<br>
+							<Provide bind:user bind:provided bind:providedPromise bind:tarif bind:optionAutoPrintTag/>
+						</div>
+
+						<!-- Récupère -->
+						<div class="tab" class:center={action == 1} class:left={action > 1} class:right={action < 1}>
+							<br>
+							<Recover bind:user bind:provided bind:providedPromise/>
+						</div>
+					{/if}
+
+					<!-- Achète -->
+					<div class="tab" class:center={action == 2} class:left={action > 2} class:right={action < 2}>
 						<br>
-						<Provide bind:user bind:provided bind:providedPromise bind:tarif/>
+						<Buy bind:user bind:purchases bind:purchasesPromise/>
 					</div>
 
-					<!-- Récupère -->
-					<div class="tab" class:center={action == 1} class:left={action > 1} class:right={action < 1}>
+					<!-- Retourne -->
+					<div class="tab" class:center={action == 3} class:left={action > 3} class:right={action < 3}>
 						<br>
-						<Recover bind:user bind:provided bind:providedPromise/>
+						<Giveback userId={user._id} trocId={$troc._id}
+								bind:purchases bind:purchasesPromise
+								bind:givebacks bind:givebacksPromise />
 					</div>
-				{/if}
+				
+					<!-- Aperçue -->
+					<div class="tab" class:center={action == 4} class:right={action < 4}>
+						<br>
+						<Resume userId={user._id} trocId={$troc._id}
+								bind:provided bind:providedPromise
+								bind:purchases bind:purchasesPromise
+								bind:payments bind:paymentsPromise 
+								bind:balance bind:tarif/>
+					</div>
 
-				<!-- Achète -->
-				<div class="tab" class:center={action == 2} class:left={action > 2} class:right={action < 2}>
-					<br>
-					<Buy bind:user bind:purchases bind:purchasesPromise/>
-				</div>
-
-				<!-- Retourne -->
-				<div class="tab" class:center={action == 3} class:left={action > 3} class:right={action < 3}>
-					<br>
-					<Giveback userId={user._id} trocId={$troc._id}
-							bind:purchases bind:purchasesPromise
-							bind:givebacks bind:givebacksPromise />
-				</div>
-			
-				<!-- Aperçue -->
-				<div class="tab" class:center={action == 4} class:right={action < 4}>
-					<br>
-					<Resume userId={user._id} trocId={$troc._id}
-							bind:provided bind:providedPromise
-							bind:purchases bind:purchasesPromise
-							bind:payments bind:paymentsPromise 
-							bind:balance bind:tarif/>
 				</div>
 
 			</div>
-
-		</div>
 		{:else}
 
-			<div class="w3-display-middle w3-center" transition:fade>
-				<i class="fas fa-cash-register noUserLogo"></i>
-				<br>
-			</div>
+			<div class="w3-display-container" style="height: calc(100% - 57px);">
 
+				<div class="w3-display-middle w3-center" in:fade>
+					<i class="fas fa-cash-register noUserLogo"></i>
+					<br>
+				</div>
+
+				<!-- Options -->
+
+				<div class="w3-display-bottomleft w3-margin w3-padding">
+					<FormField class="w3-large">
+						<Switch bind:checked={optionAutoPrintTag}></Switch>
+						<span slot="label">
+							<i class="fas fa-print"></i>
+							Lancer automatiqument l'impression d'étiquettes lors de la validation d'article fournis
+						</span>
+					</FormField>
+				</div>
+			
+			</div>
+			
 		{/if}
 
 	</div>

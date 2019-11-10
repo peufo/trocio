@@ -6,7 +6,7 @@ var router = express.Router()
 router
     .get('/', (req, res, next) => {
 
-        if (!req.query.user || req.query.user === 'false' || req.query.user === 'undefined') { //For anonyme client
+        if (req.query.user === 'false' || req.query.user === 'undefined') { //For anonyme client
 			req.query.user = { $exists: false }
 			if (req.session.user) req.query.acceptor = req.session.user._id
 		}
