@@ -55,9 +55,9 @@ export function sortByUpdatedAt(a, b) {
 	return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
 }
 
-export function goPrint() {
+export function goPrint(id) {
 	printJS({
-		printable: 'tagsPrint',
+		printable: id,
 		type: 'html',
 		targetStyles: ['*']
 	})

@@ -2,6 +2,7 @@
 <script>
     import Tag from './Tag.svelte'
 
+    export let id = 'tagsPrint'
     export let visible = false
     export let articles = []
     export let width = 80
@@ -12,7 +13,7 @@
 </script>
 
 <div class:hide={!visible}>
-    <div id="tagsPrint">
+    <div id={id}>
         {#each articles as art}
             <Tag {...art} width={width} height={height} padding={padding} border={border}/>
         {/each}

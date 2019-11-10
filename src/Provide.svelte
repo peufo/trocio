@@ -95,7 +95,7 @@
     }
 
     function validProvided() {
-        
+
         let articlesCreated = provided.filter(art => !art.recover && !art.sold && art.isCreated)
  
         let articlesValided = provided.filter(art => !art.recover && !art.sold && art.isRemovable && !art.isCreated)
@@ -111,6 +111,13 @@
             art.fee = getFee(art, tarif)
             art.margin = getMargin(art, tarif)
         })
+        
+        //Impression des étiquettes
+        console.log(optionAutoPrintTag)
+        if (optionAutoPrintTag) {
+            articlesToPrint = [...articlesCreated, ...articlesValided]
+            setTimeout(() => goPrint('providedTags'), 100)
+        }
 
         if (articlesCreated.length && articlesValided.length) {
             return Promise.all([
@@ -121,12 +128,6 @@
             return validArticlesCreated(articlesCreated)
         }else if (articlesValided.length) {
             return validArticlesValided(articlesValided)
-        }
-
-        //Impression des étiquettes
-        if (optionAutoPrintTag) {
-            articlesToPrint = [...articlesCreated, ...articlesValided]
-            goPrint()
         }
 
     }
@@ -165,7 +166,7 @@
 </script>
 
 {#if $troc.tag}
-    <TagsPrint articles={articlesToPrint} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
+    <TagsPrint id="providedTags" articles={articlesToPrint} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
 {/if}
 
 <Dialog bind:this={addArticleDialog}>

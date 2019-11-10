@@ -26,7 +26,7 @@ router
         Troc.findOne({_id: req.body.troc}, {admin: 1, cashier: 1}, (err, troc) => {
             if (err || !troc) return next(err || Error('Troc not found !'))
             
-            //Controle le droit de fair un payment (admin ou caissier)
+            //Contrôle le droit de fair un payment (admin ou caissier)
             if (troc.admin.indexOf(req.session.user._id) == -1 && troc.cashier.indexOf(req.session.user._id) == -1) {
                 return next(Error(`you are not allowed to make a payment on this troc`))
             }else{

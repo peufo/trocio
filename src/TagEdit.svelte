@@ -47,14 +47,14 @@
 
     <br><br>
     <div style="{`width: ${width}mm`}; margin: auto;">
-        <TagsPrint visible articles={articles} width={width} height={height} padding={padding} border={border}/>
+        <TagsPrint id="testPrint" visible articles={articles} width={width} height={height} padding={padding} border={border}/>
     </div>
     
     <br>
 
     <div style="{`width: ${width}mm`}; margin: auto;">
         <Button
-        on:click={goPrint}
+        on:click="{() => goPrint('testPrint')}"
         class="w3-right"
         variant="outlined">
             tester
