@@ -250,64 +250,7 @@
 
 				</div>
 
-				<!--
-				<div class="onglets w3-border-top">
-					
-					
-
-					<div class="w3-padding underline-div onglet" on:click="{() => troc.tabSelect = 0}" class:actived="{troc.tabSelect == 0}">
-						<span class="underline-span">Fouiller les articles ({troc.articlelastref})</span>
-					</div>
-
-					{#if $me._id}
-						<div class="w3-padding underline-div onglet" on:click="{() => troc.tabSelect = 1}" class:actived="{troc.tabSelect == 1}">
-							<span class="underline-span">Voir mon activité</span>
-						</div>
-					{:else}
-						<div class="w3-padding underline-div onglet" on:click="{() => dialogLogin.open()}">
-							<span class="underline-span">Voir mon activité</span>
-						</div>
-					{/if}
-
-					<!--Access butons icon
-					{#if troc.isAdmin}
-						<div class="w3-right w3-padding button-icon w3-center">
-							<a href="{`/admin/${troc._id}`}">
-								<i class="fa fa-cog w3-large"></i>
-							</a>
-						</div>
-					{:else if troc.isCashier}
-						<div class="w3-right w3-padding button-icon w3-center">
-							<a href="{`/cashier/${troc._id}`}">
-								<i class="fa fa-cash-register w3-large"></i>
-							</a>
-						</div>							
-					{/if}						
-				</div>
-				-->
-
-				<!-- Contenu des onglets -->
-				{#if troc.tabSelect > -1}
-
-					<div class="tabs" transition:slide style="height: 850px;">
-
-						<!-- Liste d'articles -->
-						<div class="tab" class:center={troc.tabSelect === 0} class:left={troc.tabSelect > 0}>
-							<Articles troc={troc._id}/>
-						</div>
-
-						<!-- Resume -->
-						{#if $me._id}
-							<div class="tab w3-padding-large" class:center={troc.tabSelect === 1} class:right={troc.tabSelect < 1}>
-								<br>
-								<Resume userId={$me._id} trocId={troc._id}/>
-							</div>
-						{/if}					
-					</div>
-
-				{/if}
 			</div>
-
 
 		{:else}
 			<br>
