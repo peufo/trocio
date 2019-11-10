@@ -3,6 +3,7 @@
     import { troc } from './stores'
 	import { crossfade } from 'svelte/transition'
     import { flip } from 'svelte/animate'
+    import Button from '@smui/button'
     import { getHeader, crossfadeConfig } from './utils'
     import Article from './Article.svelte'
 
@@ -136,14 +137,16 @@
     <div class="w3-col s6">
         <div class="w3-margin-left">
             {#await validPromise}
-                <div class="w3-right w3-round validButton">
+                <Button class="w3-right" variant="outlined">
                     <i class="fas fa-circle-notch w3-spin"></i>
                     Validation du retour...
-                </div>
+                </Button>
             {:then}
-                <div class="w3-right w3-round validButton hide" class:visible={givebacks.filter(art => art.isRemovable).length} on:click="{() => validPromise = valid()}">
-                    Valider le retour de{givebacks.filter(art => art.isRemovable).length <= 1 ? ` l'article` : `s ${givebacks.filter(art => art.isRemovable).length} articles`}
-                </div>
+                {#if givebacks.filter(art => art.isRemovable).length}
+                    <Button on:click="{() => validPromise = valid()}" class="w3-right" variant="outlined">
+                        Valider le retour de{givebacks.filter(art => art.isRemovable).length <= 1 ? ` l'article` : `s ${givebacks.filter(art => art.isRemovable).length} articles`}
+                    </Button>
+                {/if}
             {/await}
             
             <h4>Retours</h4>
