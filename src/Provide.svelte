@@ -94,7 +94,7 @@
         provided.filter(art => !art.valided).forEach(art => clickProposedArticle(art._id))
     }
 
-    function validProvided() {
+    async function validProvided() {
 
         let articlesCreated = provided.filter(art => !art.recover && !art.sold && art.isCreated)
  
@@ -112,23 +112,23 @@
             art.margin = getMargin(art, tarif)
         })
         
-        //Impression des étiquettes
-        console.log(optionAutoPrintTag)
-        if (optionAutoPrintTag) {
-            articlesToPrint = [...articlesCreated, ...articlesValided]
-            setTimeout(() => goPrint('providedTags'), 100)
-        }
-
         if (articlesCreated.length && articlesValided.length) {
-            return Promise.all([
+            await Promise.all([
                 validArticlesCreated(articlesCreated),
                 validArticlesValided(articlesValided)
             ])
         }else if (articlesCreated.length) {
-            return validArticlesCreated(articlesCreated)
+            await validArticlesCreated(articlesCreated)
         }else if (articlesValided.length) {
-            return validArticlesValided(articlesValided)
+            await validArticlesValided(articlesValided)
         }
+
+        //Impression des étiquettes
+        if (optionAutoPrintTag) {
+            printArticles([...articlesCreated, ...articlesValided])
+        }
+
+        return
 
     }
 
@@ -136,6 +136,7 @@
         let res = await fetch('/articles', getHeader(articlesCreated))
         let json = await res.json()
         if (res.ok && json.success) {
+
             let index = 0
             provided = provided.map(article => {
                 if (article.isCreated) {
@@ -145,7 +146,7 @@
                 return article
             })
             nbNewArticles -= articlesCreated.length
-            return
+            return json.message
         }
     }
 
@@ -160,6 +161,11 @@
             nbNewArticles -= articlesValided.length
             return
         }
+    }
+
+    function printArticles(arts) {
+        articlesToPrint = arts
+        setTimeout(() => goPrint('providedTags'), 100)
     }
 
 
@@ -281,7 +287,11 @@
 
                     <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
-                        <Article article={article} timeKey={'validTime'} on:remove="{() => removeArticle(article._id)}"/>
+                        <Article
+                        article={article}
+                        timeKey={'validTime'}
+                        on:remove="{() => removeArticle(article._id)}"
+                        printable on:print="{() => printArticles([article])}"/>
 
                     </div>
                 {:else}

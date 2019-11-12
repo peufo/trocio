@@ -13,7 +13,7 @@
     export let clickable = false
     export let timeKey = ''
     export let comment = ''
-
+    export let printable = false
 
     function remove() {
         dispatch('remove', article)
@@ -21,6 +21,10 @@
 
     function select() {
         dispatch('select', article)
+    }
+
+    function print() {
+        dispatch('print', article)
     }
 
 </script>
@@ -41,21 +45,49 @@
     <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
     <span class="w3-tiny" style="line-height: 1;">{comment}</span>
 
-    <div class="w3-display-topright w3-padding">
+    <div class="ref w3-display-topright w3-padding" class:withAction={article.isRemovable || printable}>
         <b style="margin-top: 4px;">#</b>{!article.isCreated ? article.ref : ''}
-
-        {#if article.isRemovable}
-            <i 	class="fa fa-trash-alt clickable"
-                style="margin-top: 4px;"
-                on:click="{() => remove(article._id)}"></i>
-        {/if}
     </div>
+
+    {#if article.isRemovable}
+        <div class="action w3-display-topright w3-padding">
+            <i 	class="fa fa-trash-alt clickable" style="margin-top: 4px;" on:click="{() => remove(article._id)}"></i>
+        </div>
+    {:else if printable}
+        <div class="action w3-display-topright w3-padding">
+            <i 	class="fa fa-print clickable" style="margin-top: 4px;" on:click={print}></i>
+        </div>
+    {/if}
+
 </div>
 
 <style>
 
     .clickable {
         cursor: pointer;
+    }
+
+    .clickable.fa:hover {
+        transform: scale(1.2);
+    }
+    .fa {
+        transition: all .2s ease;
+    }
+
+    .ref {
+        transition: all .2s ease;
+        opacity: 1;
+    }
+    .list-element:hover .ref.withAction {
+        opacity: 0;
+    }
+
+    .action {
+        transition: all .2s ease;
+        transform: translate(40px, 0px);
+    }
+    .list-element:hover .action {
+        transform: translate(0px, 0px);
     }
 
 </style>

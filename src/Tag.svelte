@@ -1,7 +1,7 @@
 <script>
 
     export let name = `Nom de l'article`
-    export let ref = '123'
+    export let ref = 'ref'
     export let price = 99
 
     export let width = 80
