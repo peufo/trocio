@@ -112,14 +112,11 @@
             art.margin = getMargin(art, tarif)
         })
         
-        if (articlesCreated.length && articlesValided.length) {
-            await Promise.all([
-                validArticlesCreated(articlesCreated),
-                validArticlesValided(articlesValided)
-            ])
-        }else if (articlesCreated.length) {
-            await validArticlesCreated(articlesCreated)
-        }else if (articlesValided.length) {
+        if (articlesCreated.length) {
+            articlesCreated = await validArticlesCreated(articlesCreated)
+        }
+        
+        if (articlesValided.length) {
             await validArticlesValided(articlesValided)
         }
 
@@ -164,7 +161,7 @@
     }
 
     function printArticles(arts) {
-        articlesToPrint = arts
+        if (arts && arts.length) articlesToPrint = arts
         setTimeout(() => goPrint('providedTags'), 100)
     }
 
