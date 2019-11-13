@@ -85,15 +85,15 @@
 {:else}
 <div in:fade style="height: calc(100% - 58px);">
 	
-	<div class="onglets">
-	{#each tabs as tab}
-		<div class="w3-padding underline-div onglet"
-			 on:click="{() => tabSelected = tab.num}"
-			 class:actived="{tabSelected == tab.num}">
-			 {@html tab.icon}
-			<span class="underline-span">{tab.name}</span>
-		</div>
-	{/each}
+	<div class="onglets w3-center">
+		{#each tabs as tab}
+			<div class="w3-padding underline-div onglet"
+				on:click="{() => tabSelected = tab.num}"
+				class:actived="{tabSelected == tab.num}">
+				{@html tab.icon}
+				<span class="underline-span tab-name">{tab.name}</span>
+			</div>
+		{/each}
 	</div>
 
 	{#if $troc._id}
@@ -209,6 +209,12 @@
 </svelt:head>
 
 <style>
+
+	@media screen and (max-width: 970px) {
+		.tab-name {
+			display: none;
+		}
+	}
 
 	#addTarif {
 		max-width: 850px;

@@ -4,7 +4,7 @@
 	import { flip } from 'svelte/animate'
 	import Dialog, {Title, Content} from '@smui/dialog'
 	import Button from '@smui/button'
-	import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt } from './utils'
+	import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint} from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
 
@@ -614,10 +614,6 @@
 	.removeCell {
 		position: absolute;
     	right: 0px;
-	}
-
-	#container {
-		position: relative;
 	}
 
 	.fa-times {

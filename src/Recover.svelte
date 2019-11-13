@@ -71,7 +71,7 @@
 
 <div class="w3-row">
 
-    <div class="w3-col m6">
+    <div class="w3-col s6">
         <div class="w3-margin-right">
 
         {#if provided.filter(providedFilter).length}
@@ -109,7 +109,7 @@
         </div>
     </div>
 
-    <div class="w3-col m6">
+    <div class="w3-col s6">
         <div class="w3-margin-left">
             {#await validPromise}
                 <Button variant="raised" class="w3-right" style="color: white;">

@@ -221,13 +221,13 @@
 			<div style="height: calc(100% - 126px);">
 
 				<!-- Action -->
-				<div class="onglets w3-margin-top w3-border-top">
+				<div class="onglets w3-margin-top w3-border-top w3-center">
 					{#each actions.filter(a => !clientAnonym || a.clientAnonymAutorised) as tab}
 						<div class="w3-padding underline-div onglet"
 							on:click="{() => action = tab.num}"
 							class:actived="{action == tab.num}">
 							{@html tab.icon}
-							<span class="underline-span">{tab.name}</span>
+							<span class="underline-span tab-name">{tab.name}</span>
 						</div>
 					{/each}
 				</div>
@@ -341,6 +341,13 @@
 </svelt:head>
 
 <style>
+
+	@media screen and (max-width: 600px) {
+		.tab-name {
+			display: none;
+		}
+	}
+
     .w3-display-container {
         height: calc(100% - 57px);
 	}
