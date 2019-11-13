@@ -1,6 +1,6 @@
 <script>
     import { troc } from './stores'
-	import { crossfade } from 'svelte/transition'
+	import { crossfade, fade } from 'svelte/transition'
     import { flip } from 'svelte/animate'
     import Button from '@smui/button'
     import { getHeader, crossfadeConfig } from './utils'
@@ -22,29 +22,51 @@
     let search = ''
     let cart = []
     let buyPromise
-    let waiting
+    let wait
 
     const LIMIT_LIST_INIT = 5 //Nombre d'élément d'une liste afficher initialement
     let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
-    async function searchArticle() {
-        let res = await fetch(`/articles/search?troc=${$troc._id}&search=${search}&available=true${user._id ? `&providernot=${user._id}` :''}`)
+    //For search article
+    let moreResultsPromise
+    let noMoreResults = false
+    let skip = 0
+
+    async function getArticles() {
+        let res = await fetch(`/articles/search?troc=${$troc._id}&search=${search}&limit=${LIMIT_LIST_A}&skip=${skip}&available=true${user._id ? `&providernot=${user._id}` :''}`)
         let json = await res.json()
-        if (res.ok) {
-            articles = json.filter(a => cart.map(c => c._id).indexOf(a._id) == -1)
-            return 
+
+        if(res.ok) {
+
+            if (json.length < LIMIT_LIST_A) noMoreResults = true
+            else noMoreResults = false
+
+            if (!!skip) {
+                articles = [...articles, ...json]
+            }else{
+                articles = json
+            }
+
+            articles = articles.filter(a => cart.map(c => c._id).indexOf(a._id) == -1)
+            return
         }
     }
 
     function input(){
-		clearTimeout(waiting)
+        skip = 0
+        if (wait) clearTimeout(wait)
         if (search.length > 0) {
-            waiting = setTimeout(() => searchPromise = searchArticle(), 100)
+            wait = setTimeout(() => searchPromise = getArticles(), 200)
         }else{
             articles = []
         }
-	}
+    }
+
+    function getMoreResults() {
+        skip += LIMIT_LIST_A
+        moreResultsPromise = getArticles()
+    }
     
     function buy(index) {
         cart = [articles[index], ...cart]
@@ -106,7 +128,7 @@
         {#await searchPromise}
             <span class="w3-opacity">Recherche en cours...</span>
         {:then}
-            {#each articles.slice(0, LIMIT_LIST_A) as article, index (article._id)}
+            {#each articles as article, index (article._id)}
                 <div class="w3-margin-right" in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
                     <Article article={article} clickable on:select="{() => buy(index)}"/>
                 </div>
@@ -115,12 +137,25 @@
             {/each}
 
             <!-- Bouton pour prolongé la liste -->
-            {#if articles.length > LIMIT_LIST_A}
-                <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
-                    <span class="underline-span w3-opacity">
-                        Afficher plus de résultat ({articles.length - LIMIT_LIST_A})
-                    </span>
+            {#if !articles.length && search.length}
+
+                <div class="w3-center w3-opacity" in:fade={{delay: 200}}>
+                    <span>Aucun article trouvé</span>
                 </div>
+
+            {:else if articles.length}
+
+                {#if !noMoreResults}
+                    {#await moreResultsPromise}
+                        <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+                    {:then}
+                        <!-- Bonton pour plus de résultats-->
+                        <div class="w3-col underline-div w3-center w3-opacity" on:click={getMoreResults}>
+                            <span class="underline-span">Plus de résultats</span>
+                        </div>
+                    {/await}
+                {/if}
+
             {/if}
             
         {/await}

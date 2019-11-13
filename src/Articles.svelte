@@ -48,8 +48,6 @@
         }
     }
 
-    $: console.log(articles)
-
 </script>
 
 <div id="articles">
