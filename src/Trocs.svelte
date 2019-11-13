@@ -250,13 +250,14 @@
 
 				</div>
 
+				{#if $me._id && dialogResume && trocSelected === troc._id}
+					<div class="w3-padding">
+						<Resume userId={$me._id} trocId={troc._id}/>
+					</div>
+				{/if}
+
 			</div>
 
-			{#if $me._id && dialogResume && trocSelected === troc._id}
-				<div transition:slide class="card w3-padding">
-					<Resume userId={$me._id} trocId={trocSelected}/>
-				</div>
-			{/if}
 
 		{:else}
 			<br>
