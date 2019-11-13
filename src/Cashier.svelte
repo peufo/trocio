@@ -291,7 +291,7 @@
 						<Switch bind:checked={optionAutoPrintTag}></Switch>
 						<span slot="label">
 							<i class="fas fa-print"></i>
-							Lancer automatiqument l'impression d'étiquettes lors de la validation d'article fournis
+							Lancer l'impression d'étiquettes lors de la validation d'article fournis
 						</span>
 					</FormField>
 				</div>
