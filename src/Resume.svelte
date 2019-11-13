@@ -55,6 +55,8 @@
 
 	let tarifInfoDialog
 
+	let onPrint = false
+
 	$:{
 		if (trocId) {
 			getTarif()
@@ -324,7 +326,9 @@
 		LIMIT_LIST_A = purchases.length
 		LIMIT_LIST_B = payments.length
 		LIMIT_LIST_C = provided.length
+		onPrint = true
 		setTimeout(() => goPrint('resume-container'), 300)
+		setTimeout(() => onPrint = false, 400)
 	}
 
 </script>
@@ -335,7 +339,7 @@
 
 <div id="resume-container">
 
-	<div on:click={print} class="w3-opacity w3-small underline-div no-print" style="position: absolute;">
+	<div on:click={print} class="w3-opacity w3-small underline-div" class:w3-hide={onPrint} style="position: absolute;">
 		<i class="fa fa-print"></i>
 		<span class="underline-span">imprimer</span>
 	</div>
@@ -426,49 +430,54 @@
 			<div class="w3-row">
 				<span class="w3-right w3-large">{(soldSum + feeSum).toFixed(2)}</span>
 				<span class="w3-large">Ventes</span>
-				{#if provided.length}
-					<Button
-					on:click={clickDownladCSV}
-					color="secondary">
-						<i class="fas fa-download"></i>
-					</Button>
-				{/if}
 
-				<!-- Bontons puor proposer des articles -->
-				{#await createArticlePromise}
-					<Button color="secondary" variant="outlined">
-						<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
-					</Button>
-				{:then}
-					{#if !importArticlesListOpen}
+				<!-- Provide button -->
+				<span class:w3-hide={onPrint}>
+
+					{#if provided.length}
 						<Button
-						on:click="{() => createArticlePromise = createArticle()}"
-						variant="outlined">
-							Proposer un article
+						on:click={clickDownladCSV}
+						color="secondary">
+							<i class="fas fa-download"></i>
 						</Button>
 					{/if}
-				{/await}
 
-				{#if !importArticlesListOpen}
-					<Button on:click="{() => importArticlesListOpen = true}" variant="outlined">
-						<i class="fas fa-list"></i>
-					</Button>
-				{:else if !importArticles.length}
-					<Button on:click="{() => importArticlesListOpen = false}" variant="outlined" color="secondary">
-						{failFormatRaison.length ? failFormatRaison : `Annuler la proposition`}
-					</Button>
-				{:else}
-					{#await createImportArticlesPromise}
-						<Button variant="outlined" color="secondary">
-							<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création des articles ...
+					<!-- Bontons puor proposer des articles -->
+					{#await createArticlePromise}
+						<Button color="secondary" variant="outlined">
+							<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
 						</Button>
 					{:then}
-						<Button on:click="{() => createImportArticlesPromise = createImportArticles()}" variant="raised" style="color: white;">
-							Valider la proposition des {importArticles.length} articles
-						</Button>
+						{#if !importArticlesListOpen}
+							<Button
+							on:click="{() => createArticlePromise = createArticle()}"
+							variant="outlined">
+								Proposer un article
+							</Button>
+						{/if}
 					{/await}
-				{/if}
+				
+					{#if !importArticlesListOpen}
+						<Button on:click="{() => importArticlesListOpen = true}" variant="outlined">
+							<i class="fas fa-list"></i>
+						</Button>
+					{:else if !importArticles.length}
+						<Button on:click="{() => importArticlesListOpen = false}" variant="outlined" color="secondary">
+							{failFormatRaison.length ? failFormatRaison : `Annuler la proposition`}
+						</Button>
+					{:else}
+						{#await createImportArticlesPromise}
+							<Button variant="outlined" color="secondary">
+								<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création des articles ...
+							</Button>
+						{:then}
+							<Button on:click="{() => createImportArticlesPromise = createImportArticles()}" variant="raised" style="color: white;">
+								Valider la proposition des {importArticles.length} articles
+							</Button>
+						{/await}
+					{/if}
 
+				</span>
 
 			</div>
 			
@@ -670,12 +679,6 @@
 	}
 	.sold {
 		color: green;
-	}
-
-	@media print {
-		.no-print {
-			display: none;
-		}
 	}
 
 </style>
