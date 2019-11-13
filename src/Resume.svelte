@@ -499,7 +499,7 @@
 						<td class="tdInput">
 
 							<textarea
-								rows="3" style="resize: none;"
+								rows="3" style="resize: none; min-width: 350px;"
 								on:input="{e =>  addModifiedArticle(e, article)}"
 								class:lastInputName="{i == provided.length-1}"  
 								bind:value={article.name}

@@ -111,7 +111,7 @@
 
 	function clickActivity() {
 		if ($me._id) {
-			dialogResume.open()
+			dialogResume = true
 		}else{
 			dialogLogin.open()
 		}
@@ -229,7 +229,7 @@
 					<Button
 					on:click="{() => dialogArticles.open()}"
 					color="secondary" variant="outlined" style="margin-top: 5px;">
-						Fouiller les articles
+						Fouiller les articles ({troc.articlelastref})
 					</Button>
 
 					<Button
@@ -251,6 +251,12 @@
 				</div>
 
 			</div>
+
+			{#if $me._id && dialogResume && trocSelected === troc._id}
+				<div transition:slide class="card w3-padding">
+					<Resume userId={$me._id} trocId={trocSelected}/>
+				</div>
+			{/if}
 
 		{:else}
 			<br>
@@ -277,15 +283,6 @@
 		<Articles troc={trocSelected}/>
 	</Content>
 </Dialog>
-
-{#if $me._id}
-	<Dialog bind:this={dialogResume}>
-		<Title>Mon activité sur <i>{trocSelectedName}</i></Title>
-		<Content>
-			<Resume userId={$me._id} trocId={trocSelected}/>
-		</Content>
-	</Dialog>
-{/if}
 
 <svelt:head>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css">
