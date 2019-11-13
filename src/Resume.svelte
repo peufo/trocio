@@ -320,20 +320,31 @@
 		document.body.removeChild(element)
 	}
 
+	function print() {
+		LIMIT_LIST_A = purchases.length
+		LIMIT_LIST_B = payments.length
+		LIMIT_LIST_C = provided.length
+		setTimeout(() => goPrint('resume-container'), 300)
+	}
+
 </script>
 
 <svelte:head>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
 </svelte:head>
 
-<div id="container">
-	
-	<div class="w3-row">
-		<div class="w3-xlarge w3-center">
-			<span class="w3-opacity">Solde actuel </span>
-			<span>{balance.toFixed(2)}</span>
-		</div>
+<div id="resume-container">
+
+	<div on:click={print} class="w3-opacity w3-small underline-div no-print" style="position: absolute;">
+		<i class="fa fa-print"></i>
+		<span class="underline-span">imprimer</span>
 	</div>
+
+	<div class="w3-center w3-xlarge">
+		<span class="w3-opacity">Solde actuel </span>
+		<span>{balance.toFixed(2)}</span>
+	</div>
+
 	<br>
 
 	<div class="w3-row">
@@ -611,6 +622,10 @@
 
 <style>
 
+	#resume-container {
+		position: relative;
+	}
+
 	.removeCell {
 		position: absolute;
     	right: 0px;
@@ -655,6 +670,12 @@
 	}
 	.sold {
 		color: green;
+	}
+
+	@media print {
+		.no-print {
+			display: none;
+		}
 	}
 
 </style>
