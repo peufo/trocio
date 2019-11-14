@@ -200,7 +200,7 @@
 					<i class="fas fa-user-plus w3-large"></i>&nbsp;Nouveau
 					</Button>
 					<Dialog bind:this={dialogLogin}>
-						<Login id="NewClient" on:newClient={userSelected}/>
+						<Login id="NewClient" on:newClient={userSelected} newUser={true}/>
 					</Dialog>
 
 					<Button

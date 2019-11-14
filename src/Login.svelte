@@ -8,7 +8,7 @@
     
     export let id = 'login' //For focus()
 
-    let newUser = !!$me._id
+    export let newUser = !!$me._id
     let reset = false
     let name = ''
     let mail = ''
