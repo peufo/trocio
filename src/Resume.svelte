@@ -493,16 +493,24 @@
 		
 			<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />	
 			<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered w3-margin-top">
+
+				<!-- En-têtes -->
 				<tr>
 					<th>#</th>
 					<th>Articles</th>
 					<th>Statuts</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
-					<th>Prix <span class="w3-small sold">{soldSum.toFixed(2)}</span></th>
-					<th on:click="{() => tarifInfoDialog.open()}">Frais 
+					<th>
+						Prix <br>
+						<span class="w3-small sold">{soldSum.toFixed(2)}</span>
+					</th>
+					<th on:click="{() => tarifInfoDialog.open()}">
+						Frais <br>
 						<span class="w3-small fee">{feeSum.toFixed(2)}</span>
 					</th>
 					<th></th><!--remove-->
 				</tr>
+
+				<!-- Corp -->
 				{#each provided.sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i}
 
 					<tr>
@@ -516,10 +524,10 @@
 
 
 						<!-- Designation -->
-						<td class="tdInput">
+						<td class="tdInput" style="width: 50%; min-width: 170px;">
 
 							<textarea
-								rows="3" style="resize: none; min-width: 350px;"
+								rows="3" style="resize: none;"
 								on:input="{e =>  addModifiedArticle(e, article)}"
 								class:lastInputName="{i == provided.length-1}"  
 								bind:value={article.name}

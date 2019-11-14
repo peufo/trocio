@@ -331,6 +331,7 @@
 		border-radius: 4px;
 		margin-top: 30px;
 		margin-bottom: 30px;
+		overflow-x: auto;
 	}
 
 	.card:hover {
