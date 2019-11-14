@@ -5,6 +5,7 @@
 	import SearchUser from './SearchUser.svelte'
 	import UserLi from './UserLi.svelte'
 
+	export let index = 0
 	export let name = ''
 	export let apply = []
 	export let margin = 0
@@ -60,13 +61,12 @@
 
 </script>
 
-<div id="tarif" class="w3-card w3-padding w3-round w3-margin-bottom" in:slide>
+<div class="tarif w3-card w3-padding w3-round w3-margin-bottom" in:slide>
 
-	<input id="name" bind:value={name} type="text" placeholder="Nom du tarif" readonly={bydefault} class="w3-input w3-large w3-center">
-	<i 	id="remove" 
-		on:click="{remove}" 
+	<input bind:value={name} type="text" placeholder="Nom du tarif" readonly={bydefault} class="name w3-input w3-large w3-center">
+	<i 	on:click="{remove}" 
 		class:w3-hide={bydefault}
-		class="fa fa-times w3-large w3-right w3-padding"></i>
+		class="remove fa fa-times w3-large w3-right w3-padding"></i>
 
 	<br>
 
@@ -163,9 +163,11 @@
 					<UserLi user={a} on:remove="{() => removeApply(i)}"/>
 				{/each}
 				</ul>
-				<SearchUser on:select="{addApply}"
-							exepted={apply}
-							placeholder="{`Ajouter un utilisateur soumit au tarif "${name}"`}"/>
+				<SearchUser 
+				id={`tarif${index}`}
+				on:select="{addApply}"
+				exepted={apply}
+				placeholder="{`Ajouter un utilisateur soumit au tarif "${name}"`}"/>
 			</div>
 
 			<br>
@@ -177,9 +179,22 @@
 
 
 <style>
-	#tarif {
+	.tarif {
 		max-width: 850px;
 		margin: auto;
+	}
+	.name {
+		width: calc(100% - 40px)
+	}
+
+	.tarif {
+		position: relative;
+	}
+
+	.remove {
+		position: absolute;
+		top: 10px;
+		right: 10px;
 	}
 	.number {
 		width: 70px;
@@ -194,24 +209,9 @@
 	.fee:hover .fa-times, #tarif:hover #remove {
 		transform: scale(1);
 	}
-
 	.fee .fa-times:hover, #tarif #remove:hover {
 		transform:scale(1.2);
 		color: red;
 	}
 	
-	#name {
-		width: calc(100% - 40px)
-	}
-
-	#tarif {
-		position: relative;
-	}
-
-	#remove {
-		position: absolute;
-		top: 10px;
-		right: 10px;
-	}
-
 </style>
