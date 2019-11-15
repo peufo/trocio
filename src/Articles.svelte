@@ -74,7 +74,7 @@
                 <div class="list-element w3-padding w3-display-container valided" style="margin-right: 5px;">
                     {article.name}
                     <br>
-                    <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
+                    <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && Number(article.price).toFixed(2)}</b>
                 </div>
             {/each}
         </div>

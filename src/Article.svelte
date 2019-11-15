@@ -42,7 +42,7 @@
         {@html article.name.length ? article.name : `<span style="color: red;">Pas de désignation !</span>`}
     </div>
 
-    <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && article.price.toFixed(2)}</b>
+    <b class="w3-tiny w3-right" style="line-height: 1;">{!isNaN(article.price) && Number(article.price).toFixed(2)}</b>
     <span class="w3-tiny" style="line-height: 1;">{comment}</span>
 
     <div class="ref w3-display-topright w3-padding" class:withAction={article.isRemovable || printable}>

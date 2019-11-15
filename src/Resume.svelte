@@ -4,7 +4,7 @@
 	import { flip } from 'svelte/animate'
 	import Dialog, {Title, Content} from '@smui/dialog'
 	import Button from '@smui/button'
-	import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint} from './utils'
+	import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
 
@@ -524,19 +524,21 @@
 
 
 						<!-- Designation -->
-						<td class="tdInput" style="width: 50%; min-width: 170px;">
-
-							<textarea
+						<td class:tdInput={!article.valided} style="width: 50%; min-width: 170px;">
+							{#if article.valided}
+								<span class:recovered={article.recover}>
+									{article.name}
+								</span>
+							{:else}
+								<textarea
 								rows="3" style="resize: none;"
 								on:input="{e =>  addModifiedArticle(e, article)}"
 								class:lastInputName="{i == provided.length-1}"  
 								bind:value={article.name}
 								type="text" 
-								class="w3-input" 
-								readonly={article.valided}
-								class:unvalided={!article.valided}
-								class:recovered={article.recover}
+								class="w3-input unvalided" 
 								placeholder="Désignation"></textarea>
+							{/if}
 
 						</td>
 
@@ -544,21 +546,18 @@
 						<td>{getStatus(article)}</td>
 
 						<!-- Prix -->
-						<td class="tdInput price">
-							<!--
-								bind:value is removed
-							-->
-							<input
-								on:input="{e => addModifiedArticle(e, article)}"
-								value={article.price}
-								type="number"
-								class="w3-input"
-								readonly={article.valided}
-								class:unvalided={!article.valided}
-								class:recovered={article.recover}
-								class:sold={article.sold}
-								step="0.05"
-								min="0">
+						<td class="price" class:tdInput={!article.valided}>
+							{#if article.valided}
+								<span class:recovered={article.recover} class:sold={article.sold}>
+									{Number(article.price).toFixed(2)}
+								</span>
+							{:else}
+								<input
+								bind:value={article.price}
+								on:input="{e => {formatPrice(e); addModifiedArticle(e, article)}}"
+								type="text"
+								class="w3-input unvalided">
+							{/if}
 						</td>
 
 						<!-- Frais -->
@@ -653,6 +652,11 @@
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
+
+	td {
+		min-height: 61px;
+	}
+
 	tr:hover .fa-times {
 		transform: scale(1);
 	}
@@ -665,14 +669,6 @@
 	}
 	.w3-input {
 		border: none;
-	}
-
-	input[type=number] {
-		width: 6em;
-	}
-	
-	.price {
-		color: green;
 	}
 
 	.fee:not(.unvalided) {

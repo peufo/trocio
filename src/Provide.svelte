@@ -1,6 +1,5 @@
 <script>
 
-    import { formatPrice } from './utils'
     import { troc, me } from './stores'
     import { onMount } from 'svelte'
     import { flip } from 'svelte/animate'
@@ -14,7 +13,7 @@
 	dayjs.locale('fr')
     dayjs.extend(relativeTime)
 
-    import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint } from './utils.js'
+    import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils.js'
     import TagsPrint from './TagsPrint.svelte'
     import Article from './Article.svelte'
 

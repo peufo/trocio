@@ -86,7 +86,7 @@ router
 	.patch('/', checkLogin, (req, res, next) => {
 		//Verifie si le les article vienne tous du même fournisseur
 		var uniqueProvider = req.body.map(a => a.provider).filter((v, i, self) => self.indexOf(v) === i).length == 1
-		if (!uniqueProvider) return next(Error('provideur is not unique'))
+		if (!uniqueProvider) return next(Error('providor is not unique'))
 
 		//Verifie si le les article vienne tous du même troc
 		var uniqueTroc = req.body.map(a => a.troc).filter((v, i, self) => self.indexOf(v) === i).length == 1
@@ -108,7 +108,8 @@ router
 
 						//PATCH
 						if (patchedArt.name) art.name = patchedArt.name
-						if (patchedArt.price) art.price = patchedArt.price
+						if (!isNaN(patchedArt.price) && patchedArt.price !== null) art.price = patchedArt.price
+
 						//TODO: Changer par un calcule interne
 						if (patchedArt.fee) art.fee = patchedArt.fee
 						if (patchedArt.margin) art.margin = patchedArt.margin

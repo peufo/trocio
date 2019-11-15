@@ -9,6 +9,7 @@ function createArticle(req, res, next) {
 		createArticleContext(art.troc, art.provider, 1, (err, newRef) => {
 			if (err) return next(err)
 			art.ref = newRef
+			if (art.price === null) art.price = 0
 			art.save(err => {
 				if (err) return next(err)
 				res.json({success: true, message: art})
@@ -19,13 +20,14 @@ function createArticle(req, res, next) {
 		var articles = req.body
 		createArticleContext(articles[0].troc, articles[0].provider, articles.length, (err, newRef) => {
 			if (err) return next(err)
-
+			
 			articles.forEach(art  => delete art._id)
-	
+			
 			Promise.all(articles.map((art, i) => {
 				return new Promise((resolve, reject) => {
 					art = new Article(art)
 					art.ref = newRef + i
+					if (art.price === null) art.price = 0
 					art.save(err => {
 						if (err) return reject(err)
 						else return resolve(art)

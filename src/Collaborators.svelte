@@ -2,9 +2,11 @@
     import { me, troc } from './stores'
     import SearchUser from './SearchUser.svelte'
     import UserLi from './UserLi.svelte'
+    import { getHeader, updateTroc } from './utils'
 
 
 	function addAdmin(e) {
+        console.log(e)
 		fetch(`/trocs/${$troc._id}/admin`, getHeader({admin: e.detail._id}))
 		.then(res => res.json())
 		.then(updateTroc)
@@ -41,7 +43,7 @@
         {/each}
             <li>
                 <SearchUser placeholder="Nouvel administrateur"
-                            exepted="{$troc.admin}"
+                            bind:exepted="{$troc.admin}"
                             on:select={addAdmin}/>
             </li>
         </ul>
