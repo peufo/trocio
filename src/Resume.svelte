@@ -334,7 +334,7 @@
 		LIMIT_LIST_C = provided.length
 		onPrint = true
 		setTimeout(() => goPrint('resume-container'), 300)
-		setTimeout(() => onPrint = false, 400)
+		setTimeout(() => {onPrint = false; LIMIT_LIST_C = 50}, 400)
 	}
 
 </script>
