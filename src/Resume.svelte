@@ -4,6 +4,9 @@
 	import { flip } from 'svelte/animate'
 	import Dialog, {Title, Content} from '@smui/dialog'
 	import Button from '@smui/button'
+	import Menu from '@smui/menu'
+	import List, { Item, Text } from '@smui/list'
+
 	import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
@@ -16,8 +19,8 @@
 
 	const [send, receive] = crossfade(crossfadeConfig)
 
-    const LIMIT_LIST_INIT = 3 //Nombre d'élément d'une liste afficher initialement
-    const LIMIT_LIST_INIT_SOLD = 10 //Nombre d'élément d'une liste afficher initialement
+    const LIMIT_LIST_INIT = 10 //Nombre d'élément d'une liste afficher initialement
+    const LIMIT_LIST_INIT_SOLD = 50 //Nombre d'élément d'une liste afficher initialement
     let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste (Achat)
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste (Paiement)
     let LIMIT_LIST_C = LIMIT_LIST_INIT_SOLD //Nombre d'élément afficher pour la seconde liste (Vente)
@@ -56,6 +59,9 @@
 	let tarifInfoDialog
 
 	let onPrint = false
+
+	let statutFilterMenu
+	let statutFilter = -1
 
 	$:{
 		if (trocId) {
@@ -247,10 +253,10 @@
 
 	let status = ['Proposé', 'En vente', 'Vendu', 'Récupéré']
 	function getStatus(art) {
-		if (!art.valided) return status[0]
-		if (art.sold) return status[2]
-		if (art.recover) return status[3]
-		return status[1]
+		if (!art.valided) return 0
+		if (art.sold) return 2
+		if (art.recover) return 3
+		return 1
 	}
 
 	function inputImportArticles() {
@@ -291,7 +297,7 @@
 			return {
 				ref: p.ref,
 				name: p.name,
-				statuts: getStatus(p),
+				statuts: status[getStatus(p)],
 				price: p.price.toFixed(2),
 				fee: p.fee.toFixed(2),
 				margin: p.margin.toFixed(2),
@@ -496,22 +502,48 @@
 
 				<!-- En-têtes -->
 				<tr>
-					<th>#</th>
-					<th>Articles</th>
-					<th>Statuts</th><!-- 0=Proposé, 1=Fournit, 2=Vendu, 3=Récupéré -->
 					<th>
-						Prix <br>
+						<span>#</span>
+					</th>
+
+					<th>
+						<span>Articles</span>
+					</th>
+
+					<!-- 0=Proposé, 1=En vente, 2=Vendu, 3=Récupéré -->
+					<th class="clickable" on:click={() => statutFilterMenu.setOpen(true)}>
+						<span>Statuts</span><br>
+						<span class="w3-tiny w3-opacity">
+							<i class="fas fa-filter"></i>
+							{statutFilter === -1 ? 'Tous' : status[statutFilter]}
+						</span>
+						<Menu bind:this={statutFilterMenu}>
+							<List>
+								<Item on:click={() => statutFilter = -1 }><Text>Tous</Text></Item>
+								<Item on:click={() => statutFilter = 0 }><Text>Proposé</Text></Item>
+								<Item on:click={() => statutFilter = 1 }><Text>En vente</Text></Item>
+								<Item on:click={() => statutFilter = 2 }><Text>Vendu</Text></Item>
+								<Item on:click={() => statutFilter = 3 }><Text>Récupéré</Text></Item>
+							</List>
+						</Menu>
+					</th>
+					
+					<th>
+						<span>Prix</span><br>
 						<span class="w3-small sold">{soldSum.toFixed(2)}</span>
 					</th>
-					<th on:click="{() => tarifInfoDialog.open()}">
-						Frais <br>
+
+					<th class="clickable" on:click="{() => tarifInfoDialog.open()}">
+						<span>Frais</span><br>
 						<span class="w3-small fee">{feeSum.toFixed(2)}</span>
 					</th>
+
 					<th></th><!--remove-->
+
 				</tr>
 
 				<!-- Corp -->
-				{#each provided.sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i}
+				{#each provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i}
 
 					<tr>
 						
@@ -543,7 +575,7 @@
 						</td>
 
 						<!-- Status -->
-						<td>{getStatus(article)}</td>
+						<td>{status[getStatus(article)]}</td>
 
 						<!-- Prix -->
 						<td class="price" class:tdInput={!article.valided}>
@@ -594,10 +626,10 @@
 			<br>
 
 			<!-- Bouton pour prolongé la liste -->
-			{#if provided.length > LIMIT_LIST_C}
-				<div on:click="{() => LIMIT_LIST_C += 25}" class="underline-div w3-center">
+			{#if provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length > LIMIT_LIST_C}
+				<div on:click="{() => LIMIT_LIST_C += 50}" class="underline-div w3-center">
 					<span class="underline-span w3-opacity">
-						Afficher plus de résultat ({provided.length - LIMIT_LIST_C})
+						Afficher plus de résultat ({provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length - LIMIT_LIST_C})
 					</span>
 				</div>
 			{/if}
