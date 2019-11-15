@@ -578,7 +578,7 @@
 						<td>{status[getStatus(article)]}</td>
 
 						<!-- Prix -->
-						<td class="price" class:tdInput={!article.valided}>
+						<td class="price" class:tdInput={!article.valided} style="max-width: 100px;">
 							{#if article.valided}
 								<span class:recovered={article.recover} class:sold={article.sold}>
 									{Number(article.price).toFixed(2)}
