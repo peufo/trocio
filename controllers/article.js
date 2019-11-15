@@ -104,6 +104,7 @@ function validArticle(req, res, next) {
 function deleteArticle(req, res, next) {
 	Article.findOne({_id: req.params.id}, (err, art) => {
 		if (err || !art) return next(err || Error('Article not found'))
+		if (art.valided) return next(Error(`Valided article can't be delete`))
 		art.remove(err => {
 			if (err) return next(err)
 			res.json({success: true, message: `Article ${req.params.id} is removed`})

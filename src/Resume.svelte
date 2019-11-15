@@ -161,7 +161,7 @@
 		let index = -1
 
 		//update price value and compute fee and margin
-		if (e.target.type == 'number' && !isNaN(e.target.value)) {
+		if (e.target.classList.contains('price-input') && !isNaN(e.target.value)) {
 			art.price = Number(e.target.value)
 			index = provided.map(a => a._id).indexOf(art._id)
 			provided[index].fee = getFee(art, tarif)
@@ -588,7 +588,7 @@
 								bind:value={article.price}
 								on:input="{e => {formatPrice(e); addModifiedArticle(e, article)}}"
 								type="text"
-								class="w3-input unvalided">
+								class="price-input w3-input unvalided">
 							{/if}
 						</td>
 
