@@ -11,7 +11,6 @@
 	export let modeSelect = false
 	export let itemSelected = {} //itemSelected = user
 	export let selectOk = false
-	
 
 	//TODO: Transformer pour aussi servire au article
 	//1. Utilisé ._id au lieu de .mail
@@ -69,7 +68,7 @@
 	}
 
 	function isExepted(user) {
-		return exepted.map(e => e.mail).indexOf(user.mail) > -1
+		return exepted.map(e => e._id).indexOf(user._id) > -1
 	}
 
 	const ENTER = 13, DOWN = 40, UP = 38

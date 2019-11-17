@@ -4,9 +4,7 @@
     import UserLi from './UserLi.svelte'
     import { getHeader, updateTroc } from './utils'
 
-
 	function addAdmin(e) {
-        console.log(e)
 		fetch(`/trocs/${$troc._id}/admin`, getHeader({admin: e.detail._id}))
 		.then(res => res.json())
 		.then(updateTroc)
@@ -38,12 +36,12 @@
         <ul class="w3-ul">
         {#each $troc.admin as admin}
             <UserLi user={admin} 
-                    on:remove="{removeAdmin}"
-                    cantRemove="{admin._id == $troc.creator._id || admin._id == $me._id}"/>
+                    on:remove={removeAdmin}
+                    cantRemove={admin._id == $troc.creator._id || admin._id == $me._id}/>
         {/each}
             <li>
                 <SearchUser placeholder="Nouvel administrateur"
-                            bind:exepted="{$troc.admin}"
+                            bind:exepted={$troc.admin}
                             on:select={addAdmin}/>
             </li>
         </ul>
@@ -54,7 +52,7 @@
         <ul class="w3-ul">
         {#each $troc.cashier as cashier}
             <UserLi user={cashier}
-                    on:remove="{removeCashier}"/>
+                    on:remove={removeCashier}/>
         {/each}
             <li>
                 <SearchUser placeholder="Nouveau caissier"
