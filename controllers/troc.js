@@ -93,8 +93,12 @@ function addAdmin(req, res, next) {
 		Troc.findById(req.params.id, (err, troc) => {
 			if (err || !troc) return next(err || Error('Troc not found'))
 
+			//Check if user is already admin
+			var index = troc.admin.map(a => a._id).indexOf(req.body.admin)
+			if (index != -1) return next(Error('User is already admin'))
+
 			//Removed of cashiers
-			var index = troc.cashier.map(c => c._id).indexOf(req.body.admin)
+			index = troc.cashier.map(c => c._id).indexOf(req.body.admin)
 			if (index != -1) troc.cashier.splice(index, 1)
 
 			troc.admin.push(req.body.admin)
@@ -116,6 +120,10 @@ function addCashier(req, res, next) {
 
 		Troc.findById(req.params.id, (err, troc) => {
 			if (err || !troc) return next(err || Error('Troc not found'))
+
+			//Check if user is already cashier
+			var index = troc.cashier.map(a => a._id).indexOf(req.body.cashier)
+			if (index != -1) return next(Error('User is already cashier'))
 
 			//Removed of administrators
 			var index = troc.admin.map(a => a._id).indexOf(req.body.cashier)
