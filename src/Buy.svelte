@@ -106,7 +106,7 @@
 
 <div class="w3-row">
 
-    <div class="w3-col s6">
+    <div class="w3-col m6">
         <div class="w3-margin-right w3-margin-bottom">
             <div class="w3-large" style="display: inline-block; margin-top: 5px;">
                 {#await searchPromise}
@@ -162,7 +162,7 @@
 
     </div>
 
-    <div class="w3-col s6">
+    <div class="w3-col m6">
         <div class="w3-margin-left w3-border w3-round w3-padding">
             {#await buyPromise}
                 <Button class="w3-right" variant="outlined">

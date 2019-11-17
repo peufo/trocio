@@ -106,7 +106,7 @@
 
 <div class="w3-row">
 
-    <div class="w3-col s6">
+    <div class="w3-col m6">
         <div class="w3-margin-right">
             
             <h4>Achats</h4>
@@ -134,7 +134,7 @@
         </div>
     </div>
 
-    <div class="w3-col s6">
+    <div class="w3-col m6">
         <div class="w3-margin-left">
             {#await validPromise}
                 <Button class="w3-right" variant="outlined">

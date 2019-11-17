@@ -211,7 +211,7 @@
 
 <div class="w3-row">
 
-    <div class="w3-col s6">
+    <div class="w3-col m6">
         <div class="w3-margin-right">
 
             {#if provided.filter(art => !art.valided).length}
@@ -254,7 +254,7 @@
         </div>
     </div>
 
-    <div class="w3-col s6">
+    <div class="w3-col m6">
         <div class="w3-margin-left">
 
             {#await validPromise}
