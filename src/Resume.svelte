@@ -233,10 +233,12 @@
 
 	}
 
-	async function deleteArticle(index) {
-		let res = await fetch(`/articles/${provided[index]._id}`, getHeader({}, 'DELETE'))
+	async function deleteArticle(artId) {
+		let res = await fetch(`/articles/${artId}`, getHeader({}, 'DELETE'))
 		let json = await res.json()
 		if (json.success) {
+			let index = provided.map(art => art._id).indexOf(artId)
+			if (index == -1) return alert('Index not found')
 			provided.splice(index, 1)
 			provided = provided
 			return
@@ -607,7 +609,7 @@
 											<i class="fa fa-times w3-spin"></i>
 										</span>
 									{:then}
-										<span class="w3-padding w3-round clickable" on:click="{() => deleteArticlePromise = deleteArticle(i)}" style="background: rgba(255, 0, 0, .2);">
+										<span class="w3-padding w3-round clickable" on:click="{() => deleteArticlePromise = deleteArticle(article._id)}" style="background: rgba(255, 0, 0, .2);">
 											<i class="fa fa-times"></i>
 										</span>
 									{/await}
