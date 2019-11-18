@@ -26,7 +26,7 @@
 	let clientAnonym = false
 	let popupPaymentOpen = false
 
-	let action = 0
+	let action = 4
 	let actions = [
 		{num: 0, name: 'Fournit', icon: '<i class="fas fa-sign-in-alt"></i>'},
 		{num: 1, name: 'Récupère', icon: '<i class="fas fa-sign-out-alt"></i>'},

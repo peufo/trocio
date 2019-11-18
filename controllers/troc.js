@@ -244,6 +244,8 @@ function editTraderPrefix(req, res, next){
 		Troc.findById(req.params.id, (err, troc) => {
 			if (err || !troc) return next(err || Error('Troc not found'))
 
+			if (troc.trader.map(t => t.prefix).indexOf(req.body.prefix) != -1) return next(Error(`Prefix ${req.body.prefix} is already used`))
+
 			var index = troc.trader.map(c => c.user._id).indexOf(req.body.trader)
 			if (index == -1) return next(Error(`Trader ${req.body.trader} not found`))
 
