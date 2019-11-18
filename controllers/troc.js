@@ -35,6 +35,7 @@ function getTrocUser(id, cb){
 	Troc.findById(id)
 		.populate('creator', 'name mail')
 		.populate('admin', 'name mail')
+		.populate('trader.user', 'name mail')
 		.populate('cashier', 'name mail')
 		.populate('tarif.apply', 'name mail')
 		.lean()
@@ -146,6 +147,26 @@ function addCashier(req, res, next) {
 	})
 }
 
+function addTrader(req, res, next) {
+	User.findById(req.body.trader, (err, user) => {
+		if (err || !user) return next(err || Error('User not found')) 
+
+		Troc.findById(req.params.id, (err, troc) => {
+			if (err || !troc) return next(err || Error('Troc not found'))
+
+			if (!troc.trader) troc.trader = []
+			troc.trader.push({user: req.body.trader, prefix: req.body.prefix ? req.body.prefix : ''})
+			troc.save(err => {
+				if (err) return next(err)
+				addInUserList(user, troc, err => {
+					if (err) return next(err)
+					resTrocUser(req, res, next)
+				})
+			})					
+
+		})
+	})
+}
 
 function removeAdmin(req, res, next) {
 	User.findById(req.body.admin, (err, user) => {
@@ -194,6 +215,46 @@ function removeCashier(req, res, next) {
 	})
 }
 
+function removeTrader(req, res, next) {
+	User.findById(req.body.trader, (err, user) => {
+		if (err || !user) return next(err || Error('User not found'))
+
+		Troc.findById(req.params.id, (err, troc) => {
+			if (err || !troc) return next(err || Error('Troc not found'))
+
+			var index = troc.trader.map(c => c.user._id).indexOf(req.body.trader)
+			if (index == -1) return next(Error(`Trader ${req.body.trader} not found`))
+
+			troc.trader.splice(index, 1)
+			troc.save(err => {
+				if (err) return next(err)
+				removeInUserList(user, troc, err => {
+					if (err) return next(err)
+					resTrocUser(req, res, next)
+				})
+			})
+		})
+	})
+}
+
+function editTraderPrefix(req, res, next){
+	User.findById(req.body.trader, (err, user) => {
+		if (err || !user) return next(err || Error('User not found'))
+
+		Troc.findById(req.params.id, (err, troc) => {
+			if (err || !troc) return next(err || Error('Troc not found'))
+
+			var index = troc.trader.map(c => c.user._id).indexOf(req.body.trader)
+			if (index == -1) return next(Error(`Trader ${req.body.trader} not found`))
+
+			troc.trader[index].prefix = req.body.prefix
+			troc.save(err => {
+				if (err) return next(err)
+				res.json({success: true, message: 'Prefix changed'})
+			})
+		})
+	})
+}
 
 function addInUserList(user, troc, cb) {
 	//Doit s'assurer que le troc n'éxiste pas déjà
@@ -219,6 +280,7 @@ function removeInUserList(user, troc, cb) {
 	}else cb()
 }
 
+
 module.exports = {
 	getTrocUser,
 	checkAdmin,
@@ -227,6 +289,9 @@ module.exports = {
 	resTrocUser,
 	addAdmin,
 	addCashier,
+	addTrader,
 	removeAdmin,
-	removeCashier
+	removeCashier,
+	removeTrader,
+	editTraderPrefix,
 }

@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte'
     import { fade } from 'svelte/transition'
-    import Textfield from '@smui/textfield'
+    import TextField from '@smui/textfield'
 
     export let troc = ''
 
@@ -53,7 +53,7 @@
 <div id="articles">
 
     <div style="max-width: 400px; margin: auto;">
-        <Textfield
+        <TextField
             bind:value="{search}"
             on:input="{searchInput}"
             class="shaped-outlined w3-margin-top"

@@ -118,8 +118,11 @@ router
 	})
 	.post('/:id/admin', ctrl.checkAdmin, ctrl.addAdmin)
 	.post('/:id/cashier', ctrl.checkAdmin, ctrl.addCashier)
+	.post('/:id/trader', ctrl.checkAdmin, ctrl.addTrader)
 	.post('/:id/admin/remove', ctrl.checkAdmin, ctrl.removeAdmin)
 	.post('/:id/cashier/remove', ctrl.checkAdmin, ctrl.removeCashier)
+	.post('/:id/trader/remove', ctrl.checkAdmin, ctrl.removeTrader)
+	.post('/:id/trader/prefix', ctrl.checkAdmin, ctrl.editTraderPrefix)
 
 
 function lookupIfAdmin(troc, userId, cb) {
