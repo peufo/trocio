@@ -50,7 +50,7 @@ router
 			res.json(troc)
 		})
 	})
-	.get('/:trocId/tarif/:userId', ctrl.checkCashier, (req, res, next) => {
+	.get('/:trocId/tarif/:userId', (req, res, next) => {
 		Troc.findById(req.params.trocId, {tarif: 1}, (err, troc) => {
 			if(err) return next(err)
 			let tarifMatched = troc.tarif.filter(t => t.apply.map(a => a._id).indexOf(req.params.userId) != -1)			

@@ -206,10 +206,10 @@
 		transition: all 0.2s ease;
 		cursor: pointer;
 	}
-	.fee:hover .fa-times, #tarif:hover #remove {
+	.fee:hover .fa-times {
 		transform: scale(1);
 	}
-	.fee .fa-times:hover, #tarif #remove:hover {
+	.fee .fa-times:hover {
 		transform:scale(1.2);
 		color: red;
 	}
