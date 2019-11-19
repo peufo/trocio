@@ -63,9 +63,12 @@
 	let statutFilterMenu
 	let statutFilter = -1
 
+	let traderPrefix = ''
+
 	$:{
 		if (trocId) {
 			getTarif()
+			getTrader()
 			purchasesPromise = getPurchases()
 			paymentsPromise = getPayments()
 			if (userId) providedPromise = getProvided()
@@ -102,7 +105,7 @@
         }
 	}
 
-	//TODO: à transformer en function de Mappage ?
+	//TODO: à transformer en function de Mappage ? creer une classe a partir de la date et utilisé :first-child ?
  	//Filtre et ajoute time
 	function addTime(arr, keyIn, keyOut) {
 		let lastTime = 0
@@ -162,7 +165,7 @@
 
 		//update price value and compute fee and margin
 		if (e.target.classList.contains('price-input') && !isNaN(e.target.value)) {
-			art.price = Number(e.target.value)
+			art.price = e.target.value
 			index = provided.map(a => a._id).indexOf(art._id)
 			provided[index].fee = getFee(art, tarif)
 			provided[index].margin = getMargin(art, tarif)
@@ -191,7 +194,7 @@
 		let json = await res.json()
 		if (json.success) {
 			
-			provided = [...provided, json.message]
+			provided = [...provided, json.message[0]]
 
 			//Get focus on last add article
 			setTimeout(() => {
@@ -214,7 +217,7 @@
 			return
 		}
 
-		//Calcul fee... Bad idea on frontside ???
+		//TODO: Calcul fee... Bad idea on frontside ???
 		importArticles.forEach(art => art.fee = getFee(art, tarif))
 
 		let res = await fetch('/articles', getHeader(importArticles))
@@ -222,7 +225,7 @@
 		if (json.success) {
 			
 			provided = [...provided, ...json.message]
-			//Remove importe articles input
+			//Hide importe articles input
 			importArticlesListOpen = false
 			importArticlesValue = ''
 			importArticles = []
@@ -253,6 +256,15 @@
 		})
 	}
 
+	function getTrader() {
+		fetch(`/trocs/${trocId}/trader/${userId}`)
+		.then(res => res.json())
+		.then(json => {
+			 if (json.success) traderPrefix = json.prefix
+			 else traderPrefix = ''
+		})
+	}
+
 	let status = ['Proposé', 'En vente', 'Vendu', 'Récupéré']
 	function getStatus(art) {
 		if (!art.valided) return 0
@@ -271,26 +283,53 @@
 			let lines = importArticlesValue.split(/[\r\n]/)
 			let cells = []
 			let price = 0
-			lines.forEach((line, i) => {
-				cells = line.split(/[\t:;]/)
-				if (cells.length >= 2) {
-					price = Number(cells[1].replace(/,/, '.'))
-					if (isNaN(price) || !cells[0].trim().length || !cells[1].trim().length) {
+
+			if (!traderPrefix) {// utilsateur simple
+				lines.forEach((line, i) => {
+					cells = line.split(/[\t:;]/)
+					if (cells.length >= 2) {
+						price = Number(cells[1].replace(/,/, '.'))
+						if (isNaN(price) || !cells[0].trim().length || !cells[1].trim().length) {
+							failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
+						}
+						importArticles = [...importArticles, {
+							name: cells[0].trim(),
+							price,
+							troc: trocId,
+							provider: userId
+						}]
+					}else{
 						failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
 					}
+				})
+			}else{//Commerçants
+				lines.forEach((line, i) => {
+					cells = line.split(/[\t:;]/)
+					if (cells.length >= 3) {
+						price = Number(cells[2].replace(/,/, '.'))
+						if (isNaN(price) || !cells[0].trim().length || !cells[1].trim().length || !cells[2].trim().length) {
+							failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
+						}
+						if (cells[0].trim()[0] != traderPrefix) failFormatRaison = `Vous devez utilier un "${traderPrefix}" comme préfixe !`
+						if (isNaN(cells[0].replace(traderPrefix, '')) || cells[0].indexOf('.') != -1) failFormatRaison = `Vous devez mettre un nombre après le préfixe !`
 
-					importArticles = [...importArticles, {
-						name: cells[0].trim(),
-						price,
-						troc: trocId,
-						provider: userId
-					}]
-
-				}
-			})
+						importArticles = [...importArticles, {
+							ref: cells[0].trim(),
+							name: cells[1].trim(),
+							price,
+							troc: trocId,
+							provider: userId
+						}]
+					}else{
+						failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
+					}
+				})
+			}
 		}
+
 		//Reset if failed
 		if (failFormatRaison.length) importArticles = []
+
 	}
 
 	function clickDownladCSV() {
@@ -300,7 +339,7 @@
 				ref: p.ref,
 				name: p.name,
 				statuts: status[getStatus(p)],
-				price: p.price.toFixed(2),
+				price: Number(p.price).toFixed(2),
 				fee: p.fee.toFixed(2),
 				margin: p.margin.toFixed(2),
 				createdAt: p.createdAt.replace('T', ' ').replace('Z', ''),
@@ -363,7 +402,7 @@
 
 		<div class="w3-col s6">
 			<div class="w3-margin-right">
-				<span class="w3-right w3-large">{buySum.toFixed(2)}</span>
+				<span class="w3-right w3-large">{-buySum.toFixed(2)}</span>
 				<h4>Achats</h4>
 
 				{#await purchasesPromise}
@@ -450,7 +489,7 @@
 						</Button>
 					{/if}
 
-					<!-- Bontons puor proposer des articles -->
+					<!-- Bontons pour proposer des articles -->
 					{#await createArticlePromise}
 						<Button color="secondary" variant="outlined">
 							<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
@@ -489,12 +528,12 @@
 
 			</div>
 			
-			<!-- Insertion de plein d'article -->
+			<!-- Insertion de plusieurs d'article -->
 			{#if importArticlesListOpen}
 				<div class="w3-row w3-margin-top" transition:slide>
 					<textarea class="w3-round" rows="10" 
 							bind:value={importArticlesValue} on:input={inputImportArticles}
-							placeholder="{'\n\t\t-- Glissez ou copiez une liste depuis un tableur --\n\t\t-- [ Désignation ] [ Prix ] --\n\n\nMon premier article ⭢ 20\nMon deuxième article : 15.35\nMon troisième article ; 5,40\n...'}"></textarea>
+							placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${traderPrefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${traderPrefix ? `${traderPrefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${traderPrefix ? `${traderPrefix}2 : ` : ''} Mon deuxième article : 15.35\n${traderPrefix ? `${traderPrefix}3 ; ` : ''} Mon troisième article ; 5,40\n...`}></textarea>
 				</div>
 			{/if}
 
@@ -537,7 +576,7 @@
 
 					<th class="clickable" on:click="{() => tarifInfoDialog.open()}">
 						<span>Frais</span><br>
-						<span class="w3-small fee">{feeSum.toFixed(2)}</span>
+						<span class="w3-small fee">{-feeSum.toFixed(2)}</span>
 					</th>
 
 					<th></th><!--remove-->

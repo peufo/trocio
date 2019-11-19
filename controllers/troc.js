@@ -1,12 +1,10 @@
 var Troc = require('../models/troc')
 var User = require('../models/user')
-var formidable = require('formidable')
-
 
 function checkAdmin(req, res, next) {
 	if (!req.session.user) return next(Error('Login required'))
 	//TODO: replace params with query
-	Troc.findOne({_id: req.params.id}, {admin: 1}, (err, troc) => {
+	Troc.findOne({_id: req.params.id || req.params.trocId}, {admin: 1}, (err, troc) => {
 		if (err || !troc) return next(err || Error('troc not found !'))
 		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
 		if (isAdmin) {
@@ -19,7 +17,7 @@ function checkAdmin(req, res, next) {
 
 function checkCashier(req, res, next) {
 	if (!req.session.user) return next(Error('Login required'))
-	Troc.findOne({_id: req.params.id}, {admin: 1, cashier: 1}, (err, troc) => {
+	Troc.findOne({_id: req.params.id || req.params.trocId}, {admin: 1, cashier: 1}, (err, troc) => {
 		if (err || !troc) return next(err || Error('troc not found !'))
 		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
 		let isCashier = troc.cashier.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1

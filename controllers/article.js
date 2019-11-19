@@ -3,54 +3,45 @@ var User = require('../models/user')
 var Troc = require('../models/troc')
 
 function createArticle(req, res, next) {
-	if (!Array.isArray(req.body)) {
-		var art = new Article(req.body)
 
-		createArticleContext(art.troc, art.provider, 1, (err, newRef) => {
-			if (err) return next(err)
-			art.ref = newRef
-			if (art.price === null) art.price = 0
-			art.save(err => {
-				if (err) return next(err)
-				res.json({success: true, message: art})
-			})
-		})
+	var articles = []
+	if (!Array.isArray(req.body)) articles = [req.body]
+	else articles = req.body
+
+	createArticleContext(articles, (err, newRef) => {
+		if (err) return next(err)
 		
-	}else{
-		var articles = req.body
-		createArticleContext(articles[0].troc, articles[0].provider, articles.length, (err, newRef) => {
-			if (err) return next(err)
-			
-			articles.forEach(art  => delete art._id)
-			
-			Promise.all(articles.map((art, i) => {
-				return new Promise((resolve, reject) => {
-					art = new Article(art)
-					art.ref = newRef + i
-					if (art.price === null) art.price = 0
-					art.save(err => {
-						if (err) return reject(err)
-						else return resolve(art)
-					})
+		articles.forEach(art  => delete art._id)
+		
+		let nbAttributedRef = 0
+		Promise.all(articles.map(art => {
+			return new Promise((resolve, reject) => {
+				art = new Article(art)
+				if (!art.ref) art.ref = newRef + nbAttributedRef++
+				if (art.price === null) art.price = 0
+				art.save(err => {
+					if (err) return reject(err)
+					else return resolve(art)
 				})
-			}))			
-			.catch(next)	
-			.then(articles => {
-				res.json({success: true, message: articles})
 			})
+		}))			
+		.catch(next)	
+		.then(articles => {
+			res.json({success: true, message: articles})
 		})
-	}
+	})
 }
 
-function createArticleContext(trocId, providerId, nombreArticles, cb) {
-	Troc.findOne({_id: trocId}, (err, troc) => {
+function createArticleContext(articles, cb) {
+	Troc.findOne({_id: articles[0].troc}, (err, troc) => {
 		if (err || !troc) return cb(err || Error('Troc is not found !'))
 
-		User.findOne({_id: providerId}, (err, user) => {
+		User.findOne({_id: articles[0].provider}, (err, user) => {
 			if (err || !user) return cb(err || Error('Provider is not found !'))
 
-			let newRef = troc.articlelastref + 1 //Reference
-			troc.articlelastref += nombreArticles
+			 //Attribution d'une ref
+			let newRef = troc.articlelastref + 1
+			troc.articlelastref += articles.filter(art => !art.ref).length
 
 			if (user.trocs.indexOf(troc._id) == -1) {
 				user.trocs.push(troc._id)
