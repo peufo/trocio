@@ -310,8 +310,9 @@
 						if (isNaN(price) || !cells[0].trim().length || !cells[1].trim().length || !cells[2].trim().length) {
 							failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
 						}
-						if (cells[0].trim()[0] != traderPrefix) failFormatRaison = `Vous devez utilier un "${traderPrefix}" comme préfixe !`
+						
 						if (isNaN(cells[0].replace(traderPrefix, '')) || cells[0].indexOf('.') != -1) failFormatRaison = `Vous devez mettre un nombre après le préfixe !`
+						if (cells[0].trim()[0] != traderPrefix) failFormatRaison = `Vous devez utilier un "${traderPrefix}" comme préfixe !`
 
 						importArticles = [...importArticles, {
 							ref: cells[0].trim(),
