@@ -298,7 +298,7 @@
 							troc: trocId,
 							provider: userId
 						}]
-					}else{
+					}else if (line.length > 0){
 						failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
 					}
 				})
@@ -321,7 +321,7 @@
 							troc: trocId,
 							provider: userId
 						}]
-					}else{
+					}else if (line.length > 0){
 						failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
 					}
 				})
