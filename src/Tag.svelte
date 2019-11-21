@@ -12,10 +12,17 @@
 </script>
 
 <div class="tag" class:border style="{`width: ${width}mm; height: ${height}mm; padding: ${padding}mm;`}">
-    <span class="ref">
-        <b>#</b>{ref}
-    </span>
+    <!-- Not work correctly
+
+        <span style="float: right;">
+            <b style="margin-top: 4px;">#</b>{ref}
+        </span>
         {name}
+
+    -->
+
+    <b>#{ref}</b>&nbsp;&nbsp;{name}
+
     <br><br>
     <img src="/favicon.ico" alt="Logo trocio" height="30" width="30" style="{`bottom: ${padding}mm; left: ${padding}mm;`}">
     <div class="price" style="{`bottom: ${padding}mm; right: ${padding}mm;`}">
@@ -38,14 +45,6 @@
         margin-top: 1mm;
     }
 
-    .ref {
-        float: right;
-    }
-
-    .ref b {
-        margin-top: 4px;
-    
-    }
     .price {
         position: absolute;
         line-height: 1;
