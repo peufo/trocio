@@ -55,7 +55,7 @@
         let json = await res.json()
         if (json.success) {
             if ($me._id) {//Un Cassier à créer un utilisateur
-                alert(`Le mot de passe de ${json.message.name} est ${json.message.password}`)
+                alert(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
                 dispatch('newClient', json.message)
             }else{
                 await Login()
