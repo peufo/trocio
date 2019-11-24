@@ -8,12 +8,13 @@
 	import UserLi from './UserLi.svelte'
 	import Collaborators from './Collaborators.svelte'
 	import Tarif from './Tarif.svelte'
+	import Correction from './Correction.svelte'
 	import Cashier from './Cashier.svelte'
 	import TagEdit from './TagEdit.svelte'
 	import { getHeader, updateTroc } from './utils'
 
 
-	let tabSelected = 6
+	let tabSelected = 5
 	let oldTabSelected = -1
 	let tabs = [
 		{num: 0, name: 'Informations', 	icon: '<i class="fas fa-info-circle"></i>'},
@@ -136,7 +137,7 @@
 		<!-- Correction  -->
 		<div class="tab" class:center={tabSelected == 5} class:left={tabSelected > 5} class:right={tabSelected < 5}>
 			<br>
-			Correction
+			<Correction troc={$troc._id}/>
 		</div>
 
 		<!-- Caisse  -->

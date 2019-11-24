@@ -109,6 +109,12 @@ router
 		}
 		
 	})
+	.get('/:id/providername', (req, res, next) => {
+		Troc.findOne({_id: req.params.id}, {provider: 1}).populate('provider', 'name').exec((err, troc) => {
+			if (err) return next(err)
+			res.json(troc.provider)
+		})
+	})
 	.post('/', ctrl.createTroc)
 	.patch('/:id', ctrl.checkAdmin, (req, res, next) => {
 		if (!req.session.user) return next(Error('Login required'))

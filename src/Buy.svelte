@@ -130,7 +130,7 @@
         {:then}
             {#each articles as article, index (article._id)}
                 <div class="w3-margin-right" in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
-                    <Article article={article} clickable on:select="{() => buy(index)}"/>
+                    <Article article={article} clickable on:select="{() => buy(index)}" comment={`Fourni par ${article.provider.name}`}/>
                 </div>
             {:else}
                 <span class="w3-opacity">Pas de résultat</span>
