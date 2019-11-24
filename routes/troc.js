@@ -50,6 +50,7 @@ router
 			res.json(troc)
 		})
 	})
+	.get('/:id/stats', ctrl.checkAdmin, ctrl.getStats)
 	.get('/:trocId/tarif/:userId', (req, res, next) => {
 		Troc.findById(req.params.trocId, {tarif: 1}, (err, troc) => {
 			if(err || !troc) return next(err || Error('Troc not found !'))
