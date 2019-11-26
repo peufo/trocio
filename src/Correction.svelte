@@ -134,6 +134,8 @@
                     </Row>
                 </Head>
                 <Body>
+                <!--
+                
                     {#each providers as provider}
                         <Row>
                             <Cell checkbox >
@@ -146,6 +148,8 @@
                             <Cell>{provider.name}</Cell>
                         </Row>
                     {/each}
+                    
+                -->
                 </Body>
             </DataTable>
         {/await}

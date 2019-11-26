@@ -6,7 +6,7 @@ var Payment = require('../models/payment')
 function checkAdmin(req, res, next) {
 	if (!req.session.user) return next(Error('Login required'))
 	//TODO: replace params with query
-	Troc.findOne({_id: req.params.id || req.params.trocId}, {admin: 1}, (err, troc) => {
+	Troc.findOne({_id: req.params.id || req.params.trocId || req.query.troc}, {admin: 1}, (err, troc) => {
 		if (err || !troc) return next(err || Error('troc not found !'))
 		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
 		if (isAdmin) {
@@ -19,7 +19,7 @@ function checkAdmin(req, res, next) {
 
 function checkCashier(req, res, next) {
 	if (!req.session.user) return next(Error('Login required'))
-	Troc.findOne({_id: req.params.id || req.params.trocId}, {admin: 1, cashier: 1}, (err, troc) => {
+	Troc.findOne({_id: req.params.id || req.params.trocId || req.query.troc}, {admin: 1, cashier: 1}, (err, troc) => {
 		if (err || !troc) return next(err || Error('troc not found !'))
 		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
 		let isCashier = troc.cashier.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
@@ -83,7 +83,7 @@ function getStats(req, res, next) {
 				marginSum: recoveredArticles.map(art => art.margin).reduce((acc, cur) => acc + cur),
 			}
 
-			Payment.find({troc: troc._id}).exec((err, payments) => {
+			Payment.find({troc: troc._id}, {amount: 1}).exec((err, payments) => {
 				if (err) return next(err)
 
 				var inputsPayment = payments.filter(p => p.amount > 0)

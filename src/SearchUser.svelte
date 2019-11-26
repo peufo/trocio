@@ -11,6 +11,7 @@
 	export let modeSelect = false
 	export let itemSelected = {} //itemSelected = user
 	export let selectOk = false
+	export let disabled = false
 
 	//TODO: Transformer pour aussi servire au article
 	//1. Utilisé ._id au lieu de .mail
@@ -135,7 +136,8 @@
 			on:input={input}
 			on:focusin="{focusin}"
 			on:focusout="{focusout}"
-			type="text" 
+			type="text"
+			class:w3-disabled={disabled}
 			class="w3-input searchUser"
 			autocomplete="off"
 			placeholder="{placeholder}">

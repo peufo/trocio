@@ -9,12 +9,13 @@
 	import Collaborators from './Collaborators.svelte'
 	import Tarif from './Tarif.svelte'
 	import Correction from './Correction.svelte'
+	import Stats from './Stats.svelte'
 	import Cashier from './Cashier.svelte'
 	import TagEdit from './TagEdit.svelte'
 	import { getHeader, updateTroc } from './utils'
 
 
-	let tabSelected = 5
+	let tabSelected = 4
 	let oldTabSelected = -1
 	let tabs = [
 		{num: 0, name: 'Informations', 	icon: '<i class="fas fa-info-circle"></i>'},
@@ -131,19 +132,19 @@
 		<!-- Stats  -->
 		<div class="tab" class:center={tabSelected == 4} class:left={tabSelected > 4} class:right={tabSelected < 4}>
 			<br>
-			Stats
+			<Stats />
 		</div>
 
 		<!-- Correction  -->
 		<div class="tab" class:center={tabSelected == 5} class:left={tabSelected > 5} class:right={tabSelected < 5}>
 			<br>
-			<Correction troc={$troc._id}/>
+			<Correction troc={$troc._id} />
 		</div>
 
 		<!-- Caisse  -->
 		<div class="tab" class:center={tabSelected == 6} class:left={tabSelected > 6} class:right={tabSelected < 6}>
 			<br>
-			<Cashier adminIntegration/>
+			<Cashier adminIntegration />
 		</div>
 		
 	</div>
