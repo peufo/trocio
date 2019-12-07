@@ -6,37 +6,71 @@
     import { troc } from './stores'
     import SearchUser from './SearchUser.svelte'
 
-
     let selectedView = ''
-
-    let articles = []
-    let articlesPromise
+    let selectedUser = ''
+    let searchUser = ''
 
     let payments = []
-    let paymentsPromise
+    let articles = []
+    let events = [] // articles events
+    let statsPromise
 
     function selectView() {
+        searchUser = ''
+        loadView()
+    }
+
+    function selectUser(e) {
+        selectedView = 'user'
+        selectedUser = e.detail._id
+        loadView()
+    }
+
+    function loadView() {
         setTimeout(() => { // Wait selectedView refresh
-            articlesPromise = getArticles().then(() => setTimeout(showArticlesGraph, 0))
-            paymentsPromise = getPayments().then(() => setTimeout(showPaymentsGraph, 0))
+            statsPromise = getStats().then(() => setTimeout(showGraphs, 0))
         }, 0)
     }
 
-    async function getArticles() {
-        let req = `/articles/stats?troc=${$troc._id}&view=${selectedView}`
+    async function getStats() {
+        let req = `/trocs/${$troc._id}/stats?view=${selectedView}`
         let res = await fetch(req)
-        articles = await res.json()
+        let json = await res.json()
+        payments = json.payments
+        articles = json.articles
+        console.log(articles.length)
+        events = getEvents()
         return
     }
 
-    async function getPayments() {
-        let req = `/payments/stats?troc=${$troc._id}&view=${selectedView}`
-        let res = await fetch(req)
-        payments = await res.json()
-        return
+    function getEvents() {
+        let paymentsEvents = payments.map(p => {
+            return {
+                pay: p,
+                event: 'payment', 
+                date: p.createdAt,
+                time: new Date(p.createdAt).getTime()
+            }
+        })
+        let articlesEvents = []
+        let capturedEvents = ['createdAt', 'valided', 'sold', 'recover'] //TODO: not giveback
+        capturedEvents.forEach(capturedEvent => {
+            articlesEvents = [...articlesEvents, ...articles.filter(art => art[capturedEvent]).map(art => {
+                    return {
+                        art,
+                        event: capturedEvent,
+                        date: art[capturedEvent],
+                        time: new Date(art[capturedEvent]).getTime()
+                    }
+                })
+            ]
+        })
+        console.log([...paymentsEvents, ...articlesEvents].sort((a, b) => a.time - b.time))
+
+        return [...paymentsEvents, ...articlesEvents].sort((a, b) => a.time - b.time)
     }
 
-    function showArticlesGraph() {
+    function showGraphs() {
 
         let proposed = { 
             name: 'Proposé',
@@ -75,37 +109,22 @@
             y: []
         }
 
-        let events = []
-        let capturedEvents = ['createdAt', 'valided', 'sold', 'recover'] //TODO: not giveback
+        let cash = { 
+            name: 'En caisse',
+            mode: 'lines+markers',
+            marker: {size: 5, color: []},
+            x: [],
+            y: [],
+            text: []
+        }
 
-        /*      
-        //Calculate in 610ms for 140000 events
-        articles.forEach(art => {
-            capturedEvents.forEach(capturedEvent => {
-                if (art[capturedEvent]) events = [...events, {
-                        art,
-                        event: capturedEvent,
-                        date: art[capturedEvent],
-                        time: new Date(art[capturedEvent]).getTime()
-                    }]
-            })
-        })
-        */
-
-        //Calculate in 13ms for 14000 events
-        capturedEvents.forEach(capturedEvent => {
-            events = [...events, ...articles.filter(art => art[capturedEvent]).map(art => {
-                    return {
-                        art,
-                        event: capturedEvent,
-                        date: art[capturedEvent],
-                        time: new Date(art[capturedEvent]).getTime()
-                    }
-                })
-            ]
-        })
-
-        events = events.sort((a, b) => a.time - b.time)
+        let debt = { 
+            name: 'Dette',
+            mode: 'lines',
+            x: [],
+            y: [],
+            text: []
+        }
 
         let balanceQteProposed = 0
         let balanceSumProposed = 0
@@ -116,6 +135,13 @@
         let balanceProfit = 0
         let balanceProfitFee = 0
         let balanceProfitMargin = 0
+
+        let balanceCash = 0
+        let nbPositivePayments = 0
+        let sumPositive = 0
+        let sumNegative = 0
+
+        let balanceDebt = 0
 
         console.time('Create traces')
 
@@ -148,6 +174,10 @@
                         balanceProfitFee += event.art.fee
                         profitFee.x.push(event.date)
                         profitFee.y.push(balanceProfitFee)
+
+                        balanceDebt -= event.art.fee
+                        debt.x.push(event.date)
+                        debt.y.push(balanceDebt)
                     }
 
                     break
@@ -174,7 +204,12 @@
                         balanceProfitMargin += event.art.margin
                         profitMargin.x.push(event.date)
                         profitMargin.y.push(balanceProfitMargin)
+ 
                     }
+
+                    balanceDebt -= event.art.margin
+                    debt.x.push(event.date)
+                    debt.y.push(balanceDebt)
 
                     break
 
@@ -193,58 +228,50 @@
                     valided.text.push(`Récupération de ${event.art.name}<br>Prix: ${event.art.price}<br>Qte total: ${balanceQteValided}`)
 
                     break
+
+                case 'payment':
+                    balanceCash += event.pay.amount
+                    cash.x.push(event.pay.createdAt)
+                    cash.y.push(balanceCash)
+                    cash.text = [...cash.text, `${event.pay.amount.toFixed(2)} ${event.pay.message}`]
+                    if (event.pay.amount >= 0){
+                        cash.marker.color = [...cash.marker.color, 'green'] 
+                        nbPositivePayments ++
+                        sumPositive += event.pay.amount
+                    }else{
+                        cash.marker.color = [...cash.marker.color, 'red'] 
+                        sumNegative += event.pay.amount
+
+                    }
+
+                    balanceDebt += event.pay.amount
+                    debt.x.push(event.pay.createdAt)
+                    debt.y.push(balanceDebt)
+                    
+                    break
             }
         })
 
         console.timeEnd('Create traces')
 
-        let layout = {
+        let layoutStock = {
             title: `TODO: Synthesize some number`,
             yaxis: {title: 'Montant'},
             legend: {orientation: 'h', y: 1}
         }
-        
-        Plotly.newPlot('stockGraph', [proposed, valided, profitFee, profitMargin, profit], layout) 
-        
-    }
 
-    function showPaymentsGraph() {
-
-        let cash = { 
-            mode: 'lines+markers',
-            marker: {size: 5, color: []},
-            x: [],
-            y: [],
-            text: []
-        }
-
-        let balance = 0
-        let nbPositivePayments = 0
-        let sumPositive = 0
-        let sumNegative = 0
-        payments.forEach(p => {
-            balance += p.amount
-            cash.x = [...cash.x, p.createdAt]
-            cash.y = [...cash.y, balance]
-            cash.text = [...cash.text, `${p.amount.toFixed(2)} ${p.message}`]
-            if (p.amount >= 0){
-                cash.marker.color = [...cash.marker.color, 'green'] 
-                nbPositivePayments ++
-                sumPositive += p.amount
-            }else{
-                cash.marker.color = [...cash.marker.color, 'red'] 
-                sumNegative += p.amount
-            }
-        })
-
-        let layout = {
+        let layoutCash = {
             title: `Nombre de paiements: ${payments.length}  <span style="color: green;">▲${nbPositivePayments}</span>  <span style="color: red;">▼${payments.length - nbPositivePayments}</span>
-                    Montant: ${balance.toFixed(2)}  <span style="color: green;">▲${sumPositive.toFixed(2)}</span>  <span style="color: red;">▼${sumNegative.toFixed(2)}</span>`,
+                    Montant: ${balanceCash.toFixed(2)}  <span style="color: green;">▲${sumPositive.toFixed(2)}</span>  <span style="color: red;">▼${sumNegative.toFixed(2)}</span>`,
             yaxis: {title: 'Montant'}
         }
         
-        Plotly.newPlot('cashGraph', [cash], layout)        
+        Plotly.newPlot('stockGraph', [proposed, valided, profitFee, profitMargin, profit], layoutStock) 
+        
+        Plotly.newPlot('cashGraph', [cash, debt], layoutCash)     
+
     }
+
 
 </script>
 
@@ -267,9 +294,9 @@
             <Radio bind:group={selectedView} value="privates"/>
             <span slot="label">Particuliers</span>
         </FormField>
-        <FormField on:click={() => alert('TODO: Manage user select')}>
+        <FormField>
             <Radio bind:group={selectedView} value="user"/>
-            <SearchUser disabled={selectedView != 'user'}/>
+            <SearchUser modeSelect on:select={selectUser} bind:search={searchUser}/>
         </FormField>
     </div>
 
@@ -281,7 +308,7 @@
             Caisse
         </Title>
 
-        {#await paymentsPromise}
+        {#await statsPromise}
             <div class="w3-center">
                 <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
             </div>
@@ -302,7 +329,7 @@
             Stock
         </Title>
 
-        {#await articlesPromise}
+        {#await statsPromise}
             <div class="w3-center">
                 <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
             </div>

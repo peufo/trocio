@@ -23,27 +23,6 @@ router
             return next(Error('Query troc and user is required !'))
         }
     })
-    .get('/stats', checkAdmin, (req, res, next) => {
-        Troc.findOne({_id: req.query.troc}).exec((err, troc) => {
-            if (err || !troc) return next(Error('Troc not found'))
-            
-            let query = {troc: troc._id}
-
-            if (req.query.view == 'traders') {
-                query.user = {$in: troc.trader.map(t => t.user)}
-            }else if (req.query.view == 'privates') {
-                query.user = {$nin: troc.trader.map(t => t.user)}
-            }else if (req.query.view == 'user') {
-                query.user = req.query.user
-            }
-
-            Payment.find(query).sort({createdAt: 1}).lean().exec((err, payments) => {
-                if (err) return next(err)
-                res.json(payments)
-            })
-            
-        })
-    })
     .post('/', (req, res, next) => {
         if (!req.session.user) return next(Error('Login required !'))
 

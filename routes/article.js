@@ -78,27 +78,6 @@ router
 		})
 
 	})
-	.get('/stats', (req, res, next) => {
-        Troc.findOne({_id: req.query.troc}).exec((err, troc) => {
-            if (err || !troc) return next(Error('Troc not found'))
-            
-            let query = {troc: troc._id}
-
-            if (req.query.view == 'traders') {
-                query.provider = {$in: troc.trader.map(t => t.user)}
-            }else if (req.query.view == 'privates') {
-                query.provider = {$nin: troc.trader.map(t => t.user)}
-            }else if (req.query.view == 'user') {
-                query.provider = req.query.user
-            }
-
-            Article.find(query).sort({createdAt: 1}).lean().exec((err, articles) => {
-                if (err) return next(err)
-                res.json(articles)
-            })
-            
-        })
-	})
 	.get('/:id', (req, res, next) => {
 		Article.findById(req.params.id, (err, art) => {
 			if (err) return next(err)

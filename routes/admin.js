@@ -44,6 +44,13 @@ router
         	res.json(payments)
       	})
     })
+    .get('/mails', (req, res, next) => {
+        User.find(req.query, {mail: 1}, (err, users) => {
+            if (err) return next(err)
+            let str = users.map(user => user.mail).join('<br>')
+            res.send(str)
+        })
+    })
     
 
 module.exports = router

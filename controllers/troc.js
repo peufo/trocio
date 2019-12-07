@@ -46,70 +46,29 @@ function getStats(req, res, next) {
 	Troc.findOne({_id: req.params.id}).exec((err, troc) => {
 		if (err || !troc) return next(err || Error('Troc not found'))
 
-		Article.find({troc: troc._id}).exec((err, articles) => {
+		let query = {troc: troc._id}
+		let user = req.query.user
+
+		if (req.query.view == 'traders') {
+			user = {$in: troc.trader.map(t => t.user)}
+		}else if (req.query.view == 'privates') {
+			user = {$nin: troc.trader.map(t => t.user)}
+		}
+		
+		if (req.query.view != 'global' || user){
+			query.$or = [{provider: user}, {buyer: user}]
+		}
+
+		
+
+		Article.find(query).sort({createdAt: 1}).lean().exec((err, articles) => {
 			if (err) return next(err)
-
-			var proposedCount = articles.length
-
-			var validedArticles = articles.filter(art => art.valided)
-			var valided = {
-				count: validedArticles.length,
-				priceSum: validedArticles.map(art => art.price).reduce((acc, cur) => acc + cur),
-				feeSum: validedArticles.map(art => art.fee).reduce((acc, cur) => acc + cur),
-				marginSum: validedArticles.map(art => art.margin).reduce((acc, cur) => acc + cur),
-			}
-			
-			var availableArticles = validedArticles.filter(art => !art.sold && !art.recover)
-			var available = {
-				count: availableArticles.length,
-				priceSum: availableArticles.map(art => art.price).reduce((acc, cur) => acc + cur),
-				feeSum: availableArticles.map(art => art.fee).reduce((acc, cur) => acc + cur),
-				marginSum: availableArticles.map(art => art.margin).reduce((acc, cur) => acc + cur),
-			}
-			
-			var soldedArticles = validedArticles.filter(art => art.sold)
-			var solded = {
-				count: soldedArticles.length,
-				priceSum: soldedArticles.map(art => art.price).reduce((acc, cur) => acc + cur),
-				feeSum: soldedArticles.map(art => art.fee).reduce((acc, cur) => acc + cur),
-				marginSum: soldedArticles.map(art => art.margin).reduce((acc, cur) => acc + cur),
-			}
-
-			var recoveredArticles = validedArticles.filter(art => art.recover)
-			var recovered = {
-				count: recoveredArticles.length,
-				priceSum: recoveredArticles.map(art => art.price).reduce((acc, cur) => acc + cur),
-				feeSum: recoveredArticles.map(art => art.fee).reduce((acc, cur) => acc + cur),
-				marginSum: recoveredArticles.map(art => art.margin).reduce((acc, cur) => acc + cur),
-			}
-
-			Payment.find({troc: troc._id}, {amount: 1}).exec((err, payments) => {
+			delete query.$or
+			if (user) query.user = user
+			Payment.find(query).sort({createdAt: 1}).lean().exec((err, payments) => {
 				if (err) return next(err)
-
-				var inputsPayment = payments.filter(p => p.amount > 0)
-				inputs = {
-					count: inputsPayment.length,
-					sum: inputsPayment.map(p => p.amount).reduce((acc, cur) => acc + cur)
-				}
-
-				var outputsPayment = payments.filter(p => p.amount < 0)
-				outputs = {
-					count: outputsPayment.length,
-					sum: outputsPayment.map(p => p.amount).reduce((acc, cur) => acc + cur)
-				}
-
-				all = {
-					count: payments.length,
-					sum: payments.map(p => p.amount).reduce((acc, cur) => acc + cur)
-				}
-
-				res.json({
-					articles: {valided, available, solded, recovered},
-					payments: {all, inputs, outputs}
-				})
-
+				res.json({articles, payments})
 			})
-
 		})
 
 	})

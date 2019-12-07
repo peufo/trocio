@@ -61,7 +61,8 @@
 			itemSelected = user
 			if (modeSelect) {
 				search = user.name
-				nextInput.focus()
+				//nextInput.focus()
+				document.getElementById(`searchUser${id}`).blur()
 			}else{
 				search = ''
 			}
