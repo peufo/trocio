@@ -6,14 +6,29 @@
     import { troc } from './stores'
     import SearchUser from './SearchUser.svelte'
 
+    //Selections
     let selectedView = ''
     let selectedUser = ''
     let searchUser = ''
 
+    //Results
     let payments = []
-    let articles = []
+    let articlesProvided = []
+    let articlesSolded = []
+    let articlesBuyed = []
     let events = [] // articles events
     let statsPromise
+
+    //Syntese results
+    let numberProvided = 0
+    let numberSolded = 0
+    let numberBuyed = 0
+    let numberPayment = 0
+    let sumProvided = 0
+    let sumSolded = 0
+    let sumBuyed = 0
+    let sumPayment = 0
+
 
     function selectView() {
         searchUser = ''
@@ -33,17 +48,36 @@
     }
 
     async function getStats() {
-        let req = `/trocs/${$troc._id}/stats?view=${selectedView}`
+        let req = `/trocs/${$troc._id}/stats?`
+        if (selectedView == 'user') {
+            req += `user=${selectedUser}`
+        }else{
+            req += `view=${selectedView}`
+        }
         let res = await fetch(req)
         let json = await res.json()
         payments = json.payments
-        articles = json.articles
-        console.log(articles.length)
+        articlesProvided = json.articlesProvided
+        articlesSolded = articlesProvided.filter(art => art.sold)
+        articlesBuyed = json.articlesBuyed
+
+        //Compute reduce
+        numberProvided = articlesProvided.length
+        numberSolded = articlesSolded.length
+        numberBuyed = articlesBuyed.length
+        numberPayment = payments.length
+        sumProvided = numberProvided ? articlesProvided.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
+        sumSolded = numberSolded ? articlesSolded.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
+        sumBuyed = numberBuyed ? articlesBuyed.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
+        sumPayment = numberPayment ? payments.map(pay => pay.amount).reduce((acc, cur) =>acc + cur) : 0
+
         events = getEvents()
         return
     }
 
     function getEvents() {
+
+        //payments
         let paymentsEvents = payments.map(p => {
             return {
                 pay: p,
@@ -52,10 +86,12 @@
                 time: new Date(p.createdAt).getTime()
             }
         })
-        let articlesEvents = []
-        let capturedEvents = ['createdAt', 'valided', 'sold', 'recover'] //TODO: not giveback
-        capturedEvents.forEach(capturedEvent => {
-            articlesEvents = [...articlesEvents, ...articles.filter(art => art[capturedEvent]).map(art => {
+
+        //Provider events
+        let articlesProvidedEvents = []
+        let capturedProvidedEvents = ['createdAt', 'valided', 'sold', 'recover']
+        capturedProvidedEvents.forEach(capturedEvent => {
+            articlesProvidedEvents = [...articlesProvidedEvents, ...articlesProvided.filter(art => art[capturedEvent]).map(art => {
                     return {
                         art,
                         event: capturedEvent,
@@ -65,9 +101,20 @@
                 })
             ]
         })
-        console.log([...paymentsEvents, ...articlesEvents].sort((a, b) => a.time - b.time))
 
-        return [...paymentsEvents, ...articlesEvents].sort((a, b) => a.time - b.time)
+        //Buyer events
+        let articlesBuyedEvents = articlesBuyed.map(art => {
+            return {
+                art,
+                event: 'buyed',
+                date: art.sold,
+                time: new Date(art.sold).getTime()
+            }
+        })
+
+        console.log('events', [...paymentsEvents, ...articlesProvidedEvents, ...articlesBuyedEvents].sort((a, b) => a.time - b.time))
+
+        return [...paymentsEvents, ...articlesProvidedEvents, ...articlesBuyedEvents].sort((a, b) => a.time - b.time)
     }
 
     function showGraphs() {
@@ -207,7 +254,8 @@
  
                     }
 
-                    balanceDebt -= event.art.margin
+                    //balanceDebt -= event.art.margin
+                    balanceDebt += event.art.price - event.art.margin
                     debt.x.push(event.date)
                     debt.y.push(balanceDebt)
 
@@ -248,6 +296,14 @@
                     debt.x.push(event.pay.createdAt)
                     debt.y.push(balanceDebt)
                     
+                    break
+
+                case 'buyed':
+
+                    balanceDebt -= event.art.price
+                    debt.x.push(event.art.sold)
+                    debt.y.push(balanceDebt)
+
                     break
             }
         })
@@ -301,8 +357,71 @@
     </div>
 
     <br><br>
+    {#if articlesProvided.length}
+        <Paper>
+            <Title>
 
-    <Paper >
+                <b>{numberSolded}</b>
+                ventes pour une valeur total de
+                <b>{Math.round(sumSolded * 100) / 100}</b>
+
+                <br>
+                <b>{numberProvided}</b>
+                dépots pour une valeur total de
+                <b>{Math.round(sumProvided * 100) / 100}</b>
+
+                <br>
+                <b>{(100 * numberSolded / numberProvided).toFixed(2)}% </b>
+                des dépots sont vendus
+
+                <br>
+                <b>{(100 * sumSolded / sumProvided).toFixed(2)}%</b>
+                de la valeur des dépots est vendu
+
+                <br>
+                Nombre de clients: ??? + n anonymes
+
+                <br>
+                Nombre de passage en caisse: ???
+
+                <br>
+                Prix moyen des dépots:
+                <b>{(sumProvided / numberProvided).toFixed(2)}</b>
+
+                <br>
+                Prix moyen des dépots vendu: 
+                <b>{(sumSolded / numberSolded).toFixed(2)}</b>
+                
+
+                <br>
+
+                <br>
+                <b>{numberBuyed}</b>
+                achats pour une valeur de
+                <b>{Math.round(sumBuyed * 100) / 100}</b>
+
+                <br>
+                Panier moyen: 
+                <b>{(sumBuyed / numberBuyed).toFixed(2)}</b>
+
+                <br>
+
+                <br>
+                <b>{numberPayment}</b>
+                paiement pour une balance de
+                <b>{sumPayment}</b>
+
+            </Title>
+
+            <Content>
+                <span>
+                    
+                </span>
+            </Content>
+        </Paper>
+    {/if}
+
+    <Paper>
         <Title>
             <i class="fas fa-cash-register w3-opacity w3-xlarge"></i>
             Caisse
@@ -323,7 +442,7 @@
 
     <br>
 
-    <Paper >
+    <Paper>
         <Title>
             <i class="fas fa-cubes w3-opacity w3-xlarge"></i>
             Stock

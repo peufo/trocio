@@ -56,18 +56,25 @@ function getStats(req, res, next) {
 		}
 		
 		if (req.query.view != 'global' || user){
-			query.$or = [{provider: user}, {buyer: user}]
+			query.provider = user
 		}
 
-		
-
-		Article.find(query).sort({createdAt: 1}).lean().exec((err, articles) => {
+		Article.find(query).sort({createdAt: 1}).lean().exec((err, articlesProvided) => {
 			if (err) return next(err)
-			delete query.$or
-			if (user) query.user = user
-			Payment.find(query).sort({createdAt: 1}).lean().exec((err, payments) => {
+
+			delete query.provider
+			if (user) query.buyer = user
+			query.sold = {$exists: true}
+			Article.find(query).sort({createdAt: 1}).lean().exec((err, articlesBuyed) => {
 				if (err) return next(err)
-				res.json({articles, payments})
+
+				delete query.buyer
+				delete query.sold
+				if (user) query.user = user
+				Payment.find(query).sort({createdAt: 1}).lean().exec((err, payments) => {
+					if (err) return next(err)
+					res.json({articlesProvided, articlesBuyed, payments})
+				})
 			})
 		})
 
