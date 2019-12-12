@@ -29,6 +29,9 @@
     let sumBuyed = 0
     let sumPayment = 0
 
+    let sumFee = 0
+    let sumMargin = 0
+
 
     function selectView() {
         searchUser = ''
@@ -69,7 +72,9 @@
         sumProvided = numberProvided ? articlesProvided.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumSolded = numberSolded ? articlesSolded.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumBuyed = numberBuyed ? articlesBuyed.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
-        sumPayment = numberPayment ? payments.map(pay => pay.amount).reduce((acc, cur) =>acc + cur) : 0
+        sumPayment = numberPayment ? payments.map(pay => pay.amount).reduce((acc, cur) => acc + cur) : 0
+        sumFee = numberProvided ? articlesProvided.map(art => art.fee).reduce((acc, cur) => acc + cur) : 0
+        sumMargin = numberSolded ? articlesSolded.map(art => art.margin).reduce((acc, cur) => acc + cur) : 0
 
         events = getEvents()
         return
@@ -425,6 +430,18 @@
         <Title>
             <i class="fas fa-cash-register w3-opacity w3-xlarge"></i>
             Caisse
+            <br>
+            <b>{sumFee.toFixed(2)}</b>
+            de frais encaissé
+
+            <br>
+            <b>{sumMargin.toFixed(2)}</b>
+            de marge encaissé
+
+            <br>
+            <b>{(sumFee + sumMargin).toFixed(2)}</b>
+            de benefice
+
         </Title>
 
         {#await statsPromise}
