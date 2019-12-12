@@ -409,7 +409,7 @@
                 <br>
                 <b>{numberPayment}</b>
                 paiement pour une balance de
-                <b>{sumPayment}</b>
+                <b>{sumPayment.toFixed(2)}</b>
 
             </Title>
 
