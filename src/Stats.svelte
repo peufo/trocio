@@ -15,6 +15,7 @@
     let payments = []
     let articlesProvided = []
     let articlesSolded = []
+    let articlesRecovered = []
     let articlesBuyed = []
     let events = [] // articles events
     let statsPromise
@@ -22,10 +23,13 @@
     //Syntese results
     let numberProvided = 0
     let numberSolded = 0
+    let numberRecovered = 0
     let numberBuyed = 0
     let numberPayment = 0
+
     let sumProvided = 0
     let sumSolded = 0
+    let sumRecovered = 0
     let sumBuyed = 0
     let sumPayment = 0
 
@@ -46,7 +50,10 @@
 
     function loadView() {
         setTimeout(() => { // Wait selectedView refresh
-            statsPromise = getStats().then(() => setTimeout(showGraphs, 0))
+            statsPromise = getStats().then(() => {
+                setTimeout(showPiePlot, 0)
+                setTimeout(showTimePlot, 0)
+            })
         }, 0)
     }
 
@@ -59,18 +66,24 @@
         }
         let res = await fetch(req)
         let json = await res.json()
-        payments = json.payments
         articlesProvided = json.articlesProvided
         articlesSolded = articlesProvided.filter(art => art.sold)
+        articlesRecovered = articlesProvided.filter(art => art.recover)
         articlesBuyed = json.articlesBuyed
+        payments = json.payments
+
+        console.log('prout')
+        console.log(articlesRecovered)
 
         //Compute reduce
         numberProvided = articlesProvided.length
         numberSolded = articlesSolded.length
+        numberRecovered = articlesRecovered.length
         numberBuyed = articlesBuyed.length
         numberPayment = payments.length
         sumProvided = numberProvided ? articlesProvided.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumSolded = numberSolded ? articlesSolded.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
+        sumRecovered = numberRecovered ? articlesRecovered.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumBuyed = numberBuyed ? articlesBuyed.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumPayment = numberPayment ? payments.map(pay => pay.amount).reduce((acc, cur) => acc + cur) : 0
         sumFee = numberProvided ? articlesProvided.map(art => art.fee).reduce((acc, cur) => acc + cur) : 0
@@ -122,7 +135,60 @@
         return [...paymentsEvents, ...articlesProvidedEvents, ...articlesBuyedEvents].sort((a, b) => a.time - b.time)
     }
 
-    function showGraphs() {
+    function showPiePlot() {
+        let data = [{
+            values: [numberProvided - numberSolded - numberRecovered, numberSolded, numberRecovered],
+            labels: ['En vente', 'Vendu', 'Récupéré'],
+            domain: {column: 0},
+            name: 'Ratio par nombre',
+            textinfo: 'value',
+            hoverinfo: 'label+percent',
+            hole: .2,
+            type: 'pie'
+        },{
+            values: [sumProvided - sumSolded - sumRecovered, sumSolded, sumRecovered],
+            labels: ['En vente', 'Vendu', 'Récupéré'],
+            text: 'Ratio par valeur',
+            textposition: 'inside',
+            domain: {column: 1},
+            name: 'Ratio par valeur',
+            textinfo: 'value',
+            hoverinfo: 'label+percent',
+            hole: .2,
+            type: 'pie'
+        }];
+
+        let layout = {
+        title: `<b>${numberProvided}</b> dépots pour une valeur total de <b>${Math.round(sumProvided * 100) / 100}</b>`,
+        annotations: [
+            {
+            font: {
+                size: 20
+            },
+            showarrow: false,
+            text: 'Nombre',
+            x: 0.17,
+            y: 0.5
+            },
+            {
+            font: {
+                size: 20
+            },
+            showarrow: false,
+            text: 'Valeur',
+            x: 0.82,
+            y: 0.5
+            }
+        ],
+        height: 400,
+        width: 600,
+        grid: {rows: 1, columns: 2}
+        };
+
+        Plotly.newPlot('plotPie', data, layout);
+    }
+
+    function showTimePlot() {
 
         let proposed = { 
             name: 'Proposé',
@@ -383,6 +449,10 @@
                 <b>{(100 * sumSolded / sumProvided).toFixed(2)}%</b>
                 de la valeur des dépots est vendu
 
+
+                <div id="plotPie"></div>
+
+
                 <br>
                 Nombre de clients: ??? + n anonymes
 
@@ -432,11 +502,11 @@
             Caisse
             <br>
             <b>{sumFee.toFixed(2)}</b>
-            de frais encaissé
+            de frais due
 
             <br>
             <b>{sumMargin.toFixed(2)}</b>
-            de marge encaissé
+            de marge due
 
             <br>
             <b>{(sumFee + sumMargin).toFixed(2)}</b>
