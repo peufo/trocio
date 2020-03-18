@@ -403,7 +403,7 @@
 
 		<div class="w3-col s6">
 			<div class="w3-margin-right">
-				<span class="w3-right w3-large">{-buySum.toFixed(2)}</span>
+				<span class="w3-right w3-large">{buySum.toFixed(2)}</span>
 				<h4>Achats</h4>
 
 				{#await purchasesPromise}
