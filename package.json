@@ -20,7 +20,7 @@
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-scss": "^1.0.2",
     "rollup-plugin-svelte": "^5.0.3",
-    "rollup-plugin-terser": "^4.0.4",
+    "rollup-plugin-terser": "^5.3.0",
     "rollup-plugin-url": "^2.2.1",
     "svelte": "^3.9.1"
   },
@@ -28,7 +28,7 @@
     "@material/textfield": "^3.2.0",
     "bcrypt": "^3.0.6",
     "bwip-js": "^1.7.3",
-    "connect-mongo": "^2.0.3",
+    "connect-mongo": "^3.2.0",
     "cookie-parser": "^1.4.4",
     "dayjs": "^1.8.16",
     "debug": "~2.6.9",

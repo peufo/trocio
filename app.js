@@ -3,7 +3,7 @@ var express = require('express')
 var path = require('path')
 var cookieParser = require('cookie-parser')
 var logger = require('morgan')
-var { PORT, DBPATH } = require('./config')
+var { PORT, DBPATH, SECRET_STRING_COOKIE } = require('./config')
 var { checkSuperAdmin } = require('./controllers/user')
 var session = require('express-session')
 var mongoose = require('mongoose')
@@ -18,8 +18,7 @@ app.listen(PORT, () => {
 	console.log('Trocio listen on ' + PORT)
 })
 
-
-app.set('secret', process.env.SECRET_STRING_COOKIE)
+app.set('secret', SECRET_STRING_COOKIE)
 
 app.use(logger('dev'))
 app.use(express.json({limit: '2mb', extended: true}))
@@ -28,7 +27,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.static(path.join(__dirname, 'node_modules', '@material')))
 app.use(session({
-	secret: process.env.SECRET_STRING_COOKIE,
+	secret: SECRET_STRING_COOKIE,
 	cookie: {maxAge: 72*60*60*1000},
   store: new MongoStore({mongooseConnection: mongoose.connection}),
 	resave: false,

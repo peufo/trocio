@@ -2,6 +2,7 @@
     import Radio from '@smui/radio'
     import FormField from '@smui/form-field'
     import Paper, {Title, Subtitle, Content} from '@smui/paper'
+    import Button, { Group, Label } from '@smui/button'
 
     import { troc } from './stores'
     import SearchUser from './SearchUser.svelte'
@@ -10,6 +11,10 @@
     let selectedView = ''
     let selectedUser = ''
     let searchUser = ''
+
+    //Affichage
+    let historicOpen = false
+    let historicModeValue = false
 
     //Results
     let payments = []
@@ -48,13 +53,27 @@
         loadView()
     }
 
+    
+
     function loadView() {
+        historicOpen = false
         setTimeout(() => { // Wait selectedView refresh
             statsPromise = getStats().then(() => {
                 setTimeout(showPiePlot, 0)
-                setTimeout(showTimePlot, 0)
+                //if (historicOpen) setTimeout(showTimePlot, 0)
             })
         }, 0)
+    }
+
+    function openHistoric() {
+        historicOpen = true
+        //setTimeout(showTimePlot, 0)
+        setTimeout(showHistoricPlot, 0)
+    }
+    
+    function selectHistoricModeValue(val) {
+        historicModeValue = val
+        setTimeout(showHistoricPlot, 0)
     }
 
     async function getStats() {
@@ -72,7 +91,6 @@
         articlesBuyed = json.articlesBuyed
         payments = json.payments
 
-        console.log('prout')
         console.log(articlesRecovered)
 
         //Compute reduce
@@ -139,22 +157,24 @@
         let data = [{
             values: [numberProvided - numberSolded - numberRecovered, numberSolded, numberRecovered],
             labels: ['En vente', 'Vendu', 'Récupéré'],
+            marker: {colors: ['rgb(33, 119, 181)', 'rgb(44, 160, 43)', 'rgb(255, 127, 14)']},
             domain: {column: 0},
             name: 'Ratio par nombre',
-            textinfo: 'value',
-            hoverinfo: 'label+percent',
-            hole: .2,
-            type: 'pie'
+            textinfo: 'value+percent',
+            sort: false,
+            hoverinfo: 'none',
+            hole: .6,
+            type: 'pie',
         },{
             values: [sumProvided - sumSolded - sumRecovered, sumSolded, sumRecovered],
             labels: ['En vente', 'Vendu', 'Récupéré'],
             text: 'Ratio par valeur',
-            textposition: 'inside',
             domain: {column: 1},
             name: 'Ratio par valeur',
-            textinfo: 'value',
-            hoverinfo: 'label+percent',
-            hole: .2,
+            textinfo: 'value+percent',
+            sort: false,
+            hoverinfo: 'none',
+            hole: .6,
             type: 'pie'
         }];
 
@@ -162,30 +182,142 @@
         title: `<b>${numberProvided}</b> dépots pour une valeur total de <b>${Math.round(sumProvided * 100) / 100}</b>`,
         annotations: [
             {
-            font: {
-                size: 20
-            },
-            showarrow: false,
-            text: 'Nombre',
-            x: 0.17,
-            y: 0.5
-            },
-            {
-            font: {
-                size: 20
-            },
-            showarrow: false,
-            text: 'Valeur',
-            x: 0.82,
-            y: 0.5
+                font: { size: 18},
+                showarrow: false,
+                text: '<b>Nombre</b>',
+                xanchor: 'center',
+                x: .238
+            },{
+                font: { size: 18},
+                showarrow: false,
+                text: '<b>Montant</b>',
+                xanchor: 'center',
+                x: .762
             }
         ],
         height: 400,
-        width: 600,
-        grid: {rows: 1, columns: 2}
+        grid: {rows: 1, columns: 2},
+        //legend: {orientation: 'h', x: .26, y: 1.15}
+        legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1}
         };
 
-        Plotly.newPlot('plotPie', data, layout);
+        Plotly.newPlot('plotPie', data, layout, {responsive: true});
+    }
+
+    function showHistoricPlot() {
+
+        let proposed = { 
+            name: 'Proposé',
+            marker: {color: 'rgb(200, 200, 200)'},
+            stackgroup: 'one', x: [],y: [], text: []
+        }
+
+        let available = { 
+            name: 'En vente',
+            marker: {color: 'rgb(33, 119, 181)'},
+            stackgroup: 'one', x: [],y: [], text: []
+        }
+
+        let solded = { 
+            name: 'Vendu',
+            marker: {color: 'rgb(44, 160, 43)'},
+            stackgroup: 'one', x: [],y: [], text: []
+        }
+
+        let recover = {
+            name: 'Récupéré',
+            marker: {color: 'rgb(255, 127, 14)'},
+            stackgroup: 'one', x: [],y: [], text: []
+        }
+
+        let balanceQteProposed = 0
+        let balanceSumProposed = 0
+
+        let balanceQteAvailable = 0
+        let balanceSumAvailable = 0
+
+        let balanceQteSolded = 0
+        let balanceSumSolded = 0
+
+        let balanceQteRecover = 0
+        let balanceSumRecover = 0
+
+        console.time('Create traces')
+
+        events.filter(e => ['createdAt', 'valided', 'sold', 'recover'].indexOf(e.event) != -1).forEach(event => {
+            switch (event.event) {
+                case 'createdAt':
+                    balanceQteProposed ++
+                    balanceSumProposed += event.art.price
+
+                    proposed.text.push(event.art.name)
+                    available.text.push('')
+                    solded.text.push('')
+                    recover.text.push('')
+                    break
+
+                case 'valided':
+                    balanceQteProposed --
+                    balanceSumProposed -= event.art.price
+                    balanceQteAvailable ++
+                    balanceSumAvailable += event.art.price
+
+                    proposed.text.push('')
+                    available.text.push(event.art.name)
+                    solded.text.push('')
+                    recover.text.push('')
+                    break
+
+                case 'sold':
+                    balanceQteAvailable --
+                    balanceSumAvailable -= event.art.price
+                    balanceQteSolded ++
+                    balanceSumSolded += event.art.price
+
+                    proposed.text.push('')
+                    available.text.push('')
+                    solded.text.push(event.art.name)
+                    recover.text.push('')
+                    break
+
+                case 'recover':
+                    balanceQteAvailable --
+                    balanceSumAvailable -= event.art.price
+                    balanceQteRecover ++
+                    balanceSumRecover += event.art.price
+
+                    proposed.text.push('')
+                    available.text.push('')
+                    solded.text.push('')
+                    recover.text.push(event.art.name)
+                    break
+            }
+
+            proposed.x.push(event.date)
+            proposed.y.push(historicModeValue ? balanceSumProposed : balanceQteProposed)
+
+            available.x.push(event.date)
+            available.y.push(historicModeValue ? balanceSumAvailable : balanceQteAvailable)
+
+            solded.x.push(event.date)
+            solded.y.push(historicModeValue ? balanceSumSolded : balanceQteSolded)
+
+            recover.x.push(event.date)
+            recover.y.push(historicModeValue ? balanceSumRecover : balanceQteRecover)
+
+        })
+
+        console.timeEnd('Create traces')
+
+        let layoutStock = {
+            title: {visible: false},
+            yaxis: {title: historicModeValue ? 'Montant' : 'Nombre'},
+            legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1}
+        }
+        
+        Plotly.newPlot('stockGraph', [recover, solded, available, proposed], layoutStock) 
+        
+
     }
 
     function showTimePlot() {
@@ -382,7 +514,6 @@
         console.timeEnd('Create traces')
 
         let layoutStock = {
-            title: `TODO: Synthesize some number`,
             yaxis: {title: 'Montant'},
             legend: {orientation: 'h', y: 1}
         }
@@ -393,7 +524,8 @@
             yaxis: {title: 'Montant'}
         }
         
-        Plotly.newPlot('stockGraph', [proposed, valided, profitFee, profitMargin, profit], layoutStock) 
+        //TODO: REMOVE
+        //Plotly.newPlot('stockGraph', [proposed, valided, profitFee, profitMargin, profit], layoutStock) 
         
         Plotly.newPlot('cashGraph', [cash, debt], layoutCash)     
 
@@ -428,124 +560,99 @@
     </div>
 
     <br><br>
-    {#if articlesProvided.length}
+
+    {#await statsPromise}
+        <div class="w3-center">
+            <br><br><br><br>
+            <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
+        </div>
+    {:then}
         <Paper>
             <Title>
-
-                <b>{numberSolded}</b>
-                ventes pour une valeur total de
-                <b>{Math.round(sumSolded * 100) / 100}</b>
-
-                <br>
-                <b>{numberProvided}</b>
-                dépots pour une valeur total de
-                <b>{Math.round(sumProvided * 100) / 100}</b>
-
-                <br>
-                <b>{(100 * numberSolded / numberProvided).toFixed(2)}% </b>
-                des dépots sont vendus
-
-                <br>
-                <b>{(100 * sumSolded / sumProvided).toFixed(2)}%</b>
-                de la valeur des dépots est vendu
-
-
-                <div id="plotPie"></div>
-
-
-                <br>
-                Nombre de clients: ??? + n anonymes
-
-                <br>
-                Nombre de passage en caisse: ???
-
-                <br>
-                Prix moyen des dépots:
-                <b>{(sumProvided / numberProvided).toFixed(2)}</b>
-
-                <br>
-                Prix moyen des dépots vendu: 
-                <b>{(sumSolded / numberSolded).toFixed(2)}</b>
-                
-
-                <br>
-
-                <br>
-                <b>{numberBuyed}</b>
-                achats pour une valeur de
-                <b>{Math.round(sumBuyed * 100) / 100}</b>
-
-                <br>
-                Panier moyen: 
-                <b>{(sumBuyed / numberBuyed).toFixed(2)}</b>
-
-                <br>
-
-                <br>
-                <b>{numberPayment}</b>
-                paiement pour une balance de
-                <b>{sumPayment.toFixed(2)}</b>
-
+                <i class="fas fa-cubes w3-opacity w3-xlarge"></i>
+                Stock
             </Title>
 
             <Content>
-                <span>
-                    
-                </span>
+
+                {#if articlesProvided.length}
+                    <div id="plotPie" style="height: 400px;"></div>
+
+                    Valeur moyenne des dépots:
+                    <b>{(sumProvided / numberProvided).toFixed(2)}</b>
+
+                    <br>
+                    Valeur moyenne des dépots vendu: 
+                    <b>{(sumSolded / numberSolded).toFixed(2)}</b>
+
+                    {#if historicOpen}
+
+                        <div id="stockGraph"></div>
+
+                        <Group variant="outlined" class="w3-right">
+                            <Button
+                            style="z-index: 1;"
+                            color="secondary"
+                            on:click={() => selectHistoricModeValue(false)}
+                            variant={!historicModeValue ? 'raised' : 'outlined'}>
+                                <Label>Nombre</Label>
+                            </Button>
+                            <Button
+                            style="z-index: 1;"
+                            color="secondary"
+                            on:click={() => selectHistoricModeValue(true)}
+                            variant={historicModeValue ? 'raised' : 'outlined'}>
+                                <Label>Montant</Label>
+                            </Button>
+                        </Group>
+
+                    {:else}
+
+                        <Button
+                        on:click={openHistoric}
+                        variant="outlined"
+                        color="secondary"
+                        class="w3-right">
+                            Voir historique
+                        </Button>
+
+                    {/if}
+                    <br>
+                {:else}
+                    <div class="w3-center">
+                        <br><br>
+                        <b>&#123;&nbsp;&nbsp; Les utilisateurs sélectionés n'ont fourni aucun article  &nbsp;&nbsp;&#125;</b>
+                        <br><br>
+                    </div>
+                {/if}
             </Content>
         </Paper>
-    {/if}
 
-    <Paper>
-        <Title>
-            <i class="fas fa-cash-register w3-opacity w3-xlarge"></i>
-            Caisse
-            <br>
-            <b>{sumFee.toFixed(2)}</b>
-            de frais due
+        <br>
 
-            <br>
-            <b>{sumMargin.toFixed(2)}</b>
-            de marge due
+        <Paper>
+            <Title>
+                <i class="fas fa-cash-register w3-opacity w3-xlarge"></i>
+                Caisse
+                <br>
+                <b>{sumFee.toFixed(2)}</b>
+                de frais due
 
-            <br>
-            <b>{(sumFee + sumMargin).toFixed(2)}</b>
-            de benefice
+                <br>
+                <b>{sumMargin.toFixed(2)}</b>
+                de marge due
 
-        </Title>
+                <br>
+                <b>{(sumFee + sumMargin).toFixed(2)}</b>
+                de benefice
 
-        {#await statsPromise}
-            <div class="w3-center">
-                <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
-            </div>
-        {:then}
+            </Title>
 
             <Content class="w3-center">
                 <div id="cashGraph"></div>
             </Content>
 
-        {/await}
-    </Paper>
-
-    <br>
-
-    <Paper>
-        <Title>
-            <i class="fas fa-cubes w3-opacity w3-xlarge"></i>
-            Stock
-        </Title>
-
-        {#await statsPromise}
-            <div class="w3-center">
-                <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
-            </div>
-        {:then}
-
-            <Content class="w3-center">
-                <div id="stockGraph"></div>
-            </Content>
-
-        {/await}
-    </Paper>
-
+            
+        </Paper>
+    {/await}
 </div>
