@@ -13,8 +13,7 @@
     let searchUser = ''
 
     //Affichage
-    let historicOpen = false
-    let historicModeValue = false
+    let stockModeValue = false
 
     //Results
     let payments = []
@@ -26,12 +25,14 @@
     let statsPromise
 
     //Syntese results
+    let numberProposed = 0
     let numberProvided = 0
     let numberSolded = 0
     let numberRecovered = 0
     let numberBuyed = 0
     let numberPayment = 0
 
+    let sumProposed = 0
     let sumProvided = 0
     let sumSolded = 0
     let sumRecovered = 0
@@ -40,7 +41,6 @@
 
     let sumFee = 0
     let sumMargin = 0
-
 
     function selectView() {
         searchUser = ''
@@ -53,27 +53,17 @@
         loadView()
     }
 
-    
-
     function loadView() {
-        historicOpen = false
         setTimeout(() => { // Wait selectedView refresh
             statsPromise = getStats().then(() => {
-                setTimeout(showPiePlot, 0)
-                //if (historicOpen) setTimeout(showTimePlot, 0)
+                setTimeout(showStockPlot, 0)
             })
         }, 0)
     }
-
-    function openHistoric() {
-        historicOpen = true
-        //setTimeout(showTimePlot, 0)
-        setTimeout(showHistoricPlot, 0)
-    }
     
-    function selectHistoricModeValue(val) {
-        historicModeValue = val
-        setTimeout(showHistoricPlot, 0)
+    function selectStockModeValue(val) {
+        stockModeValue = val
+        setTimeout(showStockPlot, 0)
     }
 
     async function getStats() {
@@ -85,20 +75,21 @@
         }
         let res = await fetch(req)
         let json = await res.json()
+        console.log(json)
         articlesProvided = json.articlesProvided
         articlesSolded = articlesProvided.filter(art => art.sold)
         articlesRecovered = articlesProvided.filter(art => art.recover)
         articlesBuyed = json.articlesBuyed
         payments = json.payments
 
-        console.log(articlesRecovered)
-
         //Compute reduce
+        numberProposed = articlesProvided.filter(art => !art.valided).length
         numberProvided = articlesProvided.length
         numberSolded = articlesSolded.length
         numberRecovered = articlesRecovered.length
         numberBuyed = articlesBuyed.length
         numberPayment = payments.length
+        sumProposed = numberProposed ? articlesProvided.filter(art => !art.valided).map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumProvided = numberProvided ? articlesProvided.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumSolded = numberSolded ? articlesSolded.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumRecovered = numberRecovered ? articlesRecovered.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
@@ -153,81 +144,48 @@
         return [...paymentsEvents, ...articlesProvidedEvents, ...articlesBuyedEvents].sort((a, b) => a.time - b.time)
     }
 
-    function showPiePlot() {
-        let data = [{
-            values: [numberProvided - numberSolded - numberRecovered, numberSolded, numberRecovered],
-            labels: ['En vente', 'Vendu', 'Récupéré'],
-            marker: {colors: ['rgb(33, 119, 181)', 'rgb(44, 160, 43)', 'rgb(255, 127, 14)']},
-            domain: {column: 0},
-            name: 'Ratio par nombre',
+    function showStockPlot() {
+
+        let pie = {
+            labels: ['Proposé', 'En vente', 'Vendu', 'Récupéré'],
+            marker: {colors: ['rgb(200, 200, 200)', 'rgb(33, 119, 181)', 'rgb(44, 160, 43)', 'rgb(255, 127, 14)']},
             textinfo: 'value+percent',
-            sort: false,
             hoverinfo: 'none',
-            hole: .6,
             type: 'pie',
-        },{
-            values: [sumProvided - sumSolded - sumRecovered, sumSolded, sumRecovered],
-            labels: ['En vente', 'Vendu', 'Récupéré'],
-            text: 'Ratio par valeur',
-            domain: {column: 1},
-            name: 'Ratio par valeur',
-            textinfo: 'value+percent',
-            sort: false,
-            hoverinfo: 'none',
-            hole: .6,
-            type: 'pie'
-        }];
+            hole: .2,
+            domain: { x: [0.75, 1]},
+            showlegend: false
+        }
 
-        let layout = {
-        title: `<b>${numberProvided}</b> dépots pour une valeur total de <b>${Math.round(sumProvided * 100) / 100}</b>`,
-        annotations: [
-            {
-                font: { size: 18},
-                showarrow: false,
-                text: '<b>Nombre</b>',
-                xanchor: 'center',
-                x: .238
-            },{
-                font: { size: 18},
-                showarrow: false,
-                text: '<b>Montant</b>',
-                xanchor: 'center',
-                x: .762
-            }
-        ],
-        height: 400,
-        grid: {rows: 1, columns: 2},
-        //legend: {orientation: 'h', x: .26, y: 1.15}
-        legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1}
-        };
+        if (stockModeValue) {
+            pie.values = [sumProposed, sumProvided - sumSolded - sumRecovered, sumSolded, sumRecovered]
+        }else{
+            pie.values = [numberProposed, numberProvided - numberSolded - numberRecovered, numberSolded, numberRecovered]
+        }
 
-        Plotly.newPlot('plotPie', data, layout, {responsive: true});
-    }
-
-    function showHistoricPlot() {
 
         let proposed = { 
             name: 'Proposé',
             marker: {color: 'rgb(200, 200, 200)'},
-            stackgroup: 'one', x: [],y: [], text: []
+            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
         }
 
         let available = { 
             name: 'En vente',
             marker: {color: 'rgb(33, 119, 181)'},
-            stackgroup: 'one', x: [],y: [], text: []
+            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
         }
 
         let solded = { 
             name: 'Vendu',
             marker: {color: 'rgb(44, 160, 43)'},
-            stackgroup: 'one', x: [],y: [], text: []
+            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
         }
 
         let recover = {
             name: 'Récupéré',
             marker: {color: 'rgb(255, 127, 14)'},
-            stackgroup: 'one', x: [],y: [], text: []
+            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
         }
 
         let balanceQteProposed = 0
@@ -294,30 +252,31 @@
             }
 
             proposed.x.push(event.date)
-            proposed.y.push(historicModeValue ? balanceSumProposed : balanceQteProposed)
+            proposed.y.push(stockModeValue ? balanceSumProposed : balanceQteProposed)
 
             available.x.push(event.date)
-            available.y.push(historicModeValue ? balanceSumAvailable : balanceQteAvailable)
+            available.y.push(stockModeValue ? balanceSumAvailable : balanceQteAvailable)
 
             solded.x.push(event.date)
-            solded.y.push(historicModeValue ? balanceSumSolded : balanceQteSolded)
+            solded.y.push(stockModeValue ? balanceSumSolded : balanceQteSolded)
 
             recover.x.push(event.date)
-            recover.y.push(historicModeValue ? balanceSumRecover : balanceQteRecover)
+            recover.y.push(stockModeValue ? balanceSumRecover : balanceQteRecover)
 
         })
 
         console.timeEnd('Create traces')
 
         let layoutStock = {
-            title: {visible: false},
-            yaxis: {title: historicModeValue ? 'Montant' : 'Nombre'},
-            legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1}
+            title: `<b>${numberProvided}</b> dépots pour une valeur total de <b>${Math.round(sumProvided * 100) / 100}</b>`,
+            yaxis: {title: stockModeValue ? 'Montant' : 'Nombre'},
+            legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1},
+            grid: {rows: 1, columns: 2},
+            xaxis: {domain: [0, 0.7]}
         }
         
-        Plotly.newPlot('stockGraph', [recover, solded, available, proposed], layoutStock) 
+        Plotly.newPlot('stockGraph', [recover, solded, available, proposed, pie], layoutStock) 
         
-
     }
 
     function showTimePlot() {
@@ -576,7 +535,25 @@
             <Content>
 
                 {#if articlesProvided.length}
-                    <div id="plotPie" style="height: 400px;"></div>
+
+                    <div id="stockGraph"></div>
+
+                    <Group variant="outlined" class="w3-right">
+                        <Button
+                        style="z-index: 1;"
+                        color="secondary"
+                        on:click={() => selectStockModeValue(false)}
+                        variant={!stockModeValue ? 'raised' : 'outlined'}>
+                            <Label>Nombre</Label>
+                        </Button>
+                        <Button
+                        style="z-index: 1;"
+                        color="secondary"
+                        on:click={() => selectStockModeValue(true)}
+                        variant={stockModeValue ? 'raised' : 'outlined'}>
+                            <Label>Montant</Label>
+                        </Button>
+                    </Group>
 
                     Valeur moyenne des dépots:
                     <b>{(sumProvided / numberProvided).toFixed(2)}</b>
@@ -585,38 +562,6 @@
                     Valeur moyenne des dépots vendu: 
                     <b>{(sumSolded / numberSolded).toFixed(2)}</b>
 
-                    {#if historicOpen}
-
-                        <div id="stockGraph"></div>
-
-                        <Group variant="outlined" class="w3-right">
-                            <Button
-                            style="z-index: 1;"
-                            color="secondary"
-                            on:click={() => selectHistoricModeValue(false)}
-                            variant={!historicModeValue ? 'raised' : 'outlined'}>
-                                <Label>Nombre</Label>
-                            </Button>
-                            <Button
-                            style="z-index: 1;"
-                            color="secondary"
-                            on:click={() => selectHistoricModeValue(true)}
-                            variant={historicModeValue ? 'raised' : 'outlined'}>
-                                <Label>Montant</Label>
-                            </Button>
-                        </Group>
-
-                    {:else}
-
-                        <Button
-                        on:click={openHistoric}
-                        variant="outlined"
-                        color="secondary"
-                        class="w3-right">
-                            Voir historique
-                        </Button>
-
-                    {/if}
                     <br>
                 {:else}
                     <div class="w3-center">

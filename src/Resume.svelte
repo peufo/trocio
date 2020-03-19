@@ -538,7 +538,7 @@
 				</div>
 			{/if}
 
-		
+			{#if provided.length}
 			<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />	
 			<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered w3-margin-top">
 
@@ -664,6 +664,10 @@
 
 				{/each}
 			</table>
+			{:else}
+				<br>
+				<span class="w3-opacity">Pas d'article proposé</span>
+			{/if}
 			
 			<br>
 
