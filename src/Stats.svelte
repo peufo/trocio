@@ -13,10 +13,11 @@
     let searchUser = ''
 
     //Affichage
-    let stockModeValue = false
+    let stockModeValue = true
 
     //Results
     let payments = []
+    let articlesProposed = []
     let articlesProvided = []
     let articlesSolded = []
     let articlesRecovered = []
@@ -57,6 +58,7 @@
         setTimeout(() => { // Wait selectedView refresh
             statsPromise = getStats().then(() => {
                 setTimeout(showStockPlot, 0)
+                setTimeout(showCashPlot, 0)
             })
         }, 0)
     }
@@ -76,20 +78,23 @@
         let res = await fetch(req)
         let json = await res.json()
         console.log(json)
-        articlesProvided = json.articlesProvided
+
+        articlesProposed = json.articlesProposed
+        articlesProvided = articlesProposed.filter(art => art.valided)
         articlesSolded = articlesProvided.filter(art => art.sold)
         articlesRecovered = articlesProvided.filter(art => art.recover)
         articlesBuyed = json.articlesBuyed
         payments = json.payments
 
         //Compute reduce
+        //here, articles proposed is equivalent to articles not valided
         numberProposed = articlesProvided.filter(art => !art.valided).length
         numberProvided = articlesProvided.length
         numberSolded = articlesSolded.length
         numberRecovered = articlesRecovered.length
         numberBuyed = articlesBuyed.length
         numberPayment = payments.length
-        sumProposed = numberProposed ? articlesProvided.filter(art => !art.valided).map(art => art.price).reduce((acc, cur) => acc + cur) : 0
+        sumProposed = numberProposed ? articlesProposed.filter(art => !art.valided).map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumProvided = numberProvided ? articlesProvided.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumSolded = numberSolded ? articlesSolded.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumRecovered = numberRecovered ? articlesRecovered.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
@@ -153,7 +158,7 @@
             hoverinfo: 'none',
             type: 'pie',
             hole: .2,
-            domain: { x: [0.75, 1]},
+            domain: { x: [0.8, 1]},
             showlegend: false
         }
 
@@ -163,30 +168,46 @@
             pie.values = [numberProposed, numberProvided - numberSolded - numberRecovered, numberSolded, numberRecovered]
         }
 
-
         let proposed = { 
             name: 'Proposé',
             marker: {color: 'rgb(200, 200, 200)'},
-            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
+            stackgroup: 'one', x: [], y: [], text: [], domain: {column: 0},
         }
 
         let available = { 
             name: 'En vente',
             marker: {color: 'rgb(33, 119, 181)'},
-            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
+            stackgroup: 'one', x: [], y: [], text: [], domain: {column: 0},
         }
 
         let solded = { 
             name: 'Vendu',
             marker: {color: 'rgb(44, 160, 43)'},
-            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
+            stackgroup: 'one', x: [], y: [], text: [], domain: {column: 0},
         }
 
         let recover = {
             name: 'Récupéré',
             marker: {color: 'rgb(255, 127, 14)'},
-            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
+            stackgroup: 'one', x: [], y: [], text: [], domain: {column: 0},
         }
+
+        let fees = {
+            name: 'Frais',
+            yaxis: 'y2',
+            marker: {color: 'rgb(140, 86, 75)'},
+            stackgroup: 'two', x: [], y: [], text: [], domain: {column: 0},
+        }
+
+        let margins = {
+            name: 'Marge',
+            yaxis: 'y2',
+            marker: {color: 'rgb(227, 119, 194)'},
+            stackgroup: 'two', x: [], y: [], text: [], domain: {column: 0},
+        }
+
+        let balanceFees = 0
+        let balanceMargins = 0
 
         let balanceQteProposed = 0
         let balanceSumProposed = 0
@@ -212,6 +233,9 @@
                     available.text.push('')
                     solded.text.push('')
                     recover.text.push('')
+
+                    fees.text.push(``)
+                    margins.text.push(``)
                     break
 
                 case 'valided':
@@ -219,11 +243,16 @@
                     balanceSumProposed -= event.art.price
                     balanceQteAvailable ++
                     balanceSumAvailable += event.art.price
+                    balanceFees += event.art.fee
 
                     proposed.text.push('')
                     available.text.push(event.art.name)
                     solded.text.push('')
                     recover.text.push('')
+
+                    fees.text.push(`Mise en vente de ${event.art.name}`)
+                    margins.text.push(``)
+
                     break
 
                 case 'sold':
@@ -231,11 +260,16 @@
                     balanceSumAvailable -= event.art.price
                     balanceQteSolded ++
                     balanceSumSolded += event.art.price
+                    balanceMargins += event.art.margin
 
                     proposed.text.push('')
                     available.text.push('')
                     solded.text.push(event.art.name)
                     recover.text.push('')
+
+                    fees.text.push(``)
+                    margins.text.push(`Vente de ${event.art.name}`)
+
                     break
 
                 case 'recover':
@@ -248,6 +282,10 @@
                     available.text.push('')
                     solded.text.push('')
                     recover.text.push(event.art.name)
+
+                    fees.text.push(``)
+                    margins.text.push(``)
+
                     break
             }
 
@@ -263,230 +301,129 @@
             recover.x.push(event.date)
             recover.y.push(stockModeValue ? balanceSumRecover : balanceQteRecover)
 
+            fees.x.push(event.date)
+            fees.y.push(balanceFees)
+                
+            margins.x.push(event.date)
+            margins.y.push(balanceMargins)
+
         })
 
         console.timeEnd('Create traces')
 
-        let layoutStock = {
-            title: `<b>${numberProvided}</b> dépots pour une valeur total de <b>${Math.round(sumProvided * 100) / 100}</b>`,
+        let layout = {
+            title: `<b>${numberProvided}</b> propositions pour une valeur total de <b>${Math.round(sumProvided * 100) / 100}</b>`,
             yaxis: {title: stockModeValue ? 'Montant' : 'Nombre'},
             legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1},
-            grid: {rows: 1, columns: 2},
+            grid: {columns: 2},
             xaxis: {domain: [0, 0.7]}
         }
-        
-        Plotly.newPlot('stockGraph', [recover, solded, available, proposed, pie], layoutStock) 
+
+        let data = [recover, solded, available, proposed, pie]
+
+        if (stockModeValue) {
+            layout.annotations = [{
+                text: `Frais<br>Marge<br>Total`,
+                x: 0.85, xref: 'paper', xanchor: 'left',
+                y: 0.98, yref: 'paper', yanchor: 'center',
+                align: 'left',
+                showarrow: false
+            }, {
+                text: `<b>${sumFee.toFixed(2)}<br>${sumMargin.toFixed(2)}<br>${(sumFee + sumMargin).toFixed(2)}</b>`,
+                x: 0.85, xref: 'paper', xanchor: 'right',
+                y: 0.98, yref: 'paper', yanchor: 'center',
+                align: 'right',
+                showarrow: false
+            }]
+            pie.domain.y = [0, 0.7]
+            layout.yaxis = {domain: [0, 0.7]}
+            layout.yaxis2 = {domain: [0.75, 1]}
+            data = [fees, margins, ...data]
+        }
+
+        Plotly.newPlot('stockGraph', data, layout) 
         
     }
 
-    function showTimePlot() {
+    function showCashPlot() {
 
-        let proposed = { 
-            name: 'Proposé',
-            mode: 'lines',
-            x: [],
-            y: [],
-            text: []
-        }
-
-        let valided = { 
-            name: 'En stock',
-            mode: 'lines',
-            x: [],
-            y: [],
-            text: []
-        }
-
-        let profit = { 
-            name: 'Bénéfice',
-            mode: 'lines',
-            x: [],
-            y: []
-        }
-
-        let profitFee = { 
+        let fees = {
             name: 'Frais',
-            mode: 'lines',
-            x: [],
-            y: []
+            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
         }
 
-        let profitMargin = { 
+        let margins = {
             name: 'Marge',
-            mode: 'lines',
-            x: [],
-            y: []
+            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
         }
 
-        let cash = { 
-            name: 'En caisse',
-            mode: 'lines+markers',
-            marker: {size: 5, color: []},
-            x: [],
-            y: [],
-            text: []
-        }
-
-        let debt = { 
-            name: 'Dette',
-            mode: 'lines',
-            x: [],
-            y: [],
-            text: []
-        }
-
-        let balanceQteProposed = 0
-        let balanceSumProposed = 0
-
-        let balanceQteValided = 0
-        let balanceSumValided = 0
-
-        let balanceProfit = 0
-        let balanceProfitFee = 0
-        let balanceProfitMargin = 0
-
-        let balanceCash = 0
-        let nbPositivePayments = 0
-        let sumPositive = 0
-        let sumNegative = 0
-
-        let balanceDebt = 0
+        let balanceFees = 0
+        let balanceMargins = 0
 
         console.time('Create traces')
 
-        events.forEach(event => {
+        events.filter(e => ['valided', 'sold'].indexOf(e.event) != -1).forEach(event => {
             switch (event.event) {
                 case 'createdAt':
-                    balanceQteProposed ++
-                    balanceSumProposed += event.art.price
-                    proposed.x.push(event.date)
-                    proposed.y.push(balanceSumProposed)
-                    if (!event.art.valided ||  Math.abs(new Date(event.art.valided).getTime() - event.time) > 5000) {
-                        proposed.text.push(`Proposition de ${event.art.name}<br>Prix: ${event.art.price}<br>Qte total: ${balanceQteProposed}`) 
-                    }else {
-                        proposed.text.push(`Qte total: ${balanceQteProposed}`)
-                    }
+
                     break
 
                 case 'valided': 
-                    balanceQteValided ++
-                    balanceSumValided += event.art.price
-                    valided.x.push(event.date)
-                    valided.y.push(balanceSumValided)
-                    valided.text.push(`Validation de ${event.art.name}<br>Prix: ${event.art.price}<br>Qte total: ${balanceQteValided}`)
 
-                    if (event.art.fee > 0) {
-                        balanceProfit += event.art.fee
-                        profit.x.push(event.date)
-                        profit.y.push(balanceProfit)
-                        
-                        balanceProfitFee += event.art.fee
-                        profitFee.x.push(event.date)
-                        profitFee.y.push(balanceProfitFee)
+                    balanceFees += event.art.fee
 
-                        balanceDebt -= event.art.fee
-                        debt.x.push(event.date)
-                        debt.y.push(balanceDebt)
-                    }
-
+                    fees.text.push(`Mise en vente de ${event.art.name}`)
+                    margins.text.push(``)
+                    
                     break
 
                 case 'sold':
-                    balanceQteProposed --
-                    balanceQteValided --
-                    balanceSumProposed -= event.art.price
-                    balanceSumValided -= event.art.price
+                    
+                    balanceMargins += event.art.margin
 
-                    proposed.x.push(event.date)
-                    proposed.y.push(balanceSumProposed)
-                    proposed.text.push(`Qte total: ${balanceQteProposed}`) 
-
-                    valided.x.push(event.date)
-                    valided.y.push(balanceSumValided)
-                    valided.text.push(`Vente de ${event.art.name}<br>Prix: ${event.art.price}<br>Qte total: ${balanceQteValided}`)
-
-                    if (event.art.margin > 0) {
-                        balanceProfit += event.art.margin
-                        profit.x.push(event.date)
-                        profit.y.push(balanceProfit)
-    
-                        balanceProfitMargin += event.art.margin
-                        profitMargin.x.push(event.date)
-                        profitMargin.y.push(balanceProfitMargin)
- 
-                    }
-
-                    //balanceDebt -= event.art.margin
-                    balanceDebt += event.art.price - event.art.margin
-                    debt.x.push(event.date)
-                    debt.y.push(balanceDebt)
+                    fees.text.push(``)
+                    margins.text.push(`Vente de ${event.art.name}`)
 
                     break
 
                 case 'recover':
-                    balanceQteProposed --
-                    balanceQteValided --
-                    balanceSumProposed -= event.art.price
-                    balanceSumValided -= event.art.price
 
-                    proposed.x.push(event.date)
-                    proposed.y.push(balanceSumProposed)
-                    proposed.text.push(`Qte total: ${balanceQteProposed}`) 
-
-                    valided.x.push(event.date)
-                    valided.y.push(balanceSumValided)
-                    valided.text.push(`Récupération de ${event.art.name}<br>Prix: ${event.art.price}<br>Qte total: ${balanceQteValided}`)
 
                     break
 
                 case 'payment':
-                    balanceCash += event.pay.amount
-                    cash.x.push(event.pay.createdAt)
-                    cash.y.push(balanceCash)
-                    cash.text = [...cash.text, `${event.pay.amount.toFixed(2)} ${event.pay.message}`]
-                    if (event.pay.amount >= 0){
-                        cash.marker.color = [...cash.marker.color, 'green'] 
-                        nbPositivePayments ++
-                        sumPositive += event.pay.amount
-                    }else{
-                        cash.marker.color = [...cash.marker.color, 'red'] 
-                        sumNegative += event.pay.amount
 
-                    }
-
-                    balanceDebt += event.pay.amount
-                    debt.x.push(event.pay.createdAt)
-                    debt.y.push(balanceDebt)
                     
                     break
 
                 case 'buyed':
 
-                    balanceDebt -= event.art.price
-                    debt.x.push(event.art.sold)
-                    debt.y.push(balanceDebt)
 
                     break
+
             }
+
+            fees.y.push(balanceFees)
+            fees.x.push(event.date)
+                
+            margins.y.push(balanceMargins)
+            margins.x.push(event.date)
+
         })
 
         console.timeEnd('Create traces')
 
-        let layoutStock = {
-            yaxis: {title: 'Montant'},
-            legend: {orientation: 'h', y: 1}
-        }
+        console.log(fees)
 
-        let layoutCash = {
-            title: `Nombre de paiements: ${payments.length}  <span style="color: green;">▲${nbPositivePayments}</span>  <span style="color: red;">▼${payments.length - nbPositivePayments}</span>
-                    Montant: ${balanceCash.toFixed(2)}  <span style="color: green;">▲${sumPositive.toFixed(2)}</span>  <span style="color: red;">▼${sumNegative.toFixed(2)}</span>`,
+        let layout = {
+            //title: `Nombre de paiements: ${payments.length}  <span style="color: green;">▲${nbPositivePayments}</span>  <span style="color: red;">▼${payments.length - nbPositivePayments}</span>
+            //        Montant: ${balanceCash.toFixed(2)}  <span style="color: green;">▲${sumPositive.toFixed(2)}</span>  <span style="color: red;">▼${sumNegative.toFixed(2)}</span>`,
+            title: 'prout',
+            legend: {orientation: 'h', y: 1},
             yaxis: {title: 'Montant'}
         }
         
-        //TODO: REMOVE
-        //Plotly.newPlot('stockGraph', [proposed, valided, profitFee, profitMargin, profit], layoutStock) 
-        
-        Plotly.newPlot('cashGraph', [cash, debt], layoutCash)     
+        Plotly.newPlot('cashGraph', [fees, margins], layout)     
 
     }
 
@@ -526,10 +463,11 @@
             <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
         </div>
     {:then}
+        
         <Paper>
             <Title>
-                <i class="fas fa-cubes w3-opacity w3-xlarge"></i>
-                Stock
+                <i class="fas fa-truck w3-opacity w3-xlarge"></i>
+                <span>Approvisionement</span>
             </Title>
 
             <Content>
@@ -572,7 +510,7 @@
                 {/if}
             </Content>
         </Paper>
-
+        
         <br>
 
         <Paper>

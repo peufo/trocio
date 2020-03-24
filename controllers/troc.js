@@ -59,7 +59,7 @@ function getStats(req, res, next) {
 			query.provider = user
 		}
 
-		Article.find(query).sort({createdAt: 1}).lean().exec((err, articlesProvided) => {
+		Article.find(query).sort({createdAt: 1}).lean().exec((err, articlesProposed) => {
 			if (err) return next(err)
 
 			delete query.provider
@@ -73,7 +73,7 @@ function getStats(req, res, next) {
 				if (user) query.user = user
 				Payment.find(query).sort({createdAt: 1}).lean().exec((err, payments) => {
 					if (err) return next(err)
-					res.json({articlesProvided, articlesBuyed, payments})
+					res.json({articlesProposed, articlesBuyed, payments})
 				})
 			})
 		})
