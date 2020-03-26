@@ -15,6 +15,9 @@ textarea {
 .clickable{
     cursor: pointer;
 }
+.clickable.smui-paper:hover {
+    background: rgb(250, 250, 250);
+}
 .underline-div {
     cursor: pointer;
 }

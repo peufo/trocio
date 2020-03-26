@@ -17,7 +17,11 @@
     //Affichage
     let stockModeValue = true
     let stockOpen = false
+    let stockLoading = false
     let consommationOpen = false
+    let consommationLoading = false
+    let cashOpen = false
+    let cashLoading = false
 
     //Results
     let payments = []
@@ -48,9 +52,26 @@
     let sumMargin = 0
 
     function openStock(e) {
-        if (articlesProposed.length){
+        if (articlesProposed.length && !stockOpen){
             stockOpen = true
+            stockLoading = true
             setTimeout(showStockPlot, 200)
+        }
+    }
+
+    function openConsomation(e) {
+        if (articlesBuyed.length && !consommationOpen){
+            consommationOpen = true
+            consommationLoading = true
+            setTimeout(showConsommationPlot, 200)
+        }
+    }
+
+    function openCash(e) {
+        if (payments.length && !cashOpen){
+            cashOpen = true
+            cashLoading = true
+            setTimeout(showCashPlot, 200)
         }
     }
 
@@ -62,6 +83,11 @@
     function closeConsommation(e) {
         e.stopPropagation()
         consommationOpen = false
+    }
+
+    function closeCash(e){
+        e.stopPropagation()
+        cashOpen = false
     }
 
     function selectView() {
@@ -79,8 +105,11 @@
         setTimeout(() => { // Wait selectedView refresh
             statsPromise = getStats().then(() => {
                 if (!articlesProposed.length) stockOpen = false
-                if (stockOpen) setTimeout(showStockPlot, 0)
-                setTimeout(showCashPlot, 0)
+                if (!articlesSolded.length) consommationOpen = false
+                if (!payments.length) cashOpen = false
+                if (stockOpen) stockLoading = true && setTimeout(showStockPlot, 0)
+                if (consommationOpen) consommationLoading = true && setTimeout(showConsommationPlot, 0)
+                if (cashOpen) cashLoading = true && setTimeout(showCashPlot, 0)
             })
         }, 0)
     }
@@ -172,6 +201,8 @@
     }
 
     function showStockPlot() {
+
+        stockLoading = true
 
         let pie = {
             labels: ['Proposé', 'En vente', 'Vendu', 'Récupéré'],
@@ -359,21 +390,19 @@
             })
         }
 
-        console.log($troc)
-
         let data = [recover, solded, available, proposed, pie]
 
         if (stockModeValue) {
             layout.annotations.push({
                 text: `Marge<br>Frais<br>Total`,
-                x: 0.85, xref: 'paper', xanchor: 'left',
+                x: 0.9, xref: 'paper', xanchor: 'left',
                 y: 0.98, yref: 'paper', yanchor: 'center',
                 align: 'left',
                 showarrow: false
             })
             layout.annotations.push({
                 text: `<b>${sumMargin.toFixed(2)}<br>${sumFee.toFixed(2)}<br>${(sumFee + sumMargin).toFixed(2)}</b>`,
-                x: 0.85, xref: 'paper', xanchor: 'right',
+                x: 0.9, xref: 'paper', xanchor: 'right',
                 y: 0.98, yref: 'paper', yanchor: 'center',
                 align: 'right',
                 showarrow: false
@@ -387,11 +416,86 @@
         console.time('create plot')
         Plotly.newPlot('stockGraph', data, layout)
         console.timeEnd('create plot')
- 
+
+        //Histogram
+        let proposedHisto = {
+            name: 'Proposé',
+            hoverinfo: 'y',
+            marker: {color: 'rgb(200, 200, 200)'},
+            x: articlesProposed.filter(art => !art.valided).map(art => art.price),
+            type: 'histogram', xbins: {size: 10}
+        }
+
+        let availableHisto = {
+            name: 'En vente',
+            hoverinfo: 'y',
+            marker: {color: 'rgb(33, 119, 181)'},
+            x: articlesProvided.filter(art => !art.solded && !art.recover).map(art => art.price),
+            type: 'histogram', xbins: {size: 10}
+        }
+
+        let soldedHisto = {
+            name: 'Vendu',
+            hoverinfo: 'y',
+            marker: {color: 'rgb(44, 160, 43)'},
+            x: articlesSolded.map(art => art.price),
+            type: 'histogram', xbins: {size: 10}
+        }
+
+        let recoverHisto = {
+            name: 'Récupéré',
+            hoverinfo: 'y',
+            marker: {color: 'rgb(255, 127, 14)'},
+            x: articlesRecovered.map(art => art.price),
+            type: 'histogram', xbins: {size: 10}
+        }
+
+        let layoutHisto = {
+            barmode: 'stack',
+            legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1.15},
+            xaxis: {title: 'Valeur', range: [0, (sumProvided / numberProvided) * 3]},
+            yaxis: {title: 'Nombre'},
+            annotations: [{
+                text: ` Moy. mis en vente: <b>${(sumProvided / numberProvided).toFixed(2)}</b>`,
+                x: sumProvided / numberProvided, y: 0,
+                arrowhead: 0, textangle: -45, xanchor: 'left', ax:30, ay: -30
+            },{
+                text: ` Moy. vendu: <b>${(sumSolded / numberSolded).toFixed(2)}</b>`,
+                x: sumSolded / numberSolded, y: 0,
+                arrowhead: 0, textangle: -45, xanchor: 'left', ax:30, ay: -30
+            },{
+                text: ` Moy. récupéré: <b>${(sumRecovered / numberRecovered).toFixed(2)}</b>`,
+                x: sumRecovered / numberRecovered, y: 0,
+                arrowhead: 0, textangle: -45, xanchor: 'left', ax:30, ay: -30
+            }]
+        }
+
+        let dataHisto = []
+        if (numberProposed) dataHisto.push(proposedHisto)
+        if (numberProvided - numberSolded - numberRecovered) dataHisto.push(availableHisto)
+        if (numberSolded) dataHisto.push(soldedHisto)
+        if (numberRecovered) dataHisto.push(recoverHisto)
+        console.log(dataHisto)
+
+        Plotly.newPlot('stockGraphHisto', dataHisto, layoutHisto)
+
+        stockLoading = false
+    }
+
+    function showConsommationPlot() {
+
+        consommationLoading = true
+
+        Plotly.newPlot('consommationGraph', [], {})
+
+        consommationLoading = false
+
     }
 
     function showCashPlot() {
 
+        cashLoading = true
+        /*
         let fees = {
             name: 'Frais',
             stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
@@ -470,9 +574,11 @@
         
         
         Plotly.newPlot('cashGraph', [fees, margins], layout)     
+        */
+
+       cashLoading = false
 
     }
-
 
 </script>
 
@@ -509,8 +615,8 @@
             <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
         </div>
     {:then}
-        <div on:click={openStock} class:clickable={!stockOpen}>
-            <Paper transition elevation={stockOpen ? 5 : 2}>
+        <div on:click={openStock}>
+            <Paper transition elevation={stockOpen ? 5 : 2} class={stockOpen ? '' : 'clickable'}>
 
                 <Title>
                     <i class="fas fa-truck w3-opacity w3-xlarge"></i>
@@ -522,7 +628,7 @@
 
                 <Subtitle>
                     {#if articlesProposed.length}
-                        <span><b>{numberProvided}</b> propositions pour une valeur total de <b>{Math.round(sumProvided * 100) / 100}</b></span>
+                        <span><b>{numberProvided + numberProposed}</b> propositions pour une valeur total de <b>{Math.round((sumProvided + sumProposed) * 100) / 100}</b></span>
                     {:else}
                         <span>Aucun article proposé</span>
                     {/if}
@@ -549,7 +655,21 @@
                                 </Button>
                             </Group>
 
-                            <div id="stockGraph" style="height: 450px;"></div>
+                            <div id="stockGraph"></div>
+                            <div id="stockGraphHisto"></div>
+                            
+                            {#if stockLoading}
+                                <div class="w3-display-container" style="height: 450px;">
+                                    <div class="w3-display-middle">
+                                        <i class="fas fa-chart-area w3-jumbo w3-opacity"></i>
+                                    </div>
+                                </div>
+                                <div class="w3-display-container" style="height: 450px;">
+                                    <div class="w3-display-middle">
+                                        <i class="far fa-chart-bar w3-jumbo w3-opacity"></i>
+                                    </div>
+                                </div>
+                            {/if}
 
                         </div>      
                     {/if}                      
@@ -558,8 +678,9 @@
         </div>
 
         <br>
-        <div on:click={() => consommationOpen = true} class:clickable={!consommationOpen}>
-            <Paper transition elevation={consommationOpen ? 5 : 2}>
+        <div on:click={openConsomation}>
+            <Paper transition elevation={consommationOpen ? 5 : 2} class={consommationOpen ? '' : 'clickable'}>
+            
                 <Title>
                     <i class="fas fa-shopping-cart w3-opacity w3-xlarge"></i>
                     <span>Consommation</span>
@@ -567,40 +688,66 @@
                         <i class="fas fa-window-minimize w3-large w3-right button-icon" on:click={closeConsommation}></i>
                     {/if}
                 </Title>
+
                 <Subtitle>
-                
+                    {#if articlesSolded.length}
+                        <span><b>{numberBuyed}</b> achats pour un valeur total de <b>{Math.round(sumBuyed * 100) / 100}</b></span>
+                    {:else}
+                        <span>Aucun article acheté</span>
+                    {/if}
                 </Subtitle>
 
                 <Content class="w3-center">
                     {#if consommationOpen}
                         <div transition:slide|local>
-                            <span>
-                            asdas<br>
-                            asdasdsad<br>
-                            asd<br>
-                            asd<br>
-                            asd<br>
-                            ads<br>
-                            ads<br>
-                            asd</span>
+
+                            <div id="consommationGraph"></div>
+
+                            {#if consommationLoading}
+                                <div class="w3-display-container" style="height: 450px;">
+                                    <div class="w3-display-middle">
+                                        <i class="far fa-chart-bar w3-jumbo w3-opacity"></i>
+                                    </div>
+                                </div>
+                            {/if}
                         </div>
                     {/if}
                 </Content>
+
             </Paper>
         </div>
 
         <br>
-        <Paper>
-            <Title>
-                <i class="fas fa-cash-register w3-opacity w3-xlarge"></i>
-                <span>Caisse</span>
+        <div on:click={openCash}>
+            <Paper class={cashOpen ? '' : 'clickable'}>
+                <Title>
+                    <i class="fas fa-cash-register w3-opacity w3-xlarge"></i>
+                    <span>Caisse</span>
+                    {#if cashOpen}
+                        <i class="fas fa-window-minimize w3-large w3-right button-icon" on:click={closeCash}></i>
+                    {/if}
+                </Title>
 
-            </Title>
+                <Content class="w3-center">
+                    {#if cashOpen}
+                        <div transition:slide|local>
 
-            <Content class="w3-center">
-                <div id="cashGraph"></div>
-            </Content>
+                            <div id="cashGraph"></div>
 
-        </Paper>
+                            {#if cashLoading}
+                                <div class="w3-display-container" style="height: 450px;">
+                                    <div class="w3-display-middle">
+                                        <i class="far fa-chart-bar w3-jumbo w3-opacity"></i>
+                                    </div>
+                                </div>
+                            {/if}
+
+                        </div>
+                    {/if}
+                    
+                </Content>
+
+            </Paper>
+        </div>
     {/await}
 </div>
