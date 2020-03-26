@@ -1,4 +1,6 @@
 <script>
+    import { slide } from 'svelte/transition'
+
     import Radio from '@smui/radio'
     import FormField from '@smui/form-field'
     import Paper, {Title, Subtitle, Content} from '@smui/paper'
@@ -14,6 +16,8 @@
 
     //Affichage
     let stockModeValue = true
+    let stockOpen = false
+    let consommationOpen = false
 
     //Results
     let payments = []
@@ -43,6 +47,23 @@
     let sumFee = 0
     let sumMargin = 0
 
+    function openStock(e) {
+        if (articlesProposed.length){
+            stockOpen = true
+            setTimeout(showStockPlot, 200)
+        }
+    }
+
+    function closeStock(e) {
+        e.stopPropagation()
+        stockOpen = false
+    }
+
+    function closeConsommation(e) {
+        e.stopPropagation()
+        consommationOpen = false
+    }
+
     function selectView() {
         searchUser = ''
         loadView()
@@ -57,7 +78,8 @@
     function loadView() {
         setTimeout(() => { // Wait selectedView refresh
             statsPromise = getStats().then(() => {
-                setTimeout(showStockPlot, 0)
+                if (!articlesProposed.length) stockOpen = false
+                if (stockOpen) setTimeout(showStockPlot, 0)
                 setTimeout(showCashPlot, 0)
             })
         }, 0)
@@ -88,7 +110,7 @@
 
         //Compute reduce
         //here, articles proposed is equivalent to articles not valided
-        numberProposed = articlesProvided.filter(art => !art.valided).length
+        numberProposed = articlesProposed.filter(art => !art.valided).length
         numberProvided = articlesProvided.length
         numberSolded = articlesSolded.length
         numberRecovered = articlesRecovered.length
@@ -120,10 +142,10 @@
         })
 
         //Provider events
-        let articlesProvidedEvents = []
-        let capturedProvidedEvents = ['createdAt', 'valided', 'sold', 'recover']
-        capturedProvidedEvents.forEach(capturedEvent => {
-            articlesProvidedEvents = [...articlesProvidedEvents, ...articlesProvided.filter(art => art[capturedEvent]).map(art => {
+        let articlesProposedEvents = []
+        let capturedProposedEvents = ['createdAt', 'valided', 'sold', 'recover']
+        capturedProposedEvents.forEach(capturedEvent => {
+            articlesProposedEvents = [...articlesProposedEvents, ...articlesProposed.filter(art => art[capturedEvent]).map(art => {
                     return {
                         art,
                         event: capturedEvent,
@@ -144,9 +166,9 @@
             }
         })
 
-        console.log('events', [...paymentsEvents, ...articlesProvidedEvents, ...articlesBuyedEvents].sort((a, b) => a.time - b.time))
+        console.log('events', [...paymentsEvents, ...articlesProposedEvents, ...articlesBuyedEvents].sort((a, b) => a.time - b.time))
 
-        return [...paymentsEvents, ...articlesProvidedEvents, ...articlesBuyedEvents].sort((a, b) => a.time - b.time)
+        return [...paymentsEvents, ...articlesProposedEvents, ...articlesBuyedEvents].sort((a, b) => a.time - b.time)
     }
 
     function showStockPlot() {
@@ -312,37 +334,60 @@
         console.timeEnd('Create traces')
 
         let layout = {
-            title: `<b>${numberProvided}</b> propositions pour une valeur total de <b>${Math.round(sumProvided * 100) / 100}</b>`,
             yaxis: {title: stockModeValue ? 'Montant' : 'Nombre'},
-            legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1},
+            legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1.15},
             grid: {columns: 2},
-            xaxis: {domain: [0, 0.7]}
+            xaxis: {
+                domain: [0, 0.7],
+                range: [
+                    new Date($troc.schedule[0].open).getTime() - 1000 * 60 * 60 * 24,
+                    new Date($troc.schedule[$troc.schedule.length - 1].close).getTime() + 1000 * 60 * 60 * 6
+                ]
+            },
+            annotations: []
         }
+
+        //add shedule annotations
+        if ($troc.schedule.length) {
+            layout.annotations.push({
+                text: 'Ouverture',
+                x: $troc.schedule[0].open
+            })
+            layout.annotations.push({
+                text: 'Fermeture',
+                x: $troc.schedule[$troc.schedule.length - 1].close
+            })
+        }
+
+        console.log($troc)
 
         let data = [recover, solded, available, proposed, pie]
 
         if (stockModeValue) {
-            layout.annotations = [{
-                text: `Frais<br>Marge<br>Total`,
+            layout.annotations.push({
+                text: `Marge<br>Frais<br>Total`,
                 x: 0.85, xref: 'paper', xanchor: 'left',
                 y: 0.98, yref: 'paper', yanchor: 'center',
                 align: 'left',
                 showarrow: false
-            }, {
-                text: `<b>${sumFee.toFixed(2)}<br>${sumMargin.toFixed(2)}<br>${(sumFee + sumMargin).toFixed(2)}</b>`,
+            })
+            layout.annotations.push({
+                text: `<b>${sumMargin.toFixed(2)}<br>${sumFee.toFixed(2)}<br>${(sumFee + sumMargin).toFixed(2)}</b>`,
                 x: 0.85, xref: 'paper', xanchor: 'right',
                 y: 0.98, yref: 'paper', yanchor: 'center',
                 align: 'right',
                 showarrow: false
-            }]
+            })
             pie.domain.y = [0, 0.7]
             layout.yaxis = {domain: [0, 0.7]}
             layout.yaxis2 = {domain: [0.75, 1]}
             data = [fees, margins, ...data]
         }
 
-        Plotly.newPlot('stockGraph', data, layout) 
-        
+        console.time('create plot')
+        Plotly.newPlot('stockGraph', data, layout)
+        console.timeEnd('create plot')
+ 
     }
 
     function showCashPlot() {
@@ -423,6 +468,7 @@
             yaxis: {title: 'Montant'}
         }
         
+        
         Plotly.newPlot('cashGraph', [fees, margins], layout)     
 
     }
@@ -439,7 +485,7 @@
     <div class="w3-center">
         <FormField on:click={selectView}>
             <Radio bind:group={selectedView} value="global"/>
-            <span slot="label">Vue global</span>
+            <span slot="label">Tous</span>
         </FormField>
         <FormField on:click={selectView}>
             <Radio bind:group={selectedView} value="traders"/>
@@ -463,71 +509,91 @@
             <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
         </div>
     {:then}
-        
-        <Paper>
-            <Title>
-                <i class="fas fa-truck w3-opacity w3-xlarge"></i>
-                <span>Approvisionement</span>
-            </Title>
+        <div on:click={openStock} class:clickable={!stockOpen}>
+            <Paper transition elevation={stockOpen ? 5 : 2}>
 
-            <Content>
+                <Title>
+                    <i class="fas fa-truck w3-opacity w3-xlarge"></i>
+                    <span>Approvisionement</span>
+                    {#if stockOpen}
+                        <i class="fas fa-window-minimize w3-large w3-right button-icon" on:click={closeStock}></i>
+                    {/if}
+                </Title>
 
-                {#if articlesProvided.length}
+                <Subtitle>
+                    {#if articlesProposed.length}
+                        <span><b>{numberProvided}</b> propositions pour une valeur total de <b>{Math.round(sumProvided * 100) / 100}</b></span>
+                    {:else}
+                        <span>Aucun article proposé</span>
+                    {/if}
+                </Subtitle>
 
-                    <div id="stockGraph"></div>
+                <Content>
+                    {#if stockOpen}
+                        <div transition:slide|local="{{duration: 200}}">
 
-                    <Group variant="outlined" class="w3-right">
-                        <Button
-                        style="z-index: 1;"
-                        color="secondary"
-                        on:click={() => selectStockModeValue(false)}
-                        variant={!stockModeValue ? 'raised' : 'outlined'}>
-                            <Label>Nombre</Label>
-                        </Button>
-                        <Button
-                        style="z-index: 1;"
-                        color="secondary"
-                        on:click={() => selectStockModeValue(true)}
-                        variant={stockModeValue ? 'raised' : 'outlined'}>
-                            <Label>Montant</Label>
-                        </Button>
-                    </Group>
+                            <Group variant="outlined" class="w3-left w3-margin-top">
+                                <Button
+                                style="z-index: 1;"
+                                color="secondary"
+                                on:click={() => selectStockModeValue(false)}
+                                variant={!stockModeValue ? 'raised' : 'outlined'}>
+                                    <Label>Nombre</Label>
+                                </Button>
+                                <Button
+                                style="z-index: 1;"
+                                color="secondary"
+                                on:click={() => selectStockModeValue(true)}
+                                variant={stockModeValue ? 'raised' : 'outlined'}>
+                                    <Label>Valeur</Label>
+                                </Button>
+                            </Group>
 
-                    Valeur moyenne des dépots:
-                    <b>{(sumProvided / numberProvided).toFixed(2)}</b>
+                            <div id="stockGraph" style="height: 450px;"></div>
 
-                    <br>
-                    Valeur moyenne des dépots vendu: 
-                    <b>{(sumSolded / numberSolded).toFixed(2)}</b>
+                        </div>      
+                    {/if}                      
+                </Content>
+            </Paper>
+        </div>
 
-                    <br>
-                {:else}
-                    <div class="w3-center">
-                        <br><br>
-                        <b>&#123;&nbsp;&nbsp; Les utilisateurs sélectionés n'ont fourni aucun article  &nbsp;&nbsp;&#125;</b>
-                        <br><br>
-                    </div>
-                {/if}
-            </Content>
-        </Paper>
-        
         <br>
+        <div on:click={() => consommationOpen = true} class:clickable={!consommationOpen}>
+            <Paper transition elevation={consommationOpen ? 5 : 2}>
+                <Title>
+                    <i class="fas fa-shopping-cart w3-opacity w3-xlarge"></i>
+                    <span>Consommation</span>
+                    {#if consommationOpen}
+                        <i class="fas fa-window-minimize w3-large w3-right button-icon" on:click={closeConsommation}></i>
+                    {/if}
+                </Title>
+                <Subtitle>
+                
+                </Subtitle>
 
+                <Content class="w3-center">
+                    {#if consommationOpen}
+                        <div transition:slide|local>
+                            <span>
+                            asdas<br>
+                            asdasdsad<br>
+                            asd<br>
+                            asd<br>
+                            asd<br>
+                            ads<br>
+                            ads<br>
+                            asd</span>
+                        </div>
+                    {/if}
+                </Content>
+            </Paper>
+        </div>
+
+        <br>
         <Paper>
             <Title>
                 <i class="fas fa-cash-register w3-opacity w3-xlarge"></i>
-                Caisse
-                <br>
-                <b>{sumFee.toFixed(2)}</b>
-                de frais due
-
-                <br>
-                <b>{sumMargin.toFixed(2)}</b>
-                de marge due
-
-                <br>
-                <b>{(sumFee + sumMargin).toFixed(2)}</b>
-                de benefice
+                <span>Caisse</span>
 
             </Title>
 
@@ -535,7 +601,6 @@
                 <div id="cashGraph"></div>
             </Content>
 
-            
         </Paper>
     {/await}
 </div>
