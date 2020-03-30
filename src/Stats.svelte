@@ -40,6 +40,8 @@
     let numberRecovered = 0
     let numberBuyed = 0
     let numberPayment = 0
+    let numberPaymentPositif = 0
+    let numberPaymentNegatif = 0
 
     let sumProposed = 0
     let sumProvided = 0
@@ -47,6 +49,8 @@
     let sumRecovered = 0
     let sumBuyed = 0
     let sumPayment = 0
+    let sumPaymentPositif = 0
+    let sumPaymentNegatif = 0
 
     let sumFee = 0
     let sumMargin = 0
@@ -145,14 +149,18 @@
         numberRecovered = articlesRecovered.length
         numberBuyed = articlesBuyed.length
         numberPayment = payments.length
+        numberPaymentPositif = payments.filter(pay => pay.amount > 0).length
+        numberPaymentNegatif = numberPayment - numberPaymentPositif
         sumProposed = numberProposed ? articlesProposed.filter(art => !art.valided).map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumProvided = numberProvided ? articlesProvided.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumSolded = numberSolded ? articlesSolded.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumRecovered = numberRecovered ? articlesRecovered.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
         sumBuyed = numberBuyed ? articlesBuyed.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
-        sumPayment = numberPayment ? payments.map(pay => pay.amount).reduce((acc, cur) => acc + cur) : 0
         sumFee = numberProvided ? articlesProvided.map(art => art.fee).reduce((acc, cur) => acc + cur) : 0
-        sumMargin = numberSolded ? articlesSolded.map(art => art.margin).reduce((acc, cur) => acc + cur) : 0
+        sumMargin = numberSolded ? articlesSolded.map(art => art.margin).reduce((acc, cur) => acc + cur) : 0  
+        sumPaymentPositif = numberPaymentPositif ? payments.map(pay => pay.amount).filter(p => p > 0).reduce((acc, cur) => acc + cur) : 0
+        sumPaymentNegatif = numberPaymentNegatif ? -payments.map(pay => pay.amount).filter(p => p < 0).reduce((acc, cur) => acc + cur) : 0
+        sumPayment = sumPaymentPositif + sumPaymentNegatif
 
         events = getEvents()
         return
@@ -365,10 +373,11 @@
         console.timeEnd('Create traces')
 
         let layout = {
-            yaxis: {title: stockModeValue ? 'Montant' : 'Nombre'},
+            yaxis: {title: 'Nombre'},
             legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1.15},
             grid: {columns: 2},
             xaxis: { domain: [0, 0.7] },
+            margin: {t: 80},
             annotations: []
         }
 
@@ -406,7 +415,7 @@
                 showarrow: false
             })
             pie.domain.y = [0, 0.7]
-            layout.yaxis = {domain: [0, 0.7]}
+            layout.yaxis = {domain: [0, 0.7], title: 'Valeur'}
             layout.yaxis2 = {domain: [0.75, 1]}
             data = [fees, margins, ...data]
         }
@@ -453,6 +462,7 @@
             legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1.15},
             xaxis: {title: 'Valeur', range: [0, (sumProvided / numberProvided) * 3]},
             yaxis: {title: 'Nombre'},
+            margin: {t: 80},
             annotations: [{
                 text: ` Moy. mis en vente: <b>${(sumProvided / numberProvided).toFixed(2)}</b>`,
                 x: sumProvided / numberProvided, y: 0,
@@ -518,6 +528,7 @@
             xaxis: {},
             yaxis: {title: 'Nombre'},
             yaxis2: {title: 'Valeur', side: 'right', overlaying: 'y'},
+            margin: {t: 0},
             legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1.15},
             annotations: []
         }
@@ -549,88 +560,158 @@
     function showCashPlot() {
 
         cashLoading = true
-        /*
-        let fees = {
-            name: 'Frais',
-            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
+        
+        let solde = {
+            name: 'Solde',
+            x: [],y: [], text: []
         }
 
-        let margins = {
-            name: 'Marge',
-            stackgroup: 'one', x: [],y: [], text: [], domain: {column: 0},
+        let pay = {
+            name: 'Paiements',
+            x: [],y: [], text: []
         }
 
-        let balanceFees = 0
-        let balanceMargins = 0
+        let validedFrequency = {
+            name: 'Mise en vente',
+            yaxis: 'y2',
+            stackgroup: 'one', x: [], y: []
+        }
+
+        let buyFrequency = {
+            name: 'Achat',
+            yaxis: 'y2',
+            stackgroup: 'one', x: [], y: []
+        }
+
+        let recoverFrequency = {
+            name: 'Récupération',
+            yaxis: 'y2',
+            stackgroup: 'one', x: [], y: []
+        }
+
+        let paymentFrequency = {
+            name: 'Paiements',
+            yaxis: 'y2',
+            stackgroup: 'one', x: [], y: []
+        }
+
+        let balanceSolde = 0
+        let balancePay = 0
+
+        let frequenceTime = 1000 * 60 * 60 //une heure
+        let startTime = Math.round(events.filter(e => e.event == 'valided')[0].time / frequenceTime) * frequenceTime
+        let endTime = Math.round(events[events.length - 1].time / frequenceTime) * frequenceTime
+        let currentTimeIndex = 0
+
+        for (let currentTime = startTime; currentTime < endTime; currentTime += frequenceTime) {
+
+            validedFrequency.y[currentTimeIndex] = 0
+            buyFrequency.y[currentTimeIndex] = 0
+            recoverFrequency.y[currentTimeIndex] = 0
+            paymentFrequency.y[currentTimeIndex] = 0
+
+            validedFrequency.x[currentTimeIndex] = currentTime
+            buyFrequency.x[currentTimeIndex] = currentTime
+            recoverFrequency.x[currentTimeIndex] = currentTime
+            paymentFrequency.x[currentTimeIndex] = currentTime
+
+            currentTimeIndex++
+        }
 
         console.time('Create traces')
 
-        events.filter(e => ['valided', 'sold'].indexOf(e.event) != -1).forEach(event => {
-            switch (event.event) {
-                case 'createdAt':
+        events.filter(e => ['valided', 'sold', 'buyed', 'recover', 'payment'].indexOf(e.event) != -1).forEach(event => {
 
-                    break
+            currentTimeIndex = Math.round((event.time - startTime) / frequenceTime)
+
+            switch (event.event) {
 
                 case 'valided': 
 
-                    balanceFees += event.art.fee
-
-                    fees.text.push(`Mise en vente de ${event.art.name}`)
-                    margins.text.push(``)
+                    balanceSolde += event.art.fee
+                    solde.text.push(`Mise en vente de ${event.art.name}`)
+                    pay.text.push(``)
+                    
+                    validedFrequency.y[currentTimeIndex]++
                     
                     break
 
                 case 'sold':
                     
-                    balanceMargins += event.art.margin
+                    balanceSolde -= event.art.price
+                    balanceSolde += event.art.margin
+                    solde.text.push(`Vente de ${event.art.name}`)
+                    pay.text.push(``)
 
-                    fees.text.push(``)
-                    margins.text.push(`Vente de ${event.art.name}`)
+                    break
+
+                case 'buyed':
+                    
+                    balanceSolde += event.art.price
+                    solde.text.push(`Achat de ${event.art.name}`)
+                    pay.text.push(``)
+
+                    buyFrequency.y[currentTimeIndex]++
 
                     break
 
                 case 'recover':
-
+                    
+                    recoverFrequency.y[currentTimeIndex]++
 
                     break
 
                 case 'payment':
 
-                    
-                    break
+                    balancePay += event.pay.amount
+                    solde.text.push(``)
+                    pay.text.push(event.pay.amount > 0 ? `Paiement de ${event.pay.amount}<br>${event.pay.message}` : `Remboursement de ${event.pay.amount}<br>${event.pay.message}`)
 
-                case 'buyed':
-
+                    paymentFrequency.y[currentTimeIndex]++
 
                     break
 
             }
 
-            fees.y.push(balanceFees)
-            fees.x.push(event.date)
-                
-            margins.y.push(balanceMargins)
-            margins.x.push(event.date)
+            solde.y.push(balanceSolde)
+            solde.x.push(event.date)
+            
+            pay.y.push(balancePay)
+            pay.x.push(event.date)
 
         })
 
         console.timeEnd('Create traces')
 
-        console.log(fees)
-
         let layout = {
-            //title: `Nombre de paiements: ${payments.length}  <span style="color: green;">▲${nbPositivePayments}</span>  <span style="color: red;">▼${payments.length - nbPositivePayments}</span>
-            //        Montant: ${balanceCash.toFixed(2)}  <span style="color: green;">▲${sumPositive.toFixed(2)}</span>  <span style="color: red;">▼${sumNegative.toFixed(2)}</span>`,
-            title: 'prout',
-            legend: {orientation: 'h', y: 1},
-            yaxis: {title: 'Montant'}
+            xaxis: {},
+            yaxis: {title: 'Montant', domain: [0, .7]},
+            yaxis2: {title: 'Opé. par heure', domain: [.75, 1]},
+            legend: {orientation: 'h', xanchor: 'center', x: .5, yanchor: 'bottom', y: 1.15},
+            annotations: []
+        }
+
+        //add shedule range and annotations
+        if ($troc.schedule.length) {
+            layout.xaxis.range = [
+                new Date($troc.schedule[0].open).getTime() - 1000 * 60 * 60 * 24,
+                new Date($troc.schedule[$troc.schedule.length - 1].close).getTime() + 1000 * 60 * 60 * 6
+            ]
+            layout.annotations.push({
+                text: 'Ouverture',
+                x: $troc.schedule[0].open,
+                y: 0
+            })
+            layout.annotations.push({
+                text: 'Fermeture',
+                x: $troc.schedule[$troc.schedule.length - 1].close, 
+                y: 0
+            })
         }
         
-        
-        Plotly.newPlot('cashGraph', [fees, margins], layout)     
-        */
+        Plotly.newPlot('cashGraph', [pay, solde, validedFrequency, buyFrequency, recoverFrequency, paymentFrequency], layout)
 
-       cashLoading = false
+        cashLoading = false
 
     }
 
@@ -753,7 +834,7 @@
 
                 <Content class="w3-center">
                     {#if consommationOpen}
-                        <div transition:slide|local>
+                        <div transition:slide|local="{{duration: 200}}">
 
                             <div id="consommationGraph"></div>
 
@@ -782,9 +863,42 @@
                     {/if}
                 </Title>
 
+                <Subtitle>
+                    {#if payments.length}
+                        <span>
+                            <b>{numberPayment}</b>
+                            <span style="color: green;">
+                                <i class="fas fa-chevron-up"></i>
+                                {numberPaymentPositif}
+                            </span>
+                            <span style="color: red;">
+                                <i class="fas fa-chevron-down"></i>
+                                {numberPaymentNegatif}
+                            </span>
+                            pour une valeur total de 
+                            <b>{sumPayment.toFixed(2)}</b>
+                            <span style="color: green;">
+                                <i class="fas fa-chevron-up"></i>
+                                {sumPaymentPositif.toFixed(2)}
+                            </span>
+                            <span style="color: red;">
+                                <i class="fas fa-chevron-down"></i>
+                                {sumPaymentNegatif.toFixed(2)}
+                            </span>
+                            <span style="color: blue;">
+                                <i class="fas fa-angle-right"></i>
+                                {(sumPaymentPositif - sumPaymentNegatif).toFixed(2)}
+                            </span>
+
+                        </span>
+                    {:else}
+                        <span>Aucun paiement</span>
+                    {/if}
+                </Subtitle>
+
                 <Content class="w3-center">
                     {#if cashOpen}
-                        <div transition:slide|local>
+                        <div transition:slide|local="{{duration: 200}}">
 
                             <div id="cashGraph"></div>
 
@@ -802,6 +916,7 @@
                 </Content>
 
             </Paper>
+            <br><br>
         </div>
     {/await}
 </div>
