@@ -4,7 +4,11 @@
     import DataTable, { Head, Body, Row, Cell } from '@smui/data-table'
     import Checkbox from '@smui/checkbox'
     import Button from '@smui/button'
+    import Menu from '@smui/menu'
+    
     import { formatPrice } from './utils'
+    import RowsPromise from './RowsPromise.svelte'
+
 
     export let troc = ''
 
@@ -27,9 +31,10 @@
     let waitArticles //Timeout
 
     onMount(() => {
-        providersPromise = getProviders()
+        articlesPromise = getArticles()
     })
 
+    /*
     async function getProviders() {
         let res = await fetch(`/trocs/${troc}/providername`)
         let json = await res.json()
@@ -38,8 +43,10 @@
         }
         return
     }
+    */
 
     function searchInputArticles() {
+        //wait 200mm for executing getArticles()
         skipArticles = 0
         if (waitArticles) clearTimeout(waitArticles)
         waitArticles = setTimeout(() => articlesPromise = getArticles(), 200)
@@ -51,16 +58,13 @@
     }
 
     async function getArticles() {
-    
-        if (!selectedProvider.length) {
-            articles = []
-            return
-        }
 
         let providersQuery = selectedProvider.map((p, i) => `provider[]=${p._id}`).join('&')
 
         let res = await fetch(`/articles/search?troc=${troc}&${providersQuery}&search=${searchArticles}&limit=${limitArticles}&skip=${skipArticles}`)
         let json = await res.json()
+
+        console.log(json)
         if(res.ok) {
 
             if (json.length < limitArticles) noMoreArticles = true
@@ -71,15 +75,6 @@
             }else{
                 articles = json
             }
-
-            /*
-            searchProviders = ''
-            let articlesProviderIds = articles.map(art => art.provider._id)
-            let distinctIndex = articlesProviderIds.map((poviderId, i, self) => self.indexOf(poviderId)).filter((selfIndex, index) => selfIndex == index)
-            providers = distinctIndex.map(index => articles[index].provider)
-            console.log(providers)
-            selectedProvider = [...providers]
-            */
 
         }else{
             articles = []
@@ -96,95 +91,36 @@
 		return 1
     }
 
-    function selectProvider() {
-        setTimeout(() => articlesPromise = getArticles(), 50)
-    }
-    
-    function filterProviderInput() {
-        articles = []
-        selectedProvider = []
-        let reg = RegExp(searchProviders, 'gi')
-        providers = providers.sort((a, b) => reg.test(b.name) - reg.test(a.name))
-    }
-
 
 </script>
 
-<div class="w3-row" style="padding: 50px 0px 0px 50px;">
-
-    <div class="w3-col m2">
-
-        <Textfield
-        on:input={filterProviderInput}
-        bind:value={searchProviders}
-        variant="outlined"
-        label="Recherche fournisseurs"/>
         
-        <br><br>
-        {#await providersPromise}
-            <span>Chargement</span>
-        {:then}
-            <DataTable>
-                <Head>
-                    <Row>
-                        <Cell checkbox>
-                            <Checkbox on:click={selectProvider}/>
-                        </Cell>
-                        <Cell>Fournisseur</Cell>
-                    </Row>
-                </Head>
-                <Body>
-                <!--
-                
-                    {#each providers as provider}
-                        <Row>
-                            <Cell checkbox >
-                                <Checkbox 
-                                on:click={selectProvider}
-                                bind:group={selectedProvider}
-                                value={provider}
-                                valueKey={provider._id}/>
-                            </Cell>
-                            <Cell>{provider.name}</Cell>
-                        </Row>
-                    {/each}
-                    
-                -->
-                </Body>
-            </DataTable>
-        {/await}
-
-    </div>
-
-    <div class="w3-col m10">
-
-        <Textfield
-        bind:value={searchArticles}
-        on:input={searchInputArticles}
-        variant="outlined"
-        label="Recherche articles"/>
-        
-        <br><br>
-
-        <DataTable>
-            <Head>
-                <Row>
-                    <Cell>Fournisseur</Cell>
-                    <Cell>#Ref</Cell>
-                    <Cell>Status</Cell>
-                    <Cell>Prix</Cell>
-                    <Cell>Désignation</Cell>
-                </Row>
-            </Head>
-            <Body>
+<br>
+<div style="text-align: center;">
+    <DataTable>
+        <Head>
+            <Row>
+                <Cell>Fournisseur</Cell>
+                <Cell>#Ref</Cell>
+                <Cell>Status</Cell>
+                <Cell>Prix</Cell>
+                <Cell>Désignation</Cell>
+            </Row>
+        </Head>
+        <Body>
+            {#await articlesPromise}
+                <RowsPromise cellsWidth={[160, 62, 90, 92, 452]}></RowsPromise>
+            {:then}
                 {#each articles as article}
-                    <Row>
+                    <Row style="text-align: left;">
                         <Cell>{article.provider.name}</Cell>
-                        <Cell>{article.ref}</Cell>
+                        <Cell numeric>{article.ref}</Cell>
                         <Cell>{status[getStatus(article)]}</Cell>
-                        {#if getStatus(article) == 2}<!--En vente -->
+                        {#if getStatus(article) == 1}<!--En vente -->
                             <Cell numeric>
+                                
                                 <input style="border: none; width: 60px; text-align: right;" type="text" bind:value={article.price} on:input={formatPrice}>
+                                
                             </Cell>
                         {:else}
                             <Cell numeric>
@@ -195,18 +131,30 @@
                     </Row>
                 {/each}
 
-                {#if articles.length && !noMoreArticles}
-                    <Button
-                    on:click={getMoreArticles}
-                    color="secondary">
-                            Plus de résultats
-                    </Button>
-                {/if}
+                {#await moreArticlesPromise}
+                    <RowsPromise rowsNumber={8} cellsWidth={[160, 62, 90, 92, 452]}></RowsPromise>
+                {/await}
 
-            </Body>
-               
-        </DataTable>
-
-    </div>
+            {/await}
+        </Body>       
+    </DataTable>
 
 </div>
+
+<br>
+
+{#if articles.length && !noMoreArticles}
+    <div class="w3-center">
+        <Button
+        on:click={getMoreArticles}
+        variant="outlined"
+        color="secondary">
+                Plus de résultats
+        </Button>
+    </div>
+    <br><br><br><br><br><br>
+{/if}
+
+<style>
+    
+</style>
