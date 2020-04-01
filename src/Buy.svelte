@@ -34,7 +34,7 @@
     let skip = 0
 
     async function getArticles() {
-        let res = await fetch(`/articles/search?troc=${$troc._id}&search=${search}&limit=${LIMIT_LIST_A}&skip=${skip}&available=true${user._id ? `&providernot=${user._id}` :''}`)
+        let res = await fetch(`/articles/search?troc=${$troc._id}&search=${search}&limit=${LIMIT_LIST_A}&skip=${skip}&statut=valided${user._id ? `&providernot=${user._id}` :''}`)
         let json = await res.json()
 
         if(res.ok) {

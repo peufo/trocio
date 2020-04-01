@@ -43,20 +43,31 @@ router
 	})
 	.delete('/:id', deleteArticle)
 	.get('/search', (req, res, next) => {
-		let { search, troc, provider, providernot, available, limit, skip } = req.query
+		let { search, troc, provider, providernot, statut, limit, skip, pricesort } = req.query
 		let query = {}
+		let sort = {}
 
 		//if (troc || providernot || available) query.$and = []
 		query.$and = [{name : {$ne: ""}}] //not article without name
 		if (troc) query.$and.push({troc})
 		if (providernot) query.$and.push({'provider': {$ne: providernot}})
-
 		if (provider) query.$and.push({'provider': {$in: provider}})
 
-		if (available) {
-			query.$and.push({'valided': {$exists: true}})
-			query.$and.push({'sold': {$exists: false}})
-			query.$and.push({'recover': {$exists: false}})
+		switch (statut) {
+			case 'proposed':
+				query.$and.push({'valided': {$exists: false}})
+				break
+			case 'valided':
+				query.$and.push({'valided': {$exists: true}})
+				query.$and.push({'sold': {$exists: false}})
+				query.$and.push({'recover': {$exists: false}})
+				break
+			case 'sold':
+				query.$and.push({'sold': {$exists: true}})
+				break	
+			case 'recover':		
+				query.$and.push({'recover': {$exists: true}})
+				break
 		}
 
 		if (search && search.length) {
@@ -72,7 +83,11 @@ router
 		if (!limit) limit = 40
 		else if(limit > 100) limit = 100
 
-		Article.find(query).populate('provider', 'name').skip(skip).limit(limit).exec((err, articles) => {
+		if (pricesort) {
+			sort.price = pricesort
+		}
+
+		Article.find(query).populate('provider', 'name').sort(sort).skip(skip).limit(limit).exec((err, articles) => {
 			if (err) return next(err)
 			res.json(articles)
 		})
