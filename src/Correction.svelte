@@ -15,6 +15,7 @@
     export let troc = ''
 
     let articles = []
+    let articlesMatchCount = 0
     let articlesPromise
     let moreArticlesPromise
     let noMoreArticles = false
@@ -22,7 +23,7 @@
     let skipArticles = 0
     let waitArticles //Timeout
 
-    //Name commande
+    //Name and ref commande
     let searchNameMenu
     let searchName = ''
 
@@ -47,6 +48,10 @@
     ]
     let priceSortIndex = 0
 
+    //Provider commande
+    let searchProviderMenu
+    let searchProvider = ''
+
     onMount(() => {
         articlesPromise = getArticles()
     })
@@ -54,6 +59,11 @@
     function openSearchNameMenu() {
         searchNameMenu.setOpen(true)
         setTimeout(() => document.querySelector('#searchNameInput input').focus(), 200)
+    }
+
+    function openSearchProviderMenu() {
+        searchProviderMenu.setOpen(true)
+        setTimeout(() => document.querySelector('#searchProviderInput input').focus(), 200)
     }
 
     function filtreStatut(newStatutIndex) {
@@ -78,7 +88,7 @@
         articlesPromise = getArticles()
     }
 
-    function searchNameInput() {
+    function searchInput() {
         //wait 200mm for executing getArticles()
         skipArticles = 0
         if (waitArticles) clearTimeout(waitArticles)
@@ -89,24 +99,28 @@
         skipArticles += limitArticles
         moreArticlesPromise = getArticles()
     }
-
+    
     async function getArticles() {
+
         let req = `/articles/search?troc=${troc}&limit=${limitArticles}&skip=${skipArticles}`
-        req += `&search=${searchName}`
-        req += `&statut=${statutFilter}`
-        req += `&pricesort=${priceSortMethodes[priceSortIndex].sort}`
+        if (searchName.length)      req += `&search=${searchName}`
+        if (statutFilter.length)    req += `&statut=${statutFilter}`
+        if (priceSortIndex)         req += `&pricesort=${priceSortMethodes[priceSortIndex].sort}`
+        if (searchProvider.length)  req += `&searchprovider=${searchProvider}`
 
         let res = await fetch(req)
         let json = await res.json()
 
         if(res.ok) {
+            
+            articlesMatchCount = json.articlesMatchCount
 
-            noMoreArticles = json.length < limitArticles
+            noMoreArticles = json.articles.length < limitArticles
 
             if (!!skipArticles) {
-                articles = [...articles, ...json]
+                articles = [...articles, ...json.articles]
             }else{
-                articles = json
+                articles = json.articles
             }
 
         }else{
@@ -120,30 +134,33 @@
         
 <br>
 <div style="text-align: center;">
-    <DataTable class="clickable">
+    <DataTable class="clickable" style="min-width: 690px; overflow-x: visible;">
         <Head>
             <Row>
-
-                <Cell class="headCell">
-                    <span>#</span><br>
-
+                <Cell class="headCell" on:click={openSearchNameMenu}>
+                    <Text>
+                        <PrimaryText>#</PrimaryText>
+                        <SecondaryText></SecondaryText>
+                    </Text>
                 </Cell>
 
                 <Cell class="headCell" on:click={openSearchNameMenu}>
                     <Text>
                         <PrimaryText>Désignation</PrimaryText>
                         <SecondaryText>
-                            <i class="fas fa-search"></i>
-                            {searchName}
+                            {#if searchName.length}
+                                <i class="fas fa-search"></i>
+                                {searchName}
+                            {/if}
                         </SecondaryText>
                     </Text>
                     <MenuSurface bind:this={searchNameMenu}>
                         <div style="margin: 1em;">
                             <Textfield
-                            on:input={searchNameInput}
+                            on:input={searchInput}
                             id="searchNameInput"
                             bind:value={searchName}
-                            label="Désignation"
+                            label="Ref / désignation"
                             withLeadingIcon>
                                 <Icon class="material-icons">search</Icon>
                             </Textfield>
@@ -191,8 +208,28 @@
                     </Menu>
                 </Cell>
 
-                <Cell class="headCell">
-                    <span>Fournisseur</span><br>
+                <Cell class="headCell" on:click={openSearchProviderMenu}>
+                    <Text>
+                        <PrimaryText>Fournisseur</PrimaryText>
+                        <SecondaryText>
+                        {#if searchProvider.length}
+                            <i class="fas fa-search"></i>
+                            {searchProvider}
+                        {/if}
+                        </SecondaryText>
+                    </Text>
+                    <MenuSurface bind:this={searchProviderMenu}>
+                        <div style="margin: 1em;">
+                            <Textfield
+                            on:input={searchInput}
+                            id="searchProviderInput"
+                            bind:value={searchProvider}
+                            label="Fournisseur"
+                            withLeadingIcon>
+                                <Icon class="material-icons">search</Icon>
+                            </Textfield>
+                        </div>
+                    </MenuSurface>
                 </Cell>
 
             </Row>

@@ -1,6 +1,7 @@
 var express = require('express')
 var Article = require('../models/article')
 var Troc = require('../models/troc')
+var User = require('../models/user')
 var { createArticle, deleteArticle, getAutorization } = require('../controllers/article')
 var { checkLogin } = require('../controllers/user')
 var router = express.Router()
@@ -43,7 +44,7 @@ router
 	})
 	.delete('/:id', deleteArticle)
 	.get('/search', (req, res, next) => {
-		let { search, troc, provider, providernot, statut, limit, skip, pricesort } = req.query
+		let { troc, search, searchprovider, provider, providernot, statut, limit, skip, pricesort } = req.query
 		let query = {}
 		let sort = {}
 
@@ -87,17 +88,34 @@ router
 			sort.price = pricesort
 		}
 
-		Article.find(query).populate('provider', 'name').sort(sort).skip(skip).limit(limit).exec((err, articles) => {
-			if (err) return next(err)
-			res.json(articles)
-		})
+		if (searchprovider) {
+			User.find({name: new RegExp(searchprovider, 'i')}).select('_id').exec((err, usersId) => {
+				if (err) return next(err)
+				query.$and.push({'provider': {$in: usersId.map(user => user._id)}})
+				let articleQuery = Article.find(query)
+				Article.find(query).populate('provider', 'name').sort(sort).skip(skip).limit(limit).exec((err, articles) => {
+					if (err) return next(err)
+					Article.find(query).countDocuments((err, count) => {
+						if (err) return next(err)
+						res.json({articles, count})
+					})
+				})
+			})
+		}else{
+			Article.find(query).populate('provider', 'name').sort(sort).skip(skip).limit(limit).exec((err, articles) => {
+				if (err) return next(err)
+				Article.find(query).countDocuments((err, articlesMatchCount) => {
+					if (err) return next(err)
+					res.json({articles, articlesMatchCount})
+				})
+			})
+		}
 
 	})
 	.get('/:id', (req, res, next) => {
 		Article.findById(req.params.id, (err, art) => {
 			if (err) return next(err)
 			res.json(art)
-
 		})
 	})
 	.patch('/', checkLogin, (req, res, next) => {

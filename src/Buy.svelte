@@ -34,21 +34,27 @@
     let skip = 0
 
     async function getArticles() {
-        let res = await fetch(`/articles/search?troc=${$troc._id}&search=${search}&limit=${LIMIT_LIST_A}&skip=${skip}&statut=valided${user._id ? `&providernot=${user._id}` :''}`)
+
+        let req = `/articles/search?troc=${$troc._id}&limit=${LIMIT_LIST_A}&skip=${skip}`
+        req += `&statut=valided`
+        req += `&search=${search}`
+        req += `${user._id ? `&providernot=${user._id}` :''}`
+
+        let res = await fetch(req)
         let json = await res.json()
 
         if(res.ok) {
-
-            if (json.length < LIMIT_LIST_A) noMoreResults = true
-            else noMoreResults = false
-
+            
+            noMoreResults  = json.articles.length < LIMIT_LIST_A
+            
             if (!!skip) {
-                articles = [...articles, ...json]
+                articles = [...articles, ...json.articles]
             }else{
-                articles = json
+                articles = json.articles
             }
-
+            
             articles = articles.filter(a => cart.map(c => c._id).indexOf(a._id) == -1)
+
             return
         }
     }
