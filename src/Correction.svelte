@@ -3,6 +3,7 @@
     import Textfield from '@smui/textfield'
     import DataTable, { Head, Body, Row, Cell } from '@smui/data-table'
     import List, { Item, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list'
+    import FormField from '@smui/form-field'
     import Checkbox from '@smui/checkbox'
     import Button from '@smui/button'
     import Menu from '@smui/menu'
@@ -22,6 +23,22 @@
     let limitArticles = 10
     let skipArticles = 0
     let waitArticles //Timeout
+
+    let fieldsMenu
+    let fields = [
+        {label: 'Désignation', actived: true, disabled: true},
+        {label: 'Statut', actived: true},
+        {label: 'Création', actived: false},
+        {label: 'Fournisseur', actived: true},
+        {label: 'Validation', actived: false},
+        {label: 'Validateur', actived: false},
+        {label: 'Vente', actived: false},
+        {label: 'Récupération', actived: false},
+        {label: 'Caissier', actived: false},
+        {label: 'Prix', actived: true},
+        {label: 'Frais', actived: false},
+        {label: 'Marge', actived: false},
+    ]
 
     //Name and ref commande
     let searchNameMenu
@@ -131,9 +148,26 @@
 
 </script>
 
-        
+
 <br>
 <div style="text-align: center;">
+
+    <div class="w3-right w3-margin-right w3-margin-bottom">
+        <Button on:click={() => fieldsMenu.setOpen(true)} variant="outlined" color="secondary">
+            Champs
+        </Button>
+        <MenuSurface bind:this={fieldsMenu}>
+            <div style="margin: 1em;">
+                {#each fields as field}
+                    <FormField style="display: flex;">
+                        <Checkbox bind:checked={field.actived} bind:disabled={field.disabled}/>
+                        <span slot="label">{field.label}</span>
+                    </FormField>
+                {/each}
+            </div>
+        </MenuSurface>
+    </div>
+
     <DataTable class="clickable" style="min-width: 690px; overflow-x: visible;">
         <Head>
             <Row>
@@ -255,24 +289,26 @@
                 {/await}
 
             {/await}
-        </Body>       
+        </Body>  
     </DataTable>
 
 </div>
 
 <br>
 
-{#if articles.length && !noMoreArticles}
-    <div class="w3-center">
+<div class="w3-center">
+    {#if articles.length && !noMoreArticles}
         <Button
         on:click={getMoreArticles}
         variant="outlined"
         color="secondary">
-                Plus de résultats
+                Plus de résultats {articles.length} / {articlesMatchCount}
         </Button>
+    {:else}
+        {articles.length} / {articlesMatchCount}
+    {/if}
     </div>
     <br><br><br><br><br><br>
-{/if}
 
 <style>
 

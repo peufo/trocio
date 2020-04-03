@@ -43,6 +43,27 @@ router
 		})
 	})
 	.delete('/:id', deleteArticle)
+	.get('/searchv2', (req, res, next) => {
+		let { troc, search, searchprovider, provider, providernot, statut, limit, skip, pricesort } = req.query
+
+		let aggregation = [
+			{ $lookup: { from: 'users', localField: 'provider', foreignField: '_id', as: 'provider'}},
+			{ $lookup: { from: 'users', localField: 'validator', foreignField: '_id', as: 'validator'}},
+			{ $lookup: { from: 'users', localField: 'seller', foreignField: '_id', as: 'seller'}},
+			{ $addFields: {
+				provider: {$arrayElemAt: ['$provider.name', 0]},
+				validator: {$arrayElemAt: ['$validator.name', 0]},
+				seller: {$arrayElemAt: ['$seller.name', 0]},
+			}}
+		]
+
+		Article.aggregate(aggregation).exec((err, articles) => {
+			if (err) return next(err)
+			res.json(articles)
+		})
+
+
+	})
 	.get('/search', (req, res, next) => {
 		let { troc, search, searchprovider, provider, providernot, statut, limit, skip, pricesort } = req.query
 		let query = {}
@@ -95,9 +116,9 @@ router
 				let articleQuery = Article.find(query)
 				Article.find(query).populate('provider', 'name').sort(sort).skip(skip).limit(limit).exec((err, articles) => {
 					if (err) return next(err)
-					Article.find(query).countDocuments((err, count) => {
+					Article.find(query).countDocuments((err, articlesMatchCount) => {
 						if (err) return next(err)
-						res.json({articles, count})
+						res.json({articles, articlesMatchCount})
 					})
 				})
 			})
