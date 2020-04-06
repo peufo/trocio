@@ -10,7 +10,7 @@
     import MenuSurface from '@smui/menu-surface'
     import Icon from '@smui/textfield/icon'
     
-    import { formatPrice } from './utils'
+    import { formatPrice, addStatutField } from './utils'
     import RowsPromise from './RowsPromise.svelte'
     
     export let troc = ''
@@ -24,92 +24,74 @@
     let skipArticles = 0
     let waitArticles //Timeout
 
+    //Options
+    const statutFiltersOptions = [
+        {queryValue: '',         label: 'Tous',     icon: ''},
+        {queryValue: 'proposed', label: 'Proposé',  icon: '<i class="fas fa-dot-circle w3-text-grey"></i>'},
+        {queryValue: 'valided',  label: 'En vente', icon: '<i class="fas fa-dot-circle w3-text-blue"></i>'},
+        {queryValue: 'sold',     label: 'Vendu',    icon: '<i class="fas fa-dot-circle w3-text-green"></i>'},
+        {queryValue: 'recover',  label: 'Récupéré', icon: '<i class="fas fa-dot-circle w3-text-orange"></i>'},
+    ]
+    const sortOptions = [
+        {queryValue: '',   label: 'Non trié',    icon: '<i class="fas fa-bars"></i>'},
+        {queryValue: '1',  label: 'Croissant',   icon: '<i class="fas fa-sort-amount-down-alt"></i>'},
+        {queryValue: '-1', label: 'Décroissant', icon: '<i class="fas fa-sort-amount-down"></i>'}
+    ]
+
+    //TODO: no big difference between sort and filter type ... this is options type
     let fieldsMenu
     let fields = [
-        {label: 'Désignation', actived: true, disabled: true},
-        {label: 'Statut', actived: true},
-        {label: 'Création', actived: false},
-        {label: 'Fournisseur', actived: true},
-        {label: 'Validation', actived: false},
-        {label: 'Validateur', actived: false},
-        {label: 'Vente', actived: false},
-        {label: 'Récupération', actived: false},
-        {label: 'Caissier', actived: false},
-        {label: 'Prix', actived: true},
-        {label: 'Frais', actived: false},
-        {label: 'Marge', actived: false},
+        {label: '#',            checked: true,  typeMenu: 'search', queryName: 'ref',             dataName: 'ref',       dataType: 'string', disabled: true},
+        {label: 'Désignation',  checked: true,  typeMenu: 'search', queryName: 'search',          dataName: 'name',      dataType: 'string', disabled: true},
+        {label: 'Statut',       checked: true,  typeMenu: 'filter', queryName: 'statut',          dataName: 'statut',    dataType: 'string', options: statutFiltersOptions},
+        {label: 'Création',     checked: false, typeMenu: 'sort',   queryName: 'sortcreatedat',   dataName: 'createdAt', dataType: 'date'},
+        {label: 'Fournisseur',  checked: true,  typeMenu: 'search', queryName: 'searchprovider',  dataName: 'provider',  dataType: 'string'},
+        {label: 'Validation',   checked: false, typeMenu: 'sort',   queryName: 'sortvalided',     dataName: 'valided',   dataType: 'date'},
+        {label: 'Validateur',   checked: false, typeMenu: 'search', queryName: 'searchvalidator', dataName: 'validator', dataType: 'string'},
+        {label: 'Vente',        checked: false, typeMenu: 'sort',   queryName: 'sortsold',        dataName: 'sold',      dataType: 'date'},
+        {label: 'Récupération', checked: false, typeMenu: 'sort',   queryName: 'sortrecover',     dataName: 'recover',   dataType: 'date'},
+        {label: 'Caissier',     checked: false, typeMenu: 'search', queryName: 'searchcashier',   dataName: 'seller',    dataType: 'string'},
+        {label: 'Prix',         checked: true,  typeMenu: 'sort',   queryName: 'sortprice',       dataName: 'price',     dataType: 'number'},
+        {label: 'Frais',        checked: false, typeMenu: 'sort',   queryName: 'sortfee',         dataName: 'fee',       dataType: 'number'},
+        {label: 'Marge',        checked: false, typeMenu: 'sort',   queryName: 'sortmargin',      dataName: 'margin',    dataType: 'number'},
     ]
-
-    //Name and ref commande
-    let searchNameMenu
-    let searchName = ''
-
-    //Statut commande
-    let statutFilterMenu
-    let status = [
-        {filter: '', label: 'Tous'},
-        {filter: 'proposed', label: 'Proposé'},
-        {filter: 'valided', label: 'En vente'},
-        {filter: 'sold', label: 'Vendu'},
-        {filter: 'recover', label: 'Récupéré'},
-    ]
-    let statutFilter = status[0].filter
-    let statutLabel = status[0].label
-
-    //Price commande
-    let priceSortMenu
-    let priceSortMethodes = [
-        {sort: '',  label: 'Non trié', icon: '<i class="fas fa-bars"></i>'},
-        {sort: 1, label: 'Croissant', icon: '<i class="fas fa-sort-amount-down-alt"></i>'},
-        {sort: -1, label: 'Décroissant', icon: '<i class="fas fa-sort-amount-down"></i>'}
-    ]
-    let priceSortIndex = 0
-
-    //Provider commande
-    let searchProviderMenu
-    let searchProvider = ''
+    fields = fields.map(field => {
+        field.queryValue = ''
+        field.queryLabel = ''
+        field.queryIcon = ''
+        if (field.typeMenu == 'sort') field.options = sortOptions
+        return field
+    })
 
     onMount(() => {
         articlesPromise = getArticles()
     })
 
-    function openSearchNameMenu() {
-        searchNameMenu.setOpen(true)
-        setTimeout(() => document.querySelector('#searchNameInput input').focus(), 200)
-    }
-
-    function openSearchProviderMenu() {
-        searchProviderMenu.setOpen(true)
-        setTimeout(() => document.querySelector('#searchProviderInput input').focus(), 200)
-    }
-
-    function filtreStatut(newStatutIndex) {
-        statutFilter = status[newStatutIndex].filter
-        statutLabel = status[newStatutIndex].label
-        articles = []
-        skipArticles = 0
-        articlesPromise = getArticles()
-    }
-
-	function getStatus(art) {
-		if (!art.valided) return 1
-		if (art.sold) return 3
-		if (art.recover) return 4
-		return 2
-    }
-
-    function sortPrice(newSortIndex) {
-        priceSortIndex = newSortIndex
-        articles = []
-        skipArticles = 0
-        articlesPromise = getArticles()
+    function openMenu(field) {
+        field.menu.setOpen(true)
+        if (field.typeMenu == 'search') {
+            setTimeout(() => document.querySelector(`#search${field.dataName}Input input`).focus(), 200)
+        }
     }
 
     function searchInput() {
         //wait 200mm for executing getArticles()
         skipArticles = 0
         if (waitArticles) clearTimeout(waitArticles)
-        waitArticles = setTimeout(() => articlesPromise = getArticles(), 200)
+        waitArticles = setTimeout(() => articlesPromise = getArticles(), 300)
+    }
+    
+    function selectOption(field, selectedOption) {
+        if (field.typeMenu == 'sort'){ //remove all sort
+            fields.filter(f => f.typeMenu == 'sort').forEach(f => f.queryValue = '')
+        }
+        field.queryValue = field.options[selectedOption].queryValue
+        field.queryLabel = field.options[selectedOption].label
+        field.queryIcon = field.options[selectedOption].icon
+        fields = fields //Compute
+        articles = []
+        skipArticles = 0
+        articlesPromise = getArticles()
     }
 
     function getMoreArticles() {
@@ -119,25 +101,26 @@
     
     async function getArticles() {
 
-        let req = `/articles/search?troc=${troc}&limit=${limitArticles}&skip=${skipArticles}`
-        if (searchName.length)      req += `&search=${searchName}`
-        if (statutFilter.length)    req += `&statut=${statutFilter}`
-        if (priceSortIndex)         req += `&pricesort=${priceSortMethodes[priceSortIndex].sort}`
-        if (searchProvider.length)  req += `&searchprovider=${searchProvider}`
+        let req = `/articles/searchv2?troc=${troc}&limit=${limitArticles}&skip=${skipArticles}`
+        fields.forEach(f => {
+            if (f.queryValue.length) req += `&${f.queryName}=${f.queryValue}`
+        })
 
         let res = await fetch(req)
         let json = await res.json()
+        let newArticles = []
 
         if(res.ok) {
             
             articlesMatchCount = json.articlesMatchCount
+            newArticles = addStatutField(json.articles)
 
-            noMoreArticles = json.articles.length < limitArticles
+            noMoreArticles = newArticles.length < limitArticles
 
             if (!!skipArticles) {
-                articles = [...articles, ...json.articles]
+                articles = [...articles, ...newArticles]
             }else{
-                articles = json.articles
+                articles = newArticles
             }
 
         }else{
@@ -148,7 +131,6 @@
 
 </script>
 
-
 <br>
 <div style="text-align: center;">
 
@@ -158,10 +140,10 @@
         </Button>
         <MenuSurface bind:this={fieldsMenu}>
             <div style="margin: 1em;">
-                {#each fields as field}
+                {#each fields as {label, checked, disabled}}
                     <FormField style="display: flex;">
-                        <Checkbox bind:checked={field.actived} bind:disabled={field.disabled}/>
-                        <span slot="label">{field.label}</span>
+                        <Checkbox bind:checked={checked} bind:disabled={disabled}/>
+                        <span slot="label">{label}</span>
                     </FormField>
                 {/each}
             </div>
@@ -171,100 +153,43 @@
     <DataTable class="clickable" style="min-width: 690px; overflow-x: visible;">
         <Head>
             <Row>
-                <Cell class="headCell" on:click={openSearchNameMenu}>
-                    <Text>
-                        <PrimaryText>#</PrimaryText>
-                        <SecondaryText></SecondaryText>
-                    </Text>
-                </Cell>
+                {#each fields.filter(f => f.checked) as field}
+                    <Cell class="headCell" on:click={() => openMenu(field)}>
+                        <Text>
+                            <PrimaryText>{field.label}</PrimaryText>
+                            <SecondaryText>
+                                {#if field.typeMenu == 'search' && field.queryValue.length}
+                                    <i class="fas fa-search"></i>
+                                    {field.queryValue}
+                                {:else if (field.typeMenu == 'filter'  || field.typeMenu == 'sort') && field.queryValue.length}
+                                    {@html field.queryIcon}
+                                    {field.queryLabel}
+                                {/if}
+                            </SecondaryText>
+                        </Text>
+                        {#if field.typeMenu == 'search'}
+                            <MenuSurface bind:this={field.menu} style="min-width: 140px;">
+                                <div style="margin: 1em;">
+                                    <Textfield id={`search${field.dataName}Input`} on:input={searchInput} bind:value={field.queryValue} label={field.label} withLeadingIcon>
+                                        <Icon class="material-icons">search</Icon>
+                                    </Textfield>
+                                </div>
+                            </MenuSurface>
+                        {:else if field.typeMenu == 'sort' || field.typeMenu == 'filter'}
+                            <Menu bind:this={field.menu}>
+                                <List>
+                                    {#each field.options as option, i}
+                                        <Item on:click={() => selectOption(field, i)}>
+                                            <Graphic>{@html option.icon}</Graphic>
+                                            <Text>{option.label}</Text>
+                                        </Item>
+                                    {/each}
+                                </List>
+                            </Menu>
+                        {/if}                  
+                    </Cell>
 
-                <Cell class="headCell" on:click={openSearchNameMenu}>
-                    <Text>
-                        <PrimaryText>Désignation</PrimaryText>
-                        <SecondaryText>
-                            {#if searchName.length}
-                                <i class="fas fa-search"></i>
-                                {searchName}
-                            {/if}
-                        </SecondaryText>
-                    </Text>
-                    <MenuSurface bind:this={searchNameMenu}>
-                        <div style="margin: 1em;">
-                            <Textfield
-                            on:input={searchInput}
-                            id="searchNameInput"
-                            bind:value={searchName}
-                            label="Ref / désignation"
-                            withLeadingIcon>
-                                <Icon class="material-icons">search</Icon>
-                            </Textfield>
-                        </div>
-                    </MenuSurface>
-                </Cell>
-
-                <Cell class="headCell" on:click={statutFilterMenu.setOpen(true)}>
-
-                    <Text>
-                        <PrimaryText>Status</PrimaryText>
-                        <SecondaryText>
-                            <i class="fas fa-filter"></i>
-                            {statutLabel}
-                        </SecondaryText>
-                    </Text>
-                    
-                    <Menu bind:this={statutFilterMenu}>
-                        <List>
-                            {#each status as statut, i}
-                                <Item on:click={() => filtreStatut(i)}><Text>{statut.label}</Text></Item>
-                            {/each}
-                        </List>
-                    </Menu>
-
-                </Cell>
-
-                <Cell class="headCell" on:click={priceSortMenu.setOpen(true)}>
-                    <Text>
-                        <PrimaryText>Prix</PrimaryText>
-                        <SecondaryText>
-                            {@html priceSortMethodes[priceSortIndex].icon}
-                            {priceSortMethodes[priceSortIndex].label}
-                        </SecondaryText>
-                    </Text>
-                    <Menu bind:this={priceSortMenu}>
-                        <List>
-                            {#each priceSortMethodes as priceSortMethode, i}
-                                <Item on:click={() => sortPrice(i)}>
-                                    <Graphic>{@html priceSortMethode.icon}</Graphic>
-                                    <Text>{priceSortMethode.label}</Text>
-                                </Item>
-                            {/each}
-                        </List>
-                    </Menu>
-                </Cell>
-
-                <Cell class="headCell" on:click={openSearchProviderMenu}>
-                    <Text>
-                        <PrimaryText>Fournisseur</PrimaryText>
-                        <SecondaryText>
-                        {#if searchProvider.length}
-                            <i class="fas fa-search"></i>
-                            {searchProvider}
-                        {/if}
-                        </SecondaryText>
-                    </Text>
-                    <MenuSurface bind:this={searchProviderMenu}>
-                        <div style="margin: 1em;">
-                            <Textfield
-                            on:input={searchInput}
-                            id="searchProviderInput"
-                            bind:value={searchProvider}
-                            label="Fournisseur"
-                            withLeadingIcon>
-                                <Icon class="material-icons">search</Icon>
-                            </Textfield>
-                        </div>
-                    </MenuSurface>
-                </Cell>
+                {/each}
 
             </Row>
         </Head>
@@ -274,13 +199,19 @@
             {:then}
                 {#each articles as article}
                     <Row style="text-align: left;">
-                        <Cell numeric>{article.ref}</Cell>
-                        <Cell>{article.name}</Cell>
-                        <Cell>{status[getStatus(article)].label}</Cell>
-                        <Cell numeric>
-                            {article.price.toFixed(2)}
-                        </Cell>
-                        <Cell>{article.provider.name}</Cell>
+                        {#each fields.filter(f => f.checked) as field}
+                            <Cell numeric={field.dataType == 'number'}>
+                                {#if !article[field.dataName]}
+                                    -
+                                {:else if field.dataType == 'date'}
+                                    {new Date(article[field.dataName]).toLocaleString()}
+                                {:else if field.dataType == 'number'}
+                                    {article[field.dataName].toFixed(2)}
+                                {:else}
+                                    {article[field.dataName]}
+                                {/if}
+                            </Cell>
+                        {/each}
                     </Row>
                 {/each}
 

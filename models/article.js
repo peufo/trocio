@@ -21,6 +21,14 @@ var articleModel = new Schema({
 })
 
 articleModel.set('timestamps', true)
-
+/*
+articleModel.virtual('statut').get(function() {
+	let statut = 'Proposé'
+	if (this.valided) statut = 'Validé'
+	if (this.sold) statut = 'Vendu'
+	if (this.recover) statut = 'Récupéré'
+	return statut
+})
+*/
 
 module.exports = mongoose.model('article', articleModel);

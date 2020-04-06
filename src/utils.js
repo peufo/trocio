@@ -72,3 +72,13 @@ export function formatPrice(e) {
 	} 
 	e.target.value = val
 }
+
+export function addStatutField(articles) {
+	return articles.map(art => {
+		art.statut = 'Proposé'
+		if (art.valided) art.statut = 'En vente'
+		if (art.sold) art.statut = 'Vendu'
+		if (art.recover) art.statut = 'Récupéré'
+		return art
+	})
+}

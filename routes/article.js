@@ -5,6 +5,7 @@ var User = require('../models/user')
 var { createArticle, deleteArticle, getAutorization } = require('../controllers/article')
 var { checkLogin } = require('../controllers/user')
 var router = express.Router()
+const ObjectId = require('mongoose').Types.ObjectId
 
 router
 	.get('/', (req, res, next) => {
@@ -44,28 +45,82 @@ router
 	})
 	.delete('/:id', deleteArticle)
 	.get('/searchv2', (req, res, next) => {
-		let { troc, search, searchprovider, provider, providernot, statut, limit, skip, pricesort } = req.query
+		let { troc, search, searchprovider, provider, providernot, statut, limit, skip, sortprice } = req.query
+		
+		let aggregation = []
+		let match = {}
+		let sort = {}
+		
+		match.$and = [{name : {$ne: ""}}] //not article without name
+		if (troc) match.$and.push({troc: ObjectId(troc)})
+		if (providernot) match.$and.push({'provider': {$ne: providernot}})
+		if (provider) match.$and.push({'provider': {$in: provider}})
+		
+		switch (statut) {
+			case 'proposed':
+				match.$and.push({'valided': {$exists: false}})
+				break
+			case 'valided':
+				match.$and.push({'valided': {$exists: true}})
+				match.$and.push({'sold': {$exists: false}})
+				match.$and.push({'recover': {$exists: false}})
+				break
+				case 'sold':
+					match.$and.push({'sold': {$exists: true}})
+					break	
+					case 'recover':		
+					match.$and.push({'recover': {$exists: true}})
+					break
+				}
+				
+				if (search && search.length) {
+			let regexp = new RegExp(search, 'i')
+			match.$or = []
+			match.$or.push({'name': regexp})
+			match.$or.push({'ref': 	regexp})
+		}
+		
+		//add the first match with user IDs
+		aggregation.push({$match: match})
 
-		let aggregation = [
-			{ $lookup: { from: 'users', localField: 'provider', foreignField: '_id', as: 'provider'}},
-			{ $lookup: { from: 'users', localField: 'validator', foreignField: '_id', as: 'validator'}},
-			{ $lookup: { from: 'users', localField: 'seller', foreignField: '_id', as: 'seller'}},
-			{ $addFields: {
-				provider: {$arrayElemAt: ['$provider.name', 0]},
-				validator: {$arrayElemAt: ['$validator.name', 0]},
-				seller: {$arrayElemAt: ['$seller.name', 0]},
-			}}
-		]
+		//add sort
+		if (!isNaN(sortprice)) {
+			sort.price = Number(sortprice)
+			aggregation.push({$sort: sort})
+		}
+		
+		//replace provider, validator and seller id by name
+		aggregation.push({ $lookup: { from: 'users', localField: 'provider', foreignField: '_id', as: 'provider'}})
+		aggregation.push({ $lookup: { from: 'users', localField: 'validator', foreignField: '_id', as: 'validator'}})
+		aggregation.push({ $lookup: { from: 'users', localField: 'seller', foreignField: '_id', as: 'seller'}})
+		aggregation.push({ $addFields: {
+			provider: {$arrayElemAt: ['$provider.name', 0]},
+			validator: {$arrayElemAt: ['$validator.name', 0]},
+			seller: {$arrayElemAt: ['$seller.name', 0]},
+		}})
+		
+		//If $sort stage is here, the compute is so sloly... Probably because $addFields is deplaced after (optimizazion fail)
+
+		//add skip
+		skip = Number(skip)
+		if (!skip) skip = 0
+		aggregation.push({$skip: skip})
+
+		//add limit
+		limit = Number(limit)
+		if (!limit) limit = 40
+		else if(limit > 100) limit = 100
+		aggregation.push({$limit: limit})
+		
 
 		Article.aggregate(aggregation).exec((err, articles) => {
 			if (err) return next(err)
-			res.json(articles)
+			res.json({articles})
 		})
-
 
 	})
 	.get('/search', (req, res, next) => {
-		let { troc, search, searchprovider, provider, providernot, statut, limit, skip, pricesort } = req.query
+		let { troc, search, searchprovider, provider, providernot, statut, limit, skip, sortprice } = req.query
 		let query = {}
 		let sort = {}
 
@@ -105,8 +160,8 @@ router
 		if (!limit) limit = 40
 		else if(limit > 100) limit = 100
 
-		if (pricesort) {
-			sort.price = pricesort
+		if (sortprice) {
+			sort.price = sortprice
 		}
 
 		if (searchprovider) {
@@ -136,6 +191,7 @@ router
 	.get('/:id', (req, res, next) => {
 		Article.findById(req.params.id, (err, art) => {
 			if (err) return next(err)
+			console.log(art)
 			res.json(art)
 		})
 	})
