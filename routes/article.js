@@ -45,49 +45,40 @@ router
 	})
 	.delete('/:id', deleteArticle)
 	.get('/searchv2', (req, res, next) => {
-		let { troc, search, searchprovider, provider, providernot, statut, limit, skip, sortprice } = req.query
-		
+		let { troc, limit, skip, filter_statut, provider, providernot } = req.query
+
 		let aggregation = []
-		let match = {}
+		let limitStages = []
+		let metaStages = []
+		let matchA = {} //Before lookup
+		let matchB = {} //After lookup
 		let sort = {}
 		
-		match.$and = [{name : {$ne: ""}}] //not article without name
-		if (troc) match.$and.push({troc: ObjectId(troc)})
-		if (providernot) match.$and.push({'provider': {$ne: providernot}})
-		if (provider) match.$and.push({'provider': {$in: provider}})
+		matchA.$and = [{name : {$ne: ""}}] //not article without name
+		if (troc) matchA.$and.push({troc: ObjectId(troc)})
+		if (provider) matchA.$and.push({'provider': {$in: provider}})
+		if (providernot) matchA.$and.push({'provider': {$ne: providernot}})
 		
-		switch (statut) {
+		switch (filter_statut) {
 			case 'proposed':
-				match.$and.push({'valided': {$exists: false}})
+				matchA.$and.push({'valided': {$exists: false}})
 				break
 			case 'valided':
-				match.$and.push({'valided': {$exists: true}})
-				match.$and.push({'sold': {$exists: false}})
-				match.$and.push({'recover': {$exists: false}})
+				matchA.$and.push({'valided': {$exists: true}})
+				matchA.$and.push({'sold': {$exists: false}})
+				matchA.$and.push({'recover': {$exists: false}})
 				break
-				case 'sold':
-					match.$and.push({'sold': {$exists: true}})
-					break	
-					case 'recover':		
-					match.$and.push({'recover': {$exists: true}})
-					break
-				}
-				
-				if (search && search.length) {
-			let regexp = new RegExp(search, 'i')
-			match.$or = []
-			match.$or.push({'name': regexp})
-			match.$or.push({'ref': 	regexp})
+			case 'sold':
+				matchA.$and.push({'sold': {$exists: true}})
+				break	
+				case 'recover':		
+				matchA.$and.push({'recover': {$exists: true}})
+				break
 		}
-		
-		//add the first match with user IDs
-		aggregation.push({$match: match})
 
-		//add sort
-		if (!isNaN(sortprice)) {
-			sort.price = Number(sortprice)
-			aggregation.push({$sort: sort})
-		}
+		//add the matchA before lookup
+		aggregation.push({$match: matchA})
+
 		
 		//replace provider, validator and seller id by name
 		aggregation.push({ $lookup: { from: 'users', localField: 'provider', foreignField: '_id', as: 'provider'}})
@@ -99,23 +90,48 @@ router
 			seller: {$arrayElemAt: ['$seller.name', 0]},
 		}})
 		
-		//If $sort stage is here, the compute is so sloly... Probably because $addFields is deplaced after (optimizazion fail)
-
+		//add sort
+		for (key in req.query) {
+			if (key.indexOf('sort_') != -1 && !isNaN(req.query[key])) {
+				sort[key.replace('sort_', '')] = Number(req.query[key])
+			}
+		}
+		if (JSON.stringify(sort) != '{}') aggregation.push({$sort: sort})
+		
+		//add search Match
+		for (key in req.query) {
+			if (key.indexOf('search_') != -1) {
+				matchB[key.replace('search_', '')] = new RegExp(req.query[key], 'i')
+			}
+		}
+		if (JSON.stringify(matchB) != '{}') aggregation.push({$match: matchB})
+		
 		//add skip
 		skip = Number(skip)
 		if (!skip) skip = 0
-		aggregation.push({$skip: skip})
-
+		limitStages.push({$skip: skip})
+		
 		//add limit
 		limit = Number(limit)
 		if (!limit) limit = 40
 		else if(limit > 100) limit = 100
-		aggregation.push({$limit: limit})
+		limitStages.push({$limit: limit})
 		
+		//add compute metadata
+		metaStages.push({ $group : {
+			_id : null, 
+			count: {$sum : 1},
+			sumPrice: {$sum: '$price'},
+			sumFee: {$sum: '$fee'},
+			sumMargin: {$sum: '$margin'}
+		}})
 
-		Article.aggregate(aggregation).exec((err, articles) => {
+		//split aggregation with $facet
+		aggregation.push({$facet: {articles: limitStages, info: metaStages}})
+
+		Article.aggregate(aggregation).exec((err, result) => {
 			if (err) return next(err)
-			res.json({articles})
+			res.json(result[0])
 		})
 
 	})

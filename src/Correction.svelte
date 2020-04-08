@@ -16,7 +16,7 @@
     export let troc = ''
 
     let articles = []
-    let articlesMatchCount = 0
+    let articlesInfo = []
     let articlesPromise
     let moreArticlesPromise
     let noMoreArticles = false
@@ -39,12 +39,13 @@
     ]
 
     //TODO: no big difference between sort and filter type ... this is options type
+    //But, sort menu need a range filter
     let fieldsMenu
     let fields = [
-        {label: '#',            checked: true,  typeMenu: 'search', queryName: 'ref',             dataName: 'ref',       dataType: 'string', disabled: true},
-        {label: 'Désignation',  checked: true,  typeMenu: 'search', queryName: 'search',          dataName: 'name',      dataType: 'string', disabled: true},
+        {label: '#',            checked: true,  typeMenu: 'search', queryName: 'searchref',       dataName: 'ref',       dataType: 'string', disabled: true},
+        {label: 'Désignation',  checked: true,  typeMenu: 'search', queryName: 'searchname',      dataName: 'name',      dataType: 'string', disabled: true},
         {label: 'Statut',       checked: true,  typeMenu: 'filter', queryName: 'statut',          dataName: 'statut',    dataType: 'string', options: statutFiltersOptions},
-        {label: 'Création',     checked: false, typeMenu: 'sort',   queryName: 'sortcreatedat',   dataName: 'createdAt', dataType: 'date'},
+        {label: 'Création',     checked: false, typeMenu: 'sort',   queryName: 'sortcreateAt',    dataName: 'createdAt', dataType: 'date'},
         {label: 'Fournisseur',  checked: true,  typeMenu: 'search', queryName: 'searchprovider',  dataName: 'provider',  dataType: 'string'},
         {label: 'Validation',   checked: false, typeMenu: 'sort',   queryName: 'sortvalided',     dataName: 'valided',   dataType: 'date'},
         {label: 'Validateur',   checked: false, typeMenu: 'search', queryName: 'searchvalidator', dataName: 'validator', dataType: 'string'},
@@ -103,7 +104,7 @@
 
         let req = `/articles/searchv2?troc=${troc}&limit=${limitArticles}&skip=${skipArticles}`
         fields.forEach(f => {
-            if (f.queryValue.length) req += `&${f.queryName}=${f.queryValue}`
+            if (f.queryValue.length) req += `&${f.typeMenu}_${f.dataName}=${f.queryValue}`
         })
 
         let res = await fetch(req)
@@ -112,7 +113,7 @@
 
         if(res.ok) {
             
-            articlesMatchCount = json.articlesMatchCount
+            articlesInfo = json.info[0] || {count: 0}
             newArticles = addStatutField(json.articles)
 
             noMoreArticles = newArticles.length < limitArticles
@@ -233,10 +234,10 @@
         on:click={getMoreArticles}
         variant="outlined"
         color="secondary">
-                Plus de résultats {articles.length} / {articlesMatchCount}
+                Plus de résultats {articles.length} / {articlesInfo.count}
         </Button>
     {:else}
-        {articles.length} / {articlesMatchCount}
+        {articles.length} / {articlesInfo.count}
     {/if}
     </div>
     <br><br><br><br><br><br>
