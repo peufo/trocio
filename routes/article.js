@@ -47,64 +47,57 @@ router
 	.get('/searchv2', (req, res, next) => {
 		let { troc, limit, skip, filter_statut, provider, providernot } = req.query
 
-		let aggregation = []
 		let limitStages = []
-		let metaStages = []
-		let matchA = {} //Before lookup
-		let matchB = {} //After lookup
+		let match = {}
+		let matchSearch = {}
+		let matchUser = {}
 		let sort = {}
 		
-		matchA.$and = [{name : {$ne: ""}}] //not article without name
-		if (troc) matchA.$and.push({troc: ObjectId(troc)})
-		if (provider) matchA.$and.push({'provider': {$in: provider}})
-		if (providernot) matchA.$and.push({'provider': {$ne: providernot}})
+		//addMatch
+		match.$and = [{name : {$ne: ""}}] //not article without name
+		if (troc) match.$and.push({troc: ObjectId(troc)})
+		if (provider) match.$and.push({'provider': {$in: provider}})
+		if (providernot) match.$and.push({'provider': {$ne: providernot}})
 		
 		switch (filter_statut) {
 			case 'proposed':
-				matchA.$and.push({'valided': {$exists: false}})
+				match.$and.push({'valided': {$exists: false}})
 				break
 			case 'valided':
-				matchA.$and.push({'valided': {$exists: true}})
-				matchA.$and.push({'sold': {$exists: false}})
-				matchA.$and.push({'recover': {$exists: false}})
+				match.$and.push({'valided': {$exists: true}})
+				match.$and.push({'sold': {$exists: false}})
+				match.$and.push({'recover': {$exists: false}})
 				break
 			case 'sold':
-				matchA.$and.push({'sold': {$exists: true}})
+				match.$and.push({'sold': {$exists: true}})
 				break	
-				case 'recover':		
-				matchA.$and.push({'recover': {$exists: true}})
+			case 'recover':		
+				match.$and.push({'recover': {$exists: true}})
 				break
 		}
 
-		//add the matchA before lookup
-		aggregation.push({$match: matchA})
+		//add matchUser
+		for (key in req.query) {
+			if (key.indexOf('user_') != -1) {
+				matchUser[key.replace('user_', '')] = req.query[key]
+			}
+		}
+		if (JSON.stringify(matchUser) != '{}') match.$and.push(matchUser)
 
-		
-		//replace provider, validator and seller id by name
-		aggregation.push({ $lookup: { from: 'users', localField: 'provider', foreignField: '_id', as: 'provider'}})
-		aggregation.push({ $lookup: { from: 'users', localField: 'validator', foreignField: '_id', as: 'validator'}})
-		aggregation.push({ $lookup: { from: 'users', localField: 'seller', foreignField: '_id', as: 'seller'}})
-		aggregation.push({ $addFields: {
-			provider: {$arrayElemAt: ['$provider.name', 0]},
-			validator: {$arrayElemAt: ['$validator.name', 0]},
-			seller: {$arrayElemAt: ['$seller.name', 0]},
-		}})
-		
+		//add matchSearch
+		for (key in req.query) {
+			if (key.indexOf('search_') != -1) {
+				matchSearch[key.replace('search_', '')] = new RegExp(req.query[key], 'i')
+			}
+		}
+		if (JSON.stringify(matchSearch) != '{}') match.$and.push(matchSearch)
+
 		//add sort
 		for (key in req.query) {
 			if (key.indexOf('sort_') != -1 && !isNaN(req.query[key])) {
 				sort[key.replace('sort_', '')] = Number(req.query[key])
 			}
 		}
-		if (JSON.stringify(sort) != '{}') aggregation.push({$sort: sort})
-		
-		//add search Match
-		for (key in req.query) {
-			if (key.indexOf('search_') != -1) {
-				matchB[key.replace('search_', '')] = new RegExp(req.query[key], 'i')
-			}
-		}
-		if (JSON.stringify(matchB) != '{}') aggregation.push({$match: matchB})
 		
 		//add skip
 		skip = Number(skip)
@@ -117,23 +110,26 @@ router
 		else if(limit > 100) limit = 100
 		limitStages.push({$limit: limit})
 		
-		//add compute metadata
-		metaStages.push({ $group : {
-			_id : null, 
-			count: {$sum : 1},
-			sumPrice: {$sum: '$price'},
-			sumFee: {$sum: '$fee'},
-			sumMargin: {$sum: '$margin'}
-		}})
-
-		//split aggregation with $facet
-		aggregation.push({$facet: {articles: limitStages, info: metaStages}})
-
-		Article.aggregate(aggregation).exec((err, result) => {
+		Article.find(match).sort(sort).skip(skip).limit(limit)
+			.populate('provider', 'name')
+			.populate('validator', 'name')
+			.populate('seller', 'name')
+			.lean().exec((err, articles) => {
 			if (err) return next(err)
-			res.json(result[0])
-		})
 
+			articles = articles.map(art => {
+				art.provider = art.provider.name
+				art.validator = art.validator ? art.validator.name : undefined
+				art.seller = art.seller ? art.seller.name : undefined
+				return art
+			})
+
+			Article.find(match).countDocuments((err, articlesMatchCount) => {
+				if (err) return next(err)
+				res.json({articles, articlesMatchCount})
+			})
+		})
+		
 	})
 	.get('/search', (req, res, next) => {
 		let { troc, search, searchprovider, provider, providernot, statut, limit, skip, sortprice } = req.query
@@ -184,7 +180,6 @@ router
 			User.find({name: new RegExp(searchprovider, 'i')}).select('_id').exec((err, usersId) => {
 				if (err) return next(err)
 				query.$and.push({'provider': {$in: usersId.map(user => user._id)}})
-				let articleQuery = Article.find(query)
 				Article.find(query).populate('provider', 'name').sort(sort).skip(skip).limit(limit).exec((err, articles) => {
 					if (err) return next(err)
 					Article.find(query).countDocuments((err, articlesMatchCount) => {
@@ -256,8 +251,12 @@ router
 						//Add author signature
 						if (patchedArt.validator) delete patchedArt.validator
 						if (patchedArt.seller) delete patchedArt.seller
-						if (patchedArt.valided != art.valided || patchedArt.refused != art.refused) art.validator = req.session.user._id 
-						if (patchedArt.sold != art.sold || patchedArt.recover != art.recover) art.seller = req.session.user._id 
+						if ((patchedArt.valided && patchedArt.valided != art.valided) || (patchedArt.refused && patchedArt.refused != art.refused)){
+							art.validator = req.session.user._id 
+						} 
+						if ((patchedArt.sold && patchedArt.sold != art.sold) || (patchedArt.recover && patchedArt.recover != art.recover)) {
+							 art.seller = req.session.user._id 
+						}
 
 						//PATCH
 						for(p in patchedArt) art[p] = patchedArt[p]
@@ -284,7 +283,6 @@ router
 			if(err || !art) return next(err || Error('Article not found'))
 			if (req.body._id) delete req.body._id
 			if (req.body.provider) delete req.body.provider
-
 
 			getAutorization(req.session.user._id, art, (err, authorization) => {
 				if (err) return next(err)

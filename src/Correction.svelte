@@ -12,11 +12,12 @@
     
     import { formatPrice, addStatutField } from './utils'
     import RowsPromise from './RowsPromise.svelte'
+    import SearchUser from './SearchUser.svelte'
     
     export let troc = ''
 
     let articles = []
-    let articlesInfo = []
+    let articlesMatchCount = 0
     let articlesPromise
     let moreArticlesPromise
     let noMoreArticles = false
@@ -42,25 +43,26 @@
     //But, sort menu need a range filter
     let fieldsMenu
     let fields = [
-        {label: '#',            checked: true,  typeMenu: 'search', queryName: 'searchref',       dataName: 'ref',       dataType: 'string', disabled: true},
-        {label: 'Désignation',  checked: true,  typeMenu: 'search', queryName: 'searchname',      dataName: 'name',      dataType: 'string', disabled: true},
-        {label: 'Statut',       checked: true,  typeMenu: 'filter', queryName: 'statut',          dataName: 'statut',    dataType: 'string', options: statutFiltersOptions},
-        {label: 'Création',     checked: false, typeMenu: 'sort',   queryName: 'sortcreateAt',    dataName: 'createdAt', dataType: 'date'},
-        {label: 'Fournisseur',  checked: true,  typeMenu: 'search', queryName: 'searchprovider',  dataName: 'provider',  dataType: 'string'},
-        {label: 'Validation',   checked: false, typeMenu: 'sort',   queryName: 'sortvalided',     dataName: 'valided',   dataType: 'date'},
-        {label: 'Validateur',   checked: false, typeMenu: 'search', queryName: 'searchvalidator', dataName: 'validator', dataType: 'string'},
-        {label: 'Vente',        checked: false, typeMenu: 'sort',   queryName: 'sortsold',        dataName: 'sold',      dataType: 'date'},
-        {label: 'Récupération', checked: false, typeMenu: 'sort',   queryName: 'sortrecover',     dataName: 'recover',   dataType: 'date'},
-        {label: 'Caissier',     checked: false, typeMenu: 'search', queryName: 'searchcashier',   dataName: 'seller',    dataType: 'string'},
-        {label: 'Prix',         checked: true,  typeMenu: 'sort',   queryName: 'sortprice',       dataName: 'price',     dataType: 'number'},
-        {label: 'Frais',        checked: false, typeMenu: 'sort',   queryName: 'sortfee',         dataName: 'fee',       dataType: 'number'},
-        {label: 'Marge',        checked: false, typeMenu: 'sort',   queryName: 'sortmargin',      dataName: 'margin',    dataType: 'number'},
+        {label: '#',            checked: true,  typeMenu: 'search', dataName: 'ref',       dataType: 'string', cellWidth: 50,  disabled: true},
+        {label: 'Désignation',  checked: true,  typeMenu: 'search', dataName: 'name',      dataType: 'string', cellWidth: 300, disabled: true},
+        {label: 'Statut',       checked: true,  typeMenu: 'filter', dataName: 'statut',    dataType: 'string', cellWidth: 90,  options: statutFiltersOptions},
+        {label: 'Création',     checked: false, typeMenu: 'sort',   dataName: 'createdAt', dataType: 'date',   cellWidth: 170},
+        {label: 'Fournisseur',  checked: true,  typeMenu: 'user',   dataName: 'provider',  dataType: 'string', cellWidth: 70},
+        {label: 'Validation',   checked: false, typeMenu: 'sort',   dataName: 'valided',   dataType: 'date',   cellWidth: 170},
+        {label: 'Validateur',   checked: false, typeMenu: 'user',   dataName: 'validator', dataType: 'string', cellWidth: 50},
+        {label: 'Vente',        checked: false, typeMenu: 'sort',   dataName: 'sold',      dataType: 'date',   cellWidth: 170},
+        {label: 'Récupération', checked: false, typeMenu: 'sort',   dataName: 'recover',   dataType: 'date',   cellWidth: 170},
+        {label: 'Caissier',     checked: false, typeMenu: 'user',   dataName: 'seller',    dataType: 'string', cellWidth: 50},
+        {label: 'Prix',         checked: true,  typeMenu: 'sort',   dataName: 'price',     dataType: 'number', cellWidth: 150},
+        {label: 'Frais',        checked: false, typeMenu: 'sort',   dataName: 'fee',       dataType: 'number', cellWidth: 50},
+        {label: 'Marge',        checked: false, typeMenu: 'sort',   dataName: 'margin',    dataType: 'number', cellWidth: 50},
     ]
     fields = fields.map(field => {
         field.queryValue = ''
         field.queryLabel = ''
         field.queryIcon = ''
         if (field.typeMenu == 'sort') field.options = sortOptions
+        if (field.typeMenu == 'user') field.queryIcon = '<i class="far fa-user"></i>'
         return field
     })
 
@@ -72,6 +74,8 @@
         field.menu.setOpen(true)
         if (field.typeMenu == 'search') {
             setTimeout(() => document.querySelector(`#search${field.dataName}Input input`).focus(), 200)
+        }else if (field.typeMenu == 'user') {
+            setTimeout(() => document.getElementById(`searchUser${field.dataName}`).focus(), 200)
         }
     }
 
@@ -89,7 +93,20 @@
         field.queryValue = field.options[selectedOption].queryValue
         field.queryLabel = field.options[selectedOption].label
         field.queryIcon = field.options[selectedOption].icon
-        fields = fields //Compute
+        fields = fields //Compute for display
+        reloadArticles()
+    }
+
+    function selectUser(field, event) {
+        console.log(field)
+        console.log(event.detail)
+        field.queryValue = event.detail._id
+        field.queryLabel = event.detail.name
+        fields = fields //Compute for display
+        reloadArticles()
+    }
+
+    function reloadArticles() {
         articles = []
         skipArticles = 0
         articlesPromise = getArticles()
@@ -113,7 +130,7 @@
 
         if(res.ok) {
             
-            articlesInfo = json.info[0] || {count: 0}
+            articlesMatchCount = json.articlesMatchCount
             newArticles = addStatutField(json.articles)
 
             noMoreArticles = newArticles.length < limitArticles
@@ -162,7 +179,7 @@
                                 {#if field.typeMenu == 'search' && field.queryValue.length}
                                     <i class="fas fa-search"></i>
                                     {field.queryValue}
-                                {:else if (field.typeMenu == 'filter'  || field.typeMenu == 'sort') && field.queryValue.length}
+                                {:else if (field.typeMenu == 'filter'  || field.typeMenu == 'sort' || field.typeMenu == 'user') && field.queryValue.length}
                                     {@html field.queryIcon}
                                     {field.queryLabel}
                                 {/if}
@@ -187,6 +204,12 @@
                                     {/each}
                                 </List>
                             </Menu>
+                        {:else if field.typeMenu == 'user'}
+                            <MenuSurface bind:this={field.menu} style="overflow: visible; min-width: 180px;">
+                                <div style="margin: 1em;">
+                                    <SearchUser id={field.dataName} on:select={e => selectUser(field, e)}/>
+                                </div>
+                            </MenuSurface>
                         {/if}                  
                     </Cell>
 
@@ -196,7 +219,7 @@
         </Head>
         <Body>
             {#await articlesPromise}
-                <RowsPromise cellsWidth={[47, 300, 85, 65, 150]}></RowsPromise>
+                <RowsPromise cellsWidth={fields.filter(f => f.checked).map(f => f.cellWidth)}></RowsPromise>
             {:then}
                 {#each articles as article}
                     <Row style="text-align: left;">
@@ -217,7 +240,7 @@
                 {/each}
 
                 {#await moreArticlesPromise}
-                    <RowsPromise cellsWidth={[47, 300, 85, 65, 150]}></RowsPromise>
+                    <RowsPromise cellsWidth={fields.filter(f => f.checked).map(f => f.cellWidth)}></RowsPromise>
                 {/await}
 
             {/await}
@@ -234,10 +257,10 @@
         on:click={getMoreArticles}
         variant="outlined"
         color="secondary">
-                Plus de résultats {articles.length} / {articlesInfo.count}
+                Plus de résultats {articles.length} / {articlesMatchCount}
         </Button>
     {:else}
-        {articles.length} / {articlesInfo.count}
+        {articles.length} / {articlesMatchCount}
     {/if}
     </div>
     <br><br><br><br><br><br>

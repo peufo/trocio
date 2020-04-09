@@ -18,8 +18,6 @@
 	//2. remplacer user par item
 	//3. Utilisé <slot> pour la représentation
 
-
-
 	let users = []
 	let selected = 0
 	let listhover = false
