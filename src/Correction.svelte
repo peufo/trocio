@@ -39,8 +39,6 @@
         {queryValue: '-1', label: 'Décroissant', icon: '<i class="fas fa-sort-amount-down"></i>'}
     ]
 
-    //TODO: no big difference between sort and filter type ... this is options type
-    //But, sort menu need a range filter
     let fieldsMenu
     let fields = [
         {label: '#',            checked: true,  typeMenu: 'search', dataName: 'ref',       dataType: 'string', cellWidth: 50,  disabled: true},
@@ -157,6 +155,7 @@
 <br>
 <div style="display: flex; justify-content: center; flex-wrap: wrap-reverse;">
     <div style="display: flex; flex-direction: column;">
+        <span class="w3-large">Articles</span>
         <DataTable class="clickable" style="min-width: 690px; overflow-x: visible;">
             <Head>
                 <Row>
@@ -255,7 +254,7 @@
 
     </div>
 
-    <div class="w3-margin-left w3-margin-bottom" style="align-self: flex-end;">
+    <div class="w3-margin-left w3-margin-bottom" style="align-self: flex-end; transform: translate(0px, 26.67px);">
         <Button on:click={() => fieldsMenu.setOpen(true)} variant="outlined" color="secondary">
             Champs
         </Button>
