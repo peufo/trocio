@@ -1,6 +1,6 @@
 <script>
 
-    import EditTable from './EditTable.svelte'
+    import SearchTable from './SearchTable.svelte'
     
     export let troc = ''
 
@@ -45,4 +45,4 @@
 
 </script>
 
-<EditTable title="Articles" baseURL="/articles/searchv2" {troc} {fields}/>
+<SearchTable title="Articles" baseURL="/articles/searchv2" {troc} {fields}/>
