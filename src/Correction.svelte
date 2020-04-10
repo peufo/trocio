@@ -75,6 +75,13 @@
         if (field.typeMenu == 'search') {
             setTimeout(() => document.querySelector(`#search${field.dataName}Input input`).focus(), 200)
         }else if (field.typeMenu == 'user') {
+            console.log('prout')
+            if (field.queryValue.length){//Reset selection
+                field.queryValue = ''
+                fields = fields
+                reloadArticles()
+            }
+            //Focus
             setTimeout(() => document.getElementById(`searchUser${field.dataName}`).focus(), 200)
         }
     }
@@ -98,10 +105,9 @@
     }
 
     function selectUser(field, event) {
-        console.log(field)
-        console.log(event.detail)
         field.queryValue = event.detail._id
         field.queryLabel = event.detail.name
+        field.menu.setOpen(false)
         fields = fields //Compute for display
         reloadArticles()
     }
@@ -205,9 +211,12 @@
                                 </List>
                             </Menu>
                         {:else if field.typeMenu == 'user'}
-                            <MenuSurface bind:this={field.menu} style="overflow: visible; min-width: 180px;">
+                            <MenuSurface bind:this={field.menu} on:click={e => e.stopPropagation()} style="overflow: visible; min-width: 200px;">
                                 <div style="margin: 1em;">
-                                    <SearchUser id={field.dataName} on:select={e => selectUser(field, e)}/>
+                                    <SearchUser
+                                    id={field.dataName}
+                                    on:select={e => selectUser(field, e)}
+                                    placeholder={`Chercher un ${field.label.toLowerCase()}`}/>
                                 </div>
                             </MenuSurface>
                         {/if}                  
