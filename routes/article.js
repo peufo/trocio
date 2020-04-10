@@ -126,7 +126,7 @@ router
 
 			Article.find(match).countDocuments((err, articlesMatchCount) => {
 				if (err) return next(err)
-				res.json({articles, articlesMatchCount})
+				res.json({data: articles, dataMatchCount: articlesMatchCount})
 			})
 		})
 		
