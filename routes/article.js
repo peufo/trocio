@@ -114,6 +114,7 @@ router
 			.populate('provider', 'name')
 			.populate('validator', 'name')
 			.populate('seller', 'name')
+			.populate('buyer', 'name')
 			.lean().exec((err, articles) => {
 			if (err) return next(err)
 

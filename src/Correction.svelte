@@ -34,6 +34,7 @@
         {label: 'Vente',        checked: false, typeMenu: 'sort',   dataName: 'sold',          dataType: 'date',   cellWidth: 170},
         {label: 'Récupération', checked: false, typeMenu: 'sort',   dataName: 'recover',       dataType: 'date',   cellWidth: 170},
         {label: 'Caissier',     checked: false, typeMenu: 'user',   dataName: 'seller.name',   dataType: 'string', cellWidth: 50},
+        {label: 'Client',       checked: false, typeMenu: 'user',   dataName: 'buyer.name',    dataType: 'string', cellWidth: 50},
         {label: 'Prix',         checked: true,  typeMenu: 'sort',   dataName: 'price',         dataType: 'number', cellWidth: 150},
         {label: 'Frais',        checked: false, typeMenu: 'sort',   dataName: 'fee',           dataType: 'number', cellWidth: 50},
         {label: 'Marge',        checked: false, typeMenu: 'sort',   dataName: 'margin',        dataType: 'number', cellWidth: 50},

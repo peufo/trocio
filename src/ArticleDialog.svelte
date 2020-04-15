@@ -66,7 +66,6 @@
             </Item>
 
             {#if article.valided || article.refused}
-
                 <Item>
                     <Graphic class={article.valided ? 'w3-text-blue' : 'w3-text-red'}>
                         {article.valided ? 'Validé' : 'Refusé'}
@@ -86,7 +85,6 @@
             {/if}
 
             {#if article.valided}
-
                 <Item>
                     {#if article.sold}
                         <Graphic class="w3-text-green">Vendu</Graphic>
@@ -113,21 +111,20 @@
                         <Button on:click={recover} color="secondary" title="Rendre l'article à son propriétaire">
                             <Label><i class="fas fa-undo"></i> Rendre</Label>
                         </Button>
-                        <Button on:click={sold} title="Vendre l'artice à un client">
+                        <Button on:click={sold} title="Vendre l'article à un client">
                             <Label><i class="fas fa-shopping-cart"></i> Vendre</Label>
                         </Button>
 
                     {/if}
                 </Item>
 
-
-            {:else}
+            {:else if !article.refused}
                 <Item>
                     <Graphic>Validation</Graphic>
-                    <Button color="secondary">
+                    <Button on:click={refuseValidation} color="secondary" title="Refusé l'article proposé">
                         <Label><i class="fa fa-times"></i> Refuser</Label>
                     </Button>
-                    <Button on:click={acceptValidation}>
+                    <Button on:click={acceptValidation} title="Accepter l'article proposé">
                         <Label><i class="fa fa-check"></i> Valider</Label>
                     </Button>
                 </Item>
