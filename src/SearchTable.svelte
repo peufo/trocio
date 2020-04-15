@@ -1,5 +1,6 @@
 <script>
-    import { onMount } from 'svelte'
+    import { onMount, createEventDispatcher } from 'svelte'
+    const dispatch = createEventDispatcher()
     import Textfield from '@smui/textfield'
     import DataTable, { Head, Body, Row, Cell } from '@smui/data-table'
     import List, { Item, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list'
@@ -89,8 +90,8 @@
     async function getData() {
 
         let req = `${baseURL}?troc=${troc}&limit=${limitData}&skip=${skipData}`
-        fields.forEach(f => {
-            if (f.queryValue.length) req += `&${f.typeMenu}_${f.dataName}=${f.queryValue}`
+        fields.filter(f => f.queryValue.length).forEach(f => {
+            req += `&${f.typeMenu}_${f.dataName.split('.')[0]}=${f.queryValue}`
         })
 
         let res = await fetch(req)
@@ -114,6 +115,10 @@
             data = []
         }
         return
+    }
+
+    function select(dat) {
+        dispatch('select', dat)
     }
 
 </script>
@@ -184,17 +189,33 @@
                     <RowsPromise cellsWidth={fields.filter(f => f.checked).map(f => f.cellWidth)}></RowsPromise>
                 {:then}
                     {#each data as dat}
-                        <Row style="text-align: left;">
+                        <Row style="text-align: left;" on:click={() => select(dat)}>
                             {#each fields.filter(f => f.checked) as field}
                                 <Cell numeric={field.dataType == 'number'}>
-                                    {#if !dat[field.dataName]}
-                                        -
-                                    {:else if field.dataType == 'date'}
-                                        {new Date(dat[field.dataName]).toLocaleString()}
-                                    {:else if field.dataType == 'number'}
-                                        {dat[field.dataName].toFixed(2)}
-                                    {:else}
-                                        {dat[field.dataName]}
+                                    {#if field.dataName.indexOf('.') === -1}
+
+                                        {#if !dat[field.dataName]}
+                                            -
+                                        {:else if field.dataType == 'date'}
+                                            {new Date(dat[field.dataName]).toLocaleString()}
+                                        {:else if field.dataType == 'number'}
+                                            {dat[field.dataName].toFixed(2)}
+                                        {:else}
+                                            {dat[field.dataName]}
+                                        {/if}
+
+                                    {:else} <!-- Deux dimensions (Object)-->
+
+                                        {#if !dat[field.dataName.split('.')[0]] || !dat[field.dataName.split('.')[0]][field.dataName.split('.')[1]]}
+                                            -
+                                        {:else if field.dataType == 'date'}
+                                            {new Date(dat[field.dataName.split('.')[0]][field.dataName.split('.')[1]]).toLocaleString()}
+                                        {:else if field.dataType == 'number'}
+                                            {dat[field.dataName.split('.')[0]][field.dataName.split('.')[1]].toFixed(2)}
+                                        {:else}
+                                            {dat[field.dataName.split('.')[0]][field.dataName.split('.')[1]]}
+                                        {/if}
+
                                     {/if}
                                 </Cell>
                             {/each}

@@ -117,13 +117,6 @@ router
 			.lean().exec((err, articles) => {
 			if (err) return next(err)
 
-			articles = articles.map(art => {
-				art.provider = art.provider.name
-				art.validator = art.validator ? art.validator.name : undefined
-				art.seller = art.seller ? art.seller.name : undefined
-				return art
-			})
-
 			Article.find(match).countDocuments((err, articlesMatchCount) => {
 				if (err) return next(err)
 				res.json({data: articles, dataMatchCount: articlesMatchCount})
