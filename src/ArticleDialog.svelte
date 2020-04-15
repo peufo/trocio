@@ -44,6 +44,13 @@
         article.sold = undefined
         article.recover = undefined
         article.seller = undefined
+        article.buyer = undefined
+    }
+
+    function selectClient() {
+        //TODO:
+        console.log('Séléctioné un utilsateur comme nouveau client')
+        console.log('prout')
     }
 
 </script>
@@ -53,6 +60,7 @@
     <Title>
         <i>#{article.ref}</i>&nbsp;&nbsp;
         <span>{article.name}</span>
+        <i class="far fa-edit button-icon w3-opacity"></i>
     </Title>
     <Content style="min-width: 500px;">
 
@@ -61,7 +69,7 @@
                 <Graphic>Proposé</Graphic>
                 <Text>
                     <PrimaryText>Par {article.provider && article.provider.name}</PrimaryText>
-                    <SecondaryText>{new Date(article.createdAt).toLocaleString()}</SecondaryText>
+                    <SecondaryText>Le {new Date(article.createdAt).toLocaleString()}</SecondaryText>
                 </Text>
             </Item>
 
@@ -72,7 +80,7 @@
                     </Graphic>
                     <Text>
                         <PrimaryText>Par {article.validator.name}</PrimaryText>
-                        <SecondaryText>{new Date(article.valided || article.refused).toLocaleString()}</SecondaryText>
+                        <SecondaryText>Le {new Date(article.valided || article.refused).toLocaleString()}</SecondaryText>
                     </Text>
 
                     {#if !article.sold && !article.recover}
@@ -89,9 +97,19 @@
                     {#if article.sold}
                         <Graphic class="w3-text-green">Vendu</Graphic>
                         <Text>
-                            <PrimaryText>Par {article.seller.name}</PrimaryText>
-                            <SecondaryText>{new Date(article.sold).toLocaleString()}</SecondaryText>
+                            <PrimaryText>
+                                Par {article.seller.name}<br>
+                                <span on:click={selectClient} class="clickable" title="Définir le client">
+                                    à {@html article.buyer && article.buyer.name || 'un client anonyme <i class="fas fa-user-secret w3-opacity"></i>'}
+                                </span>
+                            </PrimaryText>
+                            <SecondaryText>Le {new Date(article.sold).toLocaleString()}</SecondaryText>
                         </Text>
+
+                        <Meta on:click={selectClient} title="Définir le client">
+                            <i class="far fa-edit w3-large button-icon"></i>
+                        </Meta>
+
                         <Meta on:click={removeSold} title="Annuler la vente">
                             <i class="far fa-trash-alt w3-large button-icon"></i>
                         </Meta>
@@ -100,7 +118,7 @@
                         <Graphic class="w3-text-orange">Rendu</Graphic>
                         <Text>
                             <PrimaryText>Par {article.seller.name}</PrimaryText>
-                            <SecondaryText>{new Date(article.recover).toLocaleString()}</SecondaryText>
+                            <SecondaryText>Le {new Date(article.recover).toLocaleString()}</SecondaryText>
                         </Text>
                         <Meta on:click={removeSold} title="Annuler la récupération">
                             <i class="far fa-trash-alt w3-large button-icon"></i>
@@ -131,12 +149,15 @@
             {/if}
 
         </List>
-        <div >
+
+        <div>
             <br>
             <span>Prix: {article.price && article.price.toFixed(2)}</span><br>
             <span>Frais: {article.fee && article.fee.toFixed(2)}</span><br>
-            <span>Marge: {article.margin && article.margin.toFixed(2)}</span>
+            <span>Marge: {article.margin && article.margin.toFixed(2)}</span><br>
+            <i class="far fa-edit button-icon w3-opacity"></i>
         </div>
+
     </Content>
     
     <Actions>
