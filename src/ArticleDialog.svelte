@@ -1,50 +1,73 @@
 <script>
-
-    import { me } from './stores'
-
-
+    import { slide } from 'svelte/transition'
     import Dialog, { Title, Content, Actions } from '@smui/dialog'
+    import MenuSurface from '@smui/menu-surface'
+    import Textfield from '@smui/textfield'
     import Button, { Label } from '@smui/button'
     import List, { Item, Graphic, Meta, Text, PrimaryText, SecondaryText} from '@smui/list'
+
+    import { me } from './stores'
+    import { formatPrice } from './utils'
+    import SearchUser from './SearchUser.svelte'
 
     export let dialog
     export let article = {}
 
+    let articleEdited = {}
+    let isModified = false
+    let editClientDialog
+
+    function onOpen() {
+        isModified = false
+        Object.assign(articleEdited, article)
+        articleEdited = articleEdited
+    }
+
     function acceptValidation() {
-        article.valided = new Date()
-        article.refused = undefined
-        article.validator = {_id: $me._id, name: $me.name}
+        articleEdited.valided = new Date()
+        articleEdited.refused = undefined
+        articleEdited.validator = {_id: $me._id, name: $me.name}
+        testIsModifed()
     }
 
     function refuseValidation() {
-        article.valided = undefined
-        article.refused = new Date()
-        article.validator = {_id: $me._id, name: $me.name}
+        articleEdited.valided = undefined
+        articleEdited.refused = new Date()
+        articleEdited.validator = {_id: $me._id, name: $me.name}
+        testIsModifed()
     }
 
     function sold() {
-        article.sold = new Date()
-        article.recover = undefined
-        article.seller = {_id: $me._id, name: $me.name}
+        articleEdited.sold = new Date()
+        articleEdited.recover = undefined
+        articleEdited.seller = {_id: $me._id, name: $me.name}
+        testIsModifed()
     }
 
     function recover() {
-        article.sold = undefined
-        article.recover = new Date()
-        article.seller = {_id: $me._id, name: $me.name}
+        articleEdited.sold = undefined
+        articleEdited.recover = new Date()
+        articleEdited.seller = {_id: $me._id, name: $me.name}
+        testIsModifed()
     }
 
     function removeValidation() {
-        article.refused = undefined
-        article.valided = undefined
-        article.validator = undefined
+        articleEdited.refused = undefined
+        articleEdited.valided = undefined
+        articleEdited.validator = undefined
+        testIsModifed()
     }
 
     function removeSold() {
-        article.sold = undefined
-        article.recover = undefined
-        article.seller = undefined
-        article.buyer = undefined
+        articleEdited.sold = undefined
+        articleEdited.recover = undefined
+        articleEdited.seller = undefined
+        articleEdited.buyer = undefined
+        testIsModifed()
+    }
+
+    function openClientMenu() {
+        editClientDialog.open()
     }
 
     function selectClient() {
@@ -53,14 +76,38 @@
         console.log('prout')
     }
 
+    function editName(e) {
+        articleEdited.name = e.target.innerText
+        console.log(article.name)
+        console.log(articleEdited.name)
+        testIsModifed()
+    }
+
+    function editPrice(e) {
+        formatPrice(e)
+        articleEdited.price = Number(e.target.value)
+        testIsModifed()
+    }
+
+    function testIsModifed() {
+        isModified = JSON.stringify(articleEdited) != JSON.stringify(article)
+    }
+
 </script>
 
+<Dialog bind:this={editClientDialog} style="z-index: 8;">
+    <Title>Définir le client</Title>
+    <Content style="height: 400px; width: 300px; overflow-y: visible;">
+        <SearchUser placholder="Définir le client"/>
+    </Content>
+</Dialog>
 
-<Dialog bind:this={dialog}>
+<Dialog bind:this={dialog} on:MDCDialog:opening={onOpen}>
     <Title>
-        <i>#{article.ref}</i>&nbsp;&nbsp;
-        <span>{article.name}</span>
-        <i class="far fa-edit button-icon w3-opacity"></i>
+        <span>#{article.ref}</span>
+        <div contenteditable="true" on:input={editName}>
+            {articleEdited.name}
+        </div>
     </Title>
     <Content style="min-width: 500px;">
 
@@ -73,18 +120,18 @@
                 </Text>
             </Item>
 
-            {#if article.valided || article.refused}
+            {#if articleEdited.valided || articleEdited.refused}
                 <Item>
-                    <Graphic class={article.valided ? 'w3-text-blue' : 'w3-text-red'}>
-                        {article.valided ? 'Validé' : 'Refusé'}
+                    <Graphic class={articleEdited.valided ? 'w3-text-blue' : 'w3-text-red'}>
+                        {articleEdited.valided ? 'Validé' : 'Refusé'}
                     </Graphic>
                     <Text>
-                        <PrimaryText>Par {article.validator.name}</PrimaryText>
-                        <SecondaryText>Le {new Date(article.valided || article.refused).toLocaleString()}</SecondaryText>
+                        <PrimaryText>Par {articleEdited.validator.name}</PrimaryText>
+                        <SecondaryText>Le {new Date(articleEdited.valided || articleEdited.refused).toLocaleString()}</SecondaryText>
                     </Text>
 
-                    {#if !article.sold && !article.recover}
-                        <Meta on:click={removeValidation} title={article.valided ? 'Annuler la validation' : 'Annuler le refus'}>
+                    {#if !articleEdited.sold && !articleEdited.recover}
+                        <Meta on:click={removeValidation} title={articleEdited.valided ? 'Annuler la validation' : 'Annuler le refus'}>
                             <i class="far fa-trash-alt w3-large button-icon"></i>
                         </Meta>
                     {/if}
@@ -92,33 +139,29 @@
             
             {/if}
 
-            {#if article.valided}
+            {#if articleEdited.valided}
                 <Item>
-                    {#if article.sold}
+                    {#if articleEdited.sold}
                         <Graphic class="w3-text-green">Vendu</Graphic>
                         <Text>
                             <PrimaryText>
-                                Par {article.seller.name}<br>
-                                <span on:click={selectClient} class="clickable" title="Définir le client">
-                                    à {@html article.buyer && article.buyer.name || 'un client anonyme <i class="fas fa-user-secret w3-opacity"></i>'}
+                                Par {articleEdited.seller.name}<br>
+                                <span on:click={() => editClientDialog.open()} class="clickable" title="Définir le client">
+                                    à {@html articleEdited.buyer && articleEdited.buyer.name || 'un client anonyme <i class="fas fa-user-secret w3-opacity"></i>'}
                                 </span>
                             </PrimaryText>
-                            <SecondaryText>Le {new Date(article.sold).toLocaleString()}</SecondaryText>
+                            <SecondaryText>Le {new Date(articleEdited.sold).toLocaleString()}</SecondaryText>
                         </Text>
-
-                        <Meta on:click={selectClient} title="Définir le client">
-                            <i class="far fa-edit w3-large button-icon"></i>
-                        </Meta>
-
+                        
                         <Meta on:click={removeSold} title="Annuler la vente">
                             <i class="far fa-trash-alt w3-large button-icon"></i>
                         </Meta>
                         
-                    {:else if article.recover}
+                    {:else if articleEdited.recover}
                         <Graphic class="w3-text-orange">Rendu</Graphic>
                         <Text>
-                            <PrimaryText>Par {article.seller.name}</PrimaryText>
-                            <SecondaryText>Le {new Date(article.recover).toLocaleString()}</SecondaryText>
+                            <PrimaryText>Par {articleEdited.seller.name}</PrimaryText>
+                            <SecondaryText>Le {new Date(articleEdited.recover).toLocaleString()}</SecondaryText>
                         </Text>
                         <Meta on:click={removeSold} title="Annuler la récupération">
                             <i class="far fa-trash-alt w3-large button-icon"></i>
@@ -136,7 +179,7 @@
                     {/if}
                 </Item>
 
-            {:else if !article.refused}
+            {:else if !articleEdited.refused}
                 <Item>
                     <Graphic>Validation</Graphic>
                     <Button on:click={refuseValidation} color="secondary" title="Refusé l'article proposé">
@@ -152,21 +195,35 @@
 
         <div>
             <br>
-            <span>Prix: {article.price && article.price.toFixed(2)}</span><br>
+            <span>
+                Prix: 
+                <input value={article.price && article.price.toFixed(2)} type="text" on:input={editPrice} style="width: 80px;">
+            </span><br>
             <span>Frais: {article.fee && article.fee.toFixed(2)}</span><br>
             <span>Marge: {article.margin && article.margin.toFixed(2)}</span><br>
-            <i class="far fa-edit button-icon w3-opacity"></i>
         </div>
 
     </Content>
     
-    <Actions>
-        <Button color="secondary">
-            <Label><i class="fa fa-times"></i> Annuler</Label>
-        </Button>
-        <Button>
-            <Label><i class="fa fa-check"></i> Sauvegarder</Label>
-        </Button>
-    </Actions>
+    {#if isModified}
+        <div transition:slide>
+            <Actions>
+                <Button color="secondary">
+                    <Label><i class="fa fa-times"></i> Annuler</Label>
+                </Button>
+                <Button>
+                    <Label><i class="fa fa-check"></i> Sauvegarder</Label>
+                </Button>
+            </Actions>
+        </div>
+    {/if}
 
 </Dialog>
+
+<style>
+
+    input {
+        border: none;
+    }
+
+</style>

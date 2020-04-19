@@ -50,7 +50,7 @@
 
     function selectArticle(e) {
         article = e.detail
-        articleDialog.open()
+        setTimeout(articleDialog.open, 0)
     }
 
 </script>

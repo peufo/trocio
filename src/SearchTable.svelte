@@ -11,7 +11,7 @@
     import MenuSurface from '@smui/menu-surface'
     import Icon from '@smui/textfield/icon'
     
-    import { formatPrice, addStatutField } from './utils'
+    import { addStatutField } from './utils'
     import RowsPromise from './RowsPromise.svelte'
     import SearchUser from './SearchUser.svelte'
     
