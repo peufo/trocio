@@ -1,6 +1,7 @@
 import printJS from 'print-js'
 import { troc } from './stores'
 import { quintOut } from 'svelte/easing'
+import { element } from 'svelte/internal'
 
 export function getHeader(body, verb = 'POST') {
 	return {
@@ -73,12 +74,13 @@ export function formatPrice(e) {
 	e.target.value = val
 }
 
-export function addStatutField(articles) {
+export function addStatutField(articles, context = 'organisator') {
 	return articles.map(art => {
 		art.statut = 'Proposé'
-		if (art.valided) art.statut = 'En vente'
+		if (art.valided) art.statut = 'Validé'
+		if (art.refused) art.statut = 'Refusé'
 		if (art.sold) art.statut = 'Vendu'
-		if (art.recover) art.statut = 'Récupéré'
+		if (art.recover) art.statut = context == 'organisator' ? 'Rendu' : 'Récupéré'
 		return art
-	})
+	})	
 }

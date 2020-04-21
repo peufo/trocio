@@ -16,11 +16,14 @@
     let articleEdited = {}
     let isModified = false
     let editClientDialog
+    let priceToFixed2 = 0
 
     function onOpen() {
         isModified = false
+        articleEdited = {}
         Object.assign(articleEdited, article)
-        articleEdited = articleEdited
+        priceToFixed2 = articleEdited.price.toFixed(2)
+        //articleEdited = articleEdited
     }
 
     function acceptValidation() {
@@ -70,10 +73,16 @@
         editClientDialog.open()
     }
 
-    function selectClient() {
-        //TODO:
-        console.log('Séléctioné un utilsateur comme nouveau client')
-        console.log('prout')
+    function selectClient(e) {
+        articleEdited.buyer = {_id: e.detail._id, name: e.detail.name}
+        editClientDialog.close()
+        testIsModifed()
+    }
+
+    function selectClientAnonyme() {
+        articleEdited.buyer = undefined
+        editClientDialog.close()
+        testIsModifed()
     }
 
     function editName(e) {
@@ -98,7 +107,13 @@
 <Dialog bind:this={editClientDialog} style="z-index: 8;">
     <Title>Définir le client</Title>
     <Content style="height: 400px; width: 300px; overflow-y: visible;">
-        <SearchUser placholder="Définir le client"/>
+        <SearchUser id="editArticle" placholder="Définir le client" on:select={selectClient}/>
+        <br>
+        <div class="w3-center">
+            <Button on:click={selectClientAnonyme} variant="outlined" color="secondary">
+                <i class="fas fa-user-secret w3-large"></i>&nbsp;Client anonyme 
+            </Button>
+        </div>
     </Content>
 </Dialog>
 
@@ -197,7 +212,7 @@
             <br>
             <span>
                 Prix: 
-                <input value={article.price && article.price.toFixed(2)} type="text" on:input={editPrice} style="width: 80px;">
+                <input value={priceToFixed2} type="text" on:input={editPrice} style="width: 80px;">
             </span><br>
             <span>Frais: {article.fee && article.fee.toFixed(2)}</span><br>
             <span>Marge: {article.margin && article.margin.toFixed(2)}</span><br>

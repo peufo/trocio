@@ -12,9 +12,10 @@
     const statutFiltersOptions = [
         {queryValue: '',         label: 'Tous',     icon: ''},
         {queryValue: 'proposed', label: 'Proposé',  icon: '<i class="fas fa-dot-circle w3-text-light-grey"></i>'},
-        {queryValue: 'valided',  label: 'En vente', icon: '<i class="fas fa-dot-circle w3-text-blue"></i>'},
+        {queryValue: 'valided',  label: 'Validé',   icon: '<i class="fas fa-dot-circle w3-text-blue"></i>'},
+        {queryValue: 'refused',  label: 'Refusé',   icon: '<i class="fas fa-dot-circle w3-text-red"></i>'},
         {queryValue: 'sold',     label: 'Vendu',    icon: '<i class="fas fa-dot-circle w3-text-green"></i>'},
-        {queryValue: 'recover',  label: 'Récupéré', icon: '<i class="fas fa-dot-circle w3-text-orange"></i>'},
+        {queryValue: 'recover',  label: 'Rendu',    icon: '<i class="fas fa-dot-circle w3-text-orange"></i>'},
     ]
     const sortOptions = [
         {queryValue: '',   label: 'Non trié',    icon: '<i class="fas fa-bars"></i>'},
