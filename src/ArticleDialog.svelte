@@ -6,8 +6,8 @@
     import Button, { Label } from '@smui/button'
     import List, { Item, Graphic, Meta, Text, PrimaryText, SecondaryText} from '@smui/list'
 
-    import { me } from './stores'
-    import { formatPrice } from './utils'
+    import { me, troc } from './stores'
+    import { formatPrice, getFee, getMargin } from './utils'
     import SearchUser from './SearchUser.svelte'
 
     export let dialog
@@ -17,13 +17,15 @@
     let isModified = false
     let editClientDialog
     let priceToFixed2 = 0
+    let tarif = undefined
+    let tarifPromise
 
     function onOpen() {
         isModified = false
         articleEdited = {}
         Object.assign(articleEdited, article)
         priceToFixed2 = articleEdited.price.toFixed(2)
-        //articleEdited = articleEdited
+        tarif = undefined
     }
 
     function acceptValidation() {
@@ -87,20 +89,34 @@
 
     function editName(e) {
         articleEdited.name = e.target.innerText
-        console.log(article.name)
-        console.log(articleEdited.name)
-        testIsModifed()
-    }
-
-    function editPrice(e) {
-        formatPrice(e)
-        articleEdited.price = Number(e.target.value)
         testIsModifed()
     }
 
     function testIsModifed() {
         isModified = JSON.stringify(articleEdited) != JSON.stringify(article)
     }
+
+    async function editPrice(e) {
+        formatPrice(e)
+        articleEdited.price = Number(e.target.value)
+        if (!tarif) {
+            tarifPromise = getTarif($troc._id, articleEdited.provider._id).then(updateFeeAndMargin)
+        }else{
+            updateFeeAndMargin()
+        }
+        testIsModifed()
+    }
+
+    function updateFeeAndMargin() {
+        articleEdited.fee = getFee(articleEdited, tarif)
+        articleEdited.margin = getMargin(articleEdited, tarif)
+    }
+
+    async function getTarif(trocId, userId) {
+        let res = await fetch(`/trocs/${trocId}/tarif/${userId}`)
+        let json = await res.json()
+        tarif = json
+	}
 
 </script>
 
@@ -214,8 +230,13 @@
                 Prix: 
                 <input value={priceToFixed2} type="text" on:input={editPrice} style="width: 80px;">
             </span><br>
-            <span>Frais: {article.fee && article.fee.toFixed(2)}</span><br>
-            <span>Marge: {article.margin && article.margin.toFixed(2)}</span><br>
+            {#await tarifPromise}
+                <i class="fas fa-spinner w3-spin"></i>
+                <span>...tarif</span>
+            {:then}
+                <span>Frais: {articleEdited.fee && articleEdited.fee.toFixed(2)}</span><br>
+                <span>Marge: {articleEdited.margin && articleEdited.margin.toFixed(2)}</span><br>
+            {/await}
         </div>
 
     </Content>

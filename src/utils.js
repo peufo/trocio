@@ -36,6 +36,13 @@ export const crossfadeConfig = {
 	}
 }
 
+/**
+ * Compute and return fee value
+ * @param {{price: Number}} art 
+ * @param {{fee: [{price, value}]}} tarif 
+ * @returns {Number} fee
+ */
+
 export function getFee(art, tarif) {
 	if (tarif && tarif.fee.length && art.price > 0) {
 		return art.fee = tarif.fee.sort((a, b) => b.price - a.price).filter(f => f.price <= art.price)[0].value 
@@ -44,6 +51,11 @@ export function getFee(art, tarif) {
 	}else return art.fee || 0
 }
 
+/**
+ * 
+ * @param {*} art 
+ * @param {*} tarif 
+ */
 export function getMargin(art, tarif) {
 	if (tarif && art.price) {
 		return art.margin = tarif.margin * art.price
