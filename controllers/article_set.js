@@ -67,17 +67,16 @@ function goBackArticle(req, res, next) {
 function patchArticle(req, res, next) {
 
 	let patchedArticles = req.body
-	if (!Array.isArray(patchedArticles)) patchedArticles = [patchedArticles]
+	if (!Array.isArray(req.body)) patchedArticles = [patchedArticles]
 	let errors = []
 	let ids = patchedArticles.map(a => a._id)
 	let uniqueTroc = false
-	let uniqueProvider = 0
 
 	//Verifie si les articles viennent tous du même troc
 	uniqueTroc = patchedArticles.map(a => a.troc).filter((v, i, self) => self.indexOf(v) === i).length == 1
 	if (!uniqueTroc) return next(Error('All articles not becomes from the same troc'))
 
-	Article.find({_id: {$in: ids}}, (err, articles) => {
+	Article.find({_id: {$in: ids}}).exec((err, articles) => {
 		if (err || !articles.length) return next(err || Error('Article not found'))
 
 		getRole(req.session.user._id, articles[0], (err, role) => {
@@ -90,7 +89,7 @@ function patchArticle(req, res, next) {
 					let err = undefined
 
 					//Check if the user is the provider
-					if (req.session.user._id == articles[0].provider || req.session.user._id == articles[0].provider._id) {
+					if (req.session.user._id != art.provider || req.session.user._id != art.provider._id) {
 						err = Error('Provider not identified')
 					}
 
@@ -109,35 +108,30 @@ function patchArticle(req, res, next) {
 				articles.forEach(async art => {
 					let patchedArt = patchedArticles[ids.indexOf(String(art._id))]
 
-					//PATCH
-					if (patchedArt.name) art.name = patchedArt.name
+					let validedPatched = patchedArt.valided && patchedArt.valided != art.valided
+					let refusedPatched = patchedArt.refused && patchedArt.refused != art.refused
+					let soldPatched = patchedArt.sold && patchedArt.sold != art.sold
+					let recoverPatched = patchedArt.recover && patchedArt.recover != art.recover
 
-					if (patchedArt.valided && patchedArt.valided != art.valided){
-						art.valided = patchedArt.valided
-						art.validator = req.session.user._id
-					} 
-					if (patchedArt.refused && patchedArt.refused != art.refused) {
-						art.refused = patchedArt.refused
-						art.validator = req.session.user._id 
-					}
-					if (patchedArt.sold && patchedArt.buyer && patchedArt.sold != art.sold) {
-						art.sold = patchedArt.sold
-						art.buyer = patchedArt.buyer
-						art.seller = req.session.user._id 
-					}
-					if (patchedArt.recover && patchedArt.recover != art.recover) {
-						art.recover = patchedArt.recover
-						art.seller = req.session.user._id 
-					}			
+					//PATCH
+					art.name = patchedArt.name
+					art.valided = patchedArt.valided
+					art.refused = patchedArt.refused
+					art.sold = patchedArt.sold
+					art.buyer = patchedArt.buyer && patchedArt.buyer._id
+					art.recover = patchedArt.recover
+					if (validedPatched || refusedPatched) art.validator = req.session.user._id
+					if (soldPatched || recoverPatched) art.seller = req.session.user._id 
 
 					//Verification du status de l'article
 					let err = undefined
 					if (art.valided && art.refused) err = Error(`Un article ne peut pas être validé et refusé`)
 					if (art.sold && art.recover) err = Error(`Un article ne peut pas être vendu et récupéré`)
-					if (!art.valided && (art.sold || art.recover)) err = Error(`Un article doit être validé pour être vendu et récupéré`)
+					if (!art.valided && (art.sold || art.recover)) err = Error(`Un article doit être validé pour être vendu ou récupéré`)
 
 					if (!err) err = await art.save()
 					if (err) errors.push(err)
+
 					return
 				})
 
@@ -146,7 +140,12 @@ function patchArticle(req, res, next) {
 			}
 
 			if (errors.length) return next(errors[0])
-			res.json({success: true, message: articles})
+
+			if (Array.isArray(req.body)){
+				res.json({success: true, message: articles})
+			}else{
+				res.json({success: true, message: articles[0]})
+			}
 
 		})
 

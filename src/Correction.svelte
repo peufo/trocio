@@ -25,8 +25,8 @@
 
     let fieldsMenu
     let fields = [
-        {label: '#',            checked: true,  typeMenu: 'or_search', dataName: 'ref',        dataType: 'string', cellWidth: 50,  disabled: true},
-        {label: 'Désignation',  checked: true,  typeMenu: 'or_search', dataName: 'name',       dataType: 'string', cellWidth: 300, disabled: true},
+        {label: '#',            checked: true,  typeMenu: 'search', dataName: 'ref',        dataType: 'string', cellWidth: 50,  disabled: true},
+        {label: 'Désignation',  checked: true,  typeMenu: 'search', dataName: 'name',       dataType: 'string', cellWidth: 300, disabled: true},
         {label: 'Statut',       checked: true,  typeMenu: 'filter', dataName: 'statut',        dataType: 'string', cellWidth: 90,  options: statutFiltersOptions},
         {label: 'Création',     checked: false, typeMenu: 'sort',   dataName: 'createdAt',     dataType: 'date',   cellWidth: 170},
         {label: 'Fournisseur',  checked: true,  typeMenu: 'user',   dataName: 'provider.name', dataType: 'string', cellWidth: 70},

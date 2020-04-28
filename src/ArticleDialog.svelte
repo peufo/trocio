@@ -7,7 +7,7 @@
     import List, { Item, Graphic, Meta, Text, PrimaryText, SecondaryText} from '@smui/list'
 
     import { me, troc } from './stores'
-    import { formatPrice, getFee, getMargin } from './utils'
+    import { formatPrice, getFee, getMargin, getHeader } from './utils'
     import SearchUser from './SearchUser.svelte'
 
     export let dialog
@@ -119,9 +119,16 @@
         tarif = json
     }
     
-    function valid() {
-        console.log('prout')
+    async function valid() {
 
+        let res = await fetch(`/articles`, getHeader(articleEdited, 'PATCH'))
+        let json = await res.json()
+        
+    
+        //TODO: traité le cas ou le prix est modifé en créant un processus a part entière
+        if (articleEdited.price != article.price) {
+            console.log('Changement de prix !')
+        }
     }
 
 </script>

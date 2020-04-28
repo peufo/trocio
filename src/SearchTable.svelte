@@ -37,7 +37,7 @@
 
     function openMenu(field) {
         field.menu.setOpen(true)
-        if (field.typeMenu == 'search') {
+        if (field.typeMenu == 'search' || field.typeMenu == 'or_search') {
             setTimeout(() => document.querySelector(`#search${field.dataName}Input input`).focus(), 200)
         }else if (field.typeMenu == 'user') {
             if (field.queryValue.length){//Reset selection
@@ -135,12 +135,14 @@
                             <Text>
                                 <PrimaryText>{field.label}</PrimaryText>
                                 <SecondaryText>
-                                    {#if field.typeMenu == 'search' && field.queryValue.length}
-                                        <i class="fas fa-search"></i>
-                                        {field.queryValue}
-                                    {:else if (field.typeMenu == 'filter'  || field.typeMenu == 'sort' || field.typeMenu == 'user') && field.queryValue.length}
-                                        {@html field.queryIcon}
-                                        {field.queryLabel}
+                                    {#if field.queryValue.length}
+                                        {#if field.typeMenu == 'search'  || field.typeMenu === 'or_search'}
+                                            <i class="fas fa-search"></i>
+                                            {field.queryValue}
+                                        {:else if (field.typeMenu == 'filter'  || field.typeMenu == 'sort' || field.typeMenu == 'user')}
+                                            {@html field.queryIcon}
+                                            {field.queryLabel}
+                                        {/if}
                                     {/if}
                                 </SecondaryText>
                             </Text>

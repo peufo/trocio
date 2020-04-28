@@ -31,14 +31,13 @@ function searchArticle(req, res, next) {
 			match.$and.push({'valided': {$exists: false}})
 			match.$and.push({'refused': {$exists: false}})
             break
-        case 'proposed':
-			match.$and.push({'valided': {$exists: false}})
-			match.$and.push({'refused': {$exists: false}})
-			break
 		case 'valided':
 			match.$and.push({'valided': {$exists: true}})
 			match.$and.push({'sold': {$exists: false}})
 			match.$and.push({'recover': {$exists: false}})
+			break
+		case 'refused':
+			match.$and.push({'refused': {$exists: true}})
 			break
 		case 'sold':
 			match.$and.push({'sold': {$exists: true}})

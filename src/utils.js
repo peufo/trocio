@@ -3,6 +3,12 @@ import { troc } from './stores'
 import { quintOut } from 'svelte/easing'
 import { element } from 'svelte/internal'
 
+/**
+ * Define header for fetch
+ * @param {Object} body Body of request
+ * @param {String} verb Verbe of equest
+ */
+
 export function getHeader(body, verb = 'POST') {
 	return {
 		method: verb,
@@ -39,7 +45,7 @@ export const crossfadeConfig = {
 /**
  * Compute and return fee value
  * @param {{price: Number}} art 
- * @param {{fee: [{price, value}]}} tarif 
+ * @param {{fee: [{price: Number, value: Number}]}} tarif 
  * @returns {Number} fee
  */
 
@@ -52,9 +58,10 @@ export function getFee(art, tarif) {
 }
 
 /**
- * 
- * @param {*} art 
- * @param {*} tarif 
+ * Compute and return margin value
+ * @param {{price: Number}} art 
+ * @param {{fee: [{price: Number, value: Number}]}} tarif 
+ * @returns {Number} margin
  */
 export function getMargin(art, tarif) {
 	if (tarif && art.price) {
