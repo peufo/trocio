@@ -18,6 +18,7 @@
     const [send, receive] = crossfade(crossfadeConfig)
     
     let articles = [] //search
+    let countArticleAvailable = 0
     let searchPromise
     let search = ''
     let cart = []
@@ -35,9 +36,10 @@
 
     async function getArticles() {
 
-        let req = `/articles/search?troc=${$troc._id}&limit=${LIMIT_LIST_A}&skip=${skip}`
-        req += `&statut=valided`
-        req += `&search=${search}`
+        let req = `/articles?troc=${$troc._id}&limit=${LIMIT_LIST_A}&skip=${skip}`
+        req += `&filter_statut=valided`
+        req += `&or_search_name=${search}`
+        req += `&or_search_ref=${search}`
         req += `${user._id ? `&providernot=${user._id}` :''}`
 
         let res = await fetch(req)
@@ -45,12 +47,13 @@
 
         if(res.ok) {
             
-            noMoreResults  = json.articles.length < LIMIT_LIST_A
-            
+            noMoreResults  = json.data.length < LIMIT_LIST_A
+            countArticleAvailable = json.dataMatchCount
+
             if (!!skip) {
-                articles = [...articles, ...json.articles]
+                articles = [...articles, ...json.data]
             }else{
-                articles = json.articles
+                articles = json.data
             }
             
             articles = articles.filter(a => cart.map(c => c._id).indexOf(a._id) == -1)
@@ -157,7 +160,7 @@
                     {:then}
                         <!-- Bonton pour plus de résultats-->
                         <div class="w3-col underline-div w3-center w3-opacity" on:click={getMoreResults}>
-                            <span class="underline-span">Plus de résultats</span>
+                            <span class="underline-span">Plus de résultats ({articles.length} / {countArticleAvailable})</span>
                         </div>
                     {/await}
                 {/if}

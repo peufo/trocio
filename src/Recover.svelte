@@ -5,7 +5,6 @@
     import { crossfade } from 'svelte/transition'
     import Article from './Article.svelte'
 
-    export let user = {}
     export let provided = [] //Articles provided
     export let providedPromise
     let validPromise // valid button

@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+var mongoose = require('mongoose')
+const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
 
 var mailvalidatorModel = new Schema({

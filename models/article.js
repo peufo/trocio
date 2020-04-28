@@ -6,7 +6,6 @@ var articleModel = new Schema({
 	troc: {type: ObjectId, ref: 'troc', required: true},
 	provider: {type: ObjectId, ref: 'user', required: true},
 	ref: {type: String},
-	buyer: {type: ObjectId, ref: 'user'},
 	name: {type: String, default: ''},
 	price: {type: Number, default: 0},
 	fee: {type: Number, default: 0},
@@ -16,6 +15,7 @@ var articleModel = new Schema({
 	sold: Date, //ou
 	recover: Date,
 	giveback: [{sold: Date, back: Date, raison: String, user: {type: ObjectId, ref: 'user'}}], //user is not required for anonyme buyer
+	buyer: {type: ObjectId, ref: 'user'},
 	validator: {type: ObjectId, ref: 'user'}, //For valided or refused
 	seller: {type: ObjectId, ref: 'user'} //For sold or recover
 })

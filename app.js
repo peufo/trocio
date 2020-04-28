@@ -35,7 +35,7 @@ app.use(session({
 }))
 
 
-//Routage
+//Routage Vues
 app.use('/', require('./routes/index'))
 app.use('/superadmin', checkSuperAdmin, require('./routes/admin'))
 

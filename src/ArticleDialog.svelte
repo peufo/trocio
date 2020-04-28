@@ -24,7 +24,8 @@
         isModified = false
         articleEdited = {}
         Object.assign(articleEdited, article)
-        priceToFixed2 = articleEdited.price.toFixed(2)
+        priceToFixed2 = ''
+        priceToFixed2 = article.price.toFixed(2)
         tarif = undefined
     }
 
@@ -116,7 +117,12 @@
         let res = await fetch(`/trocs/${trocId}/tarif/${userId}`)
         let json = await res.json()
         tarif = json
-	}
+    }
+    
+    function valid() {
+        console.log('prout')
+
+    }
 
 </script>
 
@@ -133,7 +139,7 @@
     </Content>
 </Dialog>
 
-<Dialog bind:this={dialog} on:MDCDialog:opening={onOpen}>
+<Dialog bind:this={dialog} on:MDCDialog:opening={onOpen} autoStackButtons="false" getEscapeKeyAction="false">
     <Title>
         <span>#{article.ref}</span>
         <div contenteditable="true" on:input={editName}>
@@ -247,7 +253,7 @@
                 <Button color="secondary">
                     <Label><i class="fa fa-times"></i> Annuler</Label>
                 </Button>
-                <Button>
+                <Button on:click={valid}>
                     <Label><i class="fa fa-check"></i> Sauvegarder</Label>
                 </Button>
             </Actions>

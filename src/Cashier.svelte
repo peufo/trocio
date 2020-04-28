@@ -168,7 +168,7 @@
 				</div>
 			{/if}
 
-			<!--  -->
+			<!-- Recherche du client -->
 			<div style="display: inline-block">
 				<div class="icon iconUser">
 					{#if !clientAnonym}

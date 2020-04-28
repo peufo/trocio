@@ -27,10 +27,10 @@
     })
 
     async function getGivebacks() {
-        let res = await fetch(`/articles?giveback.user=${userId}&troc=${trocId}`)
+        let res = await fetch(`/articles?user_giveback.user=${userId}&troc=${trocId}`)
 		let json = await res.json()		
         if (res.ok) {
-			givebacks = json.map(art => {
+			givebacks = json.data.map(art => {
                 let { raison, time} = getMyLastGiveBack(art)
                 art.givebackRaison = raison
                 art.givebackTime = new Date(time).getTime()

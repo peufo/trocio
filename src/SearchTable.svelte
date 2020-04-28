@@ -103,13 +103,13 @@
             dataMatchCount = json.dataMatchCount
             newData = addStatutField(json.data) // TODO: server-side
 
-            noMoreData = newData.length < limitData
-
             if (!!skipData) {
                 data = [...data, ...newData]
             }else{
                 data = newData
             }
+
+            noMoreData = data.length == dataMatchCount
 
         }else{
             data = []
@@ -144,7 +144,7 @@
                                     {/if}
                                 </SecondaryText>
                             </Text>
-                            {#if field.typeMenu == 'search'}
+                            {#if field.typeMenu == 'search' || field.typeMenu === 'or_search'}
                                 <MenuSurface bind:this={field.menu} style="min-width: 140px;">
                                     <div style="margin: 1em;">
                                         <Textfield 

@@ -79,19 +79,19 @@
 	}
 
 	async function getProvided() {
-		let res = await fetch(`/articles?provider=${userId}&troc=${trocId}`)
+		let res = await fetch(`/articles?user_provider=${userId}&troc=${trocId}`)
 		let json = await res.json()
 		if (res.ok) {
-			provided = json
+			provided = json.data
 			return
 		}
 	}
 
 	async function getPurchases() {
-        let res = await fetch(`/articles?buyer=${userId}&troc=${trocId}`)
+        let res = await fetch(`/articles?user_buyer=${userId}&troc=${trocId}`)
         let json = await res.json()
         if (res.ok) {
-			purchases = addTime(json, 'sold', 'soldTime')
+			purchases = addTime(json.data, 'sold', 'soldTime')
             return
         }
 	}
