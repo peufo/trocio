@@ -31,17 +31,17 @@
     }
 
     async function getArticles() {
-        let res = await fetch(`articles/search?troc=${troc}&search=${search}&limit=${LIMIT}&skip=${skip}`)
+        let res = await fetch(`articles?troc=${troc}&search_name=${search}&limit=${LIMIT}&skip=${skip}`)
         let json = await res.json()
         if(res.ok) {
 
-            if (json.length < LIMIT) noMoreResults = true
+            if (json.data.length < LIMIT) noMoreResults = true
             else noMoreResults = false
 
             if (!!skip) {
-                articles = [...articles, ...json]
+                articles = [...articles, ...json.data]
             }else{
-                articles = json
+                articles = json.data
             }
 
             return

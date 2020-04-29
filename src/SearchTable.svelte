@@ -236,16 +236,18 @@
         </DataTable>
 
         <div style="align-self: flex-end;" class="w3-margin-top">
+
             {#if items.length && !noMoreData}
                 <Button
                 on:click={getMoreData}
                 variant="outlined"
                 color="secondary">
-                        Plus de résultats {items.length} / {dataMatchCount}
+                        Plus de résultats 
                 </Button>
-            {:else}
-                {items.length} / {dataMatchCount}
             {/if}
+            
+            {items.length} / {dataMatchCount}
+
         </div>
         <br><br><br>
 

@@ -17,18 +17,16 @@ var articleModel = new Schema({
 	giveback: [{sold: Date, back: Date, raison: String, user: {type: ObjectId, ref: 'user'}}], //user is not required for anonyme buyer
 	buyer: {type: ObjectId, ref: 'user'},
 	validator: {type: ObjectId, ref: 'user'}, //For valided or refused
-	seller: {type: ObjectId, ref: 'user'} //For sold or recover
+	seller: {type: ObjectId, ref: 'user'}, //For sold or recover
+	newPriceRequest: {
+		applicant: {type: ObjectId, ref: 'user'},
+		createdAt: Date,
+		price: Number
+	}
 })
 
 articleModel.set('timestamps', true)
-/*
-articleModel.virtual('statut').get(function() {
-	let statut = 'Proposé'
-	if (this.valided) statut = 'Validé'
-	if (this.sold) statut = 'Vendu'
-	if (this.recover) statut = 'Récupéré'
-	return statut
-})
-*/
+
+//TODO: Add pre('save price') and compute fee and margin
 
 module.exports = mongoose.model('article', articleModel);

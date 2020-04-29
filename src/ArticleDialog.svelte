@@ -97,7 +97,7 @@
     }
 
     function testIsModifed() {
-        isModified = JSON.stringify(articleEdited) != JSON.stringify(article)
+        return isModified = JSON.stringify(articleEdited) != JSON.stringify(article)
     }
 
     async function editPrice(e) {
@@ -124,18 +124,39 @@
     
     async function valid() {
 
-        let res = await fetch(`/articles`, getHeader(articleEdited, 'PATCH'))
-        let json = await res.json()
-        if (res.ok) {
-            dispatch('patched', articleEdited)
-        }else {
-            console.log(res)
+        //Une demande de changement de prix est émise si le fournisseur n'est pas connecté
+        if (articleEdited.price != article.price && article.provider._id != $me._id) {
+
+            let message = `Le changement du prix nécéssite l'accord du fourniseur (${article.provider.name}).\n`
+            message += `Une demande lui sera transmise et le nouveau prix de ${articleEdited.price.toFixed(2)} sera appliqué dés qu'il l'aura accepté.`
+
+            if (confirm(message)) {
+                let res = await fetch(`/articles/newprice`, getHeader({_id: article._id, price: articleEdited.price}, 'POST'))
+                let json = await res.json()
+                if (res.ok) {
+                    articleEdited.newPriceRequest = json.data.newPriceRequest
+                    articleEdited.price = article.price
+                    dispatch('patched', articleEdited)
+                }else{
+                    console.log(res)
+                }
+            }else{
+                //Rétablissement du prix
+                articleEdited.price = article.price                
+            }
         }
 
-        //TODO: traité le cas ou le prix est modifé en créant un processus a part entière
-        if (articleEdited.price != article.price) {
-            console.log('Changement de prix !')
+        //Patch request
+        if (testIsModifed()) {
+            let res = await fetch(`/articles`, getHeader(articleEdited, 'PATCH'))
+            let json = await res.json()
+            if (res.ok) {
+                dispatch('patched', articleEdited)
+            }else {
+                console.log(res)
+            }            
         }
+
     }
 
 </script>
@@ -161,6 +182,11 @@
         </div>
     </Title>
     <Content style="min-width: 500px;">
+        {#if article.newPriceRequest}
+            <span class="w3-text-red">
+                Une demande de changement de prix ({article.newPriceRequest.price.toFixed(2)}) est en cours... 
+            </span>
+        {/if}
 
         <List twoLine nonInteractive avatarList style="width: 320px;" class="w3-right">
             <Item>
@@ -245,11 +271,13 @@
         </List>
 
         <div>
+
             <br>
             <span>
                 Prix: 
                 <input value={priceToFixed2} type="text" on:input={editPrice} style="width: 80px;">
             </span><br>
+
             {#await tarifPromise}
                 <i class="fas fa-spinner w3-spin"></i>
                 <span>...tarif</span>
@@ -257,6 +285,7 @@
                 <span>Frais: {articleEdited.fee && articleEdited.fee.toFixed(2)}</span><br>
                 <span>Marge: {articleEdited.margin && articleEdited.margin.toFixed(2)}</span><br>
             {/await}
+            
         </div>
 
     </Content>

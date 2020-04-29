@@ -27,22 +27,25 @@ function createArticleContext(articles, cb) {
 	})
 }
 
-function getRole(userId, art, cb) {
+function getRoles(userId, art, cb) {
 
 	//Verifie si l'utilisateur est caissier ou admin
 	Troc.findOne({_id: art.troc}, {admin: 1, cashier: 1}, (err, troc) => { // TODO: Pas très efficient
 		if (err || !troc) return cb(err || Error('troc not found !'))
+		let roles = []
 		let isAdmin = troc.admin.map(a => a.toString()).indexOf(userId) != -1
 		let isCashier = troc.cashier.map(a => a.toString()).indexOf(userId) != -1
-		let isProvider = !art.valided && art.provider.toString() == userId
+		let isProvider = art.provider.toString() == userId
 
-		if (isCashier || isAdmin) return cb(null, 'cashier')
-		if (isProvider) return cb(null, 'provider')
-		return cb(Error('Not authorized'))
+		if (isAdmin) roles.push('admin')
+		if (isCashier || isAdmin) roles.push('cashier')
+		if (isProvider) roles.push('provider')
+
+		return cb(roles)
 	})
 }
 
 module.exports = {
 	createArticleContext,
-	getRole
+	getRoles
 }

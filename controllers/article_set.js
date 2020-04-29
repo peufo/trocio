@@ -2,7 +2,7 @@ var Article = require('../models/article')
 var User = require('../models/user')
 var Troc = require('../models/troc')
 
-var { getRole, createArticleContext } = require('./article_utils')
+var { getRoles, createArticleContext } = require('./article_utils')
 
 function createArticle(req, res, next) {
 
@@ -64,6 +64,55 @@ function goBackArticle(req, res, next) {
 	})
 }
 
+function createNewPriceRequest(req, res, next) {
+	let { _id, price } = req.body
+	if (!_id || !price) return next(Error('_id and price are request'))
+
+	Article.findOne({_id: _id}).exec((err, article) => {
+		if (err || !article) return next(err || Error('Article not found'))
+
+		getRoles(req.session.user._id, article, roles => {
+			if (roles.indexOf('cashier') == -1) return next(Error('You need to be a cashier for this operation'))
+
+			article.newPriceRequest = {
+				applicant: req.session.user._id,
+				createdAt: new Date(),
+				price: price
+			}
+
+			article.save(err => {
+				if (err) return next(err)
+				res.json({success: true, message: 'New price request is created', data: article})
+				//TODO: add Push notify to provider
+			})
+		})
+	})
+}
+
+function acceptNewPriceRequest(req, res, next) {
+
+	let { _id } = req.body
+	if (!_id) return next(Error('_id is request'))
+	Article.findOne({_id: _id}).exec((err, article) => {
+		if (err) return next(err)
+
+		getRoles(req.session.user._id, article, roles => {
+			if (roles.indexOf('provider') == -1) return next(Error('You need to be a provider for this operation'))
+
+			article.price = article.newPriceRequest.newPrice
+			article.newPriceRequest = undefined
+
+			article.save(err => {
+				if (err) return next(err)
+				res.json({success: true, message: 'New price request is accepted', data: article})
+
+			})
+
+		})
+
+	})
+}
+
 function patchArticle(req, res, next) {
 
 	let patchedArticles = req.body
@@ -79,22 +128,23 @@ function patchArticle(req, res, next) {
 	Article.find({_id: {$in: ids}}).exec((err, articles) => {
 		if (err || !articles.length) return next(err || Error('Article not found'))
 
-		getRole(req.session.user._id, articles[0], (err, role) => {
-			if (err) return next(err)
+		getRoles(req.session.user._id, articles[0], roles => {
 
-			if (role == 'provider') {
+			if (!roles.length) return next(Error('Not authorized'))
+
+			if (roles.indexOf('provider') != -1) {
 				
 				articles.forEach(async art => {
 					let patchedArt = patchedArticles[ids.indexOf(String(art._id))]
 					let err = undefined
 
-					//Check if the user is the provider
+					//Check if the user is the provider (roles is not define for all articles)
 					if (req.session.user._id != art.provider || req.session.user._id != art.provider._id) {
 						err = Error('Provider not identified')
 					}
 
 					//PATCH
-					if (!art.valided) {
+					if (!art.valided || roles.indexOf('cashier') != -1) {
 						if (patchedArt.name) art.name = patchedArt.name
 						if (!isNaN(patchedArt.price) && patchedArt.price !== null) art.price = patchedArt.price	
 					}
@@ -104,7 +154,9 @@ function patchArticle(req, res, next) {
 					return
 				})
 
-			}else if(role == 'cashier') {
+			}
+			
+			if(roles.indexOf('cashier') != -1) {
 				articles.forEach(async art => {
 					let patchedArt = patchedArticles[ids.indexOf(String(art._id))]
 
@@ -136,8 +188,6 @@ function patchArticle(req, res, next) {
 					return
 				})
 
-			}else {
-				return next(Error('role unknow'))
 			}
 
 			if (errors.length) return next(errors[0])
@@ -156,6 +206,8 @@ function patchArticle(req, res, next) {
 module.exports = {
 	createArticle,
     deleteArticle,
-    goBackArticle,
+	goBackArticle,
+	createNewPriceRequest,
+	acceptNewPriceRequest,
 	patchArticle
 }

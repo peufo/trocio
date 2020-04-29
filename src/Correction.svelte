@@ -10,8 +10,6 @@
     let articles = []
     let article = {}
 
-    $: console.log('Correction', article)
-
     //Options
     const statutFiltersOptions = [
         {queryValue: '',         label: 'Tous',     icon: ''},
