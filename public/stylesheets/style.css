@@ -168,3 +168,8 @@ textarea {
         display: none;
     }
 }
+
+.row-selected {
+    border-left: 2px solid rgb(168, 168, 168);
+    border-right: 2px solid rgb(168, 168, 168);
+}

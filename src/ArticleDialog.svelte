@@ -1,5 +1,8 @@
 <script>
+    import { onMount, createEventDispatcher } from 'svelte'
+    const dispatch = createEventDispatcher()
     import { slide } from 'svelte/transition'
+
     import Dialog, { Title, Content, Actions } from '@smui/dialog'
     import MenuSurface from '@smui/menu-surface'
     import Textfield from '@smui/textfield'
@@ -123,8 +126,12 @@
 
         let res = await fetch(`/articles`, getHeader(articleEdited, 'PATCH'))
         let json = await res.json()
-        
-    
+        if (res.ok) {
+            dispatch('patched', articleEdited)
+        }else {
+            console.log(res)
+        }
+
         //TODO: traité le cas ou le prix est modifé en créant un processus a part entière
         if (articleEdited.price != article.price) {
             console.log('Changement de prix !')

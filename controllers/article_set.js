@@ -123,6 +123,7 @@ function patchArticle(req, res, next) {
 					if (validedPatched || refusedPatched) art.validator = req.session.user._id
 					if (soldPatched || recoverPatched) art.seller = req.session.user._id 
 
+
 					//Verification du status de l'article
 					let err = undefined
 					if (art.valided && art.refused) err = Error(`Un article ne peut pas être validé et refusé`)

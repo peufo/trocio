@@ -19,6 +19,8 @@
     export let title = 'Titre de la table'
     export let baseURL = '/search'
     export let fields = []
+    export let items = []
+    export let selectedIndex = -1
 
     let fieldsMenu
 
@@ -56,7 +58,7 @@
         if (waitData) clearTimeout(waitData)
         waitData = setTimeout(() => dataPromise = getData(), 300)
     }
-    
+
     function selectOption(field, selectedOption) {
         if (field.typeMenu == 'sort'){ //remove all sort
             fields.filter(f => f.typeMenu == 'sort').forEach(f => f.queryValue = '')
@@ -96,29 +98,30 @@
 
         let res = await fetch(req)
         let json = await res.json()
-        let newData = []
+        let newItems = []
 
         if(res.ok) {
             
             dataMatchCount = json.dataMatchCount
-            newData = addStatutField(json.data) // TODO: server-side
+            newItems = addStatutField(json.data) // TODO: server-side
 
             if (!!skipData) {
-                data = [...data, ...newData]
+                items = [...items, ...newItems]
             }else{
-                data = newData
+                items = newItems
             }
 
-            noMoreData = data.length == dataMatchCount
+            noMoreData = items.length == dataMatchCount
 
         }else{
-            data = []
+            item = []
         }
         return
     }
 
-    function select(dat) {
-        dispatch('select', dat)
+    function select(index) {
+        selectedIndex = index
+        dispatch('select', items[index])
     }
 
 </script>
@@ -190,32 +193,32 @@
                 {#await dataPromise}
                     <RowsPromise cellsWidth={fields.filter(f => f.checked).map(f => f.cellWidth)}></RowsPromise>
                 {:then}
-                    {#each data as dat}
-                        <Row style="text-align: left;" on:click={() => select(dat)}>
+                    {#each items as item, index}
+                        <Row style="text-align: left;" on:click={() => select(index)} class={selectedIndex == index ? 'row-selected' : ''}>
                             {#each fields.filter(f => f.checked) as field}
                                 <Cell numeric={field.dataType == 'number'}>
                                     {#if field.dataName.indexOf('.') === -1}
 
-                                        {#if !dat[field.dataName]}
+                                        {#if !item[field.dataName]}
                                             -
                                         {:else if field.dataType == 'date'}
-                                            {new Date(dat[field.dataName]).toLocaleString()}
+                                            {new Date(item[field.dataName]).toLocaleString()}
                                         {:else if field.dataType == 'number'}
-                                            {dat[field.dataName].toFixed(2)}
+                                            {item[field.dataName].toFixed(2)}
                                         {:else}
-                                            {dat[field.dataName]}
+                                            {item[field.dataName]}
                                         {/if}
 
                                     {:else} <!-- Deux dimensions (Object)-->
 
-                                        {#if !dat[field.dataName.split('.')[0]] || !dat[field.dataName.split('.')[0]][field.dataName.split('.')[1]]}
+                                        {#if !item[field.dataName.split('.')[0]] || !item[field.dataName.split('.')[0]][field.dataName.split('.')[1]]}
                                             -
                                         {:else if field.dataType == 'date'}
-                                            {new Date(dat[field.dataName.split('.')[0]][field.dataName.split('.')[1]]).toLocaleString()}
+                                            {new Date(item[field.dataName.split('.')[0]][field.dataName.split('.')[1]]).toLocaleString()}
                                         {:else if field.dataType == 'number'}
-                                            {dat[field.dataName.split('.')[0]][field.dataName.split('.')[1]].toFixed(2)}
+                                            {item[field.dataName.split('.')[0]][field.dataName.split('.')[1]].toFixed(2)}
                                         {:else}
-                                            {dat[field.dataName.split('.')[0]][field.dataName.split('.')[1]]}
+                                            {item[field.dataName.split('.')[0]][field.dataName.split('.')[1]]}
                                         {/if}
 
                                     {/if}
@@ -233,15 +236,15 @@
         </DataTable>
 
         <div style="align-self: flex-end;" class="w3-margin-top">
-            {#if data.length && !noMoreData}
+            {#if items.length && !noMoreData}
                 <Button
                 on:click={getMoreData}
                 variant="outlined"
                 color="secondary">
-                        Plus de résultats {data.length} / {dataMatchCount}
+                        Plus de résultats {items.length} / {dataMatchCount}
                 </Button>
             {:else}
-                {data.length} / {dataMatchCount}
+                {items.length} / {dataMatchCount}
             {/if}
         </div>
         <br><br><br>

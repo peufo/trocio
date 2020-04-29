@@ -1,12 +1,16 @@
 <script>
     
+    import { addStatutField } from './utils.js'
     import SearchTable from './SearchTable.svelte'
     import ArticleDialog from './ArticleDialog.svelte'
     
     export let troc = ''
 
     let articleDialog
+    let articles = []
     let article = {}
+
+    $: console.log('Correction', article)
 
     //Options
     const statutFiltersOptions = [
@@ -54,8 +58,13 @@
         setTimeout(articleDialog.open, 0)
     }
 
+    function articlePatched(e) {
+        let index = articles.map(i => i._id).indexOf(article._id)
+        articles[index] = addStatutField([e.detail])[0]
+    }
+
 </script>
 
-<SearchTable title="Articles" baseURL="/articles" {troc} {fields} on:select={selectArticle}/>
+<SearchTable title="Articles" baseURL="/articles" {troc} {fields} on:select={selectArticle} bind:items={articles}/>
 
-<ArticleDialog bind:dialog={articleDialog} {article}/>
+<ArticleDialog bind:dialog={articleDialog} {article} on:patched={articlePatched}/>
