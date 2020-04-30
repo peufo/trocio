@@ -5,7 +5,6 @@
 
     import Dialog, { Title, Content, Actions } from '@smui/dialog'
     import MenuSurface from '@smui/menu-surface'
-    import Textfield from '@smui/textfield'
     import Button, { Label } from '@smui/button'
     import List, { Item, Graphic, Meta, Text, PrimaryText, SecondaryText} from '@smui/list'
 

@@ -2,16 +2,21 @@
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
 	import { me } from './stores'
+
 	import Button from '@smui/button'
-	import Resume from './Resume.svelte'
-	import Articles from './Articles.svelte'
-	import Toggle from './Toggle.svelte'
-	import Login from './Login.svelte'
 	import Dialog, {Title, Content} from '@smui/dialog'
+	import Textfield from '@smui/textfield'
+
 	import L from 'leaflet'
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
+
+	import Resume from './Resume.svelte'
+	import Articles from './Articles.svelte'
+	import Toggle from './Toggle.svelte'
+	import Login from './Login.svelte'
+	
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
 
@@ -131,11 +136,13 @@
 		<div class="w3-row">
 
 			<div class="w3-col m8">
-				<input 	bind:value={search}
-						on:input={newSearch}
-						class="w3-input w3-large"
-						type="search"
-						placeholder="Recherche d'un troc">		
+				<Textfield
+				style="width: 100%;"
+				bind:value={search}
+				on:input={newSearch}
+				type="search"
+				label="Recherche"
+				></Textfield>	
 			</div>
 
 			<div class="w3-col m4">
@@ -164,7 +171,7 @@
 		</div>
 
 		{#if timeOpen}
-			<div class="w3-margin w3-center w3-row" transition:slide>
+			<div class="w3-margin w3-center w3-row" transition:slide|local>
 				<div class="w3-col m5">
 					<input on:input={loadTrocs} bind:value={start} type="date" class="w3-input">
 				</div>
@@ -183,7 +190,7 @@
 		{#each trocs as troc, i (troc._id)}
 			
 			<!--  En-tête  -->
-			<div transition:slide class="card" on:click="{() => {trocSelected = troc._id; trocSelectedName = troc.name}}">
+			<div transition:slide|local class="card" on:click="{() => {trocSelected = troc._id; trocSelectedName = troc.name}}">
 
 				<div class="w3-row">
 					<div class="w3-col m8 w3-padding">

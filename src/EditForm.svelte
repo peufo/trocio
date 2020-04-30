@@ -124,7 +124,7 @@
 	<br>
 	<h3>Horaire</h3>
 	{#each scheduleIn as {day, open, close}, i}
-		<div in:slide class="schedule w3-margin-top w3-border w3-round w3-padding">
+		<div in:slide|local class="schedule w3-margin-top w3-border w3-round w3-padding">
 
 			<input 	bind:value={day}
 					type="date"

@@ -1,5 +1,5 @@
 <script>
-	import { fade, slide, crossfade } from 'svelte/transition'
+	import { slide } from 'svelte/transition'
 	import { onMount, onDestroy } from 'svelte'
 	import { flip } from 'svelte/animate'
 	import Dialog, {Title, Content} from '@smui/dialog'
@@ -7,7 +7,7 @@
 	import Menu from '@smui/menu'
 	import List, { Item, Text } from '@smui/list'
 
-	import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils'
+	import { getHeader, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
 
@@ -16,8 +16,6 @@
 	import 'dayjs/locale/fr'
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
-
-	const [send, receive] = crossfade(crossfadeConfig)
 
     const LIMIT_LIST_INIT = 10 //Nombre d'élément d'une liste afficher initialement
     const LIMIT_LIST_INIT_SOLD = 50 //Nombre d'élément d'une liste afficher initialement
@@ -439,7 +437,7 @@
 					</div>
 				{:then}
 					{#each payments.slice(0, LIMIT_LIST_B) as payment (payment._id)}
-						<div class="list-element valided w3-padding" in:receive="{{key: payment._id}}" animate:flip="{{duration: 200}}">
+						<div class="list-element valided w3-padding" in:slide|local animate:flip="{{duration: 200}}">
 							{dayjs(payment.createdAt).fromNow()}
 							<br>
 							<b class="w3-tiny w3-right" style="line-height: 1;">{payment.amount.toFixed(2)}</b>
@@ -531,7 +529,7 @@
 			
 			<!-- Insertion de plusieurs d'article -->
 			{#if importArticlesListOpen}
-				<div class="w3-row w3-margin-top" transition:slide>
+				<div class="w3-row w3-margin-top" transition:slide|local>
 					<textarea class="w3-round" rows="10" 
 							bind:value={importArticlesValue} on:input={inputImportArticles}
 							placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${traderPrefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${traderPrefix ? `${traderPrefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${traderPrefix ? `${traderPrefix}2 : ` : ''} Mon deuxième article : 15.35\n${traderPrefix ? `${traderPrefix}3 ; ` : ''} Mon troisième article ; 5,40\n...`}></textarea>
