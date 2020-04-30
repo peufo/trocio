@@ -4,7 +4,7 @@ var path = require('path')
 var cookieParser = require('cookie-parser')
 var logger = require('morgan')
 var { PORT, DBPATH, SECRET_STRING_COOKIE } = require('./config')
-var { checkSuperAdmin } = require('./controllers/user')
+var { checkSuperAdmin } = require('./controllers/user_utils')
 var session = require('express-session')
 var mongoose = require('mongoose')
 var MongoStore = require('connect-mongo')(session)
@@ -40,10 +40,10 @@ app.use('/', require('./routes/index'))
 app.use('/superadmin', checkSuperAdmin, require('./routes/admin'))
 
 //Routage REST
-app.use('/users', require('./routes/user'))
-app.use('/articles', require('./routes/article'))
-app.use('/trocs', require('./routes/troc'))
-app.use('/payments', require('./routes/payment'))
+app.use('/users',     require('./routes/user'))
+app.use('/articles',  require('./routes/article'))
+app.use('/trocs',     require('./routes/troc'))
+app.use('/payments',  require('./routes/payment'))
 
 
 // catch 404 and forward to error handler
