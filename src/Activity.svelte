@@ -9,6 +9,7 @@
     import EditForm from './EditForm.svelte'
     import Trocs from './Trocs.svelte'
     import Resume from './Resume.svelte'
+    import TrocInfo from './TrocInfo.svelte'
 
     let createTrocOpen = false
     let searchTrocOpen = false
@@ -47,7 +48,7 @@
         <!-- LISTE DES TROCS-->
         <Card style="width: 350px;">
 
-            <div style="padding: 1rem;">
+            <div style="padding: 1rem; height: 66px;">
                 <Actions class="w3-right" style="transform: translate(0px, -4px);">
                     <Button on:click={openCreateTroc}>
                         <Label>Organiser</Label>
@@ -121,10 +122,12 @@
                 <div style="padding: 1rem;">
                     <i on:click={() => detailTrocOpen = false } class="fa fa-times w3-right w3-padding button-icon" title="Fermer le résumé du troc"></i>
                     <h3 class="mdc-typography--headline6" style="margin: 0;">
-                    Détail de {$me.trocs[trocSelectedIndex].name}
+                        {$me.trocs[trocSelectedIndex].name}
                     </h3>
                 </div>
                 <CardContent>
+                    <TrocInfo troc={$me.trocs[trocSelectedIndex]}/>
+                    <hr>
                     <Resume userId={$me._id} trocId={$me.trocs[trocSelectedIndex]._id}/>
                 </CardContent>
             </Card>

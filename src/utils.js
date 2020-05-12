@@ -1,6 +1,6 @@
 import printJS from 'print-js'
 import { troc } from './stores'
-import { quintOut } from 'svelte/easing'
+import { quintOut, cubicOut } from 'svelte/easing'
 import { element } from 'svelte/internal'
 
 /**
@@ -23,22 +23,6 @@ export function updateTroc(json, cb) {
 		if (cb) cb()
 	}else{
 		alert(json.message)
-	}
-}
-
-export const crossfadeConfig = {
-	duration: d => Math.sqrt(d * 200),
-	fallback(node, params) {
-		const style = getComputedStyle(node)
-		const transform = style.transform === 'none' ? '' : style.transform
-		return {
-			duration: 600,
-			easing: quintOut,
-			css: t => `
-				transform: ${transform} scale(${t});
-				opacity: ${t}
-			`
-		}
 	}
 }
 
@@ -102,4 +86,68 @@ export function addStatutField(articles, context = 'organisator') {
 		if (art.recover) art.statut = context == 'organisator' ? 'Rendu' : 'Récupéré'
 		return art
 	})	
+}
+
+// SVELTE Transition
+export const crossfadeConfig = {
+	duration: d => Math.sqrt(d * 200),
+	fallback(node, params) {
+		const style = getComputedStyle(node)
+		const transform = style.transform === 'none' ? '' : style.transform
+		return {
+			duration: 600,
+			easing: quintOut,
+			css: t => `
+				transform: ${transform} scale(${t});
+				opacity: ${t}
+			`
+		}
+	}
+}
+
+export function slidH(node, { delay = 0, duration = 400, easing: easing$1 = cubicOut }) {
+    const style = getComputedStyle(node);
+    const opacity = +style.opacity;
+    const width = parseFloat(style.width);
+    const padding_left = parseFloat(style.paddingLeft);
+    const padding_right = parseFloat(style.paddingRight);
+    const margin_left = parseFloat(style.marginLeft);
+    const margin_right = parseFloat(style.marginRight);
+    const border_left_width = parseFloat(style.borderLeftWidth);
+    const border_right_width = parseFloat(style.borderRightWidth);
+    return {
+        delay,
+        duration,
+        easing: easing$1,
+        css: t => `overflow: hidden;` +
+            `opacity: ${Math.min(t * 20, 1) * opacity};` +
+            `width: ${t * width}px;` +
+            `padding-left: ${t * padding_left}px;` +
+            `padding-right: ${t * padding_right}px;` +
+            `margin-left: ${t * margin_left}px;` +
+            `margin-right: ${t * margin_right}px;` +
+            `border-left-width: ${t * border_left_width}px;` +
+            `border-right-width: ${t * border_right_width}px;`
+    };
+}
+
+function toDegreesMinutesAndSeconds(coordinate) {
+    let absolute = Math.abs(coordinate)
+    let degrees = Math.floor(absolute)
+    let minutesNotTruncated = (absolute - degrees) * 60
+    let minutes = Math.floor(minutesNotTruncated)
+    let seconds = Math.floor((minutesNotTruncated - minutes) * 60)
+
+    return degrees + "°" + minutes + "'" + seconds + '"'
+}
+
+export function convertDMS(lat, lng) {
+	if (typeof lat === 'object') ({lat, lng} = lat)
+    let latitude = toDegreesMinutesAndSeconds(lat)
+    let latitudeCardinal = lat >= 0 ? "N" : "S"
+
+    let longitude = toDegreesMinutesAndSeconds(lng)
+    let longitudeCardinal = lng >= 0 ? "E" : "W"
+
+    return latitude + latitudeCardinal + " " + longitude + longitudeCardinal
 }
