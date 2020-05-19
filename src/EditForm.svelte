@@ -18,7 +18,6 @@
 	export let schedule = []
 	export let society = ''
 	export let societyweb = ''
-	export let image = ''
 
 	//Schedule conversion
 	if (!schedule.length) onMount(addSchedule)

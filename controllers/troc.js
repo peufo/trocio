@@ -5,7 +5,6 @@ var Payment = require('../models/payment')
 
 function checkAdmin(req, res, next) {
 	if (!req.session.user) return next(Error('Login required'))
-	//TODO: replace params with query
 	Troc.findOne({_id: req.params.id || req.params.trocId || req.query.troc}, {admin: 1}, (err, troc) => {
 		if (err || !troc) return next(err || Error('troc not found !'))
 		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1

@@ -19,6 +19,7 @@ app.listen(PORT, () => {
 })
 
 app.set('secret', SECRET_STRING_COOKIE)
+app.set('view engine', 'ejs')
 
 app.use(logger('dev'))
 app.use(express.json({limit: '2mb', extended: true}))

@@ -120,6 +120,7 @@ textarea {
     opacity: 1 !important;
 }
 
+/*
 .tabs{
     position: relative;
     width: 100%;
@@ -152,6 +153,7 @@ textarea {
     opacity: 0;
     overflow: hidden;
 }
+*/
 
 .close-icon {
     transition: all .15s;

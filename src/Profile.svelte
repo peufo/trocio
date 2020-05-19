@@ -76,182 +76,189 @@
 
 </script>
 
-<br>
-<div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
+{#if $me._id}
+    <br>
+    <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
 
-    <div style="max-width: 500px; margin: auto;">
-        <br><br>
+        <div style="max-width: 500px; margin: auto;">
+            <br><br>
 
-        <i class="w3-xlarge far fa-user" style="margin-right: 16px;"></i>
-        <Textfield
-        bind:value="{$me.name}"
-        on:input="{() => changeName = true}"
-        label="Nom & Prénom"
-        variant="outlined"
-        style="width: calc(100% - 43px);"
-        class="w3-margin-top"
-        />
+            <i class="w3-xlarge far fa-user" style="margin-right: 16px;"></i>
+            <Textfield
+            bind:value="{$me.name}"
+            on:input="{() => changeName = true}"
+            label="Nom & Prénom"
+            variant="outlined"
+            style="width: calc(100% - 43px);"
+            class="w3-margin-top"
+            />
 
-        {#if changeName}
-            <div in:fade>
-                {#await patchNamePromise}
-                    <Button
-                    variant="outlined"
-                    color="secondary"
-                    class="w3-right w3-margin-top">
-                        <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Validation ...
-                    </Button>
-                {:then}
-                    <Button
-                    on:click="{() => patchNamePromise = patchName()}"
-                    variant="raised"
-                    disabled={$me.name.trim().length < 2}
-                    class="w3-right w3-margin-top"
-                    style="color: white;">
-                        Valider votre nouveau nom & prénom
-                    </Button>
-                {/await}
-                <br><br>
-            </div>
-        {/if}
-        <br><br>
-
-        <i class="w3-xlarge far fa-envelope" style="margin-right: 13px;"></i>
-        <Textfield
-        bind:value="{$me.mail}"
-        on:input="{() => changeMail = true}"
-        label="Mail"
-        variant="outlined"
-        style="width: calc(100% - 43px);"
-        class="w3-margin-top"
-        />
-
-        {#if !changeMail}
-            <HelperText id="helper-text-mail" persistent style="margin-left: 37px;">
-            {#if $me.mailvalided}
-                <span class="w3-text-green"><i class="fas fa-check"></i> mail validé</span>
-            {:else}
-                <span class="w3-text-red"><i class="fas fa-exclamation-triangle"></i> mail non validé</span>
+            {#if changeName}
+                <div in:fade>
+                    {#await patchNamePromise}
+                        <Button
+                        variant="outlined"
+                        color="secondary"
+                        class="w3-right w3-margin-top">
+                            <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Validation ...
+                        </Button>
+                    {:then}
+                        <Button
+                        on:click="{() => patchNamePromise = patchName()}"
+                        variant="raised"
+                        disabled={$me.name.trim().length < 2}
+                        class="w3-right w3-margin-top"
+                        style="color: white;">
+                            Valider votre nouveau nom & prénom
+                        </Button>
+                    {/await}
+                    <br><br>
+                </div>
             {/if}
-            </HelperText>
-        {/if}
+            <br><br>
 
-        {#if changeMail}
+            <i class="w3-xlarge far fa-envelope" style="margin-right: 13px;"></i>
+            <Textfield
+            bind:value="{$me.mail}"
+            on:input="{() => changeMail = true}"
+            label="Mail"
+            variant="outlined"
+            style="width: calc(100% - 43px);"
+            class="w3-margin-top"
+            />
 
-            <div in:fade>
-                {#await patchMailPromise}
-                    <Button variant="outlined" color="secondary" class="w3-right w3-margin-top">
-                        <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Validation ...
-                    </Button>
-                {:then}
-                    <Button
-                    on:click="{() => patchMailPromise = patchMail()}"
-                    variant="raised"
-                    disabled="{!$me.mail.match(EMAIL_REGEX)}"
-                    class="w3-right w3-margin-top"
-                    style="color: white;">
-                        Valider votre nouveau mail
-                    </Button>
-                {/await}
-                <br><br>
-            </div>
-            <br>
+            {#if !changeMail}
+                <HelperText id="helper-text-mail" persistent style="margin-left: 37px;">
+                {#if $me.mailvalided}
+                    <span class="w3-text-green"><i class="fas fa-check"></i> mail validé</span>
+                {:else}
+                    <span class="w3-text-red"><i class="fas fa-exclamation-triangle"></i> mail non validé</span>
+                {/if}
+                </HelperText>
+            {/if}
 
-        {:else if !$me.mailvalided}
+            {#if changeMail}
 
-            {#if mailValidatorSent}
-                <Button color="secondary" class="w3-right">
-                    <i class="fas fa-check"></i>&nbsp;Mail de validation envoyer
-                </Button>
-            {:else}
+                <div in:fade>
+                    {#await patchMailPromise}
+                        <Button variant="outlined" color="secondary" class="w3-right w3-margin-top">
+                            <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Validation ...
+                        </Button>
+                    {:then}
+                        <Button
+                        on:click="{() => patchMailPromise = patchMail()}"
+                        variant="raised"
+                        disabled="{!$me.mail.match(EMAIL_REGEX)}"
+                        class="w3-right w3-margin-top"
+                        style="color: white;">
+                            Valider votre nouveau mail
+                        </Button>
+                    {/await}
+                    <br><br>
+                </div>
+                <br>
 
-                {#await sendMailValidatorPromise}
+            {:else if !$me.mailvalided}
+
+                {#if mailValidatorSent}
                     <Button color="secondary" class="w3-right">
-                        <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Envoie du mail ...
+                        <i class="fas fa-check"></i>&nbsp;Mail de validation envoyer
                     </Button>
-                {:then}
-                    <Button
-                    on:click="{() => sendMailValidatorPromise = sendMailValidator()}"
-                    class="w3-right"
-                    variant="outlined"
-                    color="secondary">
-                        Envoyer un mail de validation ?
-                    </Button>   
-                {/await}
+                {:else}
 
+                    {#await sendMailValidatorPromise}
+                        <Button color="secondary" class="w3-right">
+                            <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Envoie du mail ...
+                        </Button>
+                    {:then}
+                        <Button
+                        on:click="{() => sendMailValidatorPromise = sendMailValidator()}"
+                        class="w3-right"
+                        variant="outlined"
+                        color="secondary">
+                            Envoyer un mail de validation ?
+                        </Button>   
+                    {/await}
+
+                {/if}
+                
             {/if}
-            
-        {/if}
-        <br><br>
+            <br><br>
 
-        {#if !changePassword}
-            <div out:slide>
-                <Button
-                on:click="{() => changePassword = true}"
-                color="secondary"
-                class="w3-margin-top w3-right">
-                    Changer votre mot de passe ?
-                </Button>
-                <br>
-            </div>
-        {:else}
-            <div in:slide>
-                <i class="w3-xlarge fas fa-unlock" style="margin-right: 16px;"></i>
-                <Textfield
-                bind:value="{oldPassword}"
-                label="Mot de passe actuel"
-                type="password"
-                variant="outlined"
-                style="width: calc(100% - 43px);"
-                class="w3-margin-top"
-                />
+            {#if !changePassword}
+                <div out:slide>
+                    <Button
+                    on:click="{() => changePassword = true}"
+                    color="secondary"
+                    class="w3-margin-top w3-right">
+                        Changer votre mot de passe ?
+                    </Button>
+                    <br>
+                </div>
+            {:else}
+                <div in:slide>
+                    <i class="w3-xlarge fas fa-unlock" style="margin-right: 16px;"></i>
+                    <Textfield
+                    bind:value="{oldPassword}"
+                    label="Mot de passe actuel"
+                    type="password"
+                    variant="outlined"
+                    style="width: calc(100% - 43px);"
+                    class="w3-margin-top"
+                    />
 
-                <i class="w3-xlarge fas fa-key" style="margin-right: 13px;"></i>
-                <Textfield
-                bind:value="{newPassword}"
-                label="Nouveau mot de passe"
-                type="password"
-                variant="outlined"
-                style="width: calc(100% - 43px);"
-                class="w3-margin-top"
-                />
+                    <i class="w3-xlarge fas fa-key" style="margin-right: 13px;"></i>
+                    <Textfield
+                    bind:value="{newPassword}"
+                    label="Nouveau mot de passe"
+                    type="password"
+                    variant="outlined"
+                    style="width: calc(100% - 43px);"
+                    class="w3-margin-top"
+                    />
 
-                <i class="w3-xlarge fas fa-key" style="margin-right: 13px;"></i>
-                <Textfield
-                bind:value="{newPassword2}"
-                label="Confirmation"
-                type="password"
-                variant="outlined"
-                style="width: calc(100% - 43px);"
-                class="w3-margin-top"
-                />
+                    <i class="w3-xlarge fas fa-key" style="margin-right: 13px;"></i>
+                    <Textfield
+                    bind:value="{newPassword2}"
+                    label="Confirmation"
+                    type="password"
+                    variant="outlined"
+                    style="width: calc(100% - 43px);"
+                    class="w3-margin-top"
+                    />
 
-                <br>
+                    <br>
 
-                <Button 
-                variant="raised"
-                on:click={validChangePassword}
-                disabled={oldPassword.trim().length < 4 || newPassword.trim().length < 4 || newPassword != newPassword2}
-                class="w3-margin-top w3-right"
-                style="color: white;">
-                    Valider votre nouveau mot de passe
-                </Button>
+                    <Button 
+                    variant="raised"
+                    on:click={validChangePassword}
+                    disabled={oldPassword.trim().length < 4 || newPassword.trim().length < 4 || newPassword != newPassword2}
+                    class="w3-margin-top w3-right"
+                    style="color: white;">
+                        Valider votre nouveau mot de passe
+                    </Button>
 
-                <br>
+                    <br>
 
-            </div>
-        {/if}
-        <br><br><br>
+                </div>
+            {/if}
+            <br><br><br>
 
-        <Button
-        href="/users/logout"
-        color="secondary"
-        class="w3-margin-top w3-right">
-            Déconnexion
-        </Button>
+            <Button
+            href="/users/logout"
+            on:click={() => sessionStorage.removeItem('me')}
+            color="secondary"
+            class="w3-margin-top w3-right">
+                Déconnexion
+            </Button>
 
-        <br><br><br>
+            <br><br><br>
+        </div>
+
     </div>
+    <br>
+{/if}
 
-</div>
-<br>
+<svelt:head>
+	<style>#waitLoaded { display: none; }</style>
+</svelt:head>

@@ -7,12 +7,20 @@ import postcss from 'rollup-plugin-postcss'
 
 const production = !process.env.ROLLUP_WATCH
 
-function getOutput(name) {
+const names = ['head', 'me', 'profile', 'admin', 'trocs', 'cashier', 'welcome']
+//const names = ['head']
+
+function getExport(name) {
 	return {
-		sourcemap: !production,
-		format: 'iife',
-		name: 'app',
-		file: `public/assets/${name}.js`
+		input: `src/${name}.js`,
+		output: {
+			sourcemap: !production,
+			format: 'iife',
+			name: 'app',
+			file: `public/assets/${name}.js`
+			},
+		plugins,
+		watch: {clearScreen: false}
 	}
 }
 
@@ -41,36 +49,4 @@ const plugins = [
 		production && terser()
 	]
 
-
-export default [
-{
-	input: 'src/me.js',
-	output: getOutput('me'),
-	plugins,
-	watch: {clearScreen: false}
-},
-{
-	input: 'src/admin.js',
-	output: getOutput('admin'),
-	plugins,
-	watch: {clearScreen: false}
-},
-{
-	input: 'src/trocs.js',
-	output: getOutput('trocs'),
-	plugins,
-	watch: {clearScreen: false}
-},
-{
-	input: 'src/cashier.js',
-	output: getOutput('cashier'),
-	plugins,
-	watch: {clearScreen: false}
-},
-{
-	input: 'src/welcome.js',
-	output: getOutput('welcome'),
-	plugins,
-	watch: {clearScreen: false}
-},
-]
+export default names.map(getExport)

@@ -1,10 +1,35 @@
 import { writable } from 'svelte/store'
 
-export let troc = createTroc()
-export let me = writable({}, getMe)
+let troc = createTroc()
+let me = writable({}, getMe)
+
+
+//Globalize ME for limit request number and work on mulitple assets
+let meLoaded = new Event('meLoaded')
+addEventListener('meLoaded', e => {
+	me.set(JSON.parse(sessionStorage.me))
+})
 
 function getMe(set) {
-	fetch('/users/me').then(res => res.json()).then(set)
+	if (sessionStorage.me != 'onLoad') {
+		if(!sessionStorage.me) {
+			sessionStorage.me = 'onLoad'
+			fetch('/users/me').then(res => res.json()).then(json => {
+				if (json.name) {
+					updateMe(json)
+				}else{
+					sessionStorage.removeItem('me')
+				}
+			})
+		}else{
+			set(JSON.parse(sessionStorage.me))		
+		}
+	}
+}
+
+function updateMe(value) {
+	sessionStorage.me = JSON.stringify(value)
+	dispatchEvent(meLoaded)
 }
 
 function createTroc() {
@@ -55,3 +80,5 @@ function getMeTroc(m, newTroc) {
 		_id: newTroc._id
 	}		
 }
+
+export { troc, me, updateMe}

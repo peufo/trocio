@@ -1,7 +1,6 @@
 var express = require('express')
 var Payment = require('../models/payment')
 var Troc = require('../models/troc')
-var { checkAdmin } = require('../controllers/troc')
 var router = express.Router()
 
 router

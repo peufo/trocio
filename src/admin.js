@@ -1,14 +1,8 @@
-import Head from './Head.svelte'
 import Admin from './Admin.svelte'
 
-let head = new Head({
-    target: document.body,
-    props: {}
-})
-
 let admin = new Admin({
-    target: document.body,
+    target: document.querySelector('#app'),
     props: {}
 })
 
-export default [head, admin]
+export default admin

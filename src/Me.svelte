@@ -18,8 +18,6 @@
     let newPassword = ''
     let newPassword2 = ''
 
-    let changeMail = false
-    let changeName = false
 
     let patchNamePromise
     let patchMailPromise

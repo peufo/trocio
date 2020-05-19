@@ -147,6 +147,9 @@
 
 </div>
 
+<svelte:head>
+    <style>#waitLoaded {display: none;}</style>
+</svelte:head>
 
 <style>
 

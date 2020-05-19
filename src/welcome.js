@@ -1,14 +1,8 @@
-import Head from './Head.svelte'
 import Welcome from './Welcome.svelte'
 
-let head = new Head({
-    target: document.body,
-    props: {}
-})
-
 let welcome = new Welcome({
-    target: document.body,
+    target: document.querySelector('#app'),
     props: {}
 })
 
-export default [head, welcome]
+export default welcome

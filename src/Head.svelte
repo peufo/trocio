@@ -1,11 +1,19 @@
 <script>
     import { me, troc } from './stores'
-    import Login from './Login.svelte'
+	import Menu from '@smui/menu'
+	import List, { Item, Graphic } from '@smui/list'
 	import Button from '@smui/button'
 	import Dialog, {Content} from '@smui/dialog'
 	import TopAppBar, {Row, Section, Title} from '@smui/top-app-bar'
 
+	import Login from './Login.svelte'
+	import AppLink from './AppLink.svelte'
+	
+	export let title = ''
+	
 	let dialogLogin
+	let userMenu
+
 
 </script>
 
@@ -17,21 +25,37 @@
 			<a href="/">
 				<Title>
 					TROCIO
-					{#if document.location.pathname == '/me'}
-						<i>- Mon compte</i>
-					{:else if $troc._id}
-						<i>- {$troc.name}</i>
-					{/if}
+					<i>{title}</i>
 				</Title>
 			</a>
 		</Section>
 
 		<Section align="end" toolbar>
 			{#if $me._id}
-				<Button color="secondary" class="w3-right w3-padding w3-text-white" href="/me">
-					<i class="fas fa-user w3-large"></i>
-					<span class="userName">&nbsp;{$me.name}</span>
-				</Button>
+				<div>
+					<Button on:click={() => userMenu.setOpen(true)} color="secondary" class="w3-right w3-padding w3-text-white">
+						<i class="fas fa-user w3-large"></i>
+						<span class="userName">&nbsp;{$me.name}</span>
+					</Button>
+
+					<Menu bind:this={userMenu} style="min-width: 200px;" anchorCorner="BOTTOM_LEFT">
+						<List>
+							<AppLink href="/me" pushState>
+								<Item>
+									<Graphic><i class="far fa-star"></i></Graphic>
+									Vos activités
+								</Item>
+							</AppLink>
+							<AppLink href="/me/profile" pushState>
+								<Item>
+									<Graphic><i class="fas fa-info-circle"></i></Graphic>
+									Votre profil
+								</Item>
+							</AppLink>
+						</List>
+					</Menu>					
+				</div>
+				
 			{:else}
 				<Button color="secondary" class="w3-right w3-padding w3-text-white" on:click="{() => dialogLogin.open()}">
 					<i class="far fa-user w3-large"></i>
@@ -48,6 +72,8 @@
 		<Login on:close="{() => dialogLogin.close()}"/>
 	</Content>
 </Dialog>
+
+
 
 <style>
 

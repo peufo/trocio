@@ -1,14 +1,8 @@
 import Trocs from './Trocs.svelte'
-import Head from './Head.svelte'
-
-let head = new Head({
-    target: document.body,
-    props: {}
-})
 
 let trocs = new Trocs({
-    target: document.body,
+    target: document.querySelector('#app'),
     props: {}
 })
 
-export default [head, trocs]
+export default trocs

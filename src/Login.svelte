@@ -3,7 +3,7 @@
     import { slide, fade } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
-    import { me } from './stores'
+    import { me, updateMe } from './stores'
     import { getHeader } from './utils'
     
     export let id = 'login' //For focus()
@@ -70,7 +70,7 @@
         let res = await fetch('/users/login', getHeader({mail, password}))
         let json = await res.json()
         if (json.name) {
-            $me = json
+            updateMe(json)
             dispatch('close')
             close = true
             return

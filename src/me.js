@@ -1,14 +1,8 @@
-import Head from './Head.svelte'
 import Me from './Me.svelte'
 
-let head = new Head({
-    target: document.body,
-    props: {}
-})
-
 let me = new Me({
-    target: document.body,
+    target: document.querySelector('#app'),
     props: {}
 })
 
-export default [head, me]
+export default me

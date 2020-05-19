@@ -1,5 +1,4 @@
 let User = require('../models/user')
-let Article = require('../models/article')
 
 function getMe(req, res, next) {
     if (!req.session.user) return res.json({success: false, message: 'Login required'})

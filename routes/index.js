@@ -1,25 +1,29 @@
-var express = require('express')
-var router = express.Router()
-var got = require('got')
-var path = require('path')
-var bwipjs = require('bwip-js')
-var { checkCashier, checkAdmin } = require('../controllers/troc')
+let express = require('express')
+let router = express.Router()
+let got = require('got')
+let path = require('path')
+let bwipjs = require('bwip-js')
+let { checkCashier, checkAdmin } = require('../controllers/troc')
+let { getAssetAndTitle } = require('./utils')
 
 router
 	.get('/', (req, res, next) => {
-		res.sendFile(path.join(__dirname, '..', 'views', 'welcome.html'))
+		res.render('../views/app.ejs', getAssetAndTitle(req.path))
 	})
 	.get('/search', (req, res, next) => {
-		res.sendFile(path.join(__dirname, '..', 'views', 'trocs.html'))
+		res.render('../views/app.ejs', getAssetAndTitle(req.path))
+	})
+	.get('/me/profile', (req, res, next) => {
+		res.render('../views/app.ejs', getAssetAndTitle(req.path))
 	})
 	.get('/me', (req, res, next) => {
-		res.sendFile(path.join(__dirname, '..', 'views', 'me.html'))
+		res.render('../views/app.ejs', getAssetAndTitle(req.path))
 	})
 	.get('/cashier/:id', checkCashier, (req, res, next) => {
-		res.sendFile(path.join(__dirname, '..', 'views', 'cashier.html'))
+		res.render('../views/app.ejs', getAssetAndTitle(req.path))
 	})
 	.get('/admin/:id', checkAdmin, (req, res, next) => {
-		res.sendFile(path.join(__dirname, '..', 'views', 'admin.html'))
+		res.render('../views/app.ejs', getAssetAndTitle(req.path))
 	})
 	.get('/mailConfirmation', (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'mailConfirmation.html'))
