@@ -21,7 +21,7 @@
     import { getAssetAndTitle } from '../routes/utils.js'
 
     export let href = ''
-    export let pushState = false
+    export let replaceState = false
     let progress = 0
     let fetchPromise
     let link
@@ -35,10 +35,10 @@
 
     function clickHandler(e){
         e.preventDefault()
-        if (pushState) {
-            window.history.pushState(null, null, href)
-        }else{
+        if (replaceState) {
             window.history.replaceState(null, null, href)
+        }else{
+            window.history.pushState(null, null, href)
         }
         load()
     }

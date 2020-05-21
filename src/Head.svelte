@@ -21,13 +21,13 @@
 	<Row>
 
 		<Section>
-			<a href="/"><img src="/favicon.ico" alt="logo Trocio" height="35"></a>
-			<a href="/">
+			<AppLink href="/">
 				<Title>
+					<img src="/favicon.ico" alt="logo Trocio" height="35">
 					TROCIO
 					<i>{title}</i>
 				</Title>
-			</a>
+			</AppLink>
 		</Section>
 
 		<Section align="end" toolbar>
@@ -40,13 +40,13 @@
 
 					<Menu bind:this={userMenu} style="min-width: 200px;" anchorCorner="BOTTOM_LEFT">
 						<List>
-							<AppLink href="/me" pushState>
+							<AppLink href="/me">
 								<Item>
 									<Graphic><i class="far fa-star"></i></Graphic>
 									Vos activités
 								</Item>
 							</AppLink>
-							<AppLink href="/me/profile" pushState>
+							<AppLink href="/me/profile">
 								<Item>
 									<Graphic><i class="fas fa-info-circle"></i></Graphic>
 									Votre profil
