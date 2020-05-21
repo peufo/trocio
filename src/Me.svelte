@@ -5,7 +5,6 @@
     import { me } from './stores'
 
     import Activity from './Activity.svelte'
-    import Profile from './Profile.svelte'
 
     let tabSelected = 0
 	let tabs = [
@@ -79,11 +78,6 @@
         <!-- Informations personel -->
         <div class="tab" class:center={tabSelected == 0} class:left={tabSelected > 0}>
             <Activity/>
-        </div>
-
-        <!-- Activités -->
-        <div class="tab" class:center={tabSelected == 1} class:right={tabSelected < 1}>
-            <Profile/>
         </div>
 
     </div>

@@ -175,3 +175,7 @@ textarea {
     border-left: 3px solid rgb(168, 168, 168);
     border-right: 3px solid rgb(168, 168, 168);
 }
+
+.mdc-linear-progress__buffer {
+    background-color:rgb(100, 100, 100)!important;
+}

@@ -12,7 +12,6 @@ var MongoStore = require('connect-mongo')(session)
 //Connection database
 mongoose.connect(DBPATH, {useNewUrlParser: true, useCreateIndex: true})
 
-
 var app = express()
 app.listen(PORT, () => {
 	console.log('Trocio listen on ' + PORT)

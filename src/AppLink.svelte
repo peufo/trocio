@@ -1,5 +1,22 @@
+<script context="module">
+
+    let activeLink //reference a link that is loading
+    let links = []
+
+    addEventListener('popstate', e => {
+        let linkIndex = links.map(l => l.pathname).indexOf(location.pathname)
+        if (linkIndex > -1) {
+            links[linkIndex].load()
+        }else{
+            console.error('invalid link')
+        }
+    })    
+
+</script>
+
 <script>
-    import { tick } from 'svelte'
+    import { tick, onMount, onDestroy } from 'svelte'
+    import { fade } from 'svelte/transition'
     import LinearProgress from '@smui/linear-progress'
     import { getAssetAndTitle } from '../routes/utils.js'
 
@@ -7,59 +24,55 @@
     export let pushState = false
     let progress = 0
     let fetchPromise
+    let link
+    let abortController
+
+    onMount(() => {
+        links = [...links, link]
+        link.abort = () => {abortController.abort()}
+        link.load = load
+    })
 
     function clickHandler(e){
         e.preventDefault()
-        
         if (pushState) {
             window.history.pushState(null, null, href)
         }else{
             window.history.replaceState(null, null, href)
         }
-
-        load(href)
+        load()
     }
 
-    function load(newPath) {
-        console.time('asd')
-        let {asset, title} = getAssetAndTitle(newPath)
-        /*
-        let oldScript = document.querySelector(`script[src="/assets/${asset}.js"]`)
-        let script = document.createElement('script')
-        document.querySelector('#app').innerHTML = ''
-        script.src = `/assets/${asset}.js`
-        document.head.appendChild(script)
-        if (oldScript) document.head.removeChild(oldScript)
-        console.timeEnd('asd')
-        */
-        fetchPromise = fetchScript(asset)
-        placeLinearProgressOnTopLevel()
+    function load(newPath = href) {
+        if (activeLink !== link && activeLink) activeLink.abort()
+        if (activeLink !== link) {
+            activeLink = link
+            let {asset, title} = getAssetAndTitle(newPath)
+            fetchPromise = fetchScript(asset).then(() => activeLink = undefined)
+            placeLinearProgressOnTopLevel()
+        }
     }
 
     async function fetchScript(assetName) {
-        progress = 0
-        let res = await fetch(`/assets/${assetName}.js`)
+        startProgression()
+        abortController = new AbortController()
+        let signal = abortController.signal
+        let res = await fetch(`/assets/${assetName}.js`, {signal})
         let reader = res.body.getReader()
         let contentLength = res.headers.get('Content-Length')
         let receivedLength = 0
         let chunks = []
-        progress = 0.1
-        console.time('progress')
 
         //Read stream
-        
         while(true) {
             let {done, value} = await reader.read()
             if (done) break
             chunks.push(value)
             receivedLength += value.length
-            progress = 0.1 + 0.9 * receivedLength / contentLength
-            console.timeLog('progress', `Received ${receivedLength} of ${contentLength}`)
+            progress = 0.2 + 0.8 * receivedLength / contentLength
         }
-        console.timeEnd('progress')
 
-        console.time('concat')
-        //Concatenate chunks and décode
+        //Concatenate chunks and decode
         let chunksAll = new Uint8Array(receivedLength)
         let position = 0
         for(let chunk of chunks) {
@@ -67,26 +80,14 @@
             position += chunk.length
         }
         let result = new TextDecoder("utf-8").decode(chunksAll)
-        console.timeEnd('concat')
 
-        console.time('AddAtDOM')
         //Reload Asset
         document.querySelector('#app').innerHTML = ''
         let oldScript = document.querySelector('#asset')
         if (oldScript) document.head.removeChild(oldScript)
-        console.timeLog('AddAtDOM')
-        /*
-        let script = document.createElement('script')
-        script.innerHTML = result
-        script.id = 'asset'
-        document.head.appendChild(script)
-        */
-        parseScript(result)()
-        console.timeEnd('AddAtDOM')
-    }
 
-    function parseScript(str) {
-        return Function(str)
+        //Dangerous ?
+        Function(result)()
     }
 
     async function placeLinearProgressOnTopLevel() {
@@ -95,12 +96,30 @@
         document.body.appendChild(elem)
     }
 
+    /**
+     * Lance la barre de chargement jusqu'à 0.2
+     */
+    async function startProgression(){
+        progress = 0
+        let step = 50
+        let rtt = window.navigator.connection.rtt || step
+        let timer = setInterval(() => {
+            progress += 0.2 / (rtt / step)
+            if (progress >= 0.2) {
+                progress = 0.2
+                clearInterval(timer)
+            }
+        }, step)
+    }
+
 </script>
 
-<a href={href} on:click={clickHandler}>
+<a href={href} on:click={clickHandler} bind:this={link}>
     <slot></slot>
 </a>
 
 {#await fetchPromise}
-    <LinearProgress id="linearProgress" style="position: fixed; top: 0px;" progress={progress}/>
+    <div id="linearProgress" transition:fade style="position: fixed; top: 0px; width: 100%;">
+        <LinearProgress {progress}/>
+    </div>
 {/await}
