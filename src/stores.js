@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 
-let troc = createTroc()
+let troc = trocBuilder()
 let me = writable({}, getMe)
 
 
@@ -32,7 +32,7 @@ function updateMe(value) {
 	dispatchEvent(meLoaded)
 }
 
-function createTroc() {
+function trocBuilder() {
 	const { subscribe, set} = writable({})
 	return {
 		subscribe, set,

@@ -1,4 +1,5 @@
 <script>
+	import queryString from 'query-string'
 	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
 	import Switch from '@smui/switch'
@@ -56,7 +57,10 @@
 
 
     onMount(() => {
-		if (!adminIntegration) troc.find(location.pathname.replace('/cashier/',''))
+		if (!adminIntegration) {
+			let query = queryString.parse(location.search)
+			troc.find(query.troc)
+		}
     })
     
 	function userSelected(e){

@@ -4,10 +4,14 @@
     let links = []
 
     addEventListener('popstate', e => {
+        //TODO: work with any path
+        console.log('popstate', links)
+        
         let linkIndex = links.map(l => l.pathname).indexOf(location.pathname)
         if (linkIndex > -1) {
             links[linkIndex].load()
         }else{
+            links[0].load(`${location.pathname}?${location.search}`)
             console.error('invalid link')
         }
     })    
@@ -18,10 +22,10 @@
     import { tick, onMount, onDestroy } from 'svelte'
     import { fade } from 'svelte/transition'
     import LinearProgress from '@smui/linear-progress'
-    import { getAssetAndTitle } from '../routes/utils.js'
+    import { getRoot } from '../routes/utils.js'
 
-    export let href = ''
-    export let replaceState = false
+    export let href = null
+
     let progress = 0
     let fetchPromise
     let link
@@ -29,26 +33,35 @@
 
     onMount(() => {
         links = [...links, link]
-        link.abort = () => {abortController.abort()}
+        link.abort = () => abortController.abort()
         link.load = load
+    })
+
+    onDestroy(() => {
+        //TODO: remove to links
+
     })
 
     function clickHandler(e){
         e.preventDefault()
-        if (replaceState) {
-            window.history.replaceState(null, null, href)
-        }else{
+        if (e.path.filter(p => p.tagName === 'A').length > 1) e.stopPropagation()
+        if (e.ctrlKey) window.open(href)
+        else{
             window.history.pushState(null, null, href)
+            load()
         }
-        load()
     }
 
-    function load(newPath = href) {
+    function load(pathname = href) {
+        
         if (activeLink !== link && activeLink) activeLink.abort()
         if (activeLink !== link) {
             activeLink = link
-            let {asset, title} = getAssetAndTitle(newPath)
-            fetchPromise = fetchScript(asset).then(() => activeLink = undefined)
+            let {asset, title} = getRoot(pathname.split('?')[0])
+            fetchPromise = fetchScript(asset).then(() => {
+                activeLink = null
+                document.querySelector('title').innerText = `Trocio ${title}`
+            })
             placeLinearProgressOnTopLevel()
         }
     }
@@ -86,8 +99,10 @@
         let oldScript = document.querySelector('#asset')
         if (oldScript) document.head.removeChild(oldScript)
 
+        
         //Dangerous ?
-        Function(result)()
+        return Function(result)()
+        
     }
 
     async function placeLinearProgressOnTopLevel() {
@@ -111,6 +126,7 @@
             }
         }, step)
     }
+
 
 </script>
 

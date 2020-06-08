@@ -19,7 +19,6 @@
 
 <TopAppBar variant="static" color="secondary" dense>
 	<Row>
-
 		<Section>
 			<AppLink href="/">
 				<Title>
@@ -40,13 +39,13 @@
 
 					<Menu bind:this={userMenu} style="min-width: 200px;" anchorCorner="BOTTOM_LEFT">
 						<List>
-							<AppLink href="/me">
+							<AppLink href="/activity">
 								<Item>
 									<Graphic><i class="far fa-star"></i></Graphic>
 									Vos activités
 								</Item>
 							</AppLink>
-							<AppLink href="/me/profile">
+							<AppLink href="/profile">
 								<Item>
 									<Graphic><i class="fas fa-info-circle"></i></Graphic>
 									Votre profil

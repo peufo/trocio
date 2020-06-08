@@ -1,4 +1,5 @@
 <script>
+	import queryString from 'query-string'
 	import { onMount } from 'svelte'
 	import { me, troc } from './stores'
 	import { fade } from 'svelte/transition'
@@ -28,7 +29,8 @@
 	]
 
 	onMount(() => {
-		troc.find(location.pathname.replace('/admin/',''))
+		let query = queryString.parse(location.search)
+		troc.find(query.troc)
 	})
 
 	function saveMeta(e) {

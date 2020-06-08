@@ -7,7 +7,7 @@ import postcss from 'rollup-plugin-postcss'
 
 const production = !process.env.ROLLUP_WATCH
 
-const names = ['head', 'me', 'profile', 'admin', 'trocs', 'cashier', 'welcome']
+const names = ['head', 'activity', 'profile', 'admin', 'trocs', 'cashier', 'welcome']
 //const names = ['head']
 
 function getExport(name) {

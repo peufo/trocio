@@ -4,26 +4,27 @@ let got = require('got')
 let path = require('path')
 let bwipjs = require('bwip-js')
 let { checkCashier, checkAdmin } = require('../controllers/troc')
-let { getAssetAndTitle } = require('./utils')
+let { getRoot } = require('./utils')
 
 router
 	.get('/', (req, res, next) => {
-		res.render('../views/app.ejs', getAssetAndTitle(req.path))
+		res.render('../views/app.ejs', getRoot(req.path))
 	})
 	.get('/search', (req, res, next) => {
-		res.render('../views/app.ejs', getAssetAndTitle(req.path))
+		//TODO: redirect to activity if user is loged ?
+		res.render('../views/app.ejs', getRoot(req.path))
 	})
-	.get('/me/profile', (req, res, next) => {
-		res.render('../views/app.ejs', getAssetAndTitle(req.path))
+	.get('/activity*', (req, res, next) => {
+		res.render('../views/app.ejs', getRoot(req.path))
 	})
-	.get('/me', (req, res, next) => {
-		res.render('../views/app.ejs', getAssetAndTitle(req.path))
+	.get('/profile', (req, res, next) => {
+		res.render('../views/app.ejs', getRoot(req.path))
 	})
-	.get('/cashier/:id', checkCashier, (req, res, next) => {
-		res.render('../views/app.ejs', getAssetAndTitle(req.path))
+	.get('/cashier', checkCashier, (req, res, next) => {
+		res.render('../views/app.ejs', getRoot(req.path))
 	})
-	.get('/admin/:id', checkAdmin, (req, res, next) => {
-		res.render('../views/app.ejs', getAssetAndTitle(req.path))
+	.get('/admin', checkAdmin, (req, res, next) => {
+		res.render('../views/app.ejs', getRoot(req.path))
 	})
 	.get('/mailConfirmation', (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'mailConfirmation.html'))
