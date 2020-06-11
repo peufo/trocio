@@ -1,5 +1,12 @@
+<script context="module">
+    export async function preload(page, { user }) {
+		console.log('MEGA PROUT')
+        return { user }
+    }
+</script>
+
 <script>
-	import { me, troc } from './stores'
+	import { troc } from './stores'
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
 	import { createEventDispatcher } from 'svelte'
@@ -82,7 +89,7 @@
 			fetch(`/trocs`, getHeader({name, address, location, description, schedule, society, societyweb}))
 			.then(res => res.json())
 			.then(json => updateTroc(json, () => {
-				$me.creditTroc--
+				user.creditTroc--
 				dispatch('create')
 			}))
 

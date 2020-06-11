@@ -1,5 +1,5 @@
 <script>
-    import { me, troc } from './stores'
+    import { troc } from './stores'
 	import Menu from '@smui/menu'
 	import List, { Item, Graphic } from '@smui/list'
 	import Button from '@smui/button'
@@ -7,50 +7,49 @@
 	import TopAppBar, {Row, Section, Title} from '@smui/top-app-bar'
 
 	import Login from './Login.svelte'
-	import AppLink from './AppLink.svelte'
 	
 	export let title = ''
+	export let user
 	
 	let dialogLogin
 	let userMenu
-
 
 </script>
 
 <TopAppBar variant="static" color="secondary" dense>
 	<Row>
 		<Section>
-			<AppLink href="/">
+			<a href="/">
 				<Title>
 					<img src="/favicon.ico" alt="logo Trocio" height="35">
 					TROCIO
 					<i>{title}</i>
 				</Title>
-			</AppLink>
+			</a>
 		</Section>
 
 		<Section align="end" toolbar>
-			{#if $me._id}
+			{#if user}
 				<div>
 					<Button on:click={() => userMenu.setOpen(true)} color="secondary" class="w3-right w3-padding w3-text-white">
 						<i class="fas fa-user w3-large"></i>
-						<span class="userName">&nbsp;{$me.name}</span>
+						<span class="userName">&nbsp;{user.name}</span>
 					</Button>
 
 					<Menu bind:this={userMenu} style="min-width: 200px;" anchorCorner="BOTTOM_LEFT">
 						<List>
-							<AppLink href="/activity">
+							<a href="/activity">
 								<Item>
 									<Graphic><i class="far fa-star"></i></Graphic>
 									Vos activités
 								</Item>
-							</AppLink>
-							<AppLink href="/profile">
+							</a>
+							<a href="/profile">
 								<Item>
 									<Graphic><i class="fas fa-info-circle"></i></Graphic>
 									Votre profil
 								</Item>
-							</AppLink>
+							</a>
 						</List>
 					</Menu>					
 				</div>
@@ -71,8 +70,6 @@
 		<Login on:close="{() => dialogLogin.close()}"/>
 	</Content>
 </Dialog>
-
-
 
 <style>
 

@@ -2,7 +2,6 @@ let User = require('../models/user')
 
 function getMe(req, res, next) {
     if (!req.session.user) return res.json({success: false, message: 'Login required'})
-		
     User.findOne({_id: req.session.user._id}, {name: 1, mail: 1, mailvalided: 1, trocs: 1, creditTroc: 1})
     .populate('trocs', 'name description address location admin cashier schedule society societyweb')
     .lean() // <== lean() Pour pouvoir retravailler le resultat
@@ -51,8 +50,27 @@ function hideMail(user) {
 	}
 }
 
+function populateUserTrocs(userId, cb) {
+    User.findOne({_id: userId}, {name: 1, mail: 1, mailvalided: 1, trocs: 1, creditTroc: 1})
+    .populate('trocs', 'name description address location admin cashier schedule society societyweb')
+    .lean() // <== lean() Pour pouvoir retravailler le resultat
+    .exec((err, user) => {
+        if (err || !user) return cb(err || Error('User not found !'))
+
+        //Admin and cashier becomes booleans
+        user.trocs.forEach(troc => {
+            troc.isAdmin = troc.admin.map(a => a.toString()).indexOf(user._id.toString()) != -1
+            troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(user._id.toString()) != -1
+            if (!troc.isAdmin && !troc.isCashier) troc.admin = troc.cashier = undefined
+        })
+
+        cb(null, user)
+    })
+}
+
 module.exports = {
     getMe, 
     searchUser,
-    getUser
+    getUser,
+    populateUserTrocs
 }

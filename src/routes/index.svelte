@@ -1,10 +1,17 @@
+<script context="module">
+    export async function preload(page, { user }) {
+        return { user }
+    }
+</script>
+
 <script>
-    import { me } from './stores'
+
     import Button from '@smui/button'
+    export let user
 
 </script>
 
-<img class="participeImg" class:w3-hide={!!$me._id} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
+<img class="participeImg" class:w3-hide={!!user} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
 
 <div class="content">
     

@@ -1,14 +1,15 @@
 {
   "name": "trocio",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
-    "build": "rollup -c",
-    "autobuild": "rollup -c -w",
-    "start": "cross-env NODE_ENV=production pm2 start",
-    "start:dev": "cross-env NODE_ENV=development pm2 start",
-    "prod": "run-p build start",
-    "dev": "run-p start:dev autobuild"
+    "dev": "sapper dev",
+    "build": "sapper build",
+    "export": "sapper export",
+    "start": "node __sapper__/build",
+    "cy:run": "cypress run",
+    "cy:open": "cypress open",
+    "test": "run-p --race dev cy:run"
   },
   "devDependencies": {
     "cross-env": "^5.2.1",
@@ -22,12 +23,19 @@
     "rollup-plugin-svelte": "^5.0.3",
     "rollup-plugin-terser": "^5.3.0",
     "rollup-plugin-url": "^2.2.1",
+    "sapper": "^0.27.13",
     "svelte": "^3.9.1"
   },
   "dependencies": {
+    "@babel/core": "^7.10.2",
     "@material/textfield": "^3.2.0",
+    "@rollup/plugin-babel": "^5.0.3",
+    "@rollup/plugin-commonjs": "^13.0.0",
+    "@rollup/plugin-node-resolve": "^8.0.1",
+    "@rollup/plugin-replace": "^2.3.3",
     "bcrypt": "^3.0.6",
     "bwip-js": "^1.7.3",
+    "compression": "^1.7.4",
     "connect-mongo": "^3.2.0",
     "cookie-parser": "^1.4.4",
     "dayjs": "^1.8.16",

@@ -8,6 +8,8 @@ var { checkSuperAdmin } = require('./controllers/user_utils')
 var session = require('express-session')
 var mongoose = require('mongoose')
 var MongoStore = require('connect-mongo')(session)
+import compression from 'compression'
+import * as sapper from '@sapper/server'
 
 //Connection database
 mongoose.connect(DBPATH, {useNewUrlParser: true, useCreateIndex: true})
@@ -24,20 +26,22 @@ app.use(logger('dev'))
 app.use(express.json({limit: '2mb', extended: true}))
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.static(path.join(__dirname, 'node_modules', '@material')))
+app.use(express.static(path.join(__dirname, 'static')))
+app.use(express.static(path.join(__dirname, 'node_modules', '@material'))) //TODO: check if util
 app.use(session({
 	secret: SECRET_STRING_COOKIE,
 	cookie: {maxAge: 72*60*60*1000},
-  store: new MongoStore({mongooseConnection: mongoose.connection}),
+  	store: new MongoStore({mongooseConnection: mongoose.connection}),
 	resave: false,
 	saveUninitialized: true
 }))
+app.use(sapper.middleware())
+
 
 
 //Routage Vues
-app.use('/', require('./routes/index'))
-app.use('/superadmin', checkSuperAdmin, require('./routes/admin'))
+//app.use('/', require('./routes/index'))
+//app.use('/superadmin', checkSuperAdmin, require('./routes/admin'))
 
 //Routage REST
 app.use('/users',     require('./routes/user'))

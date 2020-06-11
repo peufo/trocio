@@ -9,7 +9,7 @@
     
     import { convertDMS } from './utils.js'
     
-    export let troc = {schedule: []}
+    export let troc = {}
     export let societyDisplay = false
 
     let scheduleMenu
@@ -55,17 +55,19 @@
         <div>
             <Item on:click={openSchedule} title="Afficher l'horaire">
                 <Graphic class="far fa-calendar-alt"></Graphic>
-                <Text>{dayjs(troc.schedule[0].open).fromNow()}</Text>
+                <Text>{dayjs(troc.schedule && troc.schedule[0].open).fromNow()}</Text>
             </Item>
             <MenuSurface bind:this={scheduleMenu} anchorCorner="BOTTOM_LEFT">
                 <div style="marin: 1em;">
                     <List nonInteractive>
+                        {#if !!troc.schedule}
                         {#each troc.schedule as day}
                             <Item>
                                 {dayjs(day.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
                                 {dayjs(day.close).format('H[h]mm')}
                             </Item>
                         {/each}
+                        {/if}
                     </List>
                 </div>
             </MenuSurface>

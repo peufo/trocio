@@ -21,7 +21,10 @@ function login(req, res, next) {
             if (!err) {
                 if (user) {
                     console.log(`Nouvelle connection de ${user.name}`)
+                    
                     req.session.user = user
+                    delete req.session.user.password //TODO: not work ?
+
                     //La redirection se fait côté client
                     res.redirect('/users/me')
                 }else{

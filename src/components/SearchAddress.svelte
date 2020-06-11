@@ -1,27 +1,19 @@
 <script>
 	import { onMount } from 'svelte'
 	import { fade, fly, slide } from 'svelte/transition'
-	import L from 'leaflet'
 
 	export let address = ''
 	export let location = {lat: 0 , lng: 0}
 	export let changeFlag = false
 
-	let map,
+	let L,
+		map,
+		icon,
 		marker,
 		promise,
 		markers = [],
 		results = [],
 		selected = -1
-
-	let icon = L.icon({
-		iconUrl:'/images/marker-icon.png',
-		iconRetinaUrl: '/images/marker-icon-2x.png',
-		iconSize: [28, 42],
-		iconAnchor: [14, 42],
-		popupAnchor: [-14, 40],
-	})
-
 
 	function setLocation(loc) {
 		location = loc.location
@@ -39,13 +31,24 @@
 		markers.forEach(m => m.remove())
 	}
 
-	onMount(() => {
+	onMount(async () => {
+
+		const leafletModule = await import('leaflet')
+		L = leafletModule.default
 
 		map = L.map('map', {
 		    center: [47.4013048812248, 7.076493501663209],
 		    zoom: 4
 		})
 		
+		icon = L.icon({
+			iconUrl:'/images/marker-icon.png',
+			iconRetinaUrl: '/images/marker-icon-2x.png',
+			iconSize: [28, 42],
+			iconAnchor: [14, 42],
+			popupAnchor: [-14, 40],
+		})
+
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map)

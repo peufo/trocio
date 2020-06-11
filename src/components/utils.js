@@ -1,4 +1,4 @@
-import printJS from 'print-js'
+//import printJS from 'print-js'
 import { troc } from './stores'
 import { quintOut, cubicOut } from 'svelte/easing'
 import { element } from 'svelte/internal'
@@ -59,6 +59,7 @@ export function sortByUpdatedAt(a, b) {
 	return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
 }
 
+/* TODO: WINDOW is not defined !!!!
 export function goPrint(id) {
 	printJS({
 		printable: id,
@@ -66,6 +67,7 @@ export function goPrint(id) {
 		targetStyles: ['*']
 	})
 }
+*/
 
 export function formatPrice(e) {
 	let val = e.target.value.match(/\d+([,\.]\d{0,2})?/)

@@ -1,14 +1,20 @@
+<script context="module">
+    export async function preload(page, { user }) {
+        return { user }
+    }
+</script>
+
 <script>
     import { onMount, onDestroy } from 'svelte'
     import { slide, fade } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
-    import { me, updateMe } from './stores'
     import { getHeader } from './utils'
     
     export let id = 'login' //For focus()
+    export let user
 
-    export let newUser = !!$me._id
+    export let newUser = !!user
     let reset = false
     let name = ''
     let mail = ''
@@ -40,7 +46,7 @@
 
     function submit() {
         if (!loginError) {
-            if (newUser || $me._id) {
+            if (newUser || user) {
                 submitPromise = Register()
             }else if(reset){
                 submitPromise = Reset()
@@ -54,7 +60,7 @@
         let res = await fetch('/users', getHeader({name, mail, password}))
         let json = await res.json()
         if (json.success) {
-            if ($me._id) {//Un Cassier à créer un utilisateur
+            if (user) {//Un Cassier à créer un utilisateur
                 alert(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
                 dispatch('newClient', json.message)
             }else{
@@ -70,7 +76,6 @@
         let res = await fetch('/users/login', getHeader({mail, password}))
         let json = await res.json()
         if (json.name) {
-            updateMe(json)
             dispatch('close')
             close = true
             return
@@ -98,7 +103,7 @@
         if (!mail.match(EMAIL_REGEX)) loginError = 'Mail invalide !'
         if (!newUser && !reset && password.length < 3) loginError = 'Mot de passe trop court'
         if (newUser && name.length < 3) loginError = 'Nom trop court'
-        if (!$me._id && newUser && password != password2) loginError = 'Mot de passe de confirmation pas identique'
+        if (!user && newUser && password != password2) loginError = 'Mot de passe de confirmation pas identique'
     }
 
 </script>
@@ -139,7 +144,7 @@
             on:keyup="{e => e.which == 13 && submit()}">
     </div>							
 
-    {#if !reset && !$me._id}
+    {#if !reset && !user}
     <div transition:slide|local>
         <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
         <div class="w3-rest">
@@ -153,7 +158,7 @@
     </div>					
     {/if}
 
-    {#if newUser && !$me._id}
+    {#if newUser && !user}
     <div transition:slide|local>
         <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
         <div  class="w3-rest">
@@ -170,7 +175,7 @@
     <div>
         <div class="w3-margin-top w3-small">
 
-            {#if !$me._id}
+            {#if !user}
                 <div on:click="{() => {newUser = !newUser; reset = false; focus()}}" class="underline-div w3-padding">
                     <span class="underline-span">
                         {newUser ? `Déjà un compte ?` : `Nouveau compte ?`} 

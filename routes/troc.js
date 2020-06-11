@@ -2,8 +2,23 @@ var express = require('express')
 var Troc = require('../models/troc')
 var ctrl = require('../controllers/troc')
 var router = express.Router()
+const ObjectId 	= require('mongoose').Types.ObjectId
 
 router
+	.get('/me', (req, res, next) => {
+		if (!req.session.user) return next(Error('Login required'))
+		Troc.find({_id: {$in: req.session.user.trocs}}, 
+			'name description address location admin cashier schedule society societyweb')
+			.lean().exec((err, trocs) => {
+				if (err || !trocs) return next(err || Error('No trocs'))
+				trocs.forEach(troc => {
+					troc.isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+					troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(req.session.user._id.toString()) != -1
+					if (!troc.isAdmin && !troc.isCashier) troc.admin = troc.cashier = undefined
+				})
+				res.json(trocs)
+		})
+	})
 	.get('/search', (req, res, next) => {
 		let {search, start, end, north, east, sud, west} = req.query
 		let query= {}
