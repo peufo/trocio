@@ -40,6 +40,7 @@
     "cookie-parser": "^1.4.4",
     "dayjs": "^1.8.16",
     "debug": "~2.6.9",
+    "dotenv": "^8.2.0",
     "ejs": "~2.5.7",
     "express": "~4.16.0",
     "express-session": "^1.16.2",

@@ -1,11 +1,12 @@
 <script>
-    import { me } from './stores'
     import { slide, fade } from 'svelte/transition'
     import { getHeader } from './utils'
 
     import Textfield from '@smui/textfield'
     import HelperText from '@smui/textfield/helper-text/index'
     import Button from '@smui/button'
+
+    export let user = {}
 
     let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -26,7 +27,7 @@
     // FETCH FUNCTION
 
     async function patchName() {
-        let res = await fetch('/users/me', getHeader({name: $me.name}, 'PATCH'))
+        let res = await fetch('/users/me', getHeader({name: user.name}, 'PATCH'))
         let json = await res.json()
         if (json.success) {
             changeName = false
@@ -37,11 +38,11 @@
     }
     
     async function patchMail() {
-        let res = await fetch('/users/me', getHeader({mail: $me.mail}, 'PATCH'))
+        let res = await fetch('/users/me', getHeader({mail: user.mail}, 'PATCH'))
         let json = await res.json()
         if (json.success) {
             changeMail = false
-            $me.mailvalided = false
+            user.mailvalided = false
             return
         }else{
             //Pas sur mais ca ira...
@@ -76,7 +77,7 @@
 
 </script>
 
-{#if $me._id}
+{#if user._id}
     <br>
     <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
 
@@ -85,7 +86,7 @@
 
             <i class="w3-xlarge far fa-user" style="margin-right: 16px;"></i>
             <Textfield
-            bind:value="{$me.name}"
+            bind:value="{user.name}"
             on:input="{() => changeName = true}"
             label="Nom & Prénom"
             variant="outlined"
@@ -94,7 +95,7 @@
             />
 
             {#if changeName}
-                <div in:fade>
+                <div in:fade|local>
                     {#await patchNamePromise}
                         <Button
                         variant="outlined"
@@ -106,7 +107,7 @@
                         <Button
                         on:click="{() => patchNamePromise = patchName()}"
                         variant="raised"
-                        disabled={$me.name.trim().length < 2}
+                        disabled={user.name.trim().length < 2}
                         class="w3-right w3-margin-top"
                         style="color: white;">
                             Valider votre nouveau nom & prénom
@@ -119,7 +120,7 @@
 
             <i class="w3-xlarge far fa-envelope" style="margin-right: 13px;"></i>
             <Textfield
-            bind:value="{$me.mail}"
+            bind:value="{user.mail}"
             on:input="{() => changeMail = true}"
             label="Mail"
             variant="outlined"
@@ -129,7 +130,7 @@
 
             {#if !changeMail}
                 <HelperText id="helper-text-mail" persistent style="margin-left: 37px;">
-                {#if $me.mailvalided}
+                {#if user.mailvalided}
                     <span class="w3-text-green"><i class="fas fa-check"></i> mail validé</span>
                 {:else}
                     <span class="w3-text-red"><i class="fas fa-exclamation-triangle"></i> mail non validé</span>
@@ -139,7 +140,7 @@
 
             {#if changeMail}
 
-                <div in:fade>
+                <div in:fade|local>
                     {#await patchMailPromise}
                         <Button variant="outlined" color="secondary" class="w3-right w3-margin-top">
                             <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Validation ...
@@ -148,7 +149,7 @@
                         <Button
                         on:click="{() => patchMailPromise = patchMail()}"
                         variant="raised"
-                        disabled="{!$me.mail.match(EMAIL_REGEX)}"
+                        disabled="{!user.mail.match(EMAIL_REGEX)}"
                         class="w3-right w3-margin-top"
                         style="color: white;">
                             Valider votre nouveau mail
@@ -158,7 +159,7 @@
                 </div>
                 <br>
 
-            {:else if !$me.mailvalided}
+            {:else if !user.mailvalided}
 
                 {#if mailValidatorSent}
                     <Button color="secondary" class="w3-right">
@@ -186,7 +187,7 @@
             <br><br>
 
             {#if !changePassword}
-                <div out:slide>
+                <div out:slide|local>
                     <Button
                     on:click="{() => changePassword = true}"
                     color="secondary"
@@ -196,7 +197,7 @@
                     <br>
                 </div>
             {:else}
-                <div in:slide>
+                <div in:slide|local>
                     <i class="w3-xlarge fas fa-unlock" style="margin-right: 16px;"></i>
                     <Textfield
                     bind:value="{oldPassword}"

@@ -1,7 +1,7 @@
 <script>
 	import queryString from 'query-string'
 	import { onMount } from 'svelte'
-	import { me, troc } from './stores'
+	import { troc } from './stores'
 	import { fade } from 'svelte/transition'
 	import EditForm from './EditForm.svelte'
 	import SearchUser from './SearchUser.svelte'
@@ -15,6 +15,7 @@
 	import TagEdit from './TagEdit.svelte'
 	import { getHeader, updateTroc } from './utils'
 
+	export let user = {}
 
 	let tabSelected = 5
 	let oldTabSelected = -1
@@ -92,7 +93,7 @@
 		<!-- Worker -->
 		<div class="tab" class:center={tabSelected == 1} class:left={tabSelected > 1} class:right={tabSelected < 1}>
 			<br>
-			<Collaborators/>
+			<Collaborators {user} />
 		</div>
 
 		<!-- Tarif  -->
@@ -140,7 +141,7 @@
 		<!-- Correction  -->
 		<div class="tab" class:center={tabSelected == 5} class:left={tabSelected > 5} class:right={tabSelected < 5}>
 			<br>
-			<Correction troc={$troc._id} />
+			<Correction {user} troc={$troc._id} />
 		</div>
 
 		<!-- Caisse  -->

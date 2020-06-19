@@ -1,26 +1,26 @@
 <script>
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
-	import { me } from './stores'
 
 	import Button from '@smui/button'
+	import IconButton, {Icon} from '@smui/icon-button'
 	import Dialog, {Title, Content} from '@smui/dialog'
 	import Textfield from '@smui/textfield'
+	import Card, {Content as ContentCard, Actions, ActionButtons, ActionIcons} from '@smui/card'
 
-	import L from 'leaflet'
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
-
-	import Resume from './Resume.svelte'
-	import Articles from './Articles.svelte'
-	import Toggle from './Toggle.svelte'
-	import Login from './Login.svelte'
-	
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
 
-	let map,
+	import TrocInfo from './TrocInfo.svelte'
+	import Articles from './Articles.svelte'
+	import Toggle from './Toggle.svelte'
+
+	let L,
+		map,
+		icon,
 		trocs = [],
 		trocSelected = '',
 		trocSelectedName = '',
@@ -34,26 +34,30 @@
 		end = ''
 
 	//Dialogs
-	let dialogLogin, dialogArticles, dialogResume
-
-	let icon = L.icon({
-		iconUrl:'images/marker-icon.png',
-		iconRetinaUrl: 'images/marker-icon-2x.png',
-		iconSize: [28, 42],
-		iconAnchor: [14, 42],
-		tooltipAnchor: [14, -30],
-	})
+	let dialogArticles
 
 	let tabs = [
 		{id: 0, name: 'Voir les articles fournis', icon: '<i class="fas fa-sign-in-alt"></i>'},
 		{id: 2, name: 'Récupère', icon: '<i class="fas fa-sign-out-alt"></i>'}
 	]
 
-	onMount(() => {
+	onMount(async () => {
+
+		const leafletModule = await import('leaflet')
+		L = leafletModule.default
+
 		map = L.map('map', {
 		    center: [47.4013048812248, 7.076493501663209],
 			zoom: 6,
 			watch: true
+		})
+
+		icon = L.icon({
+			iconUrl:'images/marker-icon.png',
+			iconRetinaUrl: 'images/marker-icon-2x.png',
+			iconSize: [28, 42],
+			iconAnchor: [14, 42],
+			tooltipAnchor: [14, -30],
 		})
 
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -78,8 +82,6 @@
 		clearTimeout(waiting)
 		waiting = setTimeout(() => loadTrocs(), 200)
 	}
-
-	//$: $me._id && loadTrocs() //DANGEREUX, ENGENDRE UNE DOUBLE REQUETE QUAND ON EST LOGE ET SERT QU'AU LOGIN (RAFR ISADMIN ET ISCASHIER)
 
 	function loadTrocs() {
 		let query = `/trocs/search?search=${search}`
@@ -114,177 +116,113 @@
 		})
 	}
 
-	function clickActivity() {
-		if ($me._id) {
-			dialogResume = true
-		}else{
-			dialogLogin.open()
-		}
-	}
-
-	function loginClose() {
-		dialogLogin.close()
-		setTimeout(() => clickActivity(), 100)
-	}
-
 </script>
 
+<div id="container" class="w3-padding">
 
-<div id="vue">
-	<div id="container" class="w3-padding">
+	<div class="w3-row">
 
-		<div class="w3-row">
+		<div class="w3-col m8">
+			<Textfield
+			style="width: 100%;"
+			bind:value={search}
+			on:input={newSearch}
+			type="search"
+			label="Recherche"
+			></Textfield>	
+		</div>
 
-			<div class="w3-col m8">
-				<Textfield
-				style="width: 100%;"
-				bind:value={search}
-				on:input={newSearch}
-				type="search"
-				label="Recherche"
-				></Textfield>	
+		<div class="w3-col m4">
+			<div class="w3-round w3-right w3-margin-left">
+				<div class="w3-left">
+					<Toggle bind:value={mapFilter} on:click="{() => {loadTrocs(); if (mapFilter) mapOpen = true}}"/>
+				</div>
+				<div class="w3-button" on:click="{() => mapOpen = !mapOpen}">
+					<i class="fas fa-globe-europe w3-large"></i>
+					<i class="fas fa-angle-right w3-large" class:open={mapOpen}></i>
+				</div>
 			</div>
 
-			<div class="w3-col m4">
-				<div class="w3-round w3-right w3-margin-left">
-					<div class="w3-left">
-						<Toggle bind:value={mapFilter} on:click="{() => {loadTrocs(); if (mapFilter) mapOpen = true}}"/>
-					</div>
-					<div class="w3-button" on:click="{() => mapOpen = !mapOpen}">
-						<i class="fas fa-globe-europe w3-large"></i>
-						<i class="fas fa-angle-right w3-large" class:open={mapOpen}></i>
-					</div>
+			<div class="w3-round w3-right">
+
+				<div class="w3-left">
+					<Toggle bind:value={timeFilter} on:click={loadTrocs}/>
 				</div>
 
-				<div class="w3-round w3-right">
-
-					<div class="w3-left">
-						<Toggle bind:value={timeFilter} on:click={loadTrocs}/>
-					</div>
-
-					<div class="w3-button" on:click="{() => timeOpen = !timeOpen}">
-						<i class="far fa-clock w3-large"></i>
-						<i class="fas fa-angle-right w3-large" class:open={timeOpen}></i>
-					</div>
+				<div class="w3-button" on:click="{() => timeOpen = !timeOpen}">
+					<i class="far fa-clock w3-large"></i>
+					<i class="fas fa-angle-right w3-large" class:open={timeOpen}></i>
 				</div>
 			</div>
 		</div>
-
-		{#if timeOpen}
-			<div class="w3-margin w3-center w3-row" transition:slide|local>
-				<div class="w3-col m5">
-					<input on:input={loadTrocs} bind:value={start} type="date" class="w3-input">
-				</div>
-				<div class="w3-col m2">
-					<i class="fas fa-arrow-right w3-large w3-margin-top"></i>
-				</div>
-				<div class="w3-col m5">
-					<input on:input={loadTrocs} bind:value={end} type="date" class="w3-input">
-				</div>
-			</div>
-		{/if}
-
-		<div id="map" class="show" class:hide={!mapOpen}></div>
-		
-		
-		{#each trocs as troc, i (troc._id)}
-			
-			<!--  En-tête  -->
-			<div transition:slide|local class="card" on:click="{() => {trocSelected = troc._id; trocSelectedName = troc.name}}">
-
-				<div class="w3-row">
-					<div class="w3-col m8 w3-padding">
-						<span class="w3-large">{troc.name}</span>
-						<a href={troc.societyweb ? `https://${troc.societyweb}` : ''}>
-							<i>{troc.society}</i>
-						</a>
-						<br>
-						<span class="w3-small">
-							<i class="fas fa-map-marker-alt"></i>
-							{troc.address}
-						</span>
-						<p>{troc.description}</p>
-						
-						<Button href={`https://${troc.societyweb}`} dense color="secondary">
-							<i class="fas fa-globe"></i>&nbsp;{troc.societyweb}
-						</Button>
-						
-					</div>
-
-					<div class="w3-col m4 w3-center">
-						<div class="w3-small w3-padding">
-							<span class="w3-round">
-								<i class="far fa-clock"></i>
-								{dayjs(troc.schedule[0].open).fromNow()}
-							</span>
-
-							<ul class="w3-ul w3-tiny w3-margin-top">
-							{#each troc.schedule as day}
-								<li>
-									{dayjs(day.open).format('ddd. DD.MM.YY [d]e H[h]mm à ')}
-									{dayjs(day.close).format('H[h]mm')}
-								</li>
-							{/each}
-							</ul>
-							
-						</div>
-					</div>
-				</div>
-				
-				<!-- Button -->
-				<div class="w3-center w3-padding">
-					<Button
-					on:click="{() => dialogArticles.open()}"
-					color="secondary" variant="outlined" style="margin-top: 5px;">
-						Fouiller les articles ({troc.articlelastref})
-					</Button>
-
-					<Button
-					on:click="{clickActivity}"
-					color="secondary" variant="outlined" style="margin-top: 5px;">
-						Voir mon activité
-					</Button>
-
-					{#if troc.isAdmin}
-						<Button href="{`/admin/${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
-							<i class="fa fa-cog w3-large"></i>
-						</Button>
-					{:else if troc.isCashier}
-						<Button href="{`/cashier/${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
-							<i class="fa fa-cash-register w3-large"></i>
-						</Button>
-					{/if}
-
-				</div>
-
-				{#if $me._id && dialogResume && trocSelected === troc._id}
-					<div class="w3-padding">
-						<Resume userId={$me._id} trocId={troc._id}/>
-					</div>
-				{/if}
-
-			</div>
-
-
-		{:else}
-			<br>
-			<span class="w3-large">
-				Aucun troc ne correspond à la recherche
-				<i class="far fa-tired"></i>
-			</span>
-		{/each}
-	
 	</div>
+
+	{#if timeOpen}
+		<div class="w3-margin w3-center w3-row" transition:slide|local>
+			<div class="w3-col m5">
+				<input on:input={loadTrocs} bind:value={start} type="date" class="w3-input">
+			</div>
+			<div class="w3-col m2">
+				<i class="fas fa-arrow-right w3-large w3-margin-top"></i>
+			</div>
+			<div class="w3-col m5">
+				<input on:input={loadTrocs} bind:value={end} type="date" class="w3-input">
+			</div>
+		</div>
+	{/if}
+
+	<div id="map" class="show" class:hide={!mapOpen}></div>
+	
+	
+	{#each trocs as troc, i (troc._id)}
+		<div transition:slide|local class="w3-margin-top">
+			<Card>
+				<ContentCard>
+					<TrocInfo {troc} societyDisplay />
+				</ContentCard>
+				<Actions>
+					<ActionButtons>
+						<Button
+						on:click="{() => dialogArticles.open()}"
+						color="secondary" style="margin-top: 5px;">
+							Fouiller les articles ({troc.articlelastref})
+						</Button>
+
+						<Button
+						href={`/activity/detail?troc=${troc._id}`}
+						title="Afficher vos activités"
+						color="secondary" style="margin-top: 5px;">
+							Activités
+						</Button>
+					</ActionButtons>
+					<ActionIcons>
+						{#if troc.isAdmin}
+							<IconButton href={`/admin?troc=${troc._id}`} title="Accéder à la page d'administration">
+								<Icon class="fas fa-cog" style="transform: translate(0.5px, -5px);"></Icon>
+							</IconButton>
+						{:else if troc.isCashier}
+							<IconButton href={`/cashier?troc=${troc._id}`} title="Accéder à la caisse">
+								<Icon class="fa fa-cash-register" style="transform: translate(0.5px, -5px);"></Icon>
+							</IconButton>
+						{/if}
+					</ActionIcons>
+				</Actions>
+			</Card>
+		</div>
+		
+
+	{:else}
+		<br>
+		<span class="w3-large">
+			Aucun troc ne correspond à la recherche
+			<i class="far fa-tired"></i>
+		</span>
+	{/each}
+
 </div>
 
+
 <!-- Dialogs -->
-
-<Dialog bind:this={dialogLogin}>
-	<Content>
-		<Login on:close={loginClose}/>
-	</Content>
-</Dialog>
-
 <Dialog bind:this={dialogArticles} style="min-height: 430px;">
 	<Title>Fouiller les articles dans <i>{trocSelectedName}</i></Title>
 	<Content>
@@ -298,11 +236,6 @@
 </svelt:head>
 
 <style>
-
-	#vue {
-		height: calc(100% - 56px);
-		overflow-y: auto;
-	}
 
 	#container {
 		max-width: 850px;
@@ -330,23 +263,6 @@
 
 	.open {
 		transform: rotate(90deg);
-	}
-
-	.card {
-		box-shadow: 0px 0px 10px rgba(78, 78, 78, 0.2);
-		transition: .2s ease all;
-		border-radius: 4px;
-		margin-top: 30px;
-		margin-bottom: 30px;
-		overflow-x: auto;
-	}
-
-	.card:hover {
-		box-shadow: 0px 0px 10px rgba(78, 78, 78, 0.35);
-	}
-
-	.card:last-child {
-		margin-bottom: 80px;
 	}
 	
 	@media screen and (max-width: 600px) {

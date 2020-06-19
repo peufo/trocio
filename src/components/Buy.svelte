@@ -11,7 +11,7 @@
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
 
-    export let user = {}
+    export let client = {}
     export let purchases = []
     export let purchasesPromise
 
@@ -40,7 +40,7 @@
         req += `&filter_statut=valided`
         req += `&or_search_name=${search}`
         req += `&or_search_ref=${search}`
-        req += `${user._id ? `&providernot=${user._id}` :''}`
+        req += `${client._id ? `&providernot=${client._id}` :''}`
 
         let res = await fetch(req)
         let json = await res.json()
@@ -97,7 +97,7 @@
             return {
                 _id: article._id,
                 sold,
-                buyer: user._id
+                buyer: client._id
             }
         })
 
@@ -199,7 +199,7 @@
                 </div>
 
             {:else}
-                <span class="w3-opacity">Le panier {user.name ? `de ${user.name}` : ''} est vide</span>
+                <span class="w3-opacity">Le panier {client.name ? `de ${client.name}` : ''} est vide</span>
             {/each}
         </div>
 

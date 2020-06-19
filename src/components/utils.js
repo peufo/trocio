@@ -59,15 +59,16 @@ export function sortByUpdatedAt(a, b) {
 	return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
 }
 
-/* TODO: WINDOW is not defined !!!!
 export function goPrint(id) {
+	console.log('TODO: printJS(id)')
+	/* TODO: WINDOW is not defined !!!!
 	printJS({
 		printable: id,
 		type: 'html',
 		targetStyles: ['*']
 	})
+	*/
 }
-*/
 
 export function formatPrice(e) {
 	let val = e.target.value.match(/\d+([,\.]\d{0,2})?/)

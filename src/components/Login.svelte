@@ -13,8 +13,8 @@
     
     export let id = 'login' //For focus()
     export let user
-
     export let newUser = !!user
+    
     let reset = false
     let name = ''
     let mail = ''

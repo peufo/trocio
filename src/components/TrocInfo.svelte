@@ -22,60 +22,57 @@
 </script>
 
 
-<div class="w3-padding">
 
-    {#if societyDisplay}
-        <h3>{troc.name}</h3>
-    {/if}
 
-    <p>{troc.description}</p>
-    
-    <List>
+{#if societyDisplay}
+    <h3>{troc.name}</h3>
+{/if}
 
-        {#if troc.societyweb}
-            <a href={`https://${troc.societyweb}`} title="Accéder au site internet de l'organisateur">
-                <Item>
-                    <Graphic class="fas fa-user-tie"></Graphic>
-                    <Text>{troc.society}</Text>
-                </Item>
-            </a>
-        {:else}
+<p>{troc.description}</p>
+
+<List>
+
+    {#if troc.societyweb}
+        <a href={`https://${troc.societyweb}`} title="Accéder au site internet de l'organisateur">
             <Item>
                 <Graphic class="fas fa-user-tie"></Graphic>
                 <Text>{troc.society}</Text>
             </Item>
-        {/if}
-
-        <a href={`https://www.google.ch/maps/place/${convertDMS(troc.location)}`} title="Ouvrir dans Google Map">
-            <Item>
-                <Graphic class="fas fa-map-marker-alt"></Graphic>
-                <Text>{troc.address}</Text>
-            </Item>
         </a>
-        <div>
-            <Item on:click={openSchedule} title="Afficher l'horaire">
-                <Graphic class="far fa-calendar-alt"></Graphic>
-                <Text>{dayjs(troc.schedule && troc.schedule[0].open).fromNow()}</Text>
-            </Item>
-            <MenuSurface bind:this={scheduleMenu} anchorCorner="BOTTOM_LEFT">
-                <div style="marin: 1em;">
-                    <List nonInteractive>
-                        {#if !!troc.schedule}
-                        {#each troc.schedule as day}
-                            <Item>
-                                {dayjs(day.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
-                                {dayjs(day.close).format('H[h]mm')}
-                            </Item>
-                        {/each}
-                        {/if}
-                    </List>
-                </div>
-            </MenuSurface>
-        </div>
-    </List>
+    {:else}
+        <Item>
+            <Graphic class="fas fa-user-tie"></Graphic>
+            <Text>{troc.society}</Text>
+        </Item>
+    {/if}
 
-</div>
-
+    <a href={`https://www.google.ch/maps/place/${convertDMS(troc.location)}`} title="Ouvrir dans Google Map">
+        <Item>
+            <Graphic class="fas fa-map-marker-alt"></Graphic>
+            <Text>{troc.address}</Text>
+        </Item>
+    </a>
+    <div>
+        <Item on:click={openSchedule} title="Afficher l'horaire">
+            <Graphic class="far fa-calendar-alt"></Graphic>
+            <Text>{dayjs(troc.schedule && troc.schedule[0].open).fromNow()}</Text>
+        </Item>
+        <MenuSurface bind:this={scheduleMenu} anchorCorner="BOTTOM_LEFT">
+            <div style="marin: 1em;">
+                <List nonInteractive>
+                    {#if !!troc.schedule}
+                    {#each troc.schedule as day}
+                        <Item>
+                            {dayjs(day.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
+                            {dayjs(day.close).format('H[h]mm')}
+                        </Item>
+                    {/each}
+                    {/if}
+                </List>
+            </div>
+        </MenuSurface>
+    </div>
+</List>
 
 
 

@@ -2,4 +2,4 @@
     import EditForm from '../../components/EditForm.svelte'
 </script>
 
-<EditForm/>
+<EditForm createMode/>

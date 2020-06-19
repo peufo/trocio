@@ -1,3 +1,4 @@
+require('dotenv').config()
 var createError = require('http-errors')
 var express = require('express')
 var path = require('path')
@@ -40,6 +41,8 @@ app.use(session({
     saveUninitialized: true
 }))
 app.use(compression({ threshold: 0 }))
+app.use('/',     	  require('../../../routes/index'))
+app.use('/superadmin', checkSuperAdmin, require('../../../routes/admin') )
 app.use('/users',     require('../../../routes/user'))
 app.use('/articles',  require('../../../routes/article'))
 app.use('/trocs',     require('../../../routes/troc'))

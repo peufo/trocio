@@ -7,6 +7,7 @@
 
     export let provided = [] //Articles provided
     export let providedPromise
+    
     let validPromise // valid button
 
     const [send, receive] = crossfade(crossfadeConfig)

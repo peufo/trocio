@@ -75,6 +75,13 @@
                                 <SecondaryText>{troc.description}</SecondaryText>
                             </Text>
                             <Meta>
+                                <a href="{`/admin?troc=${troc._id}`}" title="Accéder à la page d'administration">
+                                    <i class="fa fa-cog button-icon w3-large w3-padding"></i>
+                                </a>
+                                <a href="{`/cashier?troc=${troc._id}`}" title="Accéder à la caisse">
+                                    <i class="fa fa-cash-register w3-large w3-padding"></i>
+                                </a>
+                                <!--
                                 {#if troc.isAdmin}
                                     <a href="{`/admin?troc=${troc._id}`}" title="Accéder à la page d'administration">
                                         <i class="fa fa-cog button-icon w3-large w3-padding"></i>
@@ -84,6 +91,7 @@
                                         <i class="fa fa-cash-register w3-large w3-padding"></i>
                                     </a>
                                 {/if}
+                                -->
                             </Meta>
                         </Item>
                     </a>

@@ -7,25 +7,6 @@ let { checkCashier, checkAdmin } = require('../controllers/troc')
 let { getRoot } = require('./utils')
 
 router
-	.get('/', (req, res, next) => {
-		res.render('../views/app.ejs', getRoot(req.path))
-	})
-	.get('/search', (req, res, next) => {
-		//TODO: redirect to activity if user is loged ?
-		res.render('../views/app.ejs', getRoot(req.path))
-	})
-	.get('/activity*', (req, res, next) => {
-		res.render('../views/app.ejs', getRoot(req.path))
-	})
-	.get('/profile', (req, res, next) => {
-		res.render('../views/app.ejs', getRoot(req.path))
-	})
-	.get('/cashier', checkCashier, (req, res, next) => {
-		res.render('../views/app.ejs', getRoot(req.path))
-	})
-	.get('/admin', checkAdmin, (req, res, next) => {
-		res.render('../views/app.ejs', getRoot(req.path))
-	})
 	.get('/mailConfirmation', (req, res, next) => {
 		res.sendFile(path.join(__dirname, '..', 'views', 'mailConfirmation.html'))
 	})

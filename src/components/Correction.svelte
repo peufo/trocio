@@ -4,6 +4,7 @@
     import SearchTable from './SearchTable.svelte'
     import ArticleDialog from './ArticleDialog.svelte'
     
+    export let user = {}
     export let troc = ''
 
     let articleDialog
@@ -65,4 +66,4 @@
 
 <SearchTable title="Articles" baseURL="/articles" {troc} {fields} on:select={selectArticle} bind:items={articles}/>
 
-<ArticleDialog bind:dialog={articleDialog} {article} on:patched={articlePatched}/>
+<ArticleDialog {user} {article} bind:dialog={articleDialog} on:patched={articlePatched}/>

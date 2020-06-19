@@ -1,6 +1,6 @@
 <script>
 
-    import { troc, me } from './stores'
+    import { troc } from './stores'
     import { onMount } from 'svelte'
     import { flip } from 'svelte/animate'
     import { crossfade } from 'svelte/transition'
@@ -18,6 +18,8 @@
     import Article from './Article.svelte'
 
     export let user = {}
+    export let client = {}
+    
     export let provided = [] //proposed => !art.valided
     export let tarif = undefined //From Resume per Cashier
     export let optionAutoPrintTag = true
@@ -46,11 +48,11 @@
         let art = {
             _id: new Date().getTime(),
             troc: $troc._id, 
-            provider: user._id,
+            provider: client._id,
             name: newArticle.name,
             price: Number(newArticle.price),
             valided: new Date(),
-            validator: $me._id,
+            validator: user._id,
             isRemovable: true,
             isCreated: true,
             fee: 0,

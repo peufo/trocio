@@ -26,7 +26,14 @@
 	let focus = false
 
 	onMount(() => {
-		if (modeSelect) {
+
+		//If item is preselected
+		if (itemSelected._id) {
+			select(itemSelected)
+		}
+
+		if (modeSelect) {//TODO: WTF!?!?!
+			
 			// Get next Input
 			let inputs = [...document.getElementsByClassName('w3-input')]
 			let input = document.getElementById(`searchUser${id}`)
@@ -37,8 +44,11 @@
 				nextInput = inputs[0]
 			}
 		}
+
 	})
 
+	$: selectOk = itemSelected.name == search
+	
 	async function searchUser() {
 		const res = await fetch(`/users/search/${search}`)
 		const json = await res.json()
@@ -55,8 +65,8 @@
 	function select(user) {
 		
 		if (!isExepted(user)) {
-			dispatch('select', user)
 			itemSelected = user
+			dispatch('select', user)
 			if (modeSelect) {
 				search = user.name
 				//nextInput.focus()
@@ -115,7 +125,7 @@
 		console.log(selected)
 	}
 
-	$: selectOk = itemSelected.name == search
+	
 
 	function focusin() {
 		focus = true

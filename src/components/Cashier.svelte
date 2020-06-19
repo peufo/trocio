@@ -1,4 +1,5 @@
 <script>
+	import { goto } from '@sapper/app'
 	import queryString from 'query-string'
 	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
@@ -6,7 +7,10 @@
 	import FormField from '@smui/form-field'
 	import Button from '@smui/button'
 	import Dialog from '@smui/dialog'
-	import { me, troc } from './stores'
+	import Card, {Content} from '@smui/card'
+	import TabBar from '@smui/tab-bar'
+	import Tab, {Icon, Label} from '@smui/tab'
+
 	import { getHeader } from './utils'
 	import SearchUser from './SearchUser.svelte'
 	import Provide from './Provide.svelte'
@@ -16,25 +20,29 @@
 	import Resume from './Resume.svelte'
 	import Login from './Login.svelte'
 
-	export let adminIntegration = false //For not reload troc on admin.svelte
+	export let mobileDisplay = false
+	export let troc = ''
+	export let user = {}
+	export let client = {}
+	$: console.log('client', client)
 
 	let dialogLogin // Create user
 
-	let user = {}
-	let searchUser = ''
-	let userPlaceholder = 'Trouver un client'
-	let userOk = false
+	let searchClient = ''
+	let clientPlaceHodlerDefault = 'Trouver un client'
+	let clientPlaceHodler = clientPlaceHodlerDefault
+	let clientOk = false
 	let clientAnonym = false
 	let popupPaymentOpen = false
 
-	let action = 4
 	let actions = [
-		{num: 0, name: 'Fournit', icon: '<i class="fas fa-sign-in-alt"></i>'},
-		{num: 1, name: 'Récupère', icon: '<i class="fas fa-sign-out-alt"></i>'},
-		{num: 2, name: 'Achète', icon: '<i class="fas fa-shopping-basket"></i>', clientAnonymAutorised: true},
-		{num: 3, name: 'Retourne', icon: '<i class="fas fa-undo"></i>', clientAnonymAutorised: true},
-		{num: 4, name: 'Aperçu', icon: '<i class="far fa-eye"></i>', clientAnonymAutorised: true},
+		{component: Provide,	label: 'Fournit', 		icon: 'fas fa-sign-in-alt'},
+		{component: Recover,	label: 'Récupère', 		icon: 'fas fa-sign-out-alt'},
+		{component: Buy,		label: 'Achète', 		icon: 'fas fa-shopping-basket', clientAnonymAutorised: true},
+		{component: Recover,	label: 'Retourne', 		icon: 'fas fa-undo', 			clientAnonymAutorised: true},
+		{component: Resume,		label: 'Aperçu', 		icon: 'far fa-eye', 			clientAnonymAutorised: true},
 	]
+	let tabActive = actions[4]
 
 	let tarif = undefined //bind to Resume.svelte
 	let validPaymentPromise
@@ -57,53 +65,78 @@
 
 
     onMount(() => {
-		if (!adminIntegration) {
-			let query = queryString.parse(location.search)
-			troc.find(query.troc)
-		}
-    })
+
+		//Keyboard shortcut listener
+		document.addEventListener('keydown', e => {
+			if (e.ctrlKey) {
+				switch (e.key) {
+					case 'Backspace':
+						searchClient = ''
+						document.getElementById('searchUser1').focus()	
+						break
+					case 'ArrowUp':
+						document.querySelector('#cashierTabs .mdc-tab[aria-selected="true"]').focus()
+						break
+				}
+					
+			}
+		})
+
+	})
+	
+	function updateClientQuery() {
+		let query = queryString.parse(location.search)
+		if (client._id) query.client = client._id
+		else delete query.client
+		goto(`${location.pathname}?${queryString.stringify(query)}`)
+	}
     
-	function userSelected(e){
-		searchUser = e.detail.name
-		userOk = true
+	function clientSelected(e){
+		clientOk = true
 		clientAnonym = false
-		user = e.detail
+		updateClientQuery()
+		searchClient = e.detail.name
+		//client = e.detail // is binded
 	}
 
-	function inputSearchUser() {
+	function inputSearchClient() {
 
 		balance = 0 // not work ?? why?
 
-		user = {}
-		userOk = false
+		clientOk = false
 		clientAnonym = false
-		userPlaceholder = 'Trouver un client'
+		client = {}
+		//updateClientQuery()
+		clientPlaceHodler = clientPlaceHodlerDefault
 	}
 
-	function focusInSearchUser() {
-		userOk = false
+	function focusInSearchClient() {
+		clientOk = false
 		clientAnonym = false
-		userPlaceholder = 'Trouver un client'
-		searchUser = '' // Malin ou pas ?
+		client = {}
+		//updateClientQuery()
+		clientPlaceHodler = clientPlaceHodlerDefault
+		searchClient = ''
 	}
 
 	function clickClientAnonym() {
-		userOk = true
-		user = {}
+		clientOk = true
 		clientAnonym = true
-		action = 2
-		searchUser = ''
-		userPlaceholder = 'Anonyme'
+		client = {}
+		updateClientQuery()
+		tabActive = actions.filter(a => !clientAnonym || a.clientAnonymAutorised)[0]
+		searchClient = ''
+		clientPlaceHodler = 'Anonyme'
 	}
 
 	//Post payment
 	async function validPayment() {
 		let payment = {
-			acceptor: $me._id,
-			user: user._id,
-			troc: $troc._id,
+			acceptor: user._id,
+			user: client._id,
+			troc,
 			amount: -balance, 
-			message: balance > 0 ? `Versé par ${$me.name}` : `Encaissé par ${$me.name}`
+			message: balance > 0 ? `Versé par ${user.name}` : `Encaissé par ${user.name}`
 		}
 		let res = await fetch(`/payments`, getHeader(payment))
 		let json = await res.json()
@@ -114,229 +147,142 @@
 		}
 	}
 
-
-	//Keyboard shortcut listener
-	document.addEventListener('keydown', e => {
-		if (e.ctrlKey) {
-			switch(e.key){
-				case 'ArrowLeft':
-					//TODO: works with clientAnonym
-					if (!clientAnonym && action > 0 ) action--
-					break
-
-				case 'ArrowRight':
-					//TODO: works with clientAnonym
-					if (!clientAnonym && action < actions.length - 1) action++
-					break
-				
-				case 'Backspace':
-					searchUser = ''
-					document.getElementById('searchUser1').focus()
-					break
-			}
-		}
-	})
-
 </script>
 
 <!-- Check if all is OK ! -->
-{#if $troc.failed}
-	<div class="w3-display-container">
-		<div class="w3-display-middle w3-red w3-padding w3-round w3-large w3-center">
-			<i class="fas fa-bug"></i> Oups ! <br>
-			{#if $troc.reason == 'Not found'}
-				<span>Ce troc n'éxiste pas !</span>
-			{:else if $troc.reason == 'Bad request'}
-				<span>La requête n'est pas valide !</span>
-			{:else}
-				<span>Vous n'avez pas accès à la caisse de ce troc !</span>
-			{/if}
-		</div>
-	</div>
-{:else}
+<div class="w3-padding">
 
-	<div class="w3-card w3-round" style="max-width: 850px; margin: auto; height: calc(100% - 45px);">
-		<div class="w3-row w3-padding">
-
-			<!-- Utilisateur -->
-			
-			<!-- Règle le solde -->
-			{#if userOk && balance != 0}
-				<div in:fade={{duration: 200}} style="display: inline-block; transform: translate(0px, 5px);" class="w3-right">
-					<Button 
-					variant="raised"
-					style="color: white;"
-					on:click="{() => popupPaymentOpen = true}">
-						Régler le solde de {balance.toFixed(2)}
-					</Button>
-				</div>
-			{/if}
-
-			<!-- Recherche du client -->
-			<div style="display: inline-block">
-				<div class="icon iconUser">
-					{#if !clientAnonym}
-						<i class:far={!userOk} class:fas={userOk} class="fa-user w3-large"></i>
-					{:else}
-						<i class="fas fa-user-secret w3-large"></i>
-					{/if}
-				</div>
-				<div style="display: inline-block; width: 260px;">
-					<SearchUser modeSelect 
-								id="1"
-								on:input={inputSearchUser}
-								on:focusin={focusInSearchUser}
-								placeholder={userPlaceholder}
-								bind:search={searchUser}
-								on:select="{userSelected}"/>
-				</div>
+	<!-- Utilisateur -->
+	<div id="userHandler">
+		<!-- Règle le solde -->
+		{#if clientOk && balance != 0}
+			<div in:fade={{duration: 200}} style="display: inline-block; transform: translate(0px, 5px);" class="w3-right">
+				<Button 
+				variant="raised"
+				style="color: white;"
+				on:click="{() => popupPaymentOpen = true}">
+					Régler le solde de {balance.toFixed(2)}
+				</Button>
 			</div>
-
-			{#if !userOk}
-				<div in:fade={{duration: 200}} style="display: inline-block">
-					
-					<!-- TODO: open LOGIN blocked for create account-->
-					<Button
-					on:click="{() =>  dialogLogin.open()}"
-					color="secondary"
-					variant="outlined"
-					class="w3-margin-left">
-					<i class="fas fa-user-plus w3-large"></i>&nbsp;Nouveau
-					</Button>
-					<Dialog bind:this={dialogLogin}>
-						<Login id="NewClient" on:newClient={userSelected} newUser={true}/>
-					</Dialog>
-
-					<Button
-					on:click={clickClientAnonym}
-					color="secondary"
-					variant="outlined"
-					class="w3-margin-left">
-					<i class="fas fa-user-secret w3-large"></i>&nbsp;Anonyme
-					</Button>
-
-				</div>
-			{/if}
-			
-		</div>
-
-
-		{#if userOk}
-			<div style="height: calc(100% - 126px);">
-
-				<!-- Action -->
-				<div class="onglets w3-margin-top w3-border-top w3-center">
-					{#each actions.filter(a => !clientAnonym || a.clientAnonymAutorised) as tab}
-						<div class="w3-padding underline-div onglet"
-							on:click="{() => action = tab.num}"
-							class:actived="{action == tab.num}">
-							{@html tab.icon}
-							<span class="underline-span tab-name">{tab.name}</span>
-						</div>
-					{/each}
-				</div>
-
-				
-				<div class="tabs" style="height: 100%;">
-					{#if !clientAnonym}
-						<!-- Fournit -->
-						<div class="tab" class:center={action == 0} class:left={action > 0}>
-							<br>
-							<Provide bind:user bind:provided bind:providedPromise bind:tarif bind:optionAutoPrintTag/>
-						</div>
-
-						<!-- Récupère -->
-						<div class="tab" class:center={action == 1} class:left={action > 1} class:right={action < 1}>
-							<br>
-							<Recover bind:user bind:provided bind:providedPromise/>
-						</div>
-					{/if}
-
-					<!-- Achète -->
-					<div class="tab" class:center={action == 2} class:left={action > 2} class:right={action < 2}>
-						<br>
-						<Buy bind:user bind:purchases bind:purchasesPromise/>
-					</div>
-
-					<!-- Retourne -->
-					<div class="tab" class:center={action == 3} class:left={action > 3} class:right={action < 3}>
-						<br>
-						<Giveback userId={user._id} trocId={$troc._id}
-								bind:purchases bind:purchasesPromise
-								bind:givebacks bind:givebacksPromise />
-					</div>
-				
-					<!-- Aperçue -->
-					<div class="tab" class:center={action == 4} class:right={action < 4}>
-						<br>
-						<Resume userId={user._id} trocId={$troc._id}
-								bind:provided bind:providedPromise
-								bind:purchases bind:purchasesPromise
-								bind:payments bind:paymentsPromise 
-								bind:balance bind:tarif/>
-					</div>
-
-				</div>
-
-			</div>
-		{:else}
-
-			<div class="w3-display-container" style="height: calc(100% - 57px);">
-
-				<div class="w3-display-middle w3-center" in:fade>
-					<i class="fas fa-cash-register noUserLogo"></i>
-					<br>
-				</div>
-
-				<!-- Options -->
-
-				<div class="w3-display-bottomleft w3-margin w3-padding">
-					<FormField class="w3-large">
-						<Switch bind:checked={optionAutoPrintTag}></Switch>
-						<span slot="label">
-							<i class="fas fa-print"></i>
-							Lancer l'impression d'étiquettes lors de la validation d'article fournis
-						</span>
-					</FormField>
-				</div>
-			
-			</div>
-			
 		{/if}
 
+		<!-- Recherche du client -->
+		<div style="display: inline-block">
+			<div class="icon iconUser">
+				{#if !clientAnonym}
+					<i class:far={!clientOk} class:fas={clientOk} class="fa-user w3-large"></i>
+				{:else}
+					<i class="fas fa-user-secret w3-large"></i>
+				{/if}
+			</div>
+			<div style="display: inline-block; width: 260px;">
+				<SearchUser modeSelect 
+							id="1"
+							bind:itemSelected={client}
+							bind:search={searchClient}
+							on:input={inputSearchClient}
+							on:focusin={focusInSearchClient}
+							placeholder={clientPlaceHodler}
+							on:select="{clientSelected}"/>
+			</div>
+		</div>
+
+		{#if !clientOk}
+			<div in:fade={{duration: 200}} style="display: inline-block">
+				
+				<!-- TODO: open LOGIN blocked for create account-->
+				<Button
+				on:click="{() =>  dialogLogin.open()}"
+				color="secondary"
+				variant="outlined"
+				class="w3-margin-left">
+				<i class="fas fa-user-plus w3-large"></i>&nbsp;Nouveau
+				</Button>
+				<Dialog bind:this={dialogLogin}>
+					<Login id="NewClient" on:newClient={clientSelected} newUser/>
+				</Dialog>
+
+				<Button
+				on:click={clickClientAnonym}
+				color="secondary"
+				variant="outlined"
+				class="w3-margin-left">
+				<i class="fas fa-user-secret w3-large"></i>&nbsp;Anonyme
+				</Button>
+
+			</div>
+		{/if}
 	</div>
 
-{/if}
+	{#if clientOk}
+		<Card class="w3-margin-top">
+			<TabBar bind:active={tabActive}
+			id="cashierTabs"
+			tabs={actions.filter(a => !clientAnonym || a.clientAnonymAutorised)}
+			let:tab
+			style="border-radius: 4px 4px 0px 0px; border-bottom: 1px solid rgb(240, 240, 240);">
+				<Tab {tab} style="border-radius: 4px 4px 0px 0px;">
+					<Icon class={tab.icon}></Icon>
+					{#if !mobileDisplay}
+						<Label>{tab.label}</Label>
+					{/if}
+				</Tab>
+			</TabBar>
+
+			<Content>
+				<svelte:component this={tabActive.component}/>
+			</Content>
+		
+		</Card>
+		
+	{:else}
+
+		<i class="fas fa-cash-register noUserLogo"></i>
+
+		<!-- Cash register options-->
+		<div style="position: fixed; bottom: 1em;">
+			<FormField class="w3-large">
+				<Switch bind:checked={optionAutoPrintTag}></Switch>
+				<span slot="label">
+					<i class="fas fa-print"></i>
+					Lancer l'impression d'étiquettes lors de la validation d'article fournis
+				</span>
+			</FormField>
+		</div>
+		
+	{/if}
+
+</div>
 
 {#if popupPaymentOpen}
-<div class="w3-modal" transition:fade|local={{duration: 150}}>
-	<div class="w3-modal-content w3-padding w3-round">
-		<div class="w3-right w3-padding close-icon" on:click="{() => popupPaymentOpen = false}">
-			<i class="fa fa-times w3-large"></i>
+	<div class="w3-modal" transition:fade|local={{duration: 150}}>
+		<div class="w3-modal-content w3-padding w3-round">
+			<div class="w3-right w3-padding close-icon" on:click="{() => popupPaymentOpen = false}">
+				<i class="fa fa-times w3-large"></i>
+			</div>
+			<br><br>
+			{#if clientAnonym}
+				<div class="w3-center w3-xlarge">
+					{`Un client vous a versé ${(-balance).toFixed(2)}`}
+				</div>
+			{:else}
+				<div class="w3-center w3-xlarge">
+					{balance > 0 ? `Vous avez versé ${balance.toFixed(2)} à ${client.name}`: `${client.name} vous a versé ${(-balance).toFixed(2)}`}
+				</div>
+			{/if}
+			<br>
+			{#await validPaymentPromise}
+				<div class="validButton w3-round w3-right">
+					Validation en cours...
+				</div>
+			{:then}
+				<div class="validButton w3-round w3-right" on:click="{() => validPaymentPromise = validPayment()}">
+					Valider la transaction
+				</div>
+			{/await}
+			<br><br>
 		</div>
-		<br><br>
-		{#if clientAnonym}
-			<div class="w3-center w3-xlarge">
-				{`Un client vous a versé ${(-balance).toFixed(2)}`}
-			</div>
-		{:else}
-			<div class="w3-center w3-xlarge">
-				{balance > 0 ? `Vous avez versé ${balance.toFixed(2)} à ${user.name}`: `${user.name} vous a versé ${(-balance).toFixed(2)}`}
-			</div>
-		{/if}
-		<br>
-		{#await validPaymentPromise}
-			<div class="validButton w3-round w3-right">
-				Validation en cours...
-			</div>
-		{:then}
-			<div class="validButton w3-round w3-right" on:click="{() => validPaymentPromise = validPayment()}">
-				Valider la transaction
-			</div>
-		{/await}
-		<br><br>
 	</div>
-</div>
 {/if}
 
 
@@ -345,21 +291,12 @@
 </svelt:head>
 
 <style>
-
-	@media screen and (max-width: 600px) {
-		.tab-name {
-			display: none;
-		}
+	/*
+	#userHandler {
+		display: flex;
+		justify-content: center;
 	}
-
-    .w3-display-container {
-        height: calc(100% - 57px);
-	}
-	
-	.tab {
-		padding-left: 32px;
-		padding-right: 32px;
-	}
+	*/
 
 	.icon {
 		display: inline-block;
@@ -377,6 +314,9 @@
 	.noUserLogo {
 		font-size: 140px;
 		opacity: .08;
+		position: absolute;
+		left: calc(50% - 70px);
+		top: calc(50% - 70px);
 	}
 
 	.w3-modal {
