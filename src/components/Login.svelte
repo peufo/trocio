@@ -1,20 +1,18 @@
-<script context="module">
-    export async function preload(page, { user }) {
-        return { user }
-    }
-</script>
-
 <script>
     import { onMount, onDestroy } from 'svelte'
     import { slide, fade } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
     import { getHeader } from './utils'
+    import { stores } from '@sapper/app'
+	let { session } = stores()
     
     export let id = 'login' //For focus()
-    export let user
+    let user
     export let newUser = !!user
-    
+
+    session.subscribe(s => {({ user } = s )})
+
     let reset = false
     let name = ''
     let mail = ''
@@ -60,7 +58,7 @@
         let res = await fetch('/users', getHeader({name, mail, password}))
         let json = await res.json()
         if (json.success) {
-            if (user) {//Un Cassier à créer un utilisateur
+            if ($session.user) {//Un Cassier à créer un utilisateur
                 alert(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
                 dispatch('newClient', json.message)
             }else{
@@ -75,7 +73,8 @@
     async function Login(){
         let res = await fetch('/users/login', getHeader({mail, password}))
         let json = await res.json()
-        if (json.name) {
+        if (res.ok) {
+            $session.user = json
             dispatch('close')
             close = true
             return
@@ -138,6 +137,7 @@
     <div  class="w3-rest">
         <input
             bind:value={mail}
+            id="userName"
             class="userInput w3-input"
             type="email"
             placeholder="Email"
@@ -150,6 +150,7 @@
         <div class="w3-rest">
             <input
                 bind:value={password}
+                id="userPassword"
                 class="userInput w3-input"
                 type="password"
                 placeholder="Mot de passe"

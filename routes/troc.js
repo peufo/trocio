@@ -80,7 +80,7 @@ router
 			if(err || !troc) return next(err || Error('Troc not found !'))
 			let index = troc.trader.map(t => t.user).indexOf(req.params.userId)	
 			if (index === -1) {
-				res.json({success: false, message: `User isn't a trader`})
+				res.json({error: true, message: `User isn't a trader`})
 			}else{
 				res.json({success: true, message: 'User is a trader', prefix: troc.trader[index].prefix})
 			}
