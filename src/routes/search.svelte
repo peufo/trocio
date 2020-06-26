@@ -16,6 +16,7 @@
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
 
+	import TrocInfo from '../components/TrocInfo.svelte'
 	import Resume from '../components/Resume.svelte'
 	import Articles from '../components/Articles.svelte'
 	import Toggle from '../components/Toggle.svelte'
@@ -203,47 +204,10 @@
 			<!--  En-tête  -->
 			<div transition:slide|local class="card" on:click="{() => {trocSelected = troc._id; trocSelectedName = troc.name}}">
 
-				<div class="w3-row">
-					<div class="w3-col m8 w3-padding">
-						<span class="w3-large">{troc.name}</span>
-						<a href={troc.societyweb ? `https://${troc.societyweb}` : ''}>
-							<i>{troc.society}</i>
-						</a>
-						<br>
-						<span class="w3-small">
-							<i class="fas fa-map-marker-alt"></i>
-							{troc.address}
-						</span>
-						<p>{troc.description}</p>
-						
-						<Button href={`https://${troc.societyweb}`} dense color="secondary">
-							<i class="fas fa-globe"></i>&nbsp;{troc.societyweb}
-						</Button>
-						
-					</div>
-
-					<div class="w3-col m4 w3-center">
-						<div class="w3-small w3-padding">
-							<span class="w3-round">
-								<i class="far fa-clock"></i>
-								{dayjs(troc.schedule[0].open).fromNow()}
-							</span>
-
-							<ul class="w3-ul w3-tiny w3-margin-top">
-							{#each troc.schedule as day}
-								<li>
-									{dayjs(day.open).format('ddd. DD.MM.YY [d]e H[h]mm à ')}
-									{dayjs(day.close).format('H[h]mm')}
-								</li>
-							{/each}
-							</ul>
-							
-						</div>
-					</div>
-				</div>
+				<TrocInfo {troc} nameDisplay/>
 				
 				<!-- Button -->
-				<div class="w3-center w3-padding">
+				<div class="w3-center">
 					<Button
 					on:click="{() => dialogArticles.open()}"
 					color="secondary" variant="outlined" style="margin-top: 5px;">
@@ -350,6 +314,7 @@
 		margin-top: 30px;
 		margin-bottom: 30px;
 		overflow-x: auto;
+		padding: 1em;
 	}
 
 	.card:hover {

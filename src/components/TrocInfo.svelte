@@ -10,7 +10,7 @@
     import { convertDMS } from './utils.js'
     
     export let troc = {}
-    export let societyDisplay = false
+    export let nameDisplay = false
 
     let scheduleMenu
     let scheduleAnchor
@@ -24,7 +24,7 @@
 
 
 
-{#if societyDisplay}
+{#if nameDisplay}
     <h3>{troc.name}</h3>
 {/if}
 
