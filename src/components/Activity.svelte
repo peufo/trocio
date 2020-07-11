@@ -90,7 +90,7 @@
                         </Item>
                     </a>
                 {:else}
-                    Vous n'avez pas encore troqué
+                    Vous n'avez pas encore de troc
                 {/each}
                     
             </CardContent>

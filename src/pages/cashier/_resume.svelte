@@ -1,15 +1,17 @@
+<!--
 <script context="module">
     import { getDetail } from '../_utils.js'
 
     export async function preload(page, { user }) {
-        let { troc } = page.query
+        let { troc, client } = page.query
         if (!troc) return this.error(400, 'troc query is required')
+        if (!client) return this.error(400, 'client query is required')
         if (!user) return this.error(401, 'authentication is required')
 
-        return getDetail.call(this, troc, user._id)
+        return getDetail.call(this, troc, client)
     }
 </script>
-
+-->
 <script>
     import Resume from '../../components/Resume.svelte'
 

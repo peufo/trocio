@@ -1,7 +1,5 @@
 <script>
-	import { troc } from './stores'
-	import { stores } from '@sapper/app'
-	let { session } = stores()
+	import { troc, user } from './stores'
 	import Menu from '@smui/menu'
 	import List, { Item, Graphic } from '@smui/list'
 	import Button from '@smui/button'
@@ -9,18 +7,11 @@
 	import TopAppBar, {Row, Section, Title} from '@smui/top-app-bar'
 
 	import Login from './Login.svelte'
-	let user
-
 
 	export let title = ''
 	
 	let dialogLogin
-	let userMenu
-	
-	session.subscribe(s => {({ user } = s )})
-
-	$: console.log('prout', user)
-	$: console.log('YOLO', $session)
+	//let userMenu
 
 </script>
 
@@ -37,12 +28,12 @@
 		</Section>
 
 		<Section align="end" toolbar>
-			{#if $session.user}
+			{#if user}
 				<div>
 
 					<Button href='/profile' color="secondary" class="w3-right w3-padding w3-text-white">
 						<i class="fas fa-user w3-large"></i>
-						<span class="button-label">&nbsp;{$session.user.name}</span>
+						<span class="button-label">&nbsp;{user.name}</span>
 					</Button>
 
 					<Button href='/activity' color="secondary" class="w3-right w3-padding w3-text-white">

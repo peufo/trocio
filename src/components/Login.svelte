@@ -4,14 +4,10 @@
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
     import { getHeader } from './utils'
-    import { stores } from '@sapper/app'
-	let { session } = stores()
+    import { user } from '../components/stores'
     
     export let id = 'login' //For focus()
-    let user
     export let newUser = !!user
-
-    session.subscribe(s => {({ user } = s )})
 
     let reset = false
     let name = ''
@@ -58,7 +54,7 @@
         let res = await fetch('/users', getHeader({name, mail, password}))
         let json = await res.json()
         if (json.success) {
-            if ($session.user) {//Un Cassier à créer un utilisateur
+            if (user) {//Un Cassier à créer un utilisateur
                 alert(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
                 dispatch('newClient', json.message)
             }else{
@@ -74,7 +70,7 @@
         let res = await fetch('/users/login', getHeader({mail, password}))
         let json = await res.json()
         if (res.ok) {
-            $session.user = json
+            user = json
             dispatch('close')
             close = true
             return

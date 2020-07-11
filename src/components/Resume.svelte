@@ -35,6 +35,7 @@
 	export let purchases = []
 	export let payments = []
 
+
 	//Computed values
 	export let balance = 0
 	export let buySum = 0
@@ -335,7 +336,7 @@
 
 	<div class="w3-center w3-xlarge">
 		<span class="w3-opacity">Solde actuel </span>
-		<span>{balance.toFixed(2)}</span>
+		<span id="balance">{balance.toFixed(2)}</span>
 	</div>
 
 	<br>

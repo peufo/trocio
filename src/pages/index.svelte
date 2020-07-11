@@ -1,9 +1,10 @@
+<!--
 <script context="module">
     export async function preload(page, { user }) {
         return { user }
     }
 </script>
-
+-->
 <script>
 
     import Button from '@smui/button'

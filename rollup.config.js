@@ -1,128 +1,55 @@
-import resolve from '@rollup/plugin-node-resolve';
-import replace from '@rollup/plugin-replace';
-import commonjs from '@rollup/plugin-commonjs';
-import svelte from 'rollup-plugin-svelte';
-import babel from '@rollup/plugin-babel';
-import { terser } from 'rollup-plugin-terser';
-import config from 'sapper/config/rollup.js';
-import pkg from './package.json';
+import { createRollupConfigs } from './scripts/base.config.js'
+import path from 'path'
 import postcss from 'rollup-plugin-postcss'
 
-const mode = process.env.NODE_ENV;
-const dev = mode === 'development';
-const legacy = !!process.env.SAPPER_LEGACY_BUILD;
+const production = !process.env.ROLLUP_WATCH;
 
-const onwarn = (warning, onwarn) => (warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message)) || onwarn(warning);
+const postcssOptions = () => ({
+	extensions: ['.scss', '.sass'],
+	extract: false,
+	minimize: true,
+	use: [
+	  ['sass', {
+		includePaths: [
+		  './src/theme',
+		  './node_modules',
+		  // This is only needed because we're using a local module. :-/
+		  // Normally, you would not need this line.
+		  path.resolve(__dirname, '..', 'node_modules')
+		]
+	  }]
+	]
+  })
 
-export default {
-	client: {
-		input: config.client.input(),
-		output: config.client.output(),
-		plugins: [
-			replace({
-				'process.browser': true,
-				'process.env.NODE_ENV': JSON.stringify(mode)
-			}),
-			svelte({
-				dev,
-				hydratable: true,
-				emitCss: false,
-				css: true
-			}),
-			resolve({
-				browser: true,
-				dedupe: ['svelte']
-			}),
-			commonjs(),
-			postcss({
-				extract: false,
-				minimize: true,
-				use: [
-				  ['sass', {
-					includePaths: [
-					  './src/theme',
-					  './node_modules'
-					]
-				  }]
-				]
-			}),
-			legacy && babel({
-				extensions: ['.js', '.mjs', '.html', '.svelte'],
-				babelHelpers: 'runtime',
-				exclude: ['node_modules/@babel/**'],
-				presets: [
-					['@babel/preset-env', {
-						targets: '> 0.25%, not dead'
-					}]
-				],
-				plugins: [
-					'@babel/plugin-syntax-dynamic-import',
-					['@babel/plugin-transform-runtime', {
-						useESModules: true
-					}]
-				]
-			}),
+export const config = {
+  staticDir: 'static',
+  distDir: 'dist',
+  buildDir: `dist/build`,
+  serve: !production,
+  production,
+  rollupWrapper: cfg => {
+	cfg.plugins = [...cfg.plugins, postcss(postcssOptions())]
+	return cfg
+  },
+  svelteWrapper: cfg => cfg,
+  swWrapper: cfg => cfg,
+}
 
-			!dev && terser({
-				module: true
-			})
-		],
+const configs = createRollupConfigs(config)
 
-		preserveEntrySignatures: false,
-		onwarn,
-	},
+export default configs
 
-	server: {
-		input: config.server.input(),
-		output: config.server.output(),
-		plugins: [
-			replace({
-				'process.browser': false,
-				'process.env.NODE_ENV': JSON.stringify(mode)
-			}),
-			svelte({
-				generate: 'ssr',
-				dev
-			}),
-			resolve({
-				dedupe: ['svelte']
-			}),
-			commonjs(),
-			postcss({
-				extract: false,
-				minimize: true,
-				use: [
-				  ['sass', {
-					includePaths: [
-					  './src/theme',
-					  './node_modules'
-					]
-				  }]
-				]
-			})
-		],
-		external: Object.keys(pkg.dependencies).concat(
-			require('module').builtinModules || Object.keys(process.binding('natives'))
-		),
 
-		preserveEntrySignatures: 'strict',
-		onwarn,
-	},
 
-	serviceworker: {
-		input: config.serviceworker.input(),
-		output: config.serviceworker.output(),
-		plugins: [
-			resolve(),
-			replace({
-				'process.browser': true,
-				'process.env.NODE_ENV': JSON.stringify(mode)
-			}),
-			commonjs(),
-			!dev && terser()
-		],
 
-		preserveEntrySignatures: false,
-		onwarn,
-	}
-};
+/** wrapper example 1 */
+// svelteWrapper: (cfg, ctx) => ({
+//   ...cfg,
+//   preprocess: mdsvex({ extension: '.md' }),
+// })
+
+/** wrapper example 2 */
+// rollupWrapper: cfg => {
+//   cfg.plugins = [...cfg.plugins, myPlugin()]
+//   return cfg
+// }

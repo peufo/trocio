@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store'
 
 let troc = trocBuilder()
+let user = writable({})
 
 function trocBuilder() {
 	const { subscribe, set} = writable({})
@@ -29,4 +30,5 @@ function trocBuilder() {
 	}
 }
 
-export { troc}
+
+export { user, troc }

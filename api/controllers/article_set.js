@@ -166,12 +166,13 @@ function patchArticle(req, res, next) {
 					let recoverPatched = patchedArt.recover && patchedArt.recover != art.recover
 
 					//PATCH
-					art.name = patchedArt.name
-					art.valided = patchedArt.valided
-					art.refused = patchedArt.refused
-					art.sold = patchedArt.sold
-					art.buyer = patchedArt.buyer && patchedArt.buyer._id
-					art.recover = patchedArt.recover
+					if (patchedArt.name) 	art.name 	= patchedArt.name
+					if (patchedArt.valided) art.valided = patchedArt.valided
+					if (patchedArt.refused) art.refused = patchedArt.refused
+					if (patchedArt.sold) 	art.sold 	= patchedArt.sold
+					if (patchedArt.recover) art.recover = patchedArt.recover
+					if (patchedArt.buyer) art.buyer = patchedArt.buyer
+
 					if (validedPatched || refusedPatched) art.validator = req.session.user._id
 					if (soldPatched || recoverPatched) art.seller = req.session.user._id 
 

@@ -1,3 +1,4 @@
+<!--
 <script context="module">
     export async function preload(page, session) {
         let res = await this.fetch('/trocs/me', {credentials: 'include'})
@@ -6,7 +7,7 @@
         return { trocs, trocSelected }
     }
 </script>
-
+-->
 <script>
     import { onMount } from 'svelte'
     import { fade } from 'svelte/transition'
@@ -96,7 +97,7 @@
                         </Item>
                     </a>
                 {:else}
-                    Vous n'avez pas encore troqué
+                    Vous n'avez pas encore de troc
                 {/each}
                     
             </CardContent>

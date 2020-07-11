@@ -8,7 +8,7 @@ let { getRoot } = require('./utils')
 
 router
 	.get('/mailConfirmation', (req, res, next) => {
-		res.sendFile(path.join(__dirname, '..', 'views', 'mailConfirmation.html'))
+		res.sendFile(path.join(__dirname, '..', '..', 'views', 'mailConfirmation.html'))
 	})
 	.get('/geocode/:query', (req, res, next) => {
 		if (!process.env.OCD_API_KEY) return next(Error('Variable environement OCD_API_KEY is undefined ! Please visite https://opencagedata.com/api'))

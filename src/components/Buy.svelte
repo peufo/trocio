@@ -1,6 +1,5 @@
 <script>
-    import { troc } from './stores'
-	import { crossfade, fade } from 'svelte/transition'
+	import { crossfade, fade, slide } from 'svelte/transition'
     import { flip } from 'svelte/animate'
     import Button from '@smui/button'
     import { getHeader, crossfadeConfig } from './utils'
@@ -11,8 +10,10 @@
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
 
-    export let client = {}
+    export let trocId = ''
+    export let client = ''
     export let purchases = []
+    export let purchasesCount = 0
     export let purchasesPromise
 
     const [send, receive] = crossfade(crossfadeConfig)
@@ -36,11 +37,11 @@
 
     async function getArticles() {
 
-        let req = `/articles?troc=${$troc._id}&limit=${LIMIT_LIST_A}&skip=${skip}`
+        let req = `/articles?troc=${trocId}&limit=${LIMIT_LIST_A}&skip=${skip}`
         req += `&filter_statut=valided`
         req += `&or_search_name=${search}`
         req += `&or_search_ref=${search}`
-        req += `${client._id ? `&providernot=${client._id}` :''}`
+        req += `${client ? `&providernot=${client}` :''}`
 
         let res = await fetch(req)
         let json = await res.json()
@@ -97,7 +98,7 @@
             return {
                 _id: article._id,
                 sold,
-                buyer: client._id
+                buyer: client
             }
         })
 
@@ -135,14 +136,14 @@
 
 
         {#await searchPromise}
-            <span class="w3-opacity">Recherche en cours...</span>
+            <div class="w3-center w3-opacity" in:fade={{delay: 200}}>
+                <span>Recherche en cours...</span>
+            </div>
         {:then}
             {#each articles as article, index (article._id)}
-                <div class="w3-margin-right" in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
+                <div class="w3-margin-right" in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip|local="{{duration: 200}}">
                     <Article article={article} clickable on:select="{() => buy(index)}" comment={`Fourni par ${article.provider.name}`}/>
                 </div>
-            {:else}
-                <span class="w3-opacity">Pas de résultat</span>
             {/each}
 
             <!-- Bouton pour prolongé la liste -->
@@ -199,7 +200,7 @@
                 </div>
 
             {:else}
-                <span class="w3-opacity">Le panier {client.name ? `de ${client.name}` : ''} est vide</span>
+                <span class="w3-opacity">Le panier est vide</span>
             {/each}
         </div>
 

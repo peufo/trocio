@@ -1,5 +1,38 @@
+<!--
+<script context="module">
+	import { getDetail } from '../_utils.js'
+
+	let lastClient = false
+
+    export async function preload(page, { user }) {
+		let { troc, client } = page.query
+		let { tab } = page.params
+
+        let detail = {}
+        if (!troc) return this.error(400, 'troc query is required')
+		if (!user) return this.error(401, 'authentication is required')
+		//if (!tab) return this.redirect(300, `${page.path}/resume?troc=${troc}${client ? `&client=${client}`: ''}`)
+        if (client != lastClient || typeof window === 'undefined') {
+			console.log('client changed')
+			console.log('last:', lastClient, 'actuel:', client)
+			lastClient = client
+			if (client) {
+				detail = await getDetail.call(this, troc, client)
+				client = await this.fetch(`/users/${client}`).then(res => res.json())
+				console.log('new client loaded')
+			}else{
+				client = {}
+				detail = {}
+				console.log('client unloaded')
+			}
+		}
+
+        return { user, troc, client, detail}
+    }
+</script>
+-->
 <script>
-	import { user } from '../stores'
+	import { user } from '../../components/stores'
 	
 	import queryString from 'query-string'
 	import { onMount, tick } from 'svelte'
@@ -12,26 +45,29 @@
 	import TabBar from '@smui/tab-bar'
 	import Tab, {Icon, Label} from '@smui/tab'
 
-	import { getHeader } from './utils'
-	import SearchUser from './SearchUser.svelte'
-	import Provide from './Provide.svelte'
-	import Buy from './Buy.svelte'
-	import Recover from './Recover.svelte'
-	import Giveback from './Giveback.svelte'
-	import Resume from './Resume.svelte'
-	import Login from './Login.svelte'
+	import { getHeader } from '../../components/utils'
+	import SearchUser from '../../components/SearchUser.svelte'
+	import Login from '../../components/Login.svelte'
+	import Provide from '../../components/Provide.svelte'
+	//import Buy from './Buy.svelte'
+	//import Recover from './Recover.svelte'
+	//import Giveback from './Giveback.svelte'
+	//import Resume from './Resume.svelte'
 
+	//const { session } = stores()
 	export let mobileDisplay = false
 	export let troc = ''
-	export let client = {}
+    export let client = {}
+    export let segment
 
-	export let provided = []
-	export let purchases = []
-	export let payments = []
-	export let givebacks = []
+    export let detail = {}
+	export let provided = detail.provided
+	//export let purchases = []
+	//export let payments = []
+	//export let givebacks = []
 
-	$: console.log('clientOk', clientOk)
-	$: console.log('payments', payments)
+	//$: console.log('clientOk', clientOk)
+	//$: console.log('payments', payments)
 
 	let dialogLogin // Create user
 
@@ -43,15 +79,14 @@
 	let popupPaymentOpen = false
 
 	let actions = [
-		{component: Provide,	label: 'Fournit', 		icon: 'fas fa-sign-in-alt'},
-		{component: Recover,	label: 'Récupère', 		icon: 'fas fa-sign-out-alt'},
-		{component: Buy,		label: 'Achète', 		icon: 'fas fa-shopping-basket', clientAnonymAutorised: true},
-		{component: Giveback,	label: 'Retourne', 		icon: 'fas fa-undo', 			clientAnonymAutorised: true},
-		{component: Resume,		label: 'Aperçu', 		icon: 'far fa-eye', 			clientAnonymAutorised: true},
+		{link: 'provide',	label: 'Fournit', 		icon: 'fas fa-sign-in-alt'},
+		{link: 'recover',	label: 'Récupère', 		icon: 'fas fa-sign-out-alt'},
+		{link: 'buy',		label: 'Achète', 		icon: 'fas fa-shopping-basket', clientAnonymAutorised: true},
+		{link: 'giveback',  label: 'Retourne', 		icon: 'fas fa-undo', 			clientAnonymAutorised: true},
+		{link: 'resume',	label: 'Aperçu', 		icon: 'far fa-eye', 			clientAnonymAutorised: true},
 	]
 	let tabActive = actions[4]
 
-	let tarif = undefined //bind to Resume.svelte
 	let validPaymentPromise
 
 	let balance = 0 //bind to Resume.svelte
@@ -81,14 +116,12 @@
 		})
 
 	})
-	
+
 	async function updateClientQuery() {
 		let query = queryString.parse(location.search)
 		if (client._id) query.client = client._id
 		else delete query.client
-		await goto(`${location.pathname}?${queryString.stringify(query)}`)
-		await tick()
-		tabActive = tabActive
+		await goto(`${location.pathname}?${queryString.stringify(query)}`, {replaceState: true})
 	}
     
 	function clientSelected(e){
@@ -216,27 +249,8 @@
 	</div>
 
 	{#if clientOk}
-		<Card id="cashierContainer" class="w3-margin-top">
-			<TabBar bind:active={tabActive}
-			id="cashierTabs"
-			tabs={actions.filter(a => !clientAnonym || a.clientAnonymAutorised)}
-			let:tab
-			style="border-radius: 4px 4px 0px 0px; border-bottom: 1px solid rgb(240, 240, 240);">
-				<Tab {tab} style="border-radius: 4px 4px 0px 0px;">
-					<Icon class={tab.icon}></Icon>
-					{#if !mobileDisplay}
-						<Label>{tab.label}</Label>
-					{/if}
-				</Tab>
-			</TabBar>
 
-			<Content>
-				
-				<svelte:component this={tabActive.component} userId={client._id} trocId={troc} {client} {provided} {purchases} {givebacks} {payments} />
-
-			</Content>
-		
-		</Card>
+		<slot></slot>
 		
 	{:else}
 

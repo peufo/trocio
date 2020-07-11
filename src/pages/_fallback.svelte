@@ -1,7 +1,5 @@
 <script>
-	export let status;
-	export let error;
-	const dev = process.env.NODE_ENV === 'development';
+	export let status
 </script>
 
 <style>
@@ -34,15 +32,8 @@
 	<title>{status}</title>
 </svelte:head>
 
-{#if status === 404}
-	<img src="/images/John_Travoltat_confused.gif" alt="John Travoltat confused">
-{/if}
 
-<h1>{status}</h1>
+<img src="/images/John_Travoltat_confused.gif" alt="John Travoltat confused">
 
-<p>{error.message}</p>
 
-{#if dev && error.stack}
-	<pre>{error.stack}</pre>
-{/if}
 
