@@ -10,6 +10,5 @@
 
 <Head/>
 
-<main>
-	<slot decorator={FadeDecorator} />
-</main>
+
+<slot decorator={FadeDecorator} />

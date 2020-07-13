@@ -28,8 +28,6 @@
     export let tarif = undefined
     export let traderPrefix = ''
 
-    $: console.log(scoped)
-
 </script>
 
 <TrocInfo troc={scoped.trocSelected} />
