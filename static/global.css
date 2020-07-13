@@ -1,4 +1,4 @@
-html, body {height: 100%;}
+:root {overflow-y: scroll;}
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
 ::-webkit-scrollbar-thumb { background: #888; }

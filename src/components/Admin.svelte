@@ -1,5 +1,4 @@
 <script>
-	import queryString from 'query-string'
 	import { onMount } from 'svelte'
 	import { troc } from './stores'
 	import { fade } from 'svelte/transition'
@@ -30,7 +29,7 @@
 	]
 
 	onMount(() => {
-		let query = queryString.parse(location.search)
+		//let query = queryString.parse(location.search)
 		troc.find(query.troc)
 	})
 

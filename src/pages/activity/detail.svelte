@@ -11,9 +11,15 @@
     }
 </script>
 -->
+
 <script>
+    import qs from 'qs'
+    import { onMount } from 'svelte'
+    import { user, userPromise, troc } from 'stores.js'
+    import TrocInfo from 'TrocInfo.svelte'
     import Resume from '../../components/Resume.svelte'
 
+    export let scoped
     export let trocId
     export let userId
     export let provided = []
@@ -22,6 +28,10 @@
     export let tarif = undefined
     export let traderPrefix = ''
 
+    $: console.log(scoped)
+
 </script>
 
+<TrocInfo troc={scoped.trocSelected} />
+<hr>
 <Resume {trocId} {userId} {provided} {purchases} {payments} {tarif} {traderPrefix}/>

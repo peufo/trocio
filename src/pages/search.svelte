@@ -1,11 +1,5 @@
-<!--
-<script context="module">
-    export async function preload(page, { user }) {
-        return { user }
-    }
-</script>
--->
 <script>
+	import { goto } from '@sveltech/routify'
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
 
@@ -17,13 +11,13 @@
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
 
-	import TrocInfo from '../components/TrocInfo.svelte'
-	import Resume from '../components/Resume.svelte'
-	import Articles from '../components/Articles.svelte'
-	import Toggle from '../components/Toggle.svelte'
-	import Login from '../components/Login.svelte'
+	import { user } from 'stores.js'
+	import TrocInfo from 'TrocInfo.svelte'
+	import Resume 	from 'Resume.svelte'
+	import Articles from 'Articles.svelte'
+	import Toggle 	from 'Toggle.svelte'
+	import Login 	from 'Login.svelte'
 	
-	export let user
 
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
@@ -45,7 +39,7 @@
 		end = ''
 
 	//Dialogs
-	let dialogLogin, dialogArticles, dialogResume
+	let dialogLogin, dialogArticles
 
 	let tabs = [
 		{id: 0, name: 'Voir les articles fournis', icon: '<i class="fas fa-sign-in-alt"></i>'},
@@ -64,8 +58,8 @@
 		})
 
 		icon = L.icon({
-			iconUrl:'images/marker-icon.png',
-			iconRetinaUrl: 'images/marker-icon-2x.png',
+			iconUrl:'/images/marker-icon.png',
+			iconRetinaUrl: '/images/marker-icon-2x.png',
 			iconSize: [28, 42],
 			iconAnchor: [14, 42],
 			tooltipAnchor: [14, -30],
@@ -127,9 +121,9 @@
 		})
 	}
 
-	function clickActivity() {
-		if (user) {
-			dialogResume = true
+	function clickActivity(trocId) {
+		if ($user) {
+			$goto(`/activity/detail?troc=${trocId}`)
 		}else{
 			dialogLogin.open()
 		}
@@ -137,7 +131,7 @@
 
 	function loginClose() {
 		dialogLogin.close()
-		setTimeout(() => clickActivity(), 100)
+		setTimeout(() => clickActivity(trocSelected), 100)
 	}
 
 </script>
@@ -216,7 +210,7 @@
 					</Button>
 
 					<Button
-					on:click="{clickActivity}"
+					on:click="{() => clickActivity(troc._id)}"
 					color="secondary" variant="outlined" style="margin-top: 5px;">
 						Voir mon activité
 					</Button>
@@ -232,12 +226,6 @@
 					{/if}
 
 				</div>
-
-				{#if user && dialogResume && trocSelected === troc._id}
-					<div class="w3-padding">
-						<Resume userId={user._id} trocId={troc._id}/>
-					</div>
-				{/if}
 
 			</div>
 

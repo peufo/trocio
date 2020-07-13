@@ -1,13 +1,12 @@
-<!--
-<script context="module">
-    export async function preload(page, { user }) {
-        return { user }
-    }
-</script>
--->
 <script>
-    import Profile from '../components/Profile.svelte'
-    export let user = {}
+    import { goto } from '@sveltech/routify'
+    import Profile from 'Profile.svelte'
+    import { user } from 'stores.js'
+
 </script>
 
-<Profile {user} />
+{#if $user === null}
+    {$goto('/')}
+{:else if $user !== undefined}
+    <Profile/>
+{/if}

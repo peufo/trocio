@@ -1,12 +1,10 @@
 <script>
-    import { slide, fade } from 'svelte/transition'
+    import { user } from './stores'
     import { getHeader } from './utils'
-
+    import { slide, fade } from 'svelte/transition'
     import Textfield from '@smui/textfield'
     import HelperText from '@smui/textfield/helper-text/index'
     import Button from '@smui/button'
-
-    export let user = {}
 
     let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -27,7 +25,7 @@
     // FETCH FUNCTION
 
     async function patchName() {
-        let res = await fetch('/users/me', getHeader({name: user.name}, 'PATCH'))
+        let res = await fetch('/users/me', getHeader({name: $user.name}, 'PATCH'))
         let json = await res.json()
         if (json.success) {
             changeName = false
@@ -38,11 +36,11 @@
     }
     
     async function patchMail() {
-        let res = await fetch('/users/me', getHeader({mail: user.mail}, 'PATCH'))
+        let res = await fetch('/users/me', getHeader({mail: $user.mail}, 'PATCH'))
         let json = await res.json()
         if (json.success) {
             changeMail = false
-            user.mailvalided = false
+            $user.mailvalided = false
             return
         }else{
             //Pas sur mais ca ira...
@@ -77,7 +75,7 @@
 
 </script>
 
-{#if user._id}
+{#if $user}
     <br>
     <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
 
@@ -86,7 +84,7 @@
 
             <i class="w3-xlarge far fa-user" style="margin-right: 16px;"></i>
             <Textfield
-            bind:value="{user.name}"
+            bind:value="{$user.name}"
             on:input="{() => changeName = true}"
             label="Nom & Prénom"
             variant="outlined"
@@ -107,7 +105,7 @@
                         <Button
                         on:click="{() => patchNamePromise = patchName()}"
                         variant="raised"
-                        disabled={user.name.trim().length < 2}
+                        disabled={$user.name.trim().length < 2}
                         class="w3-right w3-margin-top"
                         style="color: white;">
                             Valider votre nouveau nom & prénom
@@ -120,7 +118,7 @@
 
             <i class="w3-xlarge far fa-envelope" style="margin-right: 13px;"></i>
             <Textfield
-            bind:value="{user.mail}"
+            bind:value="{$user.mail}"
             on:input="{() => changeMail = true}"
             label="Mail"
             variant="outlined"
@@ -130,7 +128,7 @@
 
             {#if !changeMail}
                 <HelperText id="helper-text-mail" persistent style="margin-left: 37px;">
-                {#if user.mailvalided}
+                {#if $user.mailvalided}
                     <span class="w3-text-green"><i class="fas fa-check"></i> mail validé</span>
                 {:else}
                     <span class="w3-text-red"><i class="fas fa-exclamation-triangle"></i> mail non validé</span>
@@ -149,7 +147,7 @@
                         <Button
                         on:click="{() => patchMailPromise = patchMail()}"
                         variant="raised"
-                        disabled="{!user.mail.match(EMAIL_REGEX)}"
+                        disabled="{!$user.mail.match(EMAIL_REGEX)}"
                         class="w3-right w3-margin-top"
                         style="color: white;">
                             Valider votre nouveau mail
@@ -159,7 +157,7 @@
                 </div>
                 <br>
 
-            {:else if !user.mailvalided}
+            {:else if !$user.mailvalided}
 
                 {#if mailValidatorSent}
                     <Button color="secondary" class="w3-right">
@@ -246,8 +244,7 @@
             <br><br><br>
 
             <Button
-            href="/users/logout"
-            on:click={() => sessionStorage.removeItem('me')}
+            on:click={user.logout}
             color="secondary"
             class="w3-margin-top w3-right">
                 Déconnexion

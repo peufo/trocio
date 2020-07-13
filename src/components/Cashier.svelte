@@ -1,7 +1,6 @@
 <script>
 	import { user } from '../stores'
 	
-	import queryString from 'query-string'
 	import { onMount, tick } from 'svelte'
 	import { fade } from 'svelte/transition'
 	import Switch from '@smui/switch'
@@ -83,7 +82,7 @@
 	})
 	
 	async function updateClientQuery() {
-		let query = queryString.parse(location.search)
+		//let query = queryString.parse(location.search)
 		if (client._id) query.client = client._id
 		else delete query.client
 		await goto(`${location.pathname}?${queryString.stringify(query)}`)

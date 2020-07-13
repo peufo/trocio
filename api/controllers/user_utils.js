@@ -16,7 +16,7 @@ function checkSuperAdmin(req, res, next) {
 function login(req, res, next) {
 
     if (!req.body.mail || !req.body.password) {
-        return next(Error('Renseignement manquant !'))
+        return next(createError(401))
     }else{
         User.getAuthenticated(req.body.mail, req.body.password, (err, user, reason) => {
             if (!err) {
@@ -51,7 +51,7 @@ function login(req, res, next) {
 
 function logout(req, res, next) {
     req.session.user = undefined
-    res.redirect('/')
+    res.json({success: true, message: 'user logged out'})
 }
 
 module.exports = {

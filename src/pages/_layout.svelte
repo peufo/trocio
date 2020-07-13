@@ -1,6 +1,7 @@
 
 <script>
-	import Head from '../components/Head.svelte'
+	import Head from 'Head.svelte'
+	import FadeDecorator from 'FadeDecorator.svelte'
 </script>
 
 <svelte:head>
@@ -10,5 +11,5 @@
 <Head/>
 
 <main>
-	<slot></slot>
+	<slot decorator={FadeDecorator} />
 </main>

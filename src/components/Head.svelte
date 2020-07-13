@@ -1,5 +1,7 @@
 <script>
-	import { troc, user } from './stores'
+	import { troc, user, userPromise } from './stores'
+	import { onMount } from 'svelte'
+
 	import Menu from '@smui/menu'
 	import List, { Item, Graphic } from '@smui/list'
 	import Button from '@smui/button'
@@ -12,6 +14,10 @@
 	
 	let dialogLogin
 	//let userMenu
+
+	onMount(() => {
+		$userPromise = user.authenticate()
+	})
 
 </script>
 
@@ -28,12 +34,12 @@
 		</Section>
 
 		<Section align="end" toolbar>
-			{#if user}
+			{#if $user}
 				<div>
 
 					<Button href='/profile' color="secondary" class="w3-right w3-padding w3-text-white">
 						<i class="fas fa-user w3-large"></i>
-						<span class="button-label">&nbsp;{user.name}</span>
+						<span class="button-label">&nbsp;{$user.name}</span>
 					</Button>
 
 					<Button href='/activity' color="secondary" class="w3-right w3-padding w3-text-white">

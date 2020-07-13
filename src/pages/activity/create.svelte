@@ -1,5 +1,5 @@
 <script>
-    import EditForm from '../../components/EditForm.svelte'
+    import EditForm from 'EditForm.svelte'
 </script>
 
 <EditForm createMode/>

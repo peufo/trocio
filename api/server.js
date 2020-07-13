@@ -55,6 +55,7 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
 	if (!err) return next()
 	let status = 404
+	if (err.message === 'BadRequest') status = 400
 	if (err.message === 'Unauthorized') status = 401
   	if (req.app.get('env') === 'development' || err.name == 'Error'){
     	res.status(status).json({error: true, message: err.message})

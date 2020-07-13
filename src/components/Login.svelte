@@ -4,10 +4,10 @@
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
     import { getHeader } from './utils'
-    import { user } from '../components/stores'
+    import { user } from './stores'
     
     export let id = 'login' //For focus()
-    export let newUser = !!user
+    export let newUser = !!$user
 
     let reset = false
     let name = ''
@@ -40,7 +40,7 @@
 
     function submit() {
         if (!loginError) {
-            if (newUser || user) {
+            if (newUser || $user) {
                 submitPromise = Register()
             }else if(reset){
                 submitPromise = Reset()
@@ -54,7 +54,7 @@
         let res = await fetch('/users', getHeader({name, mail, password}))
         let json = await res.json()
         if (json.success) {
-            if (user) {//Un Cassier à créer un utilisateur
+            if ($user) {//Un Cassier à créer un utilisateur
                 alert(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
                 dispatch('newClient', json.message)
             }else{
@@ -65,12 +65,12 @@
             alert(json.message)
         }
     }   
-    
+    /*
     async function Login(){
         let res = await fetch('/users/login', getHeader({mail, password}))
         let json = await res.json()
         if (res.ok) {
-            user = json
+            $user = json
             dispatch('close')
             close = true
             return
@@ -78,8 +78,19 @@
             alert(json.message)
         }
     }
+    */
 
-    async function Reset(){
+    async function Login() {
+        return user.login(mail, password, err => {
+            if (err) return alert(err.message)
+            dispatch('close')
+            close = true
+            return
+        })
+    }
+
+
+    async function Reset() {
         let res = await fetch('/users/resetpwd', getHeader({mail}))
         let json = await res.json()
         if (res.ok) {
@@ -98,7 +109,7 @@
         if (!mail.match(EMAIL_REGEX)) loginError = 'Mail invalide !'
         if (!newUser && !reset && password.length < 3) loginError = 'Mot de passe trop court'
         if (newUser && name.length < 3) loginError = 'Nom trop court'
-        if (!user && newUser && password != password2) loginError = 'Mot de passe de confirmation pas identique'
+        if (!$user && newUser && password != password2) loginError = 'Mot de passe de confirmation pas identique'
     }
 
 </script>
@@ -140,7 +151,7 @@
             on:keyup="{e => e.which == 13 && submit()}">
     </div>							
 
-    {#if !reset && !user}
+    {#if !reset && !$user}
     <div transition:slide|local>
         <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
         <div class="w3-rest">
@@ -155,7 +166,7 @@
     </div>					
     {/if}
 
-    {#if newUser && !user}
+    {#if newUser && !$user}
     <div transition:slide|local>
         <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
         <div  class="w3-rest">
@@ -172,7 +183,7 @@
     <div>
         <div class="w3-margin-top w3-small">
 
-            {#if !user}
+            {#if !$user}
                 <div on:click="{() => {newUser = !newUser; reset = false; focus()}}" class="underline-div w3-padding">
                     <span class="underline-span">
                         {newUser ? `Déjà un compte ?` : `Nouveau compte ?`} 
