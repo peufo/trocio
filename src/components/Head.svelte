@@ -1,6 +1,5 @@
 <script>
-	import { troc, user, userPromise } from './stores'
-	import { onMount } from 'svelte'
+	import { troc, user } from './stores'
 
 	import Menu from '@smui/menu'
 	import List, { Item, Graphic } from '@smui/list'
@@ -15,9 +14,6 @@
 	let dialogLogin
 	//let userMenu
 
-	onMount(() => {
-		$userPromise = user.authenticate()
-	})
 
 </script>
 

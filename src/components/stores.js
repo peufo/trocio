@@ -5,9 +5,25 @@ import qs from 'qs'
 export let user = userBuilder()
 export let userPromise = writable()
 export let troc = trocBuilder()
+export let trocPromise = writable()
 
+function loadUser(set) {
+	userPromise.set(authenticate(set))
+	return () => {}
+}
+async function authenticate(set) {
+	let res = await fetch('/users/me')
+	let json = await res.json()
+	if (res.ok && !json.error) {
+		set(json)
+		return json
+	}else{
+		set(null)
+		return Error()
+	}
+}
 function userBuilder() {
-	const { subscribe, set} = writable({})
+	const { subscribe, set} = writable({}, loadUser)
 	set(undefined)
 	return {
 		subscribe, set,
@@ -28,20 +44,10 @@ function userBuilder() {
 			if (res.ok && json.success){
 				set(null)
 			}
-		},
-		authenticate: async () => {
-			let res = await fetch('/users/me')
-			let json = await res.json()
-			if (res.ok && !json.error) {
-				set(json)
-			}else{
-				set(null)
-			}
 		}
 	}
 
 }
-
 
 function trocBuilder() {
 	const { subscribe, set } = writable({}, listenQuery)
@@ -70,13 +76,18 @@ function trocBuilder() {
 	}
 }
 
+
 function listenQuery(set) {
-	console.log('Listen Query')
-	loadTroc(set)
-	addEventListener('locationchange', () => loadTroc(set))
+	let lastTroc = undefined
+	let setPromise = () => {
+		
+		trocPromise.set(loadTroc(set))
+	}
+	setPromise()
+	addEventListener('locationchange', setPromise)
 	return () => {
 		console.log('Stop Listen Query')
-		removeEventListener('locationchange', () => loadTroc(set))
+		removeEventListener('locationchange', setPromise)
 	}
 }
 
