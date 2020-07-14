@@ -18,7 +18,7 @@
 	import Toggle 	from 'Toggle.svelte'
 	import Login 	from 'Login.svelte'
 	
-
+	$: console.log({$user})
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
 
@@ -219,7 +219,7 @@
 						<Button href="{`/admin/${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
 							<i class="fa fa-cog w3-large"></i>
 						</Button>
-					{:else if troc.isCashier}
+					{:else if !!$user && troc.isCashier}
 						<Button href="{`/cashier/${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
 							<i class="fa fa-cash-register w3-large"></i>
 						</Button>

@@ -2,9 +2,11 @@
 	import { slide } from 'svelte/transition'
 	import { onMount, onDestroy } from 'svelte'
 	import { flip } from 'svelte/animate'
+
 	import Dialog, {Title, Content} from '@smui/dialog'
 	import Button from '@smui/button'
 	import Menu from '@smui/menu'
+	import TextField from '@smui/textfield'
 	import List, { Item, Text } from '@smui/list'
 
 	import { trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
@@ -33,23 +35,6 @@
 	export let trocId = false
 
 	$: console.log($details)
-	//Fetched values
-	/*
-	export let $details.tarif = undefined
-	export let $details.traderPrefix = ''
-	export let $details.provided = []
-	export let $details.purchases = []
-	export let $details.payments = []
-	*/
-
-	//Computed values
-	/*
-	export let balance = 0
-	export let buySum = 0
-	export let paySum = 0
-	export let soldSum = 0
-	export let feeSum = 0
-	*/
 
 	let modifiedArticles = []			//Array for minimize PATCH request on AutoPatch.svelte
 	let clearModifiedArticles			//Timeout
@@ -65,6 +50,9 @@
 	let failFormatRaison = ''			//Message if importArticlesValue is unavailable
 
 	let tarifInfoDialog
+	let createArticleDialog
+	let newArticleName = ''
+	let newArticlePrice = ''
 
 	let onPrint = false
 
@@ -111,7 +99,6 @@
 		}else{
 			modifiedArticles[index] = art
 		}
-
 		clearTimeout(clearModifiedArticles)
 		clearModifiedArticles = setTimeout(() => modifiedArticles = [], 700)
 	}
@@ -124,19 +111,14 @@
 			return
 		}
 
-		let res = await fetch('/articles', getHeader({troc: trocId, provider: userId}))
+		let res = await fetch('/articles', getHeader({troc: trocId, provider: userId, name: newArticleName, price: newArticlePrice}))
 		let json = await res.json()
 		if (json.success) {
 			
 			$details.provided = [...$details.provided, json.message[0]]
-
-			//Get focus on last add article
-			setTimeout(() => {
-				let table = document.getElementById(`tableArticles${trocId}`)
-				//table.getElementsByClassName('lastInputName')[0].focus() //Focus on the last element
-				table.getElementsByClassName('w3-input')[0].focus()	
-			},100)
-
+			newArticleName = ''
+			newArticlePrice = ''
+			document.getElementById(`newArticleName`).focus()
 			return
 			
 		}else alert(json.message)
@@ -303,6 +285,27 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
 </svelte:head>
 
+<Dialog bind:this={createArticleDialog}>
+	<Title>Proposer un article</Title>
+	<Content>
+		<textarea id="newArticleName" cols="30" rows="2" placeholder="Désignation" bind:value={newArticleName}></textarea>
+		<input placeholder="Prix" style="width: 50%;" bind:value={newArticlePrice} on:input={formatPrice} />
+		<!--
+		TODO: TextField failed
+		<TextField on:input={console.log}/>
+		-->
+		{#await createArticlePromise}
+			<Button color="secondary" variant="outlined" class="w3-right">
+				<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
+			</Button>
+		{:then}
+			<Button variant="outlined" class="w3-right" on:click={() => createArticlePromise = createArticle()}>
+				Valider
+			</Button>
+		{/await}
+	</Content>
+</Dialog>
+
 {#await $detailsPromise}
 	<div style="position: relative; height: 500px;">
 		<Logo/>
@@ -406,11 +409,18 @@
 					</Button>
 				{:then}
 					{#if !importArticlesListOpen}
-						<Button
-						on:click="{() => createArticlePromise = createArticle()}"
-						variant="outlined">
-							Proposer un article
-						</Button>
+						<!--
+							<Button
+							on:click="{() => createArticlePromise = createArticle()}"
+							variant="outlined">
+								Proposer un article
+							</Button>
+						-->
+							<Button
+							on:click="{() => createArticleDialog.open()}"
+							variant="outlined">
+								Proposer un article
+							</Button>
 					{/if}
 				{/await}
 			
@@ -443,7 +453,7 @@
 			<div class="w3-row w3-margin-top" transition:slide|local>
 				<textarea class="w3-round" rows="10" 
 						bind:value={importArticlesValue} on:input={inputImportArticles}
-						placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${$details.traderPrefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${$details.traderPrefix ? `${$details.traderPrefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${$details.traderPrefix ? `${$details.traderPrefix}2 : ` : ''} Mon deuxième article : 15.35\n${$details.traderPrefix ? `${$details.traderPrefix}3 ; ` : ''} Mon troisième article ; 5,40\n...`}></textarea>
+						placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${$details.traderPrefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${$details.traderPrefix ? `${$details.traderPrefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${$details.traderPrefix ? `${$details.traderPrefix}2 : ` : ''} Mon deuxième article : 15.35\n${$details.traderPrefix ? `${$details.traderPrefix}3 ; ` : ''} Mon troisième article ; 5,40\n ...`}></textarea>
 			</div>
 		{/if}
 
@@ -598,6 +608,9 @@
 </div>
 
 
+
+<!---->
+
 {#if $details.tarif}
 	<Dialog bind:this={tarifInfoDialog}>
 		<Title>Vous êtes soumis au tarif <b>{$details.tarif.name}</b>: </Title>
@@ -624,6 +637,7 @@
 {/if}
 
 {/await}
+
 
 <style>
 

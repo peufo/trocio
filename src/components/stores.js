@@ -58,9 +58,9 @@ function userBuilder() {
 		logout: async () => {
 			let res = await fetch('/users/logout')
 			let json = await res.json()
-			if (res.ok && json.success){
+			//if (res.ok && json.success)
 				set(null)
-			}
+			
 		}
 	}
 
