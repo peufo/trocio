@@ -1,5 +1,6 @@
 <script>
-    import List, { Item, Graphic, Text } from '@smui/list'
+    import { slide } from 'svelte/transition'
+    import List, { Item, Graphic, Text} from '@smui/list'
     import MenuSurface, { Anchor } from '@smui/menu-surface'
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
@@ -11,6 +12,8 @@
     
     export let troc = {}
     export let nameDisplay = false
+
+    let scheduleOpen = false
 
     let scheduleMenu
     let scheduleAnchor
@@ -33,7 +36,7 @@
 <List>
 
     {#if troc.societyweb}
-        <a href={`https://${troc.societyweb}`} title="Accéder au site internet de l'organisateur">
+        <a href={`https://${troc.societyweb}`} target="_blank" title="Accéder au site internet de l'organisateur">
             <Item>
                 <Graphic class="fas fa-user-tie"></Graphic>
                 <Text>{troc.society}</Text>
@@ -46,54 +49,55 @@
         </Item>
     {/if}
 
-    <a href={`https://www.google.ch/maps/place/${convertDMS(troc.location)}`} title="Ouvrir dans Google Map">
+    <a href={`https://www.google.ch/maps/place/${convertDMS(troc.location)}`} target="_blank" title="Ouvrir dans Google Map">
         <Item>
             <Graphic class="fas fa-map-marker-alt"></Graphic>
             <Text>{troc.address}</Text>
         </Item>
     </a>
-    <div>
-        <Item on:click={openSchedule} title="Afficher l'horaire">
-            <Graphic class="far fa-calendar-alt"></Graphic>
-            <Text>{dayjs(troc.schedule && troc.schedule[0].open).fromNow()}</Text>
-        </Item>
-        <MenuSurface bind:this={scheduleMenu} anchorCorner="BOTTOM_LEFT">
-            <div style="marin: 1em;">
-                <List nonInteractive>
-                    {#if !!troc.schedule}
+        <div>
+            <Item on:click={() => scheduleOpen = !scheduleOpen} title="{scheduleOpen ? 'Cacher': 'Afficher'} l'horaire">
+                <Graphic class="far fa-calendar-alt"></Graphic>
+                <Text>
+                    {dayjs(troc.schedule && troc.schedule[0].open).fromNow()}
+                </Text>
+
+            </Item>
+            
+            {#if scheduleOpen}
+                <div class="schedule" transition:slide|local>
                     {#each troc.schedule as day}
-                        <Item>
-                            {dayjs(day.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
-                            {dayjs(day.close).format('H[h]mm')}
-                        </Item>
+                        
+                        {dayjs(day.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
+                        {dayjs(day.close).format('H[h]mm')}
+                        <br>
                     {/each}
-                    {/if}
-                </List>
-            </div>
-        </MenuSurface>
-    </div>
+                </div>
+            {/if}
+
+            <!--
+            <MenuSurface bind:this={scheduleMenu} anchorCorner="TOP_RIGHT">
+                <div style="marin: 1em;">
+                    <List nonInteractive>
+                        {#if !!troc.schedule}
+                        {#each troc.schedule as day}
+                            <Item>
+                                {dayjs(day.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
+                                {dayjs(day.close).format('H[h]mm')}
+                            </Item>
+                        {/each}
+                        {/if}
+                    </List>
+                </div>
+            </MenuSurface>
+            -->
+        </div>
+    
 </List>
 
-
-
-<!--
-<div class="w3-col m4 w3-center">
-    <div class="w3-small w3-padding">
-        <span class="w3-round">
-            <i class="far fa-clock"></i>
-            {dayjs(troc.schedule[0].open).fromNow()}
-        </span>
-
-        <ul class="w3-ul w3-tiny w3-margin-top">
-        {#each troc.schedule as day}
-            <li>
-                {dayjs(day.open).format('ddd. DD.MM.YY [d]e H[h]mm à ')}
-                {dayjs(day.close).format('H[h]mm')}
-            </li>
-        {/each}
-        </ul>
-        
-    </div>
-</div>
--->
-
+<style>
+    .schedule {
+        text-align: right;
+        padding: 1em;
+    }
+</style>
