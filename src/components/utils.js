@@ -157,12 +157,12 @@ export function convertDMS(lat, lng) {
 
 export async function getDetail(troc, user) {
 
-    let providedRequest  = this.fetch(`/articles?user_provider=${user}&troc=${troc}`).then(res => res.json())
-    let purchasesRequest = this.fetch(`/articles?user_buyer=${user}&troc=${troc}`).then(res => res.json())
-    let givbacksRequest  = this.fetch(`/articles?user_giveback.user=${user}&troc=${troc}`).then(res => res.json())
-    let paymentsRequest  = this.fetch(`/payments?user=${user}&troc=${troc}`).then(res => res.json())
-    let tarifRequest     = this.fetch(`/trocs/${troc}/tarif/${user}`,  {credentials: 'include'}).then(res => res.json())
-    let traderRequest    = this.fetch(`/trocs/${troc}/trader/${user}`, {credentials: 'include'}).then(res => res.json())
+    let providedRequest  = fetch(`/articles?user_provider=${user}&troc=${troc}`).then(res => res.json())
+    let purchasesRequest = fetch(`/articles?user_buyer=${user}&troc=${troc}`).then(res => res.json())
+    let givbacksRequest  = fetch(`/articles?user_giveback.user=${user}&troc=${troc}`).then(res => res.json())
+    let paymentsRequest  = fetch(`/payments?user=${user}&troc=${troc}`).then(res => res.json())
+    let tarifRequest     = fetch(`/trocs/${troc}/tarif/${user}`).then(res => res.json())
+    let traderRequest    = fetch(`/trocs/${troc}/trader/${user}`).then(res => res.json())
 
     let [
         {data: provided,  dataMatchCount: providedCount},
@@ -172,6 +172,32 @@ export async function getDetail(troc, user) {
         tarif,
         {prefix: traderPrefix}
     ] = await Promise.all([providedRequest, purchasesRequest, givbacksRequest, paymentsRequest, tarifRequest, traderRequest])
-    
-    return { trocId: troc, userId: user && user._id, provided, purchases, givebacks, payments, tarif, traderPrefix }
+
+	//Compute values
+	//TODO: Deplacer coté serveur
+	let buySum = purchases.length ? -purchases.map(a => a.price).reduce((acc, cur) => acc + cur) : 0
+	let paySum = payments.length  ?  payments.map(a => a.amount).reduce((acc, cur) => acc + cur) : 0
+	let soldSum = 0
+	let feeSum = 0
+	if (provided.length) {
+		let arr = provided.filter(a => a.sold).map(a => a.price)
+		soldSum = arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
+
+		arr = provided.filter(a => a.valided).map(a => a.fee)
+		feeSum = arr.length ? -arr.reduce((acc, cur) => acc + cur) : 0
+
+		arr = provided.filter(a => a.sold).map(a => a.margin)
+		feeSum -= arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
+	}
+	let balance = Math.round((buySum + paySum + soldSum + feeSum) * 100) / 100
+
+	return {
+		provided, providedCount,
+		purchases, purchasesCount,
+		givebacks, givebacksCount,
+		payments,
+		tarif,
+		traderPrefix,
+		buySum, paySum, soldSum, feeSum, balance
+	 }
 }

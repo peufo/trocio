@@ -215,7 +215,7 @@
 						Voir mon activité
 					</Button>
 
-					{#if troc.isAdmin}
+					{#if !!$user && troc.isAdmin}
 						<Button href="{`/admin/${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
 							<i class="fa fa-cog w3-large"></i>
 						</Button>

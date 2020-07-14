@@ -7,10 +7,12 @@
 	import Menu from '@smui/menu'
 	import List, { Item, Text } from '@smui/list'
 
+	import { trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
 	//import { getHeader, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils'
 	import { getHeader, getFee, getMargin, sortByUpdatedAt, formatPrice } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
+	import Logo from './Logo.svelte'
 
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
@@ -24,24 +26,30 @@
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste (Paiement)
     let LIMIT_LIST_C = LIMIT_LIST_INIT_SOLD //Nombre d'élément afficher pour la seconde liste (Vente)
 
+	
+
 	//Requested values
 	export let userId = false
 	export let trocId = false
 
+	$: console.log($details)
 	//Fetched values
-	export let tarif = undefined
-	export let traderPrefix = ''
-	export let provided = []
-	export let purchases = []
-	export let payments = []
-
+	/*
+	export let $details.tarif = undefined
+	export let $details.traderPrefix = ''
+	export let $details.provided = []
+	export let $details.purchases = []
+	export let $details.payments = []
+	*/
 
 	//Computed values
+	/*
 	export let balance = 0
 	export let buySum = 0
 	export let paySum = 0
 	export let soldSum = 0
 	export let feeSum = 0
+	*/
 
 	let modifiedArticles = []			//Array for minimize PATCH request on AutoPatch.svelte
 	let clearModifiedArticles			//Timeout
@@ -83,38 +91,6 @@
 		return out
 	}
 
-	$: {//Calcul of sold
-		
-
-		//Purchases
-		if (purchases.length) buySum = -purchases.map(a => a.price).reduce((acc, cur) => acc + cur)
-		else buySum = 0
-
-		//Payments
-		if (payments.length) paySum = payments.map(a => a.amount).reduce((acc, cur) => acc + cur)
-		else paySum = 0
-
-
-		//Provide
-		//TODO: Deplacer coté serveur
-		if (userId && provided.length) {
-			let arr = provided.filter(a => a.sold).map(a => a.price)
-			soldSum = arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
-
-			arr = provided.filter(a => a.valided).map(a => a.fee)
-			feeSum = arr.length ? -arr.reduce((acc, cur) => acc + cur) : 0
-
-			arr = provided.filter(a => a.sold).map(a => a.margin)
-			feeSum -= arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
-		}else{
-			soldSum = 0
-			feeSum = 0
-		}
-
-		//balance
-		balance = Math.round((buySum + paySum + soldSum + feeSum) * 100) / 100
-
-	}
 
 	//For AutoPatch
 	function addModifiedArticle(e, art) {
@@ -124,9 +100,9 @@
 		//update price value and compute fee and margin
 		if (e.target.classList.contains('price-input') && !isNaN(e.target.value)) {
 			art.price = e.target.value
-			index = provided.map(a => a._id).indexOf(art._id)
-			provided[index].fee = getFee(art, tarif)
-			provided[index].margin = getMargin(art, tarif)
+			index = $details.provided.map(a => a._id).indexOf(art._id)
+			$details.provided[index].fee = getFee(art, $details.tarif)
+			$details.provided[index].margin = getMargin(art, $details.tarif)
 		}
 
 		index = modifiedArticles.map(a => a._id).indexOf(art._id)
@@ -142,7 +118,7 @@
 
 	async function createArticle() {
 
-		if (tarif && provided.length + 1 > tarif.maxarticles) {
+		if ($details.tarif && $details.provided.length + 1 > $details.tarif.maxarticles) {
 			alert(`Désolé, vous avez proposé trop d'article`)
 			tarifInfoDialog.open()
 			return
@@ -152,7 +128,7 @@
 		let json = await res.json()
 		if (json.success) {
 			
-			provided = [...provided, json.message[0]]
+			$details.provided = [...$details.provided, json.message[0]]
 
 			//Get focus on last add article
 			setTimeout(() => {
@@ -169,20 +145,20 @@
 
 	async function createImportArticles() {
 
-		if (tarif && provided.length + importArticles.length > tarif.maxarticles) {
+		if ($details.tarif && $details.provided.length + importArticles.length > $details.tarif.maxarticles) {
 			alert(`Désolé, vous avez proposé trop d'article`)
 			tarifInfoDialog.open()
 			return
 		}
 
 		//TODO: Calcul fee... Bad idea on frontside ???
-		importArticles.forEach(art => art.fee = getFee(art, tarif))
+		importArticles.forEach(art => art.fee = getFee(art, $details.tarif))
 
 		let res = await fetch('/articles', getHeader(importArticles))
 		let json = await res.json()
 		if (json.success) {
 			
-			provided = [...provided, ...json.message]
+			$details.provided = [...$details.provided, ...json.message]
 			//Hide importe articles input
 			importArticlesListOpen = false
 			importArticlesValue = ''
@@ -198,10 +174,10 @@
 		let res = await fetch(`/articles/${artId}`, getHeader({}, 'DELETE'))
 		let json = await res.json()
 		if (json.success) {
-			let index = provided.map(art => art._id).indexOf(artId)
+			let index = $details.provided.map(art => art._id).indexOf(artId)
 			if (index == -1) return alert('Index not found')
-			provided.splice(index, 1)
-			provided = provided
+			$details.provided.splice(index, 1)
+			$details.provided = $details.provided
 			return
 		}else alert(json.message)
 	}
@@ -225,7 +201,7 @@
 			let cells = []
 			let price = 0
 
-			if (!traderPrefix) {// utilsateur simple
+			if (!$details.traderPrefix) {// utilsateur simple
 				lines.forEach((line, i) => {
 					cells = line.split(/[\t:;]/)
 					if (cells.length >= 2) {
@@ -252,8 +228,8 @@
 							failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
 						}
 						
-						if (isNaN(cells[0].replace(traderPrefix, '')) || cells[0].indexOf('.') != -1) failFormatRaison = `Vous devez mettre un nombre après le préfixe !`
-						if (cells[0].trim()[0] != traderPrefix) failFormatRaison = `Vous devez utilier un "${traderPrefix}" comme préfixe !`
+						if (isNaN(cells[0].replace($details.traderPrefix, '')) || cells[0].indexOf('.') != -1) failFormatRaison = `Vous devez mettre un nombre après le préfixe !`
+						if (cells[0].trim()[0] != $details.traderPrefix) failFormatRaison = `Vous devez utilier un "${$details.traderPrefix}" comme préfixe !`
 
 						importArticles = [...importArticles, {
 							ref: cells[0].trim(),
@@ -276,7 +252,7 @@
 
 	function clickDownladCSV() {
 
-		let list = provided.map(p => {
+		let list = $details.provided.map(p => {
 			return {
 				ref: p.ref,
 				name: p.name,
@@ -312,9 +288,9 @@
 	}
 
 	function print() {
-		LIMIT_LIST_A = purchases.length
-		LIMIT_LIST_B = payments.length
-		LIMIT_LIST_C = provided.length
+		LIMIT_LIST_A = $details.purchases.length
+		LIMIT_LIST_B = $details.payments.length
+		LIMIT_LIST_C = $details.provided.length
 		onPrint = true
 		//TODO: repair print
 		//setTimeout(() => goPrint('resume-container'), 300)
@@ -327,6 +303,11 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
 </svelte:head>
 
+{#await $detailsPromise}
+	<div style="position: relative; height: 500px;">
+		<Logo/>
+	</div>
+{:then}
 <div id="resume-container">
 
 	<div on:click={print} class="w3-opacity w3-small underline-div" class:w3-hide={onPrint} style="position: absolute;">
@@ -336,7 +317,7 @@
 
 	<div class="w3-center w3-xlarge">
 		<span class="w3-opacity">Solde actuel </span>
-		<span id="balance">{balance.toFixed(2)}</span>
+		<span id="balance">{$details.balance.toFixed(2)}</span>
 	</div>
 
 	<br>
@@ -345,20 +326,20 @@
 
 		<div class="w3-col s6">
 			<div class="w3-margin-right">
-				<span class="w3-right w3-large">{buySum.toFixed(2)}</span>
+				<span class="w3-right w3-large">{$details.buySum.toFixed(2)}</span>
 				<h4>Achats</h4>
 
-				{#each purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
+				{#each $details.purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
 					<Article article={article} timeKey={'soldTime'}/>
 				{:else}
 					<span class="w3-opacity">Pas d'achat</span>
 				{/each}
 
 				<!-- Bouton pour prolongé la liste -->
-				{#if purchases.length > LIMIT_LIST_A}
+				{#if $details.purchases.length > LIMIT_LIST_A}
 					<div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
 						<span class="underline-span w3-opacity">
-							Afficher plus de résultat ({purchases.length - LIMIT_LIST_A})
+							Afficher plus de résultat ({$details.purchases.length - LIMIT_LIST_A})
 						</span>
 					</div>
 				{/if}
@@ -368,10 +349,10 @@
 
 		<div class="w3-col s6">
 			<div class="w3-margin-left">
-				<span class="w3-right w3-large">{paySum.toFixed(2)}</span>
+				<span class="w3-right w3-large">{$details.paySum.toFixed(2)}</span>
 				<h4>Paiement</h4>
 
-				{#each payments.slice(0, LIMIT_LIST_B) as payment (payment._id)}
+				{#each $details.payments.slice(0, LIMIT_LIST_B) as payment (payment._id)}
 					<div class="list-element valided w3-padding" in:slide|local animate:flip="{{duration: 200}}">
 						{dayjs(payment.createdAt).fromNow()}
 						<br>
@@ -383,10 +364,10 @@
 				{/each}
 
 				<!-- Bouton pour prolongé la liste -->
-				{#if payments.length > LIMIT_LIST_B}
+				{#if $details.payments.length > LIMIT_LIST_B}
 					<div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
 						<span class="underline-span w3-opacity">
-							Afficher plus de résultat ({payments.length - LIMIT_LIST_B})
+							Afficher plus de résultat ({$details.payments.length - LIMIT_LIST_B})
 						</span>
 					</div>
 				{/if}
@@ -399,18 +380,18 @@
 	<br>
 	<br>
 
-	{#if userId}
+	
 	<div class="w3-row">
 
 		<!-- Titre, Boutons propositions et somme -->
 		<div class="w3-row">
-			<span class="w3-right w3-large">{(soldSum + feeSum).toFixed(2)}</span>
+			<span class="w3-right w3-large">{($details.soldSum + $details.feeSum).toFixed(2)}</span>
 			<span class="w3-large">Ventes</span>
 
 			<!-- Provide button -->
 			<span class:w3-hide={onPrint}>
 
-				{#if provided.length}
+				{#if $details.provided.length}
 					<Button
 					on:click={clickDownladCSV}
 					color="secondary">
@@ -462,11 +443,11 @@
 			<div class="w3-row w3-margin-top" transition:slide|local>
 				<textarea class="w3-round" rows="10" 
 						bind:value={importArticlesValue} on:input={inputImportArticles}
-						placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${traderPrefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${traderPrefix ? `${traderPrefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${traderPrefix ? `${traderPrefix}2 : ` : ''} Mon deuxième article : 15.35\n${traderPrefix ? `${traderPrefix}3 ; ` : ''} Mon troisième article ; 5,40\n...`}></textarea>
+						placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${$details.traderPrefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${$details.traderPrefix ? `${$details.traderPrefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${$details.traderPrefix ? `${$details.traderPrefix}2 : ` : ''} Mon deuxième article : 15.35\n${$details.traderPrefix ? `${$details.traderPrefix}3 ; ` : ''} Mon troisième article ; 5,40\n...`}></textarea>
 			</div>
 		{/if}
 
-		{#if provided.length}
+		{#if $details.provided.length}
 		<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />	
 		<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered w3-margin-top">
 
@@ -500,12 +481,12 @@
 				
 				<th>
 					<span>Prix</span><br>
-					<span class="w3-small sold">{soldSum.toFixed(2)}</span>
+					<span class="w3-small sold">{$details.soldSum.toFixed(2)}</span>
 				</th>
 
 				<th class="clickable" on:click="{() => tarifInfoDialog.open()}">
 					<span>Frais</span><br>
-					<span class="w3-small fee">{-feeSum.toFixed(2)}</span>
+					<span class="w3-small fee">{-$details.feeSum.toFixed(2)}</span>
 				</th>
 
 				<th></th><!--remove-->
@@ -513,7 +494,7 @@
 			</tr>
 
 			<!-- Corp -->
-			{#each provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i}
+			{#each $details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i}
 
 				<tr>
 					
@@ -535,7 +516,7 @@
 							<textarea
 							rows="3" style="resize: none;"
 							on:input="{e =>  addModifiedArticle(e, article)}"
-							class:lastInputName="{i == provided.length-1}"  
+							class:lastInputName="{i == $details.provided.length-1}"  
 							bind:value={article.name}
 							type="text" 
 							class="w3-input unvalided" 
@@ -601,10 +582,10 @@
 
 		<!-- Bouton pour prolongé la liste -->
 		<!-- TODO: reparer
-			{#if provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length > LIMIT_LIST_C}
+			{#if $details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length > LIMIT_LIST_C}
 				<div on:click="{() => LIMIT_LIST_C += 50}" class="underline-div w3-center">
 					<span class="underline-span w3-opacity">
-						Afficher plus de résultat ({provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length - LIMIT_LIST_C})
+						Afficher plus de résultat ({$details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length - LIMIT_LIST_C})
 					</span>
 				</div>
 			{/if}
@@ -612,38 +593,37 @@
 		-->
 
 		<br>
-
-	
-		
 	</div>
-	{/if}
-
+	
 </div>
 
-{#if tarif}
-<Dialog bind:this={tarifInfoDialog}>
-	<Title>Vous êtes soumis au tarif <b>{tarif.name}</b>: </Title>
-	<Content>
-		<h5>Nombre maximum d'article proposés</h5>
-		{tarif.maxarticles} <i class="fas fa-cube"></i>
-		<br><br>
 
-		<h5>Frais de traitement
-			<span class="w3-small w3-opacity">Appliqué au dépot de l'article</span>
-		</h5>
-		{#each tarif.fee as fee}
-			A partir de {fee.price.toFixed(2)} <i class="fas fa-arrow-right"></i> {fee.value.toFixed(2)} <br>
-		{/each}
-		
-		<br>
-		<h5>Marge
-			<span class="w3-small w3-opacity">Appliquée à la vente de l'article</span>
-		</h5>
-		{tarif.margin * 100} <i class="fas fa-percent"></i>
+{#if $details.tarif}
+	<Dialog bind:this={tarifInfoDialog}>
+		<Title>Vous êtes soumis au tarif <b>{$details.tarif.name}</b>: </Title>
+		<Content>
+			<h5>Nombre maximum d'article proposés</h5>
+			{$details.tarif.maxarticles} <i class="fas fa-cube"></i>
+			<br><br>
 
-	</Content>
-</Dialog>
+			<h5>Frais de traitement
+				<span class="w3-small w3-opacity">Appliqué au dépot de l'article</span>
+			</h5>
+			{#each $details.tarif.fee as fee}
+				A partir de {fee.price.toFixed(2)} <i class="fas fa-arrow-right"></i> {fee.value.toFixed(2)} <br>
+			{/each}
+			
+			<br>
+			<h5>Marge
+				<span class="w3-small w3-opacity">Appliquée à la vente de l'article</span>
+			</h5>
+			{$details.tarif.margin * 100} <i class="fas fa-percent"></i>
+
+		</Content>
+	</Dialog>
 {/if}
+
+{/await}
 
 <style>
 

@@ -26,7 +26,6 @@
     //Juste pour ne pas attendre sur les détails
     async function updateTrocByQuery() {
         let { troc } = qs.parse(location.search.substr(1))
-        console.log(troc)
         if ($user === undefined) await $userPromise
         if (troc && $user) {
             let index = $user.trocs.map(t => t._id).indexOf(troc)

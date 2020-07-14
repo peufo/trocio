@@ -8,11 +8,11 @@
 <script>
 
     import Button from '@smui/button'
-    export let user
+    import { user } from "stores.js";
 
 </script>
 
-<img class="participeImg" class:w3-hide={!!user} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
+<img class="participeImg" class:w3-hide={!!$user} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
 
 <div class="content">
     

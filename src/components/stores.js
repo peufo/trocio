@@ -1,27 +1,44 @@
 import { writable } from 'svelte/store'
-import { getHeader } from './utils'
+import { getHeader, getDetail, detailEmpty } from './utils'
 import qs from 'qs'
 
 export let user = userBuilder()
 export let userPromise = writable()
 export let troc = trocBuilder()
 export let trocPromise = writable()
+export let trocDetails = trocDetailsBuilder()
+export let trocDetailsPromise = writable()
 
-function loadUser(set) {
-	userPromise.set(authenticate(set))
-	return () => {}
-}
-async function authenticate(set) {
-	let res = await fetch('/users/me')
-	let json = await res.json()
-	if (res.ok && !json.error) {
-		set(json)
-		return json
-	}else{
-		set(null)
-		return Error()
+let userPromiseSubscribed
+userPromise.subscribe(v => userPromiseSubscribed = v)
+
+// ------------------------------------------------------
+// 							UTIL
+// ------------------------------------------------------
+function buildListenQuery(query, promise, load, set) {
+	let lastQuery = undefined
+	let newQuery = undefined
+	let setPromise = () => {
+		newQuery = qs.parse(location.search.substr(1))[query]
+		if (newQuery != lastQuery) promise.set(load(set, newQuery))
+		lastQuery = newQuery
+	}
+	return set => {
+		setPromise()
+		console.log(`Start Listen Query ${query}`)
+		addEventListener('locationchange', setPromise)
+		return () => {
+			console.log(`Stop Listen Query ${query}`)
+			removeEventListener('locationchange', setPromise)
+		}
 	}
 }
+
+
+// ------------------------------------------------------
+// 							USER
+// ------------------------------------------------------
+
 function userBuilder() {
 	const { subscribe, set} = writable({}, loadUser)
 	set(undefined)
@@ -48,6 +65,27 @@ function userBuilder() {
 	}
 
 }
+
+function loadUser(set) {
+	userPromise.set(authenticate(set))
+	return () => {}
+}
+
+async function authenticate(set) {
+	let res = await fetch('/users/me')
+	let json = await res.json()
+	if (res.ok && !json.error) {
+		set(json)
+		return json
+	}else{
+		set(null)
+		return Error()
+	}
+}
+
+// ------------------------------------------------------
+// 							TROC
+// ------------------------------------------------------
 
 function trocBuilder() {
 	const { subscribe, set } = writable({}, listenQuery)
@@ -76,11 +114,8 @@ function trocBuilder() {
 	}
 }
 
-
 function listenQuery(set) {
-	let lastTroc = undefined
 	let setPromise = () => {
-		
 		trocPromise.set(loadTroc(set))
 	}
 	setPromise()
@@ -91,24 +126,41 @@ function listenQuery(set) {
 	}
 }
 
-async function loadTroc(set) {
-	console.log('loadTroc')
-	let { troc } = qs.parse(location.search.substr(1))
-	if (troc) {
-		let res = await fetch(`/trocs/${troc}`)
-		let json = await res.json()	
-		if (res.ok) {
-			set(json)
-		}else{
-			switch (res.status) {
-				case 401:
-					set({failed: true, reason: 'Login required'})
-					break;
-				default:
-					set({failed: true, reason: 'Not found'})
-					break;
-			}
-		}	
+async function loadTroc(set, troc) {
+	if(!troc) return set(null)
+	let res = await fetch(`/trocs/${troc}`)
+	let json = await res.json()	
+	if (res.ok) {
+		set(json)
+	}else{
+		switch (res.status) {
+			case 401:
+				set({failed: true, reason: 'Login required'})
+				break;
+			default:
+				set({failed: true, reason: 'Not found'})
+				break;
+		}
 	}
-	
+}
+
+// ------------------------------------------------------
+// 				       TROC DETAILS
+// ------------------------------------------------------
+function trocDetailsBuilder() {
+	const { subscribe, set } = writable({}, set => (buildListenQuery('troc', trocDetailsPromise, loadTrocDetails, set))())
+	return { 
+		subscribe, set,
+		
+	}
+}
+
+async function loadTrocDetails(set, troc) {
+	if(!troc) return set(null)
+	console.log('LOAD DETAILS ', troc)
+	//TODO: PAGE condition
+	let user = await userPromiseSubscribed
+	let details = await getDetail(troc, user._id)
+	set(details)
+	return 
 }
