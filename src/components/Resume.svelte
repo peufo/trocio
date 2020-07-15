@@ -15,6 +15,7 @@
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
 	import Logo from './Logo.svelte'
+	import Notify from './Notify.svelte'
 
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
@@ -58,6 +59,8 @@
 
 	let statutFilterMenu
 	let statutFilter = -1
+
+	let notify //Bind to notify component
 
 	//TODO: à transformer en function de Mappage ? creer une classe a partir de la date et utilisé :first-child ?
  	//Filtre et ajoute time
@@ -116,10 +119,13 @@
 		if (json.success) {
 			
 			$details.provided = [...$details.provided, json.message[0]]
+			//Reset le formulair mais reste descue 
 			newArticleName = ''
 			newArticlePrice = ''
 			document.getElementById(`newArticleName`).focus()
-			alert('Article ajouté !')
+
+			notify.notify('Article ajouté', 'fas fa-check')
+			
 			return
 			
 		}else alert(json.message)
@@ -285,6 +291,8 @@
 <svelte:head>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
 </svelte:head>
+
+<Notify bind:this={notify}/>
 
 <Dialog bind:this={createArticleDialog}>
 	<Title>Proposer un article</Title>
@@ -608,9 +616,6 @@
 	
 </div>
 
-
-
-<!---->
 
 {#if $details.tarif}
 	<Dialog bind:this={tarifInfoDialog}>
