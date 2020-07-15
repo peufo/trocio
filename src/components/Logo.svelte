@@ -7,13 +7,14 @@
     let showPaths = false
     let showPathsCenter = false
     let showPolygons = false
+    let showPolygonsInt = false
     let interval
 
     function rotate(node, {duration, delay}) {
         return {
             duration, delay,
             css: t => {
-                return `transform: rotate(${360 + (t-0.5) * 240}deg);`
+                return `transform: rotate(${(t-0.5) * 240}deg);`
             }
         }
     }
@@ -29,6 +30,8 @@
         setTimeout(() => showPathsCenter    = false,    1000)
         setTimeout(() => showPaths          = false,    1000)
         setTimeout(() => showPolygons       = false,    1400)
+        setTimeout(() => showPolygonsInt    = true,     1400)
+        setTimeout(() => showPolygonsInt    = false,    1400)
         setTimeout(() => show               = false,    2400)
 
     }
@@ -60,6 +63,17 @@
                 <path d="M200,100 L150,13.4 L50,13.4"   fill="white" stroke="rgb(100, 100, 100)" in:draw={{duration: 1000, easing: quadInOut}} out:fade/>
                 <path d="M50,13.4 L0,100 L50,186.6"     fill="white" stroke="rgb(100, 100, 100)" in:draw={{duration: 1000, easing: quadInOut}} out:fade/>
                 <path d="M50,186.6 L150,186.6 L200,100" fill="white" stroke="rgb(100, 100, 100)" in:draw={{duration: 1000, easing: quadInOut}} out:fade/>
+            {/if}
+
+            {#if showPolygonsInt}
+                <polygon points="100,100 0,100 50,186.6 150,186.6 "  fill="rgb(240, 240, 240)" out:fly={{x: -12.5, y: 21.65, duration: 1000, easing: quadInOut}}/>
+                <polygon points="100,100 150,13.4 200,100 150,186.6" fill="rgb(216, 216, 216)" out:fly={{x: 25, y: 0,    duration: 1000, easing: quadInOut}}/>
+                <polygon points="100,100 150,13.4 50,13.4 0,100"     fill="rgb(168, 168, 168)" out:fly={{x: -12.5, y: -21.65,  duration: 1000, easing: quadInOut}}/>
+            
+                <polygon points="100,100 200,100 150,13.4 50,13.4"   fill="white" out:fly={{x: 25, y: -43.3, duration: 1000, easing: quadInOut, opacity: .8}}/>
+                <polygon points="100,100 50,13.4 0,100 50,186.6"     fill="white" out:fly={{x: -50, y: 0,    duration: 1000, easing: quadInOut, opacity: .8}}/>
+                <polygon points="100,100 50,186.6 150,186.6 200,100" fill="white" out:fly={{x: 25, y: 43.3,  duration: 1000, easing: quadInOut, opacity: .8}}/>
+            
             {/if}
 
             {#if showPolygons}

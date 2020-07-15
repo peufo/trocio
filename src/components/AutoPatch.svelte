@@ -10,6 +10,7 @@
 	export let path = ''
 	export let changeFlag = false
 	export let trocRefresh = false
+	export let notifyContainer
 
 	const WAIT_FOR_PATCH = 600
 	let waiting
@@ -24,6 +25,10 @@
 	onMount(() => {
 		document.getElementById(source).addEventListener('input', testInput)
 		document.getElementById(source).addEventListener('click', testClick)
+		
+		if (!notifyContainer) notifyContainer = document.getElementsByTagName('body')[0]
+		let notify = document.getElementById('notify')
+		notifyContainer.appendChild(notify)
 	})
 	
 	let firstChangeFlag = true
@@ -80,37 +85,43 @@
 
 </script>
 
+<div id="notify">
+	{#if onAction}
+		<div class="notify-card w3-card w3-padding w3-round" style="min-width: 190px;" transition:fly={{x: -100}}>
+			{#if !!invalid}
+				<i class="fas fa-exclamation-triangle"></i>
+				{invalid}
+			{:else if onModify}
+				<i class="far fa-edit"></i>
+				Modification...	
+			{:else}
+				{#await patched}
+					<i class="fas fa-sync-alt w3-spin"></i>
+					&nbsp;Sauvegarde...
+				{:then}
+					<i class="fas fa-check"></i>
+					&nbsp;Sauvegardé
+				{:catch error}
+					<i class="fas fa-bug"></i>
+					{error}
+				{/await}
+				
+			{/if}
 
-{#if onAction}
-	<div class="w3-card w3-padding w3-round" transition:fly={{x: -100}}>
-		{#if !!invalid}
-			<i class="fas fa-exclamation-triangle"></i>
-			{invalid}
-		{:else if onModify}
-			<i class="far fa-edit"></i>
-			Modification...	
-		{:else}
-			{#await patched}
-				<i class="fas fa-sync-alt w3-spin"></i>
-				Sauvegarde...
-			{:then}
-				<i class="fas fa-check"></i>
-				Sauvegardé
-			{:catch error}
-				<i class="fas fa-bug"></i>
-				{error}
-			{/await}
-			
-		{/if}
-
-	</div>
-{/if}
+		</div>
+	{/if}
+</div>
 
 <style>
-	div {
-		position: absolute;
-		background: white;
-		left: 10px;
-		top: 10px;
+	#notify {
+		position: fixed;
+		bottom: 10px;
+    	left: 10px;
 	}
+
+	.notify-card {
+		background: white;
+		text-transform: uppercase;
+	}
+
 </style>

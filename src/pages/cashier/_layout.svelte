@@ -32,10 +32,12 @@
 </script>
 -->
 <script>
-	import { user } from '../../components/stores'
 	
+	import qs from 'qs'
+	import { goto } from '@sveltech/routify'
 	import { onMount, tick } from 'svelte'
 	import { fade } from 'svelte/transition'
+
 	import Switch from '@smui/switch'
 	import FormField from '@smui/form-field'
 	import Button from '@smui/button'
@@ -44,10 +46,14 @@
 	import TabBar from '@smui/tab-bar'
 	import Tab, {Icon, Label} from '@smui/tab'
 
-	import { getHeader } from '../../components/utils'
-	import SearchUser from '../../components/SearchUser.svelte'
-	import Login from '../../components/Login.svelte'
-	import Provide from '../../components/Provide.svelte'
+	import { user, trocDetails } from 'stores.js'
+	import { getHeader } from 'utils.js'
+	import SearchUser from 'SearchUser.svelte'
+	import Login from 'Login.svelte'
+	import Provide from 'Provide.svelte'
+	
+	$: console.log($trocDetails)
+
 	//import Buy from './Buy.svelte'
 	//import Recover from './Recover.svelte'
 	//import Giveback from './Giveback.svelte'
@@ -117,10 +123,10 @@
 	})
 
 	async function updateClientQuery() {
-		//let query = queryString.parse(location.search)
+		let query = qs.parse(location.search.slice(1))
 		if (client._id) query.client = client._id
 		else delete query.client
-		await goto(`${location.pathname}?${queryString.stringify(query)}`, {replaceState: true})
+		await $goto(location.pathname, query)
 	}
     
 	function clientSelected(e){

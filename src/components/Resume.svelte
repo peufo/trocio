@@ -119,6 +119,7 @@
 			newArticleName = ''
 			newArticlePrice = ''
 			document.getElementById(`newArticleName`).focus()
+			alert('Article ajouté !')
 			return
 			
 		}else alert(json.message)
@@ -288,7 +289,7 @@
 <Dialog bind:this={createArticleDialog}>
 	<Title>Proposer un article</Title>
 	<Content>
-		<textarea id="newArticleName" cols="30" rows="2" placeholder="Désignation" bind:value={newArticleName}></textarea>
+		<textarea id="newArticleName" cols="30" rows="3" placeholder="Désignation" bind:value={newArticleName}></textarea>
 		<input placeholder="Prix" style="width: 50%;" bind:value={newArticlePrice} on:input={formatPrice} />
 		<!--
 		TODO: TextField failed
@@ -640,7 +641,6 @@
 
 
 <style>
-
 	#resume-container {
 		position: relative;
 	}

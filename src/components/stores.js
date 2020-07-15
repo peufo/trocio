@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store'
 import { getHeader, getDetail, detailEmpty } from './utils'
 import qs from 'qs'
+import { layout } from '@sveltech/routify'
 
 export let user = userBuilder()
 export let userPromise = writable()
@@ -12,15 +13,18 @@ export let trocDetailsPromise = writable()
 let userPromiseSubscribed
 userPromise.subscribe(v => userPromiseSubscribed = v)
 
+
 // ------------------------------------------------------
 // 							UTIL
 // ------------------------------------------------------
 function buildListenQuery(query, promise, load, set) {
+	query = query.split(' ')
 	let lastQuery = undefined
 	let newQuery = undefined
 	let setPromise = () => {
-		newQuery = qs.parse(location.search.substr(1))[query]
-		if (newQuery != lastQuery) promise.set(load(set, newQuery))
+		let parsed = qs.parse(location.search.substr(1))
+		newQuery = query.map(q => parsed[q]).join(' ')
+		if (newQuery != lastQuery) promise.set(load(set, parsed))
 		lastQuery = newQuery
 	}
 	return set => {
@@ -148,17 +152,18 @@ async function loadTroc(set, troc) {
 // 				       TROC DETAILS
 // ------------------------------------------------------
 function trocDetailsBuilder() {
-	const { subscribe, set } = writable({}, set => (buildListenQuery('troc', trocDetailsPromise, loadTrocDetails, set))())
+	const { subscribe, set } = writable({}, set => (buildListenQuery('troc client', trocDetailsPromise, loadTrocDetails, set))())
 	return { 
 		subscribe, set,
-		
 	}
 }
 
-async function loadTrocDetails(set, troc) {
+async function loadTrocDetails(set, {troc, client}) {
 	if(!troc) return set(null)
 	console.log('LOAD DETAILS ', troc)
 	//TODO: PAGE condition
+	// NON Il faut alimenté le composant Resume
+
 	let user = await userPromiseSubscribed
 	let details = await getDetail(troc, user._id)
 	set(details)
