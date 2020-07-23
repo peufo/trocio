@@ -27,7 +27,8 @@ function login(req, res, next) {
                     delete req.session.user.password //TODO: not work ?
 
                     //La redirection se fait côté client
-                    res.redirect('/users/me')
+                    //res.redirect('/users/me')
+                    res.json({message: 'login successful'})
                 }else{
                     var reasons = User.failedLogin
                     switch(reason){

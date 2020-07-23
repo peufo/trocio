@@ -18,7 +18,6 @@
 	import Toggle 	from 'Toggle.svelte'
 	import Login 	from 'Login.svelte'
 	
-	$: console.log({$user})
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
 
@@ -234,7 +233,6 @@
 			<br>
 			<span class="w3-large">
 				Aucun troc ne correspond à la recherche
-				<i class="far fa-tired"></i>
 			</span>
 		{/each}
 	

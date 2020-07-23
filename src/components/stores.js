@@ -55,8 +55,9 @@ function userBuilder() {
 		login: async (mail, password, cb) => {
 			let res = await fetch('/users/login', getHeader({mail, password}))
 			let json = await res.json()
+			console.log('login', {res, json})
 			if (res.ok && !json.error) {
-				set(json)
+				loadUser(set)
 				cb()
 			}else{
 				set(null)
@@ -67,8 +68,7 @@ function userBuilder() {
 			let res = await fetch('/users/logout')
 			let json = await res.json()
 			//if (res.ok && json.success)
-				set(null)
-			
+			set(null)
 		}
 	}
 
@@ -82,7 +82,7 @@ function loadUser(set) {
 async function authenticate(set) {
 	let res = await fetch('/users/me')
 	let json = await res.json()
-	console.log({res, json})
+	console.log('authenticate', {res, json})
 	if (res.ok && !json.error) {
 		set(json)
 		return json
