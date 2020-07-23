@@ -2,14 +2,19 @@ var Article = require('../models/article')
 const ObjectId 	= require('mongoose').Types.ObjectId
 
 function searchArticle(req, res, next) {
-	let { troc, limit, skip, filter_statut, provider, providernot } = req.query
+	let { troc, limit, skip, filter_statut, provider, providernot, include_without_name } = req.query
 
 	let match = {}
 	let sort = {}
-	
+	const QUERY_SEARCH = 'search_'
+	const QUERY_OR_SEARCH = 'or_search_'
+	const QUERY_SORT = 'sort_'
+	const QUERY_USER = 'user_'
+
     //addMatch
-    match.$or = []
-    match.$and = [{name : {$ne: ""}}] //not article without name
+	match.$or = []
+	if (include_without_name) match.$and = []
+    else match.$and = [{name : {$ne: ""}}] //not article without name
     if (troc) match.$and.push({troc: ObjectId(troc)})
 
     //Filtre pour un groupe de founisseur
@@ -21,6 +26,7 @@ function searchArticle(req, res, next) {
 	if (!skip) skip = 0
 	
 	//Define limit
+	//TODO: Créer un échec du calcul du solde chez le client
 	limit = Number(limit)
 	if (!limit) limit = 40
     else if(limit > 100) limit = 100
@@ -46,24 +52,26 @@ function searchArticle(req, res, next) {
 			match.$and.push({'recover': {$exists: true}})
 			break
 	}
-    
+	
+	
+	//Dinamic query
 	for (key in req.query) {
         
         //add matchSearch
-		if (key.indexOf('search_') === 0) {
-            match.$and.push({[key.replace('search_', '')]: new RegExp(req.query[key], 'i')})
+		if (key.indexOf(QUERY_SEARCH) === 0) {
+            match.$and.push({[key.replace(QUERY_SEARCH, '')]: new RegExp(req.query[key], 'i')})
             
         //add matchOrSearch
-        }else if (key.indexOf('or_search_') === 0) {
-            match.$or.push({[key.replace('or_search_', '')]: new RegExp(req.query[key], 'i')})
+        }else if (key.indexOf(QUERY_OR_SEARCH) === 0) {
+            match.$or.push({[key.replace(QUERY_OR_SEARCH, '')]: new RegExp(req.query[key], 'i')})
         
         //add matchUser
-        }else if (key.indexOf('user_') === 0){
-            match.$and.push({[key.replace('user_', '')]: req.query[key]})
+        }else if (key.indexOf(QUERY_USER) === 0){
+            match.$and.push({[key.replace(QUERY_USER, '')]: req.query[key]})
 
         //add sort
-        }else if (key.indexOf('sort_') != -1 && !isNaN(req.query[key])) {
-			sort[key.replace('sort_', '')] = Number(req.query[key])
+        }else if (key.indexOf(QUERY_SORT) != -1 && !isNaN(req.query[key])) {
+			sort[key.replace(QUERY_SORT, '')] = Number(req.query[key])
 		}
 
     }

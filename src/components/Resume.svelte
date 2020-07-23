@@ -35,7 +35,9 @@
 	export let userId = false
 	export let trocId = false
 
-	$: console.log($details)
+	$: console.log({userId})
+	$: console.log({trocId})
+	$: console.log({$details})
 
 	let modifiedArticles = []			//Array for minimize PATCH request on AutoPatch.svelte
 	let clearModifiedArticles			//Timeout
@@ -125,7 +127,7 @@
 			document.getElementById(`newArticleName`).focus()
 
 			notify.notify('Article ajouté', 'fas fa-check')
-			
+
 			return
 			
 		}else alert(json.message)
@@ -167,6 +169,9 @@
 			if (index == -1) return alert('Index not found')
 			$details.provided.splice(index, 1)
 			$details.provided = $details.provided
+
+			notify.notify('Article supprimé', 'far fa-trash-alt')
+
 			return
 		}else alert(json.message)
 	}
@@ -316,7 +321,7 @@
 </Dialog>
 
 {#await $detailsPromise}
-	<div style="position: relative; height: 500px;">
+	<div style="position: relative; height: 500px">
 		<Logo/>
 	</div>
 {:then}
@@ -336,7 +341,7 @@
 
 	<div class="w3-row">
 
-		<div class="w3-col s6">
+		<div class="w3-col l3">
 			<div class="w3-margin-right">
 				<span class="w3-right w3-large">{$details.buySum.toFixed(2)}</span>
 				<h4>Achats</h4>
@@ -359,10 +364,232 @@
 			</div>
 		</div>
 
-		<div class="w3-col s6">
+		<div class="w3-col l6">
+
+			<!-- Titre, Boutons propositions et somme -->
+			<div class="">
+				<span class="w3-right w3-large">{($details.soldSum + $details.feeSum).toFixed(2)}</span>
+				<h4>Ventes</h4>
+
+				<!-- Provide button -->
+				<span class:w3-hide={onPrint}>
+
+					{#if $details.provided.length}
+						<Button
+						on:click={clickDownladCSV}
+						color="secondary">
+							<i class="fas fa-download"></i>
+						</Button>
+					{/if}
+
+					<!-- Bontons pour proposer des articles -->
+					{#await createArticlePromise}
+						<Button color="secondary" variant="outlined">
+							<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
+						</Button>
+					{:then}
+						{#if !importArticlesListOpen}
+							<!--
+								<Button
+								on:click="{() => createArticlePromise = createArticle()}"
+								variant="outlined">
+									Proposer un article
+								</Button>
+							-->
+								<Button
+								on:click="{() => createArticleDialog.open()}"
+								variant="outlined">
+									Proposer un article
+								</Button>
+						{/if}
+					{/await}
+				
+					{#if !importArticlesListOpen}
+						<Button on:click="{() => importArticlesListOpen = true}" variant="outlined">
+							<i class="fas fa-list"></i>
+						</Button>
+					{:else if !importArticles.length}
+						<Button on:click="{() => importArticlesListOpen = false}" variant="outlined" color="secondary">
+							{failFormatRaison.length ? failFormatRaison : `Annuler la proposition`}
+						</Button>
+					{:else}
+						{#await createImportArticlesPromise}
+							<Button variant="outlined" color="secondary">
+								<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création des articles ...
+							</Button>
+						{:then}
+							<Button on:click="{() => createImportArticlesPromise = createImportArticles()}" variant="raised" style="color: white;">
+								Valider la proposition des {importArticles.length} articles
+							</Button>
+						{/await}
+					{/if}
+
+				</span>
+
+			</div>
+			
+			<!-- Insertion de plusieurs d'article -->
+			{#if importArticlesListOpen}
+				<div class="w3-row w3-margin-top" transition:slide|local>
+					<textarea class="w3-round" rows="10" 
+							bind:value={importArticlesValue} on:input={inputImportArticles}
+							placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${$details.traderPrefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${$details.traderPrefix ? `${$details.traderPrefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${$details.traderPrefix ? `${$details.traderPrefix}2 : ` : ''} Mon deuxième article : 15.35\n${$details.traderPrefix ? `${$details.traderPrefix}3 ; ` : ''} Mon troisième article ; 5,40\n ...`}></textarea>
+				</div>
+			{/if}
+
+			{#if $details.provided.length}
+			<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />	
+			<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered w3-margin-top">
+
+				<!-- En-têtes -->
+				<tr>
+					<th>
+						<span>#</span>
+					</th>
+
+					<th>
+						<span>Articles</span>
+					</th>
+
+					<!-- 0=Proposé, 1=En vente, 2=Vendu, 3=Récupéré -->
+					<th class="clickable" on:click={() => statutFilterMenu.setOpen(true)}>
+						<span>Statuts</span><br>
+						<span class="w3-tiny w3-opacity">
+							<i class="fas fa-filter"></i>
+							{statutFilter === -1 ? 'Tous' : status[statutFilter]}
+						</span>
+						<Menu bind:this={statutFilterMenu}>
+							<List>
+								<Item on:click={() => statutFilter = -1 }><Text>Tous</Text></Item>
+								<Item on:click={() => statutFilter = 0 }><Text>Proposé</Text></Item>
+								<Item on:click={() => statutFilter = 1 }><Text>En vente</Text></Item>
+								<Item on:click={() => statutFilter = 2 }><Text>Vendu</Text></Item>
+								<Item on:click={() => statutFilter = 3 }><Text>Récupéré</Text></Item>
+							</List>
+						</Menu>
+					</th>
+					
+					<th>
+						<span>Prix</span><br>
+						<span class="w3-small sold">{$details.soldSum.toFixed(2)}</span>
+					</th>
+
+					<th class="clickable" on:click="{() => tarifInfoDialog.open()}">
+						<span>Frais</span><br>
+						<span class="w3-small fee">{-$details.feeSum.toFixed(2)}</span>
+					</th>
+
+					<th></th><!--remove-->
+
+				</tr>
+
+				<!-- Corp -->
+				{#each $details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i}
+
+					<tr>
+						
+						<!-- Ref # -->
+						<td>
+							<b class="w3-small">
+								{!article.isCreated ? article.ref : ''}
+							</b>						
+						</td>
+
+
+						<!-- Designation -->
+						<td class:tdInput={!article.valided} style="width: 50%; min-width: 170px;">
+							{#if article.valided}
+								<span class:recovered={article.recover}>
+									{article.name}
+								</span>
+							{:else}
+								<textarea
+								rows="3" style="resize: none;"
+								on:input="{e =>  addModifiedArticle(e, article)}"
+								class:lastInputName="{i == $details.provided.length-1}"  
+								bind:value={article.name}
+								type="text" 
+								class="w3-input unvalided" 
+								placeholder="Désignation"></textarea>
+							{/if}
+
+						</td>
+
+						<!-- Status -->
+						<td>{status[getStatus(article)]}</td>
+
+						<!-- Prix -->
+						<td class="price" class:tdInput={!article.valided} style="max-width: 100px;">
+							{#if article.valided}
+								<span class:recovered={article.recover} class:sold={article.sold}>
+									{Number(article.price).toFixed(2)}
+								</span>
+							{:else}
+								<input
+								bind:value={article.price}
+								on:input="{e => {formatPrice(e); addModifiedArticle(e, article)}}"
+								type="text"
+								class="price-input w3-input unvalided">
+							{/if}
+						</td>
+
+						<!-- Frais -->
+						<td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided} on:click="{() => tarifInfoDialog.open()}">
+							{article.fee.toFixed(2)}
+							{@html article.sold ? ` <span class="w3-tiny">+</span> ${article.margin.toFixed(2)}` : ''}
+						</td>
+
+						<!-- Suppression (uniquement les articles non validé) -->
+						<td on:mouseleave="{() => articleWaitValidationForDelete = -1}" class="removeCell">
+							{#if !article.valided}
+								{#if articleWaitValidationForDelete == article._id}
+									{#await deleteArticlePromise}
+										<span class="w3-padding">
+											<i class="fa fa-times w3-spin"></i>
+										</span>
+									{:then}
+										<span class="w3-padding w3-round clickable" on:click="{() => deleteArticlePromise = deleteArticle(article._id)}" style="background: rgba(255, 0, 0, .2);">
+											<i class="fa fa-times"></i>
+										</span>
+									{/await}
+								{:else}
+									<span class="w3-padding clickable" on:click="{() => articleWaitValidationForDelete = article._id}">
+										<i class="fa fa-times"></i>
+									</span>
+								{/if}
+							{/if}
+						</td>
+					</tr>
+
+				{/each}
+			</table>
+			{:else}
+				<br>
+				<span class="w3-opacity">Pas d'article proposé</span>
+			{/if}
+			
+			<br>
+
+			<!-- Bouton pour prolongé la liste -->
+			<!-- TODO: reparer
+				{#if $details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length > LIMIT_LIST_C}
+					<div on:click="{() => LIMIT_LIST_C += 50}" class="underline-div w3-center">
+						<span class="underline-span w3-opacity">
+							Afficher plus de résultat ({$details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length - LIMIT_LIST_C})
+						</span>
+					</div>
+				{/if}
+
+			-->
+
+			<br>
+		</div>
+
+
+		<div class="w3-col l3">
 			<div class="w3-margin-left">
 				<span class="w3-right w3-large">{$details.paySum.toFixed(2)}</span>
-				<h4>Paiement</h4>
+				<h4>Paiements</h4>
 
 				{#each $details.payments.slice(0, LIMIT_LIST_B) as payment (payment._id)}
 					<div class="list-element valided w3-padding" in:slide|local animate:flip="{{duration: 200}}">
@@ -390,229 +617,6 @@
 
 	</div>
 	<br>
-	<br>
-
-	
-	<div class="w3-row">
-
-		<!-- Titre, Boutons propositions et somme -->
-		<div class="w3-row">
-			<span class="w3-right w3-large">{($details.soldSum + $details.feeSum).toFixed(2)}</span>
-			<span class="w3-large">Ventes</span>
-
-			<!-- Provide button -->
-			<span class:w3-hide={onPrint}>
-
-				{#if $details.provided.length}
-					<Button
-					on:click={clickDownladCSV}
-					color="secondary">
-						<i class="fas fa-download"></i>
-					</Button>
-				{/if}
-
-				<!-- Bontons pour proposer des articles -->
-				{#await createArticlePromise}
-					<Button color="secondary" variant="outlined">
-						<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
-					</Button>
-				{:then}
-					{#if !importArticlesListOpen}
-						<!--
-							<Button
-							on:click="{() => createArticlePromise = createArticle()}"
-							variant="outlined">
-								Proposer un article
-							</Button>
-						-->
-							<Button
-							on:click="{() => createArticleDialog.open()}"
-							variant="outlined">
-								Proposer un article
-							</Button>
-					{/if}
-				{/await}
-			
-				{#if !importArticlesListOpen}
-					<Button on:click="{() => importArticlesListOpen = true}" variant="outlined">
-						<i class="fas fa-list"></i>
-					</Button>
-				{:else if !importArticles.length}
-					<Button on:click="{() => importArticlesListOpen = false}" variant="outlined" color="secondary">
-						{failFormatRaison.length ? failFormatRaison : `Annuler la proposition`}
-					</Button>
-				{:else}
-					{#await createImportArticlesPromise}
-						<Button variant="outlined" color="secondary">
-							<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création des articles ...
-						</Button>
-					{:then}
-						<Button on:click="{() => createImportArticlesPromise = createImportArticles()}" variant="raised" style="color: white;">
-							Valider la proposition des {importArticles.length} articles
-						</Button>
-					{/await}
-				{/if}
-
-			</span>
-
-		</div>
-		
-		<!-- Insertion de plusieurs d'article -->
-		{#if importArticlesListOpen}
-			<div class="w3-row w3-margin-top" transition:slide|local>
-				<textarea class="w3-round" rows="10" 
-						bind:value={importArticlesValue} on:input={inputImportArticles}
-						placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${$details.traderPrefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${$details.traderPrefix ? `${$details.traderPrefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${$details.traderPrefix ? `${$details.traderPrefix}2 : ` : ''} Mon deuxième article : 15.35\n${$details.traderPrefix ? `${$details.traderPrefix}3 ; ` : ''} Mon troisième article ; 5,40\n ...`}></textarea>
-			</div>
-		{/if}
-
-		{#if $details.provided.length}
-		<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />	
-		<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered w3-margin-top">
-
-			<!-- En-têtes -->
-			<tr>
-				<th>
-					<span>#</span>
-				</th>
-
-				<th>
-					<span>Articles</span>
-				</th>
-
-				<!-- 0=Proposé, 1=En vente, 2=Vendu, 3=Récupéré -->
-				<th class="clickable" on:click={() => statutFilterMenu.setOpen(true)}>
-					<span>Statuts</span><br>
-					<span class="w3-tiny w3-opacity">
-						<i class="fas fa-filter"></i>
-						{statutFilter === -1 ? 'Tous' : status[statutFilter]}
-					</span>
-					<Menu bind:this={statutFilterMenu}>
-						<List>
-							<Item on:click={() => statutFilter = -1 }><Text>Tous</Text></Item>
-							<Item on:click={() => statutFilter = 0 }><Text>Proposé</Text></Item>
-							<Item on:click={() => statutFilter = 1 }><Text>En vente</Text></Item>
-							<Item on:click={() => statutFilter = 2 }><Text>Vendu</Text></Item>
-							<Item on:click={() => statutFilter = 3 }><Text>Récupéré</Text></Item>
-						</List>
-					</Menu>
-				</th>
-				
-				<th>
-					<span>Prix</span><br>
-					<span class="w3-small sold">{$details.soldSum.toFixed(2)}</span>
-				</th>
-
-				<th class="clickable" on:click="{() => tarifInfoDialog.open()}">
-					<span>Frais</span><br>
-					<span class="w3-small fee">{-$details.feeSum.toFixed(2)}</span>
-				</th>
-
-				<th></th><!--remove-->
-
-			</tr>
-
-			<!-- Corp -->
-			{#each $details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i}
-
-				<tr>
-					
-					<!-- Ref # -->
-					<td>
-						<b class="w3-small">
-							{!article.isCreated ? article.ref : ''}
-						</b>						
-					</td>
-
-
-					<!-- Designation -->
-					<td class:tdInput={!article.valided} style="width: 50%; min-width: 170px;">
-						{#if article.valided}
-							<span class:recovered={article.recover}>
-								{article.name}
-							</span>
-						{:else}
-							<textarea
-							rows="3" style="resize: none;"
-							on:input="{e =>  addModifiedArticle(e, article)}"
-							class:lastInputName="{i == $details.provided.length-1}"  
-							bind:value={article.name}
-							type="text" 
-							class="w3-input unvalided" 
-							placeholder="Désignation"></textarea>
-						{/if}
-
-					</td>
-
-					<!-- Status -->
-					<td>{status[getStatus(article)]}</td>
-
-					<!-- Prix -->
-					<td class="price" class:tdInput={!article.valided} style="max-width: 100px;">
-						{#if article.valided}
-							<span class:recovered={article.recover} class:sold={article.sold}>
-								{Number(article.price).toFixed(2)}
-							</span>
-						{:else}
-							<input
-							bind:value={article.price}
-							on:input="{e => {formatPrice(e); addModifiedArticle(e, article)}}"
-							type="text"
-							class="price-input w3-input unvalided">
-						{/if}
-					</td>
-
-					<!-- Frais -->
-					<td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided} on:click="{() => tarifInfoDialog.open()}">
-						{article.fee.toFixed(2)}
-						{@html article.sold ? ` <span class="w3-tiny">+</span> ${article.margin.toFixed(2)}` : ''}
-					</td>
-
-					<!-- Suppression (uniquement les articles non validé) -->
-					<td on:mouseleave="{() => articleWaitValidationForDelete = -1}" class="removeCell">
-						{#if !article.valided}
-							{#if articleWaitValidationForDelete == article._id}
-								{#await deleteArticlePromise}
-									<span class="w3-padding">
-										<i class="fa fa-times w3-spin"></i>
-									</span>
-								{:then}
-									<span class="w3-padding w3-round clickable" on:click="{() => deleteArticlePromise = deleteArticle(article._id)}" style="background: rgba(255, 0, 0, .2);">
-										<i class="fa fa-times"></i>
-									</span>
-								{/await}
-							{:else}
-								<span class="w3-padding clickable" on:click="{() => articleWaitValidationForDelete = article._id}">
-									<i class="fa fa-times"></i>
-								</span>
-							{/if}
-						{/if}
-					</td>
-				</tr>
-
-			{/each}
-		</table>
-		{:else}
-			<br>
-			<span class="w3-opacity">Pas d'article proposé</span>
-		{/if}
-		
-		<br>
-
-		<!-- Bouton pour prolongé la liste -->
-		<!-- TODO: reparer
-			{#if $details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length > LIMIT_LIST_C}
-				<div on:click="{() => LIMIT_LIST_C += 50}" class="underline-div w3-center">
-					<span class="underline-span w3-opacity">
-						Afficher plus de résultat ({$details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length - LIMIT_LIST_C})
-					</span>
-				</div>
-			{/if}
-
-		-->
-
-		<br>
-	</div>
 	
 </div>
 
@@ -621,26 +625,37 @@
 	<Dialog bind:this={tarifInfoDialog}>
 		<Title>Vous êtes soumis au tarif <b>{$details.tarif.name}</b>: </Title>
 		<Content>
-			<h5>Nombre maximum d'article proposés</h5>
-			{$details.tarif.maxarticles} <i class="fas fa-cube"></i>
+			<h5>Nombre maximum d'article proposés</h5><br>
+			<div style="text-align: center;">
+				<b>{$details.tarif.maxarticles}</b> <i class="fas fa-cube"></i>
+			</div>
 			<br><br>
 
 			<h5>Frais de traitement
 				<span class="w3-small w3-opacity">Appliqué au dépot de l'article</span>
-			</h5>
-			{#each $details.tarif.fee as fee}
-				A partir de {fee.price.toFixed(2)} <i class="fas fa-arrow-right"></i> {fee.value.toFixed(2)} <br>
-			{/each}
-			
-			<br>
+			</h5><br>
+			<div style="text-align: center;">
+				{#each $details.tarif.fee as fee}
+					A partir de <b>{fee.price.toFixed(2)} </b><i class="fas fa-arrow-right"></i> <b>{fee.value.toFixed(2)}</b>
+					<br>
+				{/each}
+			</div>
+			<br><br>
+
 			<h5>Marge
 				<span class="w3-small w3-opacity">Appliquée à la vente de l'article</span>
-			</h5>
-			{$details.tarif.margin * 100} <i class="fas fa-percent"></i>
-
+			</h5><br>
+			<div style="text-align: center;">
+				<b>{$details.tarif.margin * 100}</b> <i class="fas fa-percent"></i>
+			</div>
+			<br>
+			
 		</Content>
 	</Dialog>
 {/if}
+
+{:catch err}
+	<h1>Error {err}</h1>
 
 {/await}
 

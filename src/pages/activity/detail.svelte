@@ -5,8 +5,11 @@
 
     export let scoped
 
+    $: console.log({$user})
+    $: console.log({scoped})
+
 </script>
 
 <TrocInfo troc={scoped.trocSelected} />
 <hr>
-<Resume trocId={scoped.trocSelected} userId={$user._id}/>
+<Resume trocId={scoped.trocSelected} userId={scoped.user._id}/>

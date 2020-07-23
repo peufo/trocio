@@ -12,9 +12,6 @@ const compression = require('compression')
 const { ssr } = require('@sveltech/ssr')
 let createError = require('http-errors')
 
-
-let { PORT, NODE_ENV } = process.env
-PORT = PORT || 5000
 let catchError404 = (req, res, next) => next(createError(404))
 
 //Connection database

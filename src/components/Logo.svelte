@@ -66,9 +66,9 @@
             {/if}
 
             {#if showPolygonsInt}
-                <polygon points="100,100 0,100 50,186.6 150,186.6 "  fill="rgb(240, 240, 240)" out:fly={{x: -12.5, y: 21.65, duration: 1000, easing: quadInOut}}/>
-                <polygon points="100,100 150,13.4 200,100 150,186.6" fill="rgb(216, 216, 216)" out:fly={{x: 25, y: 0,    duration: 1000, easing: quadInOut}}/>
-                <polygon points="100,100 150,13.4 50,13.4 0,100"     fill="rgb(168, 168, 168)" out:fly={{x: -12.5, y: -21.65,  duration: 1000, easing: quadInOut}}/>
+                <polygon points="100,100 0,100 50,186.6 150,186.6 "  fill="rgb(240, 240, 240)" out:fly={{x: -12.5, y: 21.65, duration: 800, easing: quadInOut}}/>
+                <polygon points="100,100 150,13.4 200,100 150,186.6" fill="rgb(216, 216, 216)" out:fly={{x: 25, y: 0,    duration: 800, easing: quadInOut}}/>
+                <polygon points="100,100 150,13.4 50,13.4 0,100"     fill="rgb(168, 168, 168)" out:fly={{x: -12.5, y: -21.65,  duration: 800, easing: quadInOut}}/>
             
                 <polygon points="100,100 200,100 150,13.4 50,13.4"   fill="white" out:fly={{x: 25, y: -43.3, duration: 1000, easing: quadInOut, opacity: .8}}/>
                 <polygon points="100,100 50,13.4 0,100 50,186.6"     fill="white" out:fly={{x: -50, y: 0,    duration: 1000, easing: quadInOut, opacity: .8}}/>
@@ -96,6 +96,7 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%)
+
     }
 
     svg {

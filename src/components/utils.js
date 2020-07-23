@@ -157,7 +157,9 @@ export function convertDMS(lat, lng) {
 
 export async function getDetail(troc, user) {
 
-    let providedRequest  = fetch(`/articles?user_provider=${user}&troc=${troc}`).then(res => res.json())
+	console.log('Get detail', {troc, user})
+
+    let providedRequest  = fetch(`/articles?user_provider=${user}&troc=${troc}&include_without_name=true`).then(res => res.json())
     let purchasesRequest = fetch(`/articles?user_buyer=${user}&troc=${troc}`).then(res => res.json())
     let givbacksRequest  = fetch(`/articles?user_giveback.user=${user}&troc=${troc}`).then(res => res.json())
     let paymentsRequest  = fetch(`/payments?user=${user}&troc=${troc}`).then(res => res.json())

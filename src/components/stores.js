@@ -11,7 +11,11 @@ export let trocDetails = trocDetailsBuilder()
 export let trocDetailsPromise = writable()
 
 let userPromiseSubscribed
-userPromise.subscribe(v => userPromiseSubscribed = v)
+userPromise.subscribe(v => {
+	userPromiseSubscribed = v
+	console.log({'userPromiseSubscribed': v})
+})
+
 
 
 // ------------------------------------------------------
@@ -21,19 +25,19 @@ function buildListenQuery(query, promise, load, set) {
 	query = query.split(' ')
 	let lastQuery = undefined
 	let newQuery = undefined
-	let setPromise = () => {
+	let createPromise = () => {
 		let parsed = qs.parse(location.search.substr(1))
 		newQuery = query.map(q => parsed[q]).join(' ')
 		if (newQuery != lastQuery) promise.set(load(set, parsed))
 		lastQuery = newQuery
 	}
 	return set => {
-		setPromise()
+		createPromise()
 		console.log(`Start Listen Query ${query}`)
-		addEventListener('locationchange', setPromise)
+		addEventListener('locationchange', createPromise)
 		return () => {
 			console.log(`Stop Listen Query ${query}`)
-			removeEventListener('locationchange', setPromise)
+			removeEventListener('locationchange', createPromise)
 		}
 	}
 }
@@ -78,12 +82,13 @@ function loadUser(set) {
 async function authenticate(set) {
 	let res = await fetch('/users/me')
 	let json = await res.json()
+	console.log({res, json})
 	if (res.ok && !json.error) {
 		set(json)
 		return json
 	}else{
 		set(null)
-		return Error()
+		return Error(json.message)
 	}
 }
 
@@ -160,11 +165,11 @@ function trocDetailsBuilder() {
 
 async function loadTrocDetails(set, {troc, client}) {
 	if(!troc) return set(null)
-	console.log('LOAD DETAILS ', troc)
+	
 	//TODO: PAGE condition
 	// NON Il faut alimenté le composant Resume
-
 	let user = await userPromiseSubscribed
+	console.log('LOAD DETAILS ', {troc, client, user})
 	let details = await getDetail(troc, user._id)
 	set(details)
 	return 
