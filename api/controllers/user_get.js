@@ -35,7 +35,7 @@ function searchUser(req, res, next) {
 
 function getUser(req, res, next) {
     User.findById(req.params.id).lean().exec((err, user) => {
-        if (err) return next(err)
+        if (err || !user) return next(err || Error('User not found'))
         hideMail(user)
         res.json(user)
     })

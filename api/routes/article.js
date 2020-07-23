@@ -7,7 +7,7 @@ let { 	createArticle,
 		patchArticle,
 		createNewPriceRequest,
 		acceptNewPriceRequest	} = require('../controllers/article_set')
-let { searchArticle } = require('../controllers/article_get')
+let { searchArticle, getArticle } = require('../controllers/article_get')
 let { checkLogin } = require('../controllers/user_utils')
 
 router
@@ -18,5 +18,6 @@ router
 	.delete('/:id', 	checkLogin,			deleteArticle)
 	.patch('/', 		checkLogin, 		patchArticle)
 	.get('/', 			searchArticle)
+	.get('/:id', getArticle)
 
 module.exports = router

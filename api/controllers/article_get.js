@@ -1,6 +1,13 @@
 var Article = require('../models/article')
 const ObjectId 	= require('mongoose').Types.ObjectId
 
+function getArticle(req, res, next) {
+	Article.find({_id: req.params.id}).exec((err, article) => {
+		if (err) return next(Error(err))
+		res.json(article)
+	})
+}
+
 function searchArticle(req, res, next) {
 	let { troc, limit, skip, filter_statut, provider, providernot, include_without_name } = req.query
 
@@ -96,6 +103,9 @@ function searchArticle(req, res, next) {
 	})
 }
 
+
+
 module.exports = {
+	getArticle,
 	searchArticle
 }

@@ -3,6 +3,7 @@ var Troc = require('../models/troc')
 var ctrl = require('../controllers/troc')
 var router = express.Router()
 const ObjectId 	= require('mongoose').Types.ObjectId
+let { getTarif, getTrader } = require('../controllers/troc_get')
 
 router
 	.get('/me', (req, res, next) => {
@@ -59,34 +60,9 @@ router
 			res.json(trocs)
 		})
 	})
-	.get('/:id/tarif', ctrl.checkAdmin, (req, res, next) => {
-		Troc.findById(req.params.id, {tarif: 1}, (err, troc) => {
-			if(err || !troc) return next(err || Error('Troc not found !'))
-			res.json(troc)
-		})
-	})
+	.get('/tarif', getTarif)
+	.get('/trader', getTrader)
 	.get('/:id/stats', ctrl.checkAdmin, ctrl.getStats)
-	.get('/:trocId/tarif/:userId', (req, res, next) => {
-		Troc.findById(req.params.trocId, {tarif: 1}, (err, troc) => {
-			if(err || !troc) return next(err || Error('Troc not found !'))
-			let tarifMatched = troc.tarif.filter(t => t.apply.map(a => a._id).indexOf(req.params.userId) != -1)			
-			res.json(tarifMatched[0] || troc.tarif[0])
-		})
-	})
-	.get('/:trocId/trader/:userId', (req, res, next) => {
-		if (!req.session.user) return next(Error('Login required'))
-		//if (req.session.user != req.param.userId) //TODO: Check if req.session.user is cashier
-		Troc.findById(req.params.trocId, {trader: 1}, (err, troc) => {
-			if(err || !troc) return next(err || Error('Troc not found !'))
-			let index = troc.trader.map(t => t.user).indexOf(req.params.userId)	
-			if (index === -1) {
-				res.json({error: true, message: `User isn't a trader`})
-			}else{
-				res.json({success: true, message: 'User is a trader', prefix: troc.trader[index].prefix})
-			}
-			
-		})
-	})
 	.get('/:id', (req, res, next) => {
 		if (req.session.user) {
 

@@ -1,8 +1,10 @@
-var Article = require('../models/article')
-var User = require('../models/user')
-var Troc = require('../models/troc')
+let Article = require('../models/article')
+let User = require('../models/user')
+let Troc = require('../models/troc')
 
-var { getRoles, createArticleContext } = require('./article_utils')
+let { getRoles, createArticleContext } = require('./article_utils')
+let { findTarif, getFee, getMargin } = require('./troc_utils')
+const article_utils = require('./article_utils')
 
 function createArticle(req, res, next) {
 
@@ -11,9 +13,10 @@ function createArticle(req, res, next) {
 
 	//TODO: verifier si le troc n'est pas dépasser
 
-	createArticleContext(articles, (err, newRef) => {
+	createArticleContext(articles, async (err, newRef) => {
 		if (err) return next(err)
-		
+		let tarif = await findTarif(articles[0].troc, articles[0].provider)
+
 		articles.forEach(art  => delete art._id)
 		
 		let nbAttributedRef = 0
@@ -22,6 +25,10 @@ function createArticle(req, res, next) {
 				art = new Article(art)
 				if (!art.ref) art.ref = newRef + nbAttributedRef++
 				if (art.price === null) art.price = 0
+				else {
+					art.fee = getFee(art, tarif)
+					art.margin = getMargin(art, tarif)
+				}
 				art.save(err => {
 					if (err) return reject(err)
 					else return resolve(art)
@@ -120,21 +127,30 @@ function patchArticle(req, res, next) {
 	let errors = []
 	let ids = patchedArticles.map(a => a._id)
 	let uniqueTroc = false
-
-	//Verifie si les articles viennent tous du même troc
-	uniqueTroc = patchedArticles.map(a => a.troc).filter((v, i, self) => self.indexOf(v) === i).length == 1
-	if (!uniqueTroc) return next(Error('All articles not becomes from the same troc'))
+	let uniqueProvider = false
 
 	Article.find({_id: {$in: ids}}).exec((err, articles) => {
-		if (err || !articles.length) return next(err || Error('Article not found'))
+		if (err || !articles.length) return next(err || Error('Articles not found'))
 
-		getRoles(req.session.user._id, articles[0], roles => {
+		//Check if all articles become from the same troc
+		uniqueTroc = articles.map(a => a.troc.toString()).filter((v, i, self) => self.indexOf(v) === i).length == 1
+		if (!uniqueTroc) return next(Error('All articles not becomes from the same troc'))
+
+		getRoles(req.session.user._id, articles[0], async roles => {
 
 			if (!roles.length) return next(Error('Not authorized'))
 
 			if (roles.indexOf('provider') != -1) {
-				
-				articles.forEach(async art => {
+
+				//Check if all articles become from the same provider
+				uniqueProvider = articles.map(a => a.provider.toString()).filter((v, i, self) => self.indexOf(v) === i).length == 1
+				if (!uniqueProvider) return next(Error('All articles not becomes from the same provider'))
+
+				//Find tarif to apply it if price change
+				let tarif = await findTarif(articles[0].troc, articles[0].provider)
+					//if (err) return next(Error(err))
+
+				articles = articles.map(art => {
 					let patchedArt = patchedArticles[ids.indexOf(String(art._id))]
 					let err = undefined
 
@@ -144,20 +160,27 @@ function patchArticle(req, res, next) {
 					}
 
 					//PATCH
-					if (!art.valided || roles.indexOf('cashier') != -1) {
+					if (!art.valided) {
 						if (patchedArt.name) art.name = patchedArt.name
-						if (!isNaN(patchedArt.price) && patchedArt.price !== null) art.price = patchedArt.price	
+						if (!isNaN(patchedArt.price) && patchedArt.price !== null){
+							art.price 	= patchedArt.price
+							art.fee 	= getFee(art, tarif)
+							art.margin 	= getMargin(art, tarif)
+						}
 					}
 
-					if (!err) err = await art.save()
 					if (err) errors.push(err)
-					return
+					return art
 				})
+					
+
+					
+				
 
 			}
 			
 			if(roles.indexOf('cashier') != -1) {
-				articles.forEach(async art => {
+				articles = articles.map(art => {
 					let patchedArt = patchedArticles[ids.indexOf(String(art._id))]
 
 					let validedPatched = patchedArt.valided && patchedArt.valided != art.valided
@@ -171,7 +194,7 @@ function patchArticle(req, res, next) {
 					if (patchedArt.refused) art.refused = patchedArt.refused
 					if (patchedArt.sold) 	art.sold 	= patchedArt.sold
 					if (patchedArt.recover) art.recover = patchedArt.recover
-					if (patchedArt.buyer) art.buyer = patchedArt.buyer
+					if (patchedArt.buyer) 	art.buyer 	= patchedArt.buyer
 
 					if (validedPatched || refusedPatched) art.validator = req.session.user._id
 					if (soldPatched || recoverPatched) art.seller = req.session.user._id 
@@ -183,21 +206,32 @@ function patchArticle(req, res, next) {
 					if (art.sold && art.recover) err = Error(`Un article ne peut pas être vendu et récupéré`)
 					if (!art.valided && (art.sold || art.recover)) err = Error(`Un article doit être validé pour être vendu ou récupéré`)
 
-					if (!err) err = await art.save()
+					//if (!err) err = await art.save()
 					if (err) errors.push(err)
 
-					return
+					return art
 				})
 
 			}
 
 			if (errors.length) return next(errors[0])
 
-			if (Array.isArray(req.body)){
-				res.json({success: true, message: articles})
-			}else{
-				res.json({success: true, message: articles[0]})
-			}
+			Promise.all(articles.map(art => {
+				return new Promise((resolve, reject) => {
+					art.save(err => {
+						if (err) return reject(err)
+						else return resolve(art)
+					})
+
+				})
+			}))
+			.then(() => {
+				if (Array.isArray(req.body)){
+					res.json({success: true, message: articles})
+				}else{
+					res.json({success: true, message: articles[0]})
+				}
+			}).catch(next)
 
 		})
 

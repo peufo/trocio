@@ -3,12 +3,6 @@ import { troc } from './stores'
 import { quintOut, cubicOut } from 'svelte/easing'
 import { element } from 'svelte/internal'
 
-/**
- * Define header for fetch
- * @param {Object} body Body of request
- * @param {String} verb Verbe of equest
- */
-
 export function getHeader(body, verb = 'POST') {
 	return {
 		method: verb,
@@ -23,35 +17,6 @@ export function updateTroc(json, cb) {
 		if (cb) cb()
 	}else{
 		alert(json.message)
-	}
-}
-
-/**
- * Compute and return fee value
- * @param {{price: Number}} art 
- * @param {{fee: [{price: Number, value: Number}]}} tarif 
- * @returns {Number} fee
- */
-
-export function getFee(art, tarif) {
-	if (tarif && tarif.fee.length && art.price > 0) {
-		return art.fee = tarif.fee.sort((a, b) => b.price - a.price).filter(f => f.price <= art.price)[0].value 
-	}else if (art.price == 0) {
-		return art.fee = 0
-	}else return art.fee || 0
-}
-
-/**
- * Compute and return margin value
- * @param {{price: Number}} art 
- * @param {{fee: [{price: Number, value: Number}]}} tarif 
- * @returns {Number} margin
- */
-export function getMargin(art, tarif) {
-	if (tarif && art.price) {
-		return art.margin = tarif.margin * art.price
-	}else{
-		return art.margin = 0
 	}
 }
 
@@ -163,8 +128,8 @@ export async function getDetail(troc, user) {
     let purchasesRequest = fetch(`/articles?user_buyer=${user}&troc=${troc}`).then(res => res.json())
     let givbacksRequest  = fetch(`/articles?user_giveback.user=${user}&troc=${troc}`).then(res => res.json())
     let paymentsRequest  = fetch(`/payments?user=${user}&troc=${troc}`).then(res => res.json())
-    let tarifRequest     = fetch(`/trocs/${troc}/tarif/${user}`).then(res => res.json())
-    let traderRequest    = fetch(`/trocs/${troc}/trader/${user}`).then(res => res.json())
+    let tarifRequest     = fetch(`/trocs/tarif?user=${user}&troc=${troc}`).then(res => res.json())
+    let traderRequest    = fetch(`/trocs/trader?user=${user}&troc=${troc}`).then(res => res.json())
 
     let [
         {data: provided,  dataMatchCount: providedCount},
@@ -176,7 +141,7 @@ export async function getDetail(troc, user) {
     ] = await Promise.all([providedRequest, purchasesRequest, givbacksRequest, paymentsRequest, tarifRequest, traderRequest])
 
 	//Compute values
-	//TODO: Deplacer coté serveur
+	//TODO: Deplacer coté serveur ?
 	let buySum = purchases.length ? -purchases.map(a => a.price).reduce((acc, cur) => acc + cur) : 0
 	let paySum = payments.length  ?  payments.map(a => a.amount).reduce((acc, cur) => acc + cur) : 0
 	let soldSum = 0

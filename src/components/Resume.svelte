@@ -11,7 +11,8 @@
 
 	import { trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
 	//import { getHeader, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils'
-	import { getHeader, getFee, getMargin, sortByUpdatedAt, formatPrice } from './utils'
+	import { getHeader, sortByUpdatedAt, formatPrice } from './utils'
+	import { getFee, getMargin } from '../../api/controllers/troc_utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
 	import Logo from './Logo.svelte'
@@ -635,7 +636,7 @@
 				<span class="w3-small w3-opacity">Appliqué au dépot de l'article</span>
 			</h5><br>
 			<div style="text-align: center;">
-				{#each $details.tarif.fee as fee}
+				{#each $details.tarif.fee.sort((a, b) => a.price - b.price) as fee}
 					A partir de <b>{fee.price.toFixed(2)} </b><i class="fas fa-arrow-right"></i> <b>{fee.value.toFixed(2)}</b>
 					<br>
 				{/each}
