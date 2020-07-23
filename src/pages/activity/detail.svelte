@@ -12,4 +12,4 @@
 
 <TrocInfo troc={scoped.trocSelected} />
 <hr>
-<Resume trocId={scoped.trocSelected} userId={scoped.user._id}/>
+<Resume trocId={scoped.trocSelected} userId={$user._id}/>

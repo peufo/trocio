@@ -1,10 +1,3 @@
-<script context="module">
-    export async function preload(page, { user }) {
-		console.log('MEGA PROUT')
-        return { user }
-    }
-</script>
-
 <script>
 	import { troc } from './stores'
 	import { onMount } from 'svelte'
@@ -25,6 +18,7 @@
 	export let schedule = []
 	export let society = ''
 	export let societyweb = ''
+	export let mapDelay = 0
 
 	//Schedule conversion
 	if (!schedule.length) onMount(addSchedule)
@@ -122,7 +116,8 @@
 	<br>
 	<br>
 	<h3>Lieu</h3>
-	<SearchAddress 	bind:address={address}
+	<SearchAddress 	{mapDelay}
+					bind:address={address}
 					bind:location={location}
 					bind:changeFlag={changeFlag}/>
 

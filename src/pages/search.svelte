@@ -11,6 +11,8 @@
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
 
+	import L from 'leaflet'
+
 	import { user } from 'stores.js'
 	import TrocInfo from 'TrocInfo.svelte'
 	import Resume 	from 'Resume.svelte'
@@ -18,12 +20,13 @@
 	import Toggle 	from 'Toggle.svelte'
 	import Login 	from 'Login.svelte'
 	
+	export let mapDelay = 0 // Pour attendre la fin de l'animation
+
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
 
 
-	let L,
-		map,
+	let map,
 		icon,
 		trocs = [],
 		trocSelected = '',
@@ -45,32 +48,32 @@
 		{id: 2, name: 'Récupère', icon: '<i class="fas fa-sign-out-alt"></i>'}
 	]
 
-	onMount(async () => {
+	onMount(() => {
+		setTimeout(() => {
 
-		const leafletModule = await import('leaflet')
-		L = leafletModule.default
+			map = L.map('map', {
+				center: [47.4013048812248, 7.076493501663209],
+				zoom: 6,
+				watch: true
+			})
+	
+			icon = L.icon({
+				iconUrl:'/images/marker-icon.png',
+				iconRetinaUrl: '/images/marker-icon-2x.png',
+				iconSize: [28, 42],
+				iconAnchor: [14, 42],
+				tooltipAnchor: [14, -30],
+			})
+	
+			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			}).addTo(map)
+	
+			map.on('move', onMapMove)
+	
+			loadTrocs()
 
-		map = L.map('map', {
-		    center: [47.4013048812248, 7.076493501663209],
-			zoom: 6,
-			watch: true
-		})
-
-		icon = L.icon({
-			iconUrl:'/images/marker-icon.png',
-			iconRetinaUrl: '/images/marker-icon-2x.png',
-			iconSize: [28, 42],
-			iconAnchor: [14, 42],
-			tooltipAnchor: [14, -30],
-		})
-
-		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-		}).addTo(map)
-
-		map.on('move', onMapMove)
-
-		loadTrocs()
+		}, mapDelay)
 
 	})
 

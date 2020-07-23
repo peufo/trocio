@@ -46,37 +46,37 @@
 </script>
 
 {#if $user === null}
-    {$goto('/')}
+    {$goto('/search')}
 {:else if $user !== undefined}
     <div class="main-container">
 
 
-        {#if segment}
-        <div>
-            <div class="item no-margin-right" transition:fade|local style="min-width: 600px; flex-grow: 4;">
-                <Card>
-                    <div class="w3-padding">
-                        <a class="w3-right w3-padding" href="/activity">
-                            <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
-                        </a>
-                        <h3 class="mdc-typography--headline6" style="margin: 0;">{segment.title || trocSelected && trocSelected.name}</h3>
-                    </div>
-                    <CardContent id="sectionContent">
+        <div id="window" class:open={segment}>
+            {#if segment}
+                <div class="item no-margin-right" in:fade|local={{delay: 200}}>
+                    <Card>
+                        <div class="w3-padding">
+                            <a class="w3-right w3-padding" href="/activity">
+                                <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
+                            </a>
+                            <h3 class="mdc-typography--headline6" style="margin: 0;">{segment.title || trocSelected && trocSelected.name}</h3>
+                        </div>
+                        <CardContent id="sectionContent">
 
-                        <slot scoped={{trocSelected, user: $user}}/>
+                            <slot scoped={{trocSelected}}/>
 
-                    </CardContent>
-                </Card>
-            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            {/if}
         </div>
             
-        {/if}
 
     
         <div class="right-container">
             <!-- LISTE DES TROCS-->
             <div class="item">
-                <Card style="width: 350px;">
+                <Card>
 
                     <div style="padding: 1rem; height: 66px;">
                         <Actions class="w3-right" style="transform: translate(0px, -4px);">
@@ -164,8 +164,7 @@
 
     .main-container {
         display: flex;
-        justify-content: flex-end;
-        
+        justify-content: center;
     }
 
     .right-container {
@@ -173,13 +172,19 @@
         flex-direction: column;
     }
 
-
     .item {
-        
         margin: 1em;
-        transition: all 1s;
     }
 
+    #window {
+        width: 0%;
+        transition: all .3s ease;
+    }
+
+    #window.open{
+        width: 100%;
+    }
+        
     .no-margin-top {
         margin-top: 0px;
     }
