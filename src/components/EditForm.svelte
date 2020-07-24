@@ -1,10 +1,15 @@
 <script>
-	import { troc } from './stores'
+	
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
 	import { createEventDispatcher } from 'svelte'
 	const dispatch = createEventDispatcher()
 	import dayjs from 'dayjs'
+	import TextField from '@smui/textfield'
+	import Button, { Label } from '@smui/button'
+	import DataTable, {Head, Body, Row, Cell} from '@smui/data-table'
+
+	import { troc } from './stores'
 	import { getHeader, updateTroc } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import SearchAddress from './SearchAddress.svelte'
@@ -19,6 +24,10 @@
 	export let society = ''
 	export let societyweb = ''
 	export let mapDelay = 0
+	let offsetWidth = 0
+	let smallDisplay = false
+
+	$: smallDisplay = offsetWidth < 800
 
 	//Schedule conversion
 	if (!schedule.length) onMount(addSchedule)
@@ -30,7 +39,8 @@
 		}
 	})
 
-	function addSchedule() {
+	function addSchedule(e) {
+		if (!!e) e.preventDefault()
 		if (scheduleIn.length == 0) {
 			scheduleIn = [...scheduleIn, {
 				day: dayjs().format('YYYY-MM-DD'),
@@ -107,87 +117,103 @@
 	<!-- Il faudra gerer les mise a jour de l'image en plus !!! -->
 {/if}
 
-<form id="editForm" name="editForm" class="w3-center" enctype="multipart/form-data">
-	<br>
-	<h3>Mon troc</h3>
-	<input bind:value={name} class="w3-input w3-large" type="text" placeholder="Nom de l'évènement">
-	<textarea bind:value={description} class="w3-round" placeholder="Description" rows="6"></textarea>
-
-	<br>
-	<br>
-	<h3>Lieu</h3>
-	<SearchAddress 	{mapDelay}
-					bind:address={address}
-					bind:location={location}
-					bind:changeFlag={changeFlag}/>
-
-	<br>
-	<br>
-	<h3>Horaire</h3>
-	{#each scheduleIn as {day, open, close}, i}
-		<div in:slide|local class="schedule w3-margin-top w3-border w3-round w3-padding">
-
-			<input 	bind:value={day}
-					type="date"
-					class="w3-input"
-					on:input={convertSchedule}>
-			
-			<div class="w3-row">
-				<div class="w3-col m5">
-					Ouverture
-					<input 	bind:value={open}
-							type="time"
-							max={close}
-							class="w3-padding w3-round"
-							on:input={convertSchedule}>	
-				</div>
-				<div class="w3-col m5">
-					Fermeture
-					<input 	bind:value={close}
-							type="time"
-							min={open}
-							class="w3-padding"
-							on:input={convertSchedule}>
-				</div>
-				<i 	on:click="{() => removeSchedule(i)}"
-					class="patchButton fa fa-times w3-col m1 w3-right w3-large w3-padding"></i>	
-			</div>			
+<form id="editForm" name="editForm" enctype="multipart/form-data" bind:offsetWidth>
+	<div class="container" class:smallDisplay>
+		<div class="item troc">
+			<h4>Mon troc</h4><br>
+			<TextField bind:value={name} label="Nom de l'évènement" variant="outlined" style="width: 100%;"/>
+			<br><br>
+			<TextField bind:value={description} label="Déscription" fullwidth textarea style="min-height: 168px;"/>
 		</div>
-	{/each}
-	<div on:click={addSchedule}
-		 class="patchButton w3-button w3-border w3-round w3-right">
-		+1 jour
+
+		<div class="item location">
+			<h4>Lieu</h4><br>
+			<SearchAddress 	{mapDelay}
+							bind:address={address}
+							bind:location={location}
+							bind:changeFlag={changeFlag}/>
+		</div>
+
+
+		<div class="item schedule">
+			<h4>Horaire</h4><br>
+			<DataTable class="w3-margin-bottom" style="min-width: 100%;">
+				<Head>
+					<Row>
+						<Cell>Date</Cell>
+						<Cell>Ouverture</Cell>
+						<Cell>Fermeture</Cell>
+						<Cell style="width: 20px;"></Cell>
+					</Row>
+				</Head>
+				<Body >
+					{#each scheduleIn as {day, open, close}, i}
+						<Row>
+							<Cell><input bind:value={day} type="date" /></Cell>
+							<Cell><input bind:value={open} max={close} on:input={convertSchedule} type="time" /></Cell>
+							<Cell style="width: 20px; padding: 1px 0px 1px 16px">
+								<input bind:value={close} min={open} on:input={convertSchedule} type="time" />
+							</Cell>
+							<Cell style="width: 20px; padding: 0px">
+								<i 	on:click="{() => removeSchedule(i)}"
+									class="patchButton far fa-trash-alt w3-right w3-large w3-padding"
+									title="supprimer la période">
+								</i>
+							</Cell>	
+						</Row>
+					{/each}				
+				</Body>
+			</DataTable>
+			
+
+			<Button on:click={addSchedule} variant="outlined" color="secondary" class="patchButton w3-right" title="Ajouter un période">
+				<Label>+1 période</Label>
+			</Button>
+		
+		</div>
+	
+		<div class="item society">
+			<h4>Mon organisation <span class="w3-small w3-opacity">Pas obligatoire</span></h4><br>
+			<TextField bind:value={society} label="Nom de l'organisation" variant="outlined" style="width: 100%;"/><br><br>
+			<TextField bind:value={societyweb} label="Site internet de l'organisation" variant="outlined" style="width: 100%;"/>
+		</div>
+
 	</div>
-
-	<br>
-	<br>
-	<h3>Mon organisation <span class="w3-small w3-opacity">Pas obligatoire</span></h3>
-	<input bind:value={society} class="w3-input" type="text" placeholder="Nom">
-	<input bind:value={societyweb} class="w3-input" type="text" placeholder="Site internet">
-
+	
 	{#if createMode}
-		<br>
-		<div on:click={create} 
-			class:w3-disabled={!!invalid} 
-			class="w3-button w3-border w3-round">
-			Créer mon troc
+		<!--
+			<div on:click={create} 
+				class:w3-disabled={!!invalid} 
+				class="w3-button w3-border w3-round">
+				Créer mon troc
+			</div>
+		-->
+		<div style="margin-top: 40px;">
+			<Button variant="raised" class="w3-right" title="Valider la création de mon troc">
+				<Label>Créer mon troc</Label>
+			</Button>
 		</div>
 	{/if}
 	
 </form>
 
 <style>
-	form {
-		max-width: 600px;
-		margin: auto;
+
+	.container {
+		display: grid;
+		grid-template-columns: minmax(calc(50% - 1rem), 500px)  minmax(25%, calc(50% - 1rem));
+		gap: 2rem;
 	}
 
-	input[type=time] {
+	.container.smallDisplay {
+		grid-template-columns: 100%;
+	}
+
+	.schedule input {
 		border: none;
-	}
-
-	h3 {
-		border-bottom: 2px solid #d6d6d6;
+		font-size: medium;
+		padding: 5px 10px;
+		background: rgba(0, 0, 0, 0)
 	}
 
 	.schedule i {
@@ -196,16 +222,8 @@
 		cursor: pointer;
 	}
 
-	.schedule:hover i {
+	.schedule tr:hover i {
 		transform: scale(1);
 	}
 
-	.schedule i:hover {
-		transform:scale(1.2);
-		color: red;
-	}
-
-	.w3-button {
-		margin-top: 10px;
-	}
 </style>
