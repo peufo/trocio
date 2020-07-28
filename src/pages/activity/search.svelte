@@ -2,4 +2,4 @@
     import Search from '../search.svelte'
 </script>
 
-<Search mapDelay="200"/>
+<Search mapDelay="250"/>

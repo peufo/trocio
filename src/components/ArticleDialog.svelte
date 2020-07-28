@@ -8,11 +8,10 @@
     import Button, { Label } from '@smui/button'
     import List, { Item, Graphic, Meta, Text, PrimaryText, SecondaryText} from '@smui/list'
 
-    import { troc } from './stores'
+    import { troc, user } from './stores'
     import { formatPrice, getFee, getMargin, getHeader } from './utils'
     import SearchUser from './SearchUser.svelte'
 
-    export let user = {}
     export let dialog
     export let article = {}
 
@@ -35,28 +34,28 @@
     function acceptValidation() {
         articleEdited.valided = new Date()
         articleEdited.refused = undefined
-        articleEdited.validator = {_id: user._id, name: user.name}
+        articleEdited.validator = {_id: $user._id, name: $user.name}
         testIsModifed()
     }
 
     function refuseValidation() {
         articleEdited.valided = undefined
         articleEdited.refused = new Date()
-        articleEdited.validator = {_id: user._id, name: user.name}
+        articleEdited.validator = {_id: $user._id, name: $user.name}
         testIsModifed()
     }
 
     function sold() {
         articleEdited.sold = new Date()
         articleEdited.recover = undefined
-        articleEdited.seller = {_id: user._id, name: user.name}
+        articleEdited.seller = {_id: $user._id, name: $user.name}
         testIsModifed()
     }
 
     function recover() {
         articleEdited.sold = undefined
         articleEdited.recover = new Date()
-        articleEdited.seller = {_id: user._id, name: user.name}
+        articleEdited.seller = {_id: $user._id, name: $user.name}
         testIsModifed()
     }
 
@@ -125,7 +124,7 @@
     async function valid() {
 
         //Une demande de changement de prix est émise si le fournisseur n'est pas connecté
-        if (articleEdited.price != article.price && article.provider._id != user._id) {
+        if (articleEdited.price != article.price && article.provider._id != $user._id) {
 
             let message = `Le changement du prix nécéssite l'accord du fourniseur (${article.provider.name}).\n`
             message += `Une demande lui sera transmise et le nouveau prix de ${articleEdited.price.toFixed(2)} sera appliqué dés qu'il l'aura accepté.`

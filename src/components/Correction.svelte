@@ -1,9 +1,10 @@
 <script>
     
-    import { addStatutField } from './utils.js'
+    import { addStatutField, statutFiltersOptions, sortOptions } from './utils.js'
     import SearchTable from './SearchTable.svelte'
     import ArticleDialog from './ArticleDialog.svelte'
-    
+
+
     export let user = {}
     export let troc = ''
 
@@ -11,22 +12,8 @@
     let articles = []
     let article = {}
 
-    //Options
-    const statutFiltersOptions = [
-        {queryValue: '',         label: 'Tous',     icon: ''},
-        {queryValue: 'proposed', label: 'Proposé',  icon: '<i class="fas fa-dot-circle w3-text-light-grey"></i>'},
-        {queryValue: 'valided',  label: 'Validé',   icon: '<i class="fas fa-dot-circle w3-text-blue"></i>'},
-        {queryValue: 'refused',  label: 'Refusé',   icon: '<i class="fas fa-dot-circle w3-text-red"></i>'},
-        {queryValue: 'sold',     label: 'Vendu',    icon: '<i class="fas fa-dot-circle w3-text-green"></i>'},
-        {queryValue: 'recover',  label: 'Rendu',    icon: '<i class="fas fa-dot-circle w3-text-orange"></i>'},
-    ]
-    const sortOptions = [
-        {queryValue: '',   label: 'Non trié',    icon: '<i class="fas fa-bars"></i>'},
-        {queryValue: '1',  label: 'Croissant',   icon: '<i class="fas fa-sort-amount-down-alt"></i>'},
-        {queryValue: '-1', label: 'Décroissant', icon: '<i class="fas fa-sort-amount-down"></i>'}
-    ]
+    //TODO: replace with getFields
 
-    let fieldsMenu
     let fields = [
         {label: '#',            checked: true,  typeMenu: 'search', dataName: 'ref',        dataType: 'string', cellWidth: 50,  disabled: true},
         {label: 'Désignation',  checked: true,  typeMenu: 'search', dataName: 'name',       dataType: 'string', cellWidth: 300, disabled: true},
@@ -64,6 +51,6 @@
 
 </script>
 
-<SearchTable title="Articles" baseURL="/articles" {troc} {fields} on:select={selectArticle} bind:items={articles}/>
+<SearchTable title="Articles" {troc} {fields} on:select={selectArticle} bind:items={articles}/>
 
 <ArticleDialog {user} {article} bind:dialog={articleDialog} on:patched={articlePatched}/>

@@ -1,11 +1,20 @@
+<script context="module">
+
+    //TODO: use just one element notify
+
+   
+
+</script>
+
 <script>
-    import { onMount } from 'svelte'
+    import { onMount, onDestroy } from 'svelte'
     import { fly } from 'svelte/transition'
 
     export let notifyContainer
     export let display = false
     export let message = ''
     export let icon = ''
+    let notifyElement
 
     let timeOutA, timeOutB
     export function notify(messageArg, iconArg, duration = 2000) {
@@ -49,8 +58,12 @@
     onMount(() => {
         //Place la notification à la racine
     	if (!notifyContainer) notifyContainer = document.getElementsByTagName('body')[0]
-		let notify = document.getElementById('notify')
-        notifyContainer.appendChild(notify)
+		notifyElement = document.getElementById('notify')
+        notifyContainer.appendChild(notifyElement)
+    })
+
+    onDestroy(() => {
+        //if (notifyContainer && notifyElement) notifyContainer.removeChild(notifyElement)
     })
 
 </script>

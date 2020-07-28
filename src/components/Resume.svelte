@@ -6,17 +6,21 @@
 	import Dialog, {Title, Content} from '@smui/dialog'
 	import Button from '@smui/button'
 	import Menu from '@smui/menu'
-	import TextField from '@smui/textfield'
+	import Textfield from '@smui/textfield'
 	import List, { Item, Text } from '@smui/list'
+	import Table, { Head, Body, Row, Cell } from '@smui/data-table'
+	import Notify from './Notify.svelte'
+	import SearchTable from './SearchTable.svelte'
+	import ArticleDialog from './ArticleDialog.svelte'
 
 	import { trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
 	//import { getHeader, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils'
-	import { getHeader, sortByUpdatedAt, formatPrice } from './utils'
+	import { getHeader, sortByUpdatedAt, formatPrice, getFields, addStatutField, statutFiltersOptions, sortOptions } from './utils'
 	import { getFee, getMargin } from '../../api/controllers/troc_utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import Article from './Article.svelte'
 	import Logo from './Logo.svelte'
-	import Notify from './Notify.svelte'
+	import DetailCard from './DetailCard.svelte'
 
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
@@ -31,14 +35,18 @@
     let LIMIT_LIST_C = LIMIT_LIST_INIT_SOLD //Nombre d'élément afficher pour la seconde liste (Vente)
 
 	
-
 	//Requested values
 	export let userId = false
-	export let trocId = false
+	export let troc = false
 
 	$: console.log({userId})
-	$: console.log({trocId})
+	$: console.log({troc})
 	$: console.log({$details})
+
+	let providedFields = getFields('# Désignation Statut Frais Marge Prix', '')
+
+	let articleDialog
+	let article = {} //Article selected
 
 	let modifiedArticles = []			//Array for minimize PATCH request on AutoPatch.svelte
 	let clearModifiedArticles			//Timeout
@@ -64,26 +72,6 @@
 	let statutFilter = -1
 
 	let notify //Bind to notify component
-
-	//TODO: à transformer en function de Mappage ? creer une classe a partir de la date et utilisé :first-child ?
- 	//Filtre et ajoute time
-	function addTime(arr, keyIn, keyOut) {
-		let lastTime = 0
-		let out = arr.filter(elem => elem[keyIn])
-		.map(elem => {
-			elem[keyOut] = new Date(elem[keyIn]).getTime()
-			return elem
-		})
-		.sort((a, b) => b[keyOut] - a[keyOut]).map(elem => {
-			if (elem[keyOut] && elem[keyOut] != lastTime) {
-				lastTime = elem[keyOut]
-			}else{
-				elem[keyOut] = 0
-			}
-			return elem
-		})
-		return out
-	}
 
 
 	//For AutoPatch
@@ -117,7 +105,7 @@
 			return
 		}
 
-		let res = await fetch('/articles', getHeader({troc: trocId, provider: userId, name: newArticleName, price: newArticlePrice}))
+		let res = await fetch('/articles', getHeader({troc: troc._id, provider: userId, name: newArticleName, price: newArticlePrice}))
 		let json = await res.json()
 		if (json.success) {
 			
@@ -207,7 +195,7 @@
 						importArticles.push({
 							name: cells[0].trim(),
 							price,
-							troc: trocId,
+							troc: troc._id,
 							provider: userId
 						})
 					}else if (line.length > 0){
@@ -230,7 +218,7 @@
 							ref: cells[0].trim(),
 							name: cells[1].trim(),
 							price,
-							troc: trocId,
+							troc: troc._id,
 							provider: userId
 						}]
 					}else if (line.length > 0){
@@ -292,6 +280,16 @@
 		setTimeout(() => {onPrint = false; LIMIT_LIST_C = 50}, 400)
 	}
 
+	function selectArticle(e) {
+        article = e.detail
+        setTimeout(articleDialog.open, 0)
+	}
+	
+	function articlePatched(e) {
+        let index = $details.provided.map(art => art._id).indexOf(e.detail._id)
+        $details.provided[index] = addStatutField([e.detail])[0]
+    }
+
 </script>
 
 <svelte:head>
@@ -304,10 +302,10 @@
 	<Title>Proposer un article</Title>
 	<Content>
 		<textarea id="newArticleName" cols="30" rows="3" placeholder="Désignation" bind:value={newArticleName}></textarea>
-		<input placeholder="Prix" style="width: 50%;" bind:value={newArticlePrice} on:input={formatPrice} />
+		<input placeholder="Prix" style="width: 50%; height: 36px;" bind:value={newArticlePrice} on:input={formatPrice} />
 		<!--
 		TODO: TextField failed
-		<TextField on:input={console.log}/>
+			<Textfield on:input={console.log}/>
 		-->
 		{#await createArticlePromise}
 			<Button color="secondary" variant="outlined" class="w3-right">
@@ -326,46 +324,91 @@
 		<Logo/>
 	</div>
 {:then}
-<div id="resume-container">
+<div id="resume-container" style="max-width: 700px; margin: auto;">
 
-	<div on:click={print} class="w3-opacity w3-small underline-div" class:w3-hide={onPrint} style="position: absolute;">
+	<br>
+	<div class="w3-row w3-xlarge" style="padding-left: 7px;">
+		<div class="w3-col s1">&nbsp;</div>
+		<span class="w3-col s9">Solde actuel </span>
+		<span id="balance" class="w3-col s2 w3-right-align">{$details.balance.toFixed(2)}</span>
+	</div>
+	
+	<br><br>
+	<DetailCard title="Paiements"
+	count={$details.payments.length}
+	sum={$details.paySum}
+	nonInteractive
+	items={$details.payments}
+	let:item={payment}>
+		<span slot="col-1"></span>
+		<span slot="col-2">{payment.message} {dayjs(payment.createdAt).fromNow()}</span>
+		<span slot="col-3">{payment.amount.toFixed(2)}</span>						
+	</DetailCard>
+
+	<br>
+	<DetailCard title="Achats"
+	count={$details.purchasesCount}
+	sum={$details.buySum}
+	items={$details.purchases}
+	let:item={article}>
+		<span slot="col-1">#{article.ref}</span>
+		<span slot="col-2">{article.name}</span>
+		<span slot="col-3">{article.price.toFixed(2)}</span>
+	</DetailCard>
+
+	<br>
+	<DetailCard title="Ventes"
+	free
+	count={$details.providedCount}
+	sum={$details.soldSum + $details.feeSum}>
+		
+		
+		<SearchTable
+			troc={troc._id}
+			fields={providedFields}
+			items={$details.provided}
+			on:select={selectArticle}
+			showAllFields preloaded
+			baseURL={`/articles?provider=${userId}&include_without_name=true&`}/>
+		
+		<ArticleDialog article={article} bind:dialog={articleDialog} on:patched={articlePatched}/>
+		
+		<!--
+		<Table style="width: 100%; border: none;">
+			<Head>
+				<Row>
+					<Cell>#</Cell>
+					<Cell>Désignation</Cell>
+					<Cell>Status</Cell>
+					<Cell>Frais</Cell>
+					<Cell>Prix</Cell>
+				</Row>
+			</Head>
+			<Body>
+				{#each $details.provided as article}
+					<Row>
+						<Cell>{article.ref}</Cell>
+						<Cell>{article.name}</Cell>
+						<Cell>{article.statut}</Cell>
+						<Cell>{(article.fee + article.margin).toFixed(2)}</Cell>
+						<Cell>{article.price}</Cell>
+					</Row>
+				{/each}
+			</Body>
+		</Table>
+		-->
+	</DetailCard>
+
+	<br>
+	<div on:click={print} class="w3-opacity w3-small underline-div w3-right" class:w3-hide={onPrint}>
 		<i class="fa fa-print"></i>
 		<span class="underline-span">imprimer</span>
 	</div>
 
-	<div class="w3-center w3-xlarge">
-		<span class="w3-opacity">Solde actuel </span>
-		<span id="balance">{$details.balance.toFixed(2)}</span>
-	</div>
+	<br><br><br><hr>
 
-	<br>
 
-	<div class="w3-row">
 
-		<div class="w3-col l3">
-			<div class="w3-margin-right">
-				<span class="w3-right w3-large">{$details.buySum.toFixed(2)}</span>
-				<h4>Achats</h4>
-
-				{#each $details.purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
-					<Article article={article} timeKey={'soldTime'}/>
-				{:else}
-					<span class="w3-opacity">Pas d'achat</span>
-				{/each}
-
-				<!-- Bouton pour prolongé la liste -->
-				{#if $details.purchases.length > LIMIT_LIST_A}
-					<div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
-						<span class="underline-span w3-opacity">
-							Afficher plus de résultat ({$details.purchases.length - LIMIT_LIST_A})
-						</span>
-					</div>
-				{/if}
-
-			</div>
-		</div>
-
-		<div class="w3-col l6">
 
 			<!-- Titre, Boutons propositions et somme -->
 			<div class="">
@@ -439,8 +482,8 @@
 			{/if}
 
 			{#if $details.provided.length}
-			<AutoPatch source="{`tableArticles${trocId}`}" path="/articles" body={modifiedArticles} />	
-			<table id="{`tableArticles${trocId}`}" class="w3-table w3-bordered w3-margin-top">
+			<AutoPatch source="{`tableArticles${troc._id}`}" path="/articles" body={modifiedArticles} />	
+			<table id="{`tableArticles${troc._id}`}" class="w3-table w3-bordered w3-margin-top">
 
 				<!-- En-têtes -->
 				<tr>
@@ -584,44 +627,12 @@
 			-->
 
 			<br>
-		</div>
 
-
-		<div class="w3-col l3">
-			<div class="w3-margin-left">
-				<span class="w3-right w3-large">{$details.paySum.toFixed(2)}</span>
-				<h4>Paiements</h4>
-
-				{#each $details.payments.slice(0, LIMIT_LIST_B) as payment (payment._id)}
-					<div class="list-element valided w3-padding" in:slide|local animate:flip="{{duration: 200}}">
-						{dayjs(payment.createdAt).fromNow()}
-						<br>
-						<b class="w3-tiny w3-right" style="line-height: 1;">{payment.amount.toFixed(2)}</b>
-						<span class="w3-tiny" style="line-height: 1;">{payment.message}</span>
-					</div>
-				{:else}
-					<span class="w3-opacity">Pas de paiement</span>
-				{/each}
-
-				<!-- Bouton pour prolongé la liste -->
-				{#if $details.payments.length > LIMIT_LIST_B}
-					<div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
-						<span class="underline-span w3-opacity">
-							Afficher plus de résultat ({$details.payments.length - LIMIT_LIST_B})
-						</span>
-					</div>
-				{/if}
-					
-				
-			</div>
-		</div>
-
-	</div>
 	<br>
 	
 </div>
 
-
+<!-- Dialogue d'information sur les tarifs -->
 {#if $details.tarif}
 	<Dialog bind:this={tarifInfoDialog}>
 		<Title>Vous êtes soumis au tarif <b>{$details.tarif.name}</b>: </Title>

@@ -2,4 +2,4 @@
     import EditForm from 'EditForm.svelte'
 </script>
 
-<EditForm createMode mapDelay="200"/>
+<EditForm createMode mapDelay="250"/>

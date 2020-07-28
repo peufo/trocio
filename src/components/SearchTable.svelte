@@ -11,20 +11,23 @@
     import MenuSurface from '@smui/menu-surface'
     import Icon from '@smui/textfield/icon'
     
-    import { addStatutField } from './utils'
+    import { addStatutField, getFields } from './utils'
     import RowsPromise from './RowsPromise.svelte'
     import SearchUser from './SearchUser.svelte'
     
     export let troc = ''
-    export let title = 'Titre de la table'
-    export let baseURL = '/search'
-    export let fields = []
+    export let title = ''
+    export let baseURL = '/articles?'
+    export let fields = getFields()
+    export let showAllFields = false
     export let items = []
+    export let preloaded = false
     export let selectedIndex = -1
+    $: console.log({fields})
 
     let fieldsMenu
+    let menus = {}
 
-    let data = []
     let dataMatchCount = 0
     let dataPromise
     let moreDataPromise
@@ -34,13 +37,21 @@
     let waitData //Timeout
 
     onMount(() => {
-        dataPromise = getData()
+        if (!preloaded) dataPromise = getData()
+        else {
+            dataMatchCount = items.length
+            noMoreData = true
+            dataPromise = Promise.resolve()
+        }
     })
 
     function openMenu(field) {
-        field.menu.setOpen(true)
+
+        if (menus[field.dataName]) menus[field.dataName].setOpen(true)
+
         if (field.typeMenu == 'search' || field.typeMenu == 'or_search') {
-            setTimeout(() => document.querySelector(`#search${field.dataName}Input input`).focus(), 200)
+            
+            document.querySelector(`#search${field.dataName}Input`).focus()
         }else if (field.typeMenu == 'user') {
             if (field.queryValue.length){//Reset selection
                 field.queryValue = ''
@@ -79,7 +90,6 @@
     }
 
     function reloadData() {
-        data = []
         skipData = 0
         dataPromise = getData()
     }
@@ -90,12 +100,13 @@
     }
     
     async function getData() {
-
-        let req = `${baseURL}?troc=${troc}&limit=${limitData}&skip=${skipData}`
+        
+        let req = `${baseURL}troc=${troc}&limit=${limitData}&skip=${skipData}`
+        
         fields.filter(f => f.queryValue.length).forEach(f => {
             req += `&${f.typeMenu}_${f.dataName.split('.')[0]}=${f.queryValue}`
         })
-
+        
         let res = await fetch(req)
         let json = await res.json()
         let newItems = []
@@ -103,7 +114,7 @@
         if(res.ok) {
             
             dataMatchCount = json.dataMatchCount
-            newItems = addStatutField(json.data) // TODO: server-side
+            newItems = addStatutField(json.data, '') // TODO: server-side
 
             if (!!skipData) {
                 items = [...items, ...newItems]
@@ -124,34 +135,50 @@
         dispatch('select', items[index])
     }
 
+    let menu
+
 </script>
 
 <br>
 <div style="display: flex; justify-content: center; flex-wrap: wrap-reverse;">
     <div style="display: flex; flex-direction: column;">
         <span class="w3-large">{title}</span>
-        <DataTable class="clickable" style="min-width: 690px; overflow-x: visible;">
+        <DataTable class="clickable" style="min-width: 690px; overflow-x: visible; border: none;">
             <Head>
                 <Row>
-                    {#each fields.filter(f => f.checked) as field}
-                        <Cell class="headCell" on:click={() => openMenu(field)}>
+                    {#each fields.filter(f => showAllFields || f.checked) as field}
+                        <Cell class="headCell" on:click={() => openMenu(field)}  style={`width: ${field.cellWidth}px;`}>
                             <Text>
                                 <PrimaryText>{field.label}</PrimaryText>
                                 <SecondaryText>
-                                    {#if field.queryValue.length}
-                                        {#if field.typeMenu == 'search'  || field.typeMenu === 'or_search'}
+                                    
+                                    {#if field.typeMenu == 'search'  || field.typeMenu == 'or_search'}
+
+                                        {#if field.queryValue.length || field.isFocus}
                                             <i class="fas fa-search"></i>
-                                            {field.queryValue}
-                                        {:else if (field.typeMenu == 'filter'  || field.typeMenu == 'sort' || field.typeMenu == 'user')}
-                                            {@html field.queryIcon}
-                                            {field.queryLabel}
                                         {/if}
+
+                                        <input
+                                        id={`search${field.dataName}Input`}
+                                        class="searchInput"
+                                        type="text"
+                                        on:input={searchInput}
+                                        on:focus={() => field.isFocus = true}
+                                        on:blur={() => field.isFocus = false}
+                                        bind:value={field.queryValue}>
+
+                                    {:else if field.queryValue.length && (field.typeMenu == 'filter'  || field.typeMenu == 'sort' || field.typeMenu == 'user')}
+                                        {@html field.queryIcon}
+                                        {field.queryLabel}
                                     {/if}
+                                    
                                 </SecondaryText>
                             </Text>
+                            <!--
                             {#if field.typeMenu == 'search' || field.typeMenu === 'or_search'}
-                                <MenuSurface bind:this={field.menu} style="min-width: 140px;">
+                                <MenuSurface bind:this={menus[field.dataName]} style="min-width: 140px;">
                                     <div style="margin: 1em;">
+                                        
                                         <Textfield 
                                         id={`search${field.dataName}Input`}
                                         on:input={searchInput}
@@ -160,10 +187,12 @@
                                         withLeadingIcon>
                                             <Icon class="material-icons">search</Icon>
                                         </Textfield>
+                                        
                                     </div>
                                 </MenuSurface>
-                            {:else if field.typeMenu == 'sort' || field.typeMenu == 'filter'}
-                                <Menu bind:this={field.menu}>
+                            -->
+                            {#if field.typeMenu == 'sort' || field.typeMenu == 'filter'}
+                                <Menu bind:this={menus[field.dataName]}>
                                     <List>
                                         {#each field.options as option, i}
                                             <Item on:click={() => selectOption(field, i)}>
@@ -174,7 +203,7 @@
                                     </List>
                                 </Menu>
                             {:else if field.typeMenu == 'user'}
-                                <MenuSurface bind:this={field.menu} on:click={e => e.stopPropagation()} style="overflow: visible; min-width: 200px;">
+                                <MenuSurface bind:this={menus[field.dataName]} on:click={e => e.stopPropagation()} style="overflow: visible; min-width: 200px;">
                                     <div style="margin: 1em;">
                                         <SearchUser
                                         id={field.dataName}
@@ -191,11 +220,11 @@
             </Head>
             <Body>
                 {#await dataPromise}
-                    <RowsPromise cellsWidth={fields.filter(f => f.checked).map(f => f.cellWidth)}></RowsPromise>
+                    <RowsPromise cellsWidth={fields.filter(f => showAllFields || f.checked).map(f => f.cellWidth)}></RowsPromise>
                 {:then}
                     {#each items as item, index}
-                        <Row style="text-align: left;" on:click={() => select(index)} class={selectedIndex == index ? 'row-selected' : ''}>
-                            {#each fields.filter(f => f.checked) as field}
+                        <Row style="text-align: left; border: none;" on:click={() => select(index)} class={selectedIndex == index ? 'row-selected' : ''}>
+                            {#each fields.filter(f => showAllFields || f.checked) as field}
                                 <Cell numeric={field.dataType == 'number'}>
                                     {#if field.dataName.indexOf('.') === -1}
 
@@ -210,7 +239,7 @@
                                         {/if}
 
                                     {:else} <!-- Deux dimensions (Object)-->
-
+            
                                         {#if !item[field.dataName.split('.')[0]] || !item[field.dataName.split('.')[0]][field.dataName.split('.')[1]]}
                                             -
                                         {:else if field.dataType == 'date'}
@@ -228,11 +257,12 @@
                     {/each}
 
                     {#await moreDataPromise}
-                        <RowsPromise cellsWidth={fields.filter(f => f.checked).map(f => f.cellWidth)}></RowsPromise>
+                        <RowsPromise cellsWidth={fields.filter(f => showAllFields || f.checked).map(f => f.cellWidth)}></RowsPromise>
                     {/await}
 
                 {/await}
-            </Body>  
+            </Body> 
+            
         </DataTable>
 
         <div style="align-self: flex-end;" class="w3-margin-top">
@@ -253,21 +283,37 @@
 
     </div>
 
-    <div class="w3-margin-left w3-margin-bottom" style="align-self: flex-end; transform: translate(0px, 26.67px);">
-        <Button on:click={() => fieldsMenu.setOpen(true)} variant="outlined" color="secondary">
-            Champs
-        </Button>
-        <MenuSurface bind:this={fieldsMenu}>
-            <div style="margin: 1em;">
-                {#each fields as {label, checked, disabled}}
-                    <FormField style="display: flex;">
-                        <Checkbox bind:checked={checked} bind:disabled={disabled}/>
-                        <span slot="label">{label}</span>
-                    </FormField>
-                {/each}
-            </div>
-        </MenuSurface>
-    </div>
+    {#if !showAllFields}
+        <div class="w3-margin-left w3-margin-bottom" style="align-self: flex-end; transform: translate(0px, 26.67px);">
+            <Button on:click={() => fieldsMenu.setOpen(true)} variant="outlined" color="secondary">
+                Champs
+            </Button>
+            <MenuSurface bind:this={fieldsMenu}>
+                <div style="margin: 1em;">
+                    {#each fields as {label, checked, disabled}}
+                        <FormField style="display: flex;">
+                            <Checkbox bind:checked={checked} bind:disabled={disabled}/>
+                            <span slot="label">{label}</span>
+                        </FormField>
+                    {/each}
+                </div>
+            </MenuSurface>
+        </div>
+    {/if}
 
 </div>
 <br>
+
+<style>
+
+    .searchInput {
+        width: calc(100% - 20px);
+        min-width: 40px;
+        border: none;
+    }
+
+    .searchInput:focus {
+        outline: none;
+    }
+
+</style>
