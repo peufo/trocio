@@ -273,10 +273,9 @@
 	free
 	bind:show={providedShow}
 	on:close={closeProvidedTable}
-	count={$details.providedCount}
+	count={$details.provided.length}
 	sum={$details.soldSum + $details.feeSum}>
 		
-
 		<span slot="head">
 			<!-- Provide button -->
 			<span class:w3-hide={onPrint}>
@@ -291,30 +290,21 @@
 					</Button>
 				{/if}
 
-				<!-- Bontons pour proposer des articles -->
+				<!-- Bonton pour proposer un articles -->
 				{#await createArticlePromise}
-					<Button color="secondary" >
+					<Button color="secondary" dense >
 						<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
 					</Button>
 				{:then}
 					{#if !importArticlesListOpen}
-						<!--
-							<Button
-							on:click="{() => createArticlePromise = createArticle()}"
-							>
-								Proposer un article
-							</Button>
-						-->
-						
 						<Button dense
 						on:click={clickOpenCreateArticle}>
 							Proposer un article
 						</Button>
-						
-						
 					{/if}
 				{/await}
 			
+				<!-- Bonton pour proposer une liste d'articles -->
 				{#if !importArticlesListOpen}
 					<Button on:click={clickOpenImportArticle} dense>
 						<i class="fas fa-list"></i>

@@ -1,12 +1,15 @@
 :root {
     overflow-y: scroll;
-    font-family: Roboto,sans-serif;
+    font-family: Roboto,sans-serif!important;
 }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
 ::-webkit-scrollbar-thumb { background: #888; }
 ::-webkit-scrollbar-thumb:hover { background: #555; }
-a { text-decoration: none; }
+
+a {
+    text-decoration: none;
+}
 
 textarea {
     margin-top: 10px;
