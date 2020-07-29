@@ -35,6 +35,7 @@ export function goPrint(id) {
 	*/
 }
 
+/*
 export function formatPrice(e) {
 	let val = e.target.value.match(/\d+([,\.]\d{0,2})?/)
 	if (val) {
@@ -42,7 +43,41 @@ export function formatPrice(e) {
 	}else{
 		val = ''
 	} 
-	e.target.value = val
+
+	console.log('Format price:', val, Number(val).toFixed(2))
+	e.target.value = Number(val).toFixed(2)
+	return 
+}
+*/
+export function formatPrice(node) {
+
+	function format(fixed = false) {
+		let val = node.value.match(/\d+([,\.]\d{0,2})?/)
+		if (val) {
+			val = val[0].replace(',', '.')
+		}else{
+			val = ''
+		} 
+
+		console.log('Format price:', val)
+
+		node.value = fixed ? Number(val).toFixed(2) : val
+		return val
+	}
+
+	node.setAttribute('type', 'text')
+	node.style.textAlign = 'right'
+
+	format(true)
+	node.addEventListener('input', () => format(false))
+	node.addEventListener('blur', () => format(true))
+	
+	return {
+		destroy() {
+			node.removeEventListener('input', () => format(false))
+			node.removeEventListener('blur', () => format(true))
+		}
+	}
 }
 
 export const STATUTS = ['Proposé', 'Validé', 'Refusé', 'Vendu', 'Récupéré']

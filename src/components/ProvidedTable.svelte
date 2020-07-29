@@ -13,7 +13,6 @@
     import { getFee, getMargin } from '../../api/controllers/troc_utils'
     const uuid = uuidv4()
 
-
 	let modifiedArticles = []			//Array for minimize PATCH request on AutoPatch.svelte
     let clearModifiedArticles			//Timeout
     
@@ -90,7 +89,7 @@
             <span>#</span>
         </th>
 
-        <th>
+        <th style="width: 60%; min-width: 170px;">
             <span>Articles</span>
         </th>
 
@@ -113,15 +112,17 @@
 
         <th class="clickable" on:click="{() => tarifInfoDialog.open()}">
             <span>Frais</span><br>
-            <span class="w3-small fee">{-$details.feeSum.toFixed(2)}</span>
+            <span class="w3-small fee w3-right">
+                {-$details.feeSum.toFixed(2)}
+            </span>
         </th> 
 
-        <th>
+        <th style="max-width: 100px;">
             <span>Prix</span><br>
-            <span class="w3-small sold">{$details.soldSum.toFixed(2)}</span>
+            <span class="w3-small sold w3-right">
+                {$details.soldSum.toFixed(2)}
+            </span>
         </th>
-
-        <th></th><!--remove-->
 
     </tr>
 
@@ -151,7 +152,7 @@
 
 
             <!-- Designation -->
-            <td class:tdInput={!article.valided} style="width: 50%; min-width: 170px;">
+            <td class:tdInput={!article.valided}>
                 {#if article.valided}
                     <span class:recovered={article.recover}>
                         {article.name}
@@ -159,10 +160,9 @@
                 {:else}
                     <textarea
                     rows="3" style="resize: none;"
-                    on:input="{e =>  addModifiedArticle(e, article)}"
+                    on:input={e =>  addModifiedArticle(e, article)}
                     class:lastInputName="{i == $details.provided.length-1}"  
                     bind:value={article.name}
-                    type="text" 
                     class="w3-input unvalided" 
                     placeholder="Désignation"></textarea>
                 {/if}
@@ -179,16 +179,18 @@
             </td>
 
             <!-- Prix -->
-            <td class="price" class:tdInput={!article.valided} style="max-width: 100px;">
+            <td class:tdInput={!article.valided}>
                 {#if article.valided}
-                    <span class:recovered={article.recover} class:sold={article.sold}>
+                    <span class="w3-right" class:recovered={article.recover} class:sold={article.sold}>
                         {Number(article.price).toFixed(2)}
                     </span>
                 {:else}
                     <input
-                    bind:value={article.price}
-                    on:input="{e => {formatPrice(e); addModifiedArticle(e, article)}}"
+                    value={article.price}
+                    use:formatPrice
+                    on:input={e => addModifiedArticle(e, article)}
                     type="text"
+                    style="text-align: right;"
                     class="price-input w3-input unvalided">
                 {/if}
             </td>
@@ -250,10 +252,6 @@
 {/if}
 
 <style>
-	.removeCell {
-		position: absolute;
-    	right: 0px;
-	}
 
 	td {
 		min-height: 61px;
@@ -265,7 +263,7 @@
         padding: 6px 0px;
         margin-top: 0px;
         border-radius: 4px;
-        width: 80%;
+        width: 90%;
     }
 
     .removeIcon i {
