@@ -45,13 +45,15 @@ export function formatPrice(e) {
 	e.target.value = val
 }
 
+export const STATUTS = ['Proposé', 'Validé', 'Refusé', 'Vendu', 'Récupéré']
+
 export function addStatutField(articles, context = 'organisator') {
 	return articles.map(art => {
-		art.statut = 'Proposé'
-		if (art.valided) art.statut = 'Validé'
-		if (art.refused) art.statut = 'Refusé'
-		if (art.sold) art.statut = 'Vendu'
-		if (art.recover) art.statut = context == 'organisator' ? 'Rendu' : 'Récupéré'
+		art.statut = STATUTS[0]
+		if (art.valided) art.statut = STATUTS[1]
+		if (art.refused) art.statut = STATUTS[2]
+		if (art.sold) art.statut = STATUTS[3]
+		if (art.recover) art.statut = STATUTS[4]
 		return art
 	})	
 }

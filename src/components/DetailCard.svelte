@@ -1,6 +1,7 @@
 
 <script>
-    import { fade } from 'svelte/transition'
+    import { createEventDispatcher } from 'svelte'
+    import { slide } from 'svelte/transition'
     import List, { Item, Text } from '@smui/list'
 
     import { details } from './stores.js'
@@ -13,66 +14,60 @@
     export let items = []
     export let nonInteractive = false
 
-    function clickHandler() {
+    let dispatch = createEventDispatcher()
+
+    function clickHandler(e) {
+        if (!e.target.classList.contains('clickHandler')) return
         show = !show
+        if (show) dispatch('open')
+        else dispatch('close')
     }
 
 </script>
 
-<div class="simple-card" class:show>
+<div class="simple-card">
 
-    <div on:click={clickHandler} class="clickable w3-row header">
-        <div class="w3-col s1 w3-right-align w3-large " style="padding-right: 20px;">{count}</div>
-        <div class="w3-col s9 w3-large ">
-            {title}
-            &nbsp;<i class="fas fa-chevron-right w3-opacity" class:show></i>
+    <div on:click={clickHandler} class="clickable w3-row header clickHandler">
+        <div class="w3-col s1 w3-right-align w3-large clickHandler" style="padding-right: 20px;">{count}</div>
+        <div class="w3-col s9 w3-large clickHandler">
+            <i class="fas fa-chevron-right w3-opacity clickHandler" class:show></i>
+            &nbsp;{title}
+            
+            <slot name="head"></slot>
+           
         </div>
-        <span class="w3-col s2 w3-right-align w3-large ">{sum.toFixed(2)}</span>
+        <span class="w3-col s2 w3-right-align w3-large clickHandler">{sum.toFixed(2)}</span>
     </div>
 
-    
-    <div class="content" class:show>
-        {#if free}
-            <slot></slot>
-        {:else}
-            <List style="padding: 7px;" {nonInteractive}>
-                {#each items as item}
-                    <Item style="padding: 0 6px">
-                        <Text class="w3-col s1"><slot name="col-1" {item}></slot></Text>
-                        <Text class="w3-col s9"><slot name="col-2" {item}></slot></Text>
-                        <Text class="w3-col s2 w3-right-align"><slot name="col-3" {item}></slot></Text>
-                    </Item>
-                {/each}
-            </List>
-        {/if}
-    </div>
+    {#if show}
+        <div transition:slide|local>
+            {#if free}
+                <slot></slot>
+            {:else}
+                
+                <List style="padding: 7px;" {nonInteractive}>
+                    {#each items as item}
+                        <Item style="padding: 0 6px">
+                            <Text class="w3-col s1"><slot name="col-1" {item}></slot></Text>
+                            <Text class="w3-col s9"><slot name="col-2" {item}></slot></Text>
+                            <Text class="w3-col s2 w3-right-align"><slot name="col-3" {item}></slot></Text>
+                        </Item>
+                    {/each}
+                </List>
+            {/if}
+        </div>
+    {/if}
     
 
 </div>
 
 <style>
 
-    .content {
-        opacity: 0;
-        transition: .5s;
-    }
-
-    .content.show {
-        opacity: 1;
-    }
-
     .simple-card {
 		border: 1px solid #eee;
         border-radius: 4px;
-        overflow: hidden;
-        height: 57px;
         transition: .3s;
         box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-    }
-
-    .simple-card.show {
-        height: inherit;
-        overflow: initial;
     }
 
     .simple-card:hover {
@@ -81,6 +76,7 @@
 
     .header {
         padding: 15px 7px;
+        font-size: 32px; 
     }
 
     .fa-chevron-right {
