@@ -22,14 +22,15 @@
 
 	let tarifInfoDialog
 
-    const LIMIT_LIST_INIT = 10 //Nombre d'élément d'une liste afficher initialement
-    const LIMIT_LIST_INIT_SOLD = 50 //Nombre d'élément d'une liste afficher initialement
-    let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste (Achat)
-    let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste (Paiement)
-    let LIMIT_LIST_C = LIMIT_LIST_INIT_SOLD //Nombre d'élément afficher pour la seconde liste (Vente)	
+    const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
+    let limitList= LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste (Achat)
+
 
 	let statutFilterMenu
-	let statutFilter = -1
+    let statutFilter = -1
+    
+    let provided = [] 
+    $: provided = $details.provided.filter(art => statutFilter === -1 || STATUTS[statutFilter] === art.statut).sort(sortByUpdatedAt)
     
 	//For AutoPatch
 	function addModifiedArticle(e, art) {
@@ -126,7 +127,7 @@
 
     <!-- Corp -->
     <!-- TODO: Comparaison de string pour STATUTS bof -->
-    {#each $details.provided.filter(art => statutFilter === -1 || STATUTS[statutFilter] === art.statut).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i (article._id)}
+    {#each provided.slice(0, limitList) as article, i (article._id)}
 
         <tr transition:slide|local>
             
@@ -200,20 +201,17 @@
     <span class="w3-opacity">Pas d'article proposé</span>
 {/if}
 
-<br>
 
 <!-- Bouton pour prolongé la liste -->
-<!-- TODO: reparer
-    {#if $details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length > LIMIT_LIST_C}
-        <div on:click="{() => LIMIT_LIST_C += 50}" class="underline-div w3-center">
-            <span class="underline-span w3-opacity">
-                Afficher plus de résultat ({$details.provided.filter(art => statutFilter === -1 || statutFilter === getStatus(art)).length - LIMIT_LIST_C})
-            </span>
-        </div>
-    {/if}
+{#if provided.length > limitList}
+    <div on:click="{() => limitList += 50}" class="underline-div w3-center">
+        <span class="underline-span w3-opacity">
+            Afficher plus de résultat ({provided.length - limitList})
+        </span>
+    </div>
+{/if}
 
--->
-
+<br>
 
 <!-- Dialogue d'information sur les tarifs -->
 {#if $details.tarif}

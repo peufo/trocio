@@ -74,9 +74,6 @@
 		let noticePatch = noticeEdit
 		noticeEdit = null
 		noticePatch.update({type: 'info', title: 'Sauvegarde...', icon: 'fas fa-sync-alt w3-spin', hide: false})
-		console.log({noticeEdit, noticePatch, patchCount})
-		//if (notice) notice.update(loadOptions)
-		//else notice = notify.info(loadOptions)
 
 		patchCount++
 		const res = await fetch(path, getHeader(body, 'PATCH'))
