@@ -1,15 +1,18 @@
 <script>
-	import { slide } from 'svelte/transition'
+
+	import { slide, fade } from 'svelte/transition'
+
 	import Dialog, {Title, Content} from '@smui/dialog'
 	import Button from '@smui/button'
+	import notify from './notify.js'
+
 
 	import SearchTable from './SearchTable.svelte'
 	import ArticleDialog from './ArticleDialog.svelte'
 	import ProvidedTable from './ProvidedTable.svelte'
 
 	import { trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
-	//import { getHeader, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils'
-	import { getFields, addStatutField, formatPrice } from './utils'
+	import { getFields, addStatutField, formatPrice, getHeader } from './utils'
 	
 	import Logo from './Logo.svelte'
 	import DetailCard from './DetailCard.svelte'
@@ -33,7 +36,6 @@
 
 	let articleDialog
 	let article = {} //Article selected
-
 
 	let onPrint = false
 
@@ -62,56 +64,72 @@
 		setTimeout(() => {onPrint = false; LIMIT_LIST_C = 50}, 400)
 	}
 
-	async function createArticle() {
+	async function createArticle(e) {
 
 		if ($details.tarif && $details.provided.length + 1 > $details.tarif.maxarticles) {
-			alert(`Désolé, vous avez proposé trop d'article`)
-			tarifInfoDialog.open()
+			notify.warning({
+				title: `Trop d'articles`,
+				text: `Vous avez atteint le nombre maximal d'articles pouvant être proposés.\nRenseignez-vous auprès de l'organisateur pour lever cette limite.`
+			})
 			return
 		}
+		
+		try {
+			let body = {troc: troc._id, provider: userId, name: newArticleName, price: newArticlePrice}
+			let res = await fetch('/articles', getHeader(body))
+			let json = await res.json()
+			if (json.success) {
+				
+				$details.provided = [...$details.provided, addStatutField(json.message[0])]
+				
+				newArticleName = ''
+				newArticlePrice = ''
+				document.getElementById(`newArticleName`).focus()
 
-		let res = await fetch('/articles', getHeader({troc: troc._id, provider: userId, name: newArticleName, price: newArticlePrice}))
-		let json = await res.json()
-		if (json.success) {
-			
-			$details.provided = [...$details.provided, json.message[0]]
-			//Reset le formulair mais reste descue 
-			newArticleName = ''
-			newArticlePrice = ''
-			document.getElementById(`newArticleName`).focus()
+				notify.success('Article ajouté')
 
-			notify.notify('Article ajouté', 'fas fa-check')
-
-			return
-			
-		}else alert(json.message)
+				return
+				
+			}else notify.error(json.message)
+		} catch (error) {
+			console.error(error)
+		}
+		
 		
     }
 
     async function createImportArticles() {
 
 		if ($details.tarif && $details.provided.length + importArticles.length > $details.tarif.maxarticles) {
-			alert(`Désolé, vous avez proposé trop d'article`)
-			tarifInfoDialog.open()
+			notify.warning({
+				title: `Trop d'articles`,
+				text: `Vous avez atteint le nombre maximal d'articles pouvant être proposés.\nRenseignez-vous auprès de l'organisateur pour lever cette limite.`
+			})
 			return
 		}
 
-		//TODO: Calcul fee... Bad idea on frontside ???
-		importArticles.forEach(art => art.fee = getFee(art, $details.tarif))
+		try {
 
-		let res = await fetch('/articles', getHeader(importArticles))
-		let json = await res.json()
-		if (json.success) {
-			
-			$details.provided = [...$details.provided, ...json.message]
-			//Hide importe articles input
-			importArticlesListOpen = false
-			importArticlesValue = ''
-			importArticles = []
+			let res = await fetch('/articles', getHeader(importArticles))
+			let json = await res.json()
+			if (json.success) {
+				let articlesImported = json.message
 
-			return
+				$details.provided = [...$details.provided, ...addStatutField(articlesImported)]
+				//Hide importe articles input
+				importArticlesListOpen = false
+				importArticlesValue = ''
+				importArticles = []
 
-		}else alert(json.message)
+				notify.success(`${articlesImported.length} articles ajoutés`)
+
+				return
+
+			}else notify.error(json.message)
+		} catch (error) {
+			console.error(error)
+		}
+		
 
     }
 
@@ -227,16 +245,16 @@
 </script>
 
 <svelte:head>
+	<!-- JSON to CSV -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
 </svelte:head>
-
 
 {#await $detailsPromise}
 	<div style="position: relative; height: 500px">
 		<Logo/>
 	</div>
 {:then}
-<div id="resume-container" style="max-width: 700px; margin: auto;">
+<div id="resume-container" in:fade|local style="max-width: 700px; margin: auto;">
 
 	<br>
 	<div class="w3-row w3-xlarge" style="padding-left: 7px;">
@@ -320,7 +338,7 @@
 						</Button>
 					{:then}
 						<Button on:click="{() => createImportArticlesPromise = createImportArticles()}" variant="raised" style="color: white;">
-							Valider la proposition des {importArticles.length} articles
+							Proposer les {importArticles.length} articles
 						</Button>
 					{/await}
 				{/if}
@@ -332,17 +350,13 @@
 				<Title>Proposer un article</Title>
 				<Content>
 					<textarea id="newArticleName" cols="30" rows="3" placeholder="Désignation" bind:value={newArticleName}></textarea>
-					<input placeholder="Prix" style="width: 50%; height: 36px;" bind:value={newArticlePrice} on:input={formatPrice} />
-					<!--
-					TODO: TextField failed
-						<Textfield on:input={console.log}/>
-					-->
+					<input use:formatPrice style="width: 30%; height: 36px;" bind:value={newArticlePrice}  />
 					{#await createArticlePromise}
 						<Button color="secondary" variant="outlined" class="w3-right">
 							<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
 						</Button>
 					{:then}
-						<Button variant="outlined" class="w3-right" on:click={() => createArticlePromise = createArticle()}>
+						<Button variant="outlined" class="w3-right" on:click={e => createArticlePromise = createArticle(e)}>
 							Valider
 						</Button>
 					{/await}

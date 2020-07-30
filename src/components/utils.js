@@ -1,7 +1,6 @@
 //import printJS from 'print-js'
 import { troc } from './stores'
 import { quintOut, cubicOut } from 'svelte/easing'
-import { element } from 'svelte/internal'
 
 export function getHeader(body, verb = 'POST') {
 	return {
@@ -59,13 +58,13 @@ export function formatPrice(node) {
 			val = ''
 		} 
 
-		console.log('Format price:', val)
-
-		node.value = fixed ? Number(val).toFixed(2) : val
+		if (Number(val) === 0) node.value = ''
+		else node.value = fixed ? Number(val).toFixed(2) : val
 		return val
 	}
 
 	node.setAttribute('type', 'text')
+	node.setAttribute('placeholder', '0.00')
 	node.style.textAlign = 'right'
 
 	format(true)
@@ -83,14 +82,19 @@ export function formatPrice(node) {
 export const STATUTS = ['Proposé', 'Validé', 'Refusé', 'Vendu', 'Récupéré']
 
 export function addStatutField(articles, context = 'organisator') {
-	return articles.map(art => {
+	let isArray = Array.isArray(articles)
+	articles = isArray ? articles : [articles]
+	articles = articles.map(art => {
 		art.statut = STATUTS[0]
 		if (art.valided) art.statut = STATUTS[1]
 		if (art.refused) art.statut = STATUTS[2]
 		if (art.sold) art.statut = STATUTS[3]
 		if (art.recover) art.statut = STATUTS[4]
 		return art
-	})	
+	})
+
+	return isArray ? articles : articles[0]
+
 }
 
 // SVELTE Transition

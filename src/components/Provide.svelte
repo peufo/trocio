@@ -13,7 +13,8 @@
 	dayjs.locale('fr')
     dayjs.extend(relativeTime)
 
-    import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils.js'
+    //import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils.js'
+    import { getHeader, crossfadeConfig, sortByUpdatedAt, goPrint, formatPrice } from './utils.js'
     import TagsPrint from './TagsPrint.svelte'
     import Article from './Article.svelte'
 
@@ -104,13 +105,13 @@
         let date = new Date()
         articlesCreated.forEach(art => {
             art.valided = date
-            art.fee = getFee(art, tarif)
-            art.margin = getMargin(art, tarif)
+            //art.fee = getFee(art, tarif)
+            //art.margin = getMargin(art, tarif)
         })
         articlesValided.forEach(art => {
             art.valided = date
-            art.fee = getFee(art, tarif)
-            art.margin = getMargin(art, tarif)
+            //art.fee = getFee(art, tarif)
+            //art.margin = getMargin(art, tarif)
         })
         
         if (articlesCreated.length) {

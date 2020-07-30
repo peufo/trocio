@@ -185,3 +185,12 @@ textarea {
 .mdc-linear-progress__buffer {
     background-color:rgb(100, 100, 100)!important;
 }
+
+[data-pnotify] .material-container {
+    border-radius: 6px;
+}
+
+[data-pnotify] .material-icon {
+    transform: translate(-4px, 4px);
+}
+

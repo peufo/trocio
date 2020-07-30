@@ -4,8 +4,6 @@
     import { slide } from 'svelte/transition'
     import List, { Item, Text } from '@smui/list'
 
-    import { details } from './stores.js'
-
     export let count = 0
     export let title = ''
     export let sum = 0
@@ -76,7 +74,7 @@
 
     .header {
         padding: 15px 7px;
-        font-size: 32px; 
+        line-height: 32px; 
     }
 
     .fa-chevron-right {

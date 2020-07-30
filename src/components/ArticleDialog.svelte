@@ -9,7 +9,8 @@
     import List, { Item, Graphic, Meta, Text, PrimaryText, SecondaryText} from '@smui/list'
 
     import { troc, user } from './stores'
-    import { formatPrice, getFee, getMargin, getHeader } from './utils'
+    //import { formatPrice, getFee, getMargin, getHeader } from './utils'
+    import { formatPrice, getHeader } from './utils'
     import SearchUser from './SearchUser.svelte'
 
     export let dialog
@@ -111,8 +112,10 @@
     }
 
     function updateFeeAndMargin() {
+        /* TODO: Review
         articleEdited.fee = getFee(articleEdited, tarif)
         articleEdited.margin = getMargin(articleEdited, tarif)
+        */
     }
 
     async function getTarif(trocId, userId) {

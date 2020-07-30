@@ -1,13 +1,14 @@
 <script>
     import { v4 as uuidv4 } from 'uuid'
+    import { slide } from 'svelte/transition'
 	import Dialog, {Title, Content} from '@smui/dialog'
     import Menu from '@smui/menu'
     import List, { Item, Text } from '@smui/list'
 	import Textfield from '@smui/textfield'
-    import Notify from './Notify.svelte'
     
     import AutoPatch from './AutoPatch.svelte'
-    
+    import notify from './notify.js'
+
     import { getHeader, sortByUpdatedAt, formatPrice, STATUTS } from './utils'
     import { trocDetails as details } from './stores.js'
     import { getFee, getMargin } from '../../api/controllers/troc_utils'
@@ -29,8 +30,6 @@
 
 	let statutFilterMenu
 	let statutFilter = -1
-
-	let notify //Bind to notify component
     
 	//For AutoPatch
 	function addModifiedArticle(e, art) {
@@ -65,19 +64,18 @@
 		let json = await res.json()
 		if (json.success) {
 			let index = $details.provided.map(art => art._id).indexOf(artId)
-			if (index == -1) return alert('Index not found')
+			if (index == -1) return notify.error('Index not found')
 			$details.provided.splice(index, 1)
 			$details.provided = $details.provided
 
-			notify.notify('Article supprimé', 'far fa-trash-alt')
+            notify.success({title: 'Article supprimé', icon: 'far fa-trash-alt'})
 
 			return
-		}else alert(json.message)
+		}else notify.error(json.message)
     }
 
 </script>
 
-<Notify bind:this={notify}/>
 
 {#if $details.provided.length}
 <AutoPatch source="{`tableArticles${uuid}`}" path="/articles" body={modifiedArticles} />	
@@ -128,9 +126,9 @@
 
     <!-- Corp -->
     <!-- TODO: Comparaison de string pour STATUTS bof -->
-    {#each $details.provided.filter(art => statutFilter === -1 || STATUTS[statutFilter] === art.statut).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i}
+    {#each $details.provided.filter(art => statutFilter === -1 || STATUTS[statutFilter] === art.statut).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_C) as article, i (article._id)}
 
-        <tr>
+        <tr transition:slide|local>
             
             <!-- Ref # -->
             <td>
@@ -142,7 +140,7 @@
                 on:mouseleave={() => articleWaitValidationForDelete = -1}
                 on:click={() => clickDeleteArticle(article._id)}>
                     {#await deleteArticlePromise}
-                        <i class="fa fa-times w3-spin"></i>
+                        <i class="fas fa-recycle w3-spin"></i>
                     {:then}
                         <i class="far fa-trash-alt"></i>
                     {/await}

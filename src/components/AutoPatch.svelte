@@ -1,9 +1,12 @@
 <script>
-	import { onMount, onDestroy } from 'svelte'
+
+	//TODO: Can become a simple module
+
+	import { onMount } from 'svelte'
 
 	import { troc } from './stores'
 	import { getHeader } from './utils'
-	import Notify from './Notify.svelte'
+	import notify from './notify'
 
 	export let body = {} 
 	export let source = ''
@@ -12,10 +15,12 @@
 	export let changeFlag = false
 	export let trocRefresh = false
 
+	let noticeEdit = null
+
 	const WAIT_FOR_PATCH = 600
 	let waiting
 	let onModify = false
-	let patched
+	let patchPromise
 	let patchCount = 0
 
 	let waitingOnAction // For hide
@@ -50,6 +55,8 @@
 	}
 
 	function change() {
+		if (!noticeEdit) noticeEdit = notify.info({title: 'Modification...', icon : 'far fa-edit', hide: false,})
+		if(invalid) noticeEdit.update({type: 'notice', title: invalid, icon: 'fas fa-exclamation'})
 		onModify = true
 		onAction = true
 		clearTimeout(waiting)
@@ -59,10 +66,18 @@
 
 	function getPatched() {
 		onModify = false
-		patched = patch()
+		patchPromise = patch()
 	}
 
 	async function patch() {
+
+		let noticePatch = noticeEdit
+		noticeEdit = null
+		noticePatch.update({type: 'info', title: 'Sauvegarde...', icon: 'fas fa-sync-alt w3-spin', hide: false})
+		console.log({noticeEdit, noticePatch, patchCount})
+		//if (notice) notice.update(loadOptions)
+		//else notice = notify.info(loadOptions)
+
 		patchCount++
 		const res = await fetch(path, getHeader(body, 'PATCH'))
 		const json = await res.json()
@@ -72,32 +87,15 @@
 				if (trocRefresh) troc.refresh(json.message)
 				waitingOnAction = setTimeout(() => onAction = false, 1000)
 			}
+			noticePatch.update({type: 'success', title: 'Sauvegardé', icon: 'fas fa-check', hide: true})
+			noticePatch = null
 			return 
 		}else{
+			noticePatch.update({type: 'error', title: json.message, icon: 'fas fa-bug', hide: true})
+			noticePatch = null
 			throw Error(json.message)
 		}
 	}
 
 
 </script>
-
-<Notify display={onAction}>
-	{#if !!invalid}
-		<i class="fas fa-exclamation-triangle"></i>
-		{invalid}
-	{:else if onModify}
-		<i class="far fa-edit"></i>
-		Modification...	
-	{:else}
-		{#await patched}
-			<i class="fas fa-sync-alt w3-spin"></i>
-			&nbsp;Sauvegarde...
-		{:then}
-			<i class="fas fa-check"></i>
-			&nbsp;Sauvegardé
-		{:catch error}
-			<i class="fas fa-bug"></i>
-			{error}
-		{/await}
-	{/if}
-</Notify>
