@@ -28,9 +28,19 @@
 
 	let statutFilterMenu
     let statutFilter = -1
+
+    let searchName = ''
+    let searchNameFocused = false
+    let searchRef = ''
+    let searchRefFocused = false
     
     let provided = [] 
-    $: provided = $details.provided.filter(art => statutFilter === -1 || STATUTS[statutFilter] === art.statut).sort(sortByUpdatedAt)
+    $: provided = $details.provided.filter(art => {
+                        let ok = statutFilter === -1 || STATUTS[statutFilter] === art.statut
+                        if (ok && searchName) ok = art.name.indexOf(searchName) > -1
+                        if (ok && searchRef) ok = art.ref.indexOf(searchRef) > -1
+                        return ok
+                    }).sort(sortByUpdatedAt)
     
 	//For AutoPatch
 	function addModifiedArticle(e, art) {
@@ -85,12 +95,27 @@
 
             <!-- En-têtes -->
             <tr class="w3-small">
-                <th>
+                <th on:click={() => document.getElementById('searchRef').focus()}>
                     <span>#</span>
+                    &nbsp;<i class="fa fa-search" class:w3-hide={!searchRefFocused && !searchRef}></i>
+                    <br>
+                    <input id="searchRef"
+                    class="searchInput w3-small"
+                    bind:value={searchRef}
+                    on:focus={() => searchRefFocused = true}
+                    on:blur={() => searchRefFocused = false}
+                    type="text">
                 </th>
 
-                <th style="width: 60%; min-width: 170px;">
-                    <span>Articles</span>
+                <th style="width: 60%; min-width: 170px;" on:click={() => document.getElementById('searchName').focus()}>
+                    <span>Articles</span><br>
+                    <i class="fa fa-search" class:w3-hide={!searchNameFocused && !searchName}></i>
+                    <input id="searchName"
+                    class="searchInput w3-small"
+                    bind:value={searchName}
+                    on:focus={() => searchNameFocused = true}
+                    on:blur={() => searchNameFocused = false}
+                    type="text">
                 </th>
 
                 <!-- 0=Proposé, 1=En vente, 2=Vendu, 3=Récupéré -->
@@ -208,11 +233,13 @@
 
 <!-- Bouton pour prolongé la liste -->
 {#if provided.length > limitList}
+    <br>
     <div on:click="{() => limitList += 50}" class="underline-div w3-center">
         <span class="underline-span w3-opacity">
             Afficher plus de résultat ({provided.length - limitList})
-        </span><br>
+        </span>
     </div>
+    <br>
 {/if}
 
 <!-- Dialogue d'information sur les tarifs -->
@@ -296,5 +323,14 @@
 	.sold {
 		color: green;
 	}
+
+    .searchInput {
+        border: none;
+        outline: none;
+    }
+
+    #searchRef {
+        width: 40px;
+    }
 
 </style>

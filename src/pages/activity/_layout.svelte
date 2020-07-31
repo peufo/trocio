@@ -53,20 +53,18 @@
 
         <div id="window" class:open={segment}>
             {#if segment}
-                <div class="item no-margin-right" in:fade|local={{delay: 200}}>
-                    <Card>
+                <div class="item no-margin-right simple-card" in:fade|local={{delay: 200}}>
+
+
                         <div class="w3-padding">
                             <a class="w3-right w3-padding" href="/activity">
                                 <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
                             </a>
                             <h3 class="mdc-typography--headline6" style="margin: 0;">{segment.title || trocSelected && trocSelected.name}</h3>
                         </div>
-                        <CardContent id="sectionContent">
 
-                            <slot scoped={{trocSelected}}/>
+                        <slot scoped={{trocSelected}}/>
 
-                        </CardContent>
-                    </Card>
                 </div>
             {/if}
         </div>
@@ -75,8 +73,7 @@
     
         <div class="right-container">
             <!-- LISTE DES TROCS-->
-            <div class="item">
-                <Card>
+            <div class="item simple-card">
 
                     <div style="padding: 1rem; height: 66px;">
                         <Actions class="w3-right" style="transform: translate(0px, -4px);">
@@ -93,8 +90,7 @@
                         <h3 class="mdc-typography--headline6" style="margin: 0;">Mes trocs</h3>
                     </div>
 
-                    <CardContent component={List} twoLine avatarList singleSelection>
-                        
+                    <List twoLine avatarList singleSelection>
                         {#each $user.trocs as troc, i}
                             <a href={`/activity/detail?troc=${troc._id}`}>
                                 <Item selected={trocSelected && trocSelected._id === troc._id} title={troc.address}>
@@ -104,13 +100,14 @@
                                         <SecondaryText>{troc.description}</SecondaryText>
                                     </Text>
                                     <Meta>
+                                        <!--
                                         <a href="{`/admin?troc=${troc._id}`}" title="Accéder à la page d'administration">
                                             <i class="fa fa-cog button-icon w3-large w3-padding"></i>
                                         </a>
                                         <a href="{`/cashier?troc=${troc._id}`}" title="Accéder à la caisse">
                                             <i class="fa fa-cash-register w3-large w3-padding"></i>
                                         </a>
-                                        <!--
+                                        -->
                                         {#if troc.isAdmin}
                                             <a href="{`/admin?troc=${troc._id}`}" title="Accéder à la page d'administration">
                                                 <i class="fa fa-cog button-icon w3-large w3-padding"></i>
@@ -120,16 +117,14 @@
                                                 <i class="fa fa-cash-register w3-large w3-padding"></i>
                                             </a>
                                         {/if}
-                                        -->
                                     </Meta>
                                 </Item>
                             </a>
                         {:else}
                             Vous n'avez pas encore de troc
                         {/each}
-                            
-                    </CardContent>
-                </Card>
+                    </List>
+                
             </div>
 
 
@@ -161,6 +156,13 @@
 {/if}
 
 <style>
+
+    .simple-card {
+		border: 1px solid #eee;
+        border-radius: 4px;
+        box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.1);
+        padding: 16px;
+    }
 
     .main-container {
         display: flex;

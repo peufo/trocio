@@ -314,11 +314,11 @@
 			
 				<!-- Bonton pour proposer une liste d'articles -->
 				{#if !importArticlesListOpen}
-					<Button on:click={clickOpenImportArticle} dense>
+					<Button on:click={clickOpenImportArticle} dense title="Proposer une liste d'articles">
 						<i class="fas fa-list"></i>
 					</Button>
 				{:else if !importArticles.length}
-					<Button on:click="{() => importArticlesListOpen = false}"  color="secondary">
+					<Button on:click="{() => importArticlesListOpen = false}"  color="secondary" dense>
 						{failFormatRaison.length ? failFormatRaison : `Annuler la proposition`}
 					</Button>
 				{:else}
@@ -375,13 +375,14 @@
 
 		<ProvidedTable {userId}/>
 
-	</DetailCard><br>
+	</DetailCard>
+	<br>
 
-	
 	<div on:click={print} class="w3-opacity w3-small underline-div w3-right" class:w3-hide={onPrint}>
 		<i class="fa fa-print"></i>
 		<span class="underline-span">imprimer</span>
 	</div>
+	<br>
 	
 </div>
 

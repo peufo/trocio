@@ -40,7 +40,7 @@
 	}
 
 	function testInput(e) {
-		if(!e.target.classList.contains('searchUser')) {
+		if(!e.target.classList.contains('searchInput') && !e.target.classList.contains('searchUser')) {
 			change()
 		}
 	}
