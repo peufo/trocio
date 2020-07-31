@@ -47,8 +47,8 @@
                     {#each items as item}
                         <Item style="padding: 0 6px">
                             <Text class="w3-col s1"><slot name="col-1" {item}></slot></Text>
-                            <Text class="w3-col s9"><slot name="col-2" {item}></slot></Text>
-                            <Text class="w3-col s2 w3-right-align"><slot name="col-3" {item}></slot></Text>
+                            <Text class="w3-col s8"><slot name="col-2" {item}></slot></Text>
+                            <Text class="w3-col s3 w3-right-align"><slot name="col-3" {item}></slot></Text>
                         </Item>
                     {/each}
                 </List>

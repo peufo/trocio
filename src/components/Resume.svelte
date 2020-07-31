@@ -259,8 +259,8 @@
 	<br>
 	<div class="w3-row w3-xlarge" style="padding-left: 7px;">
 		<div class="w3-col s1">&nbsp;</div>
-		<span class="w3-col s9">Solde actuel </span>
-		<span id="balance" class="w3-col s2 w3-right-align">{$details.balance.toFixed(2)}</span>
+		<span class="w3-col s8">Solde actuel </span>
+		<span id="balance" class="w3-col s3 w3-right-align">{$details.balance.toFixed(2)}</span>
 	</div><br><br>
 	
 	

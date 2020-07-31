@@ -3,7 +3,7 @@
     import { layout, page } from '@sveltech/routify'
 
     import { onMount, onDestroy } from 'svelte'
-    import { fade } from 'svelte/transition'
+    import { fade, fly } from 'svelte/transition'
 
     import Card, { Content as CardContent, Actions } from '@smui/card'
     import List, {Item, Text, PrimaryText, SecondaryText, Meta} from '@smui/list'
@@ -11,6 +11,12 @@
     
     import qs from 'qs'
     import { user, userPromise } from 'stores.js'
+
+    let offsetWidth = 0
+    let mobileDisplay = false
+    $: mobileDisplay = offsetWidth < 1100
+
+    let rightMenuOpen = false
 
     let trocSelected = {}
 
@@ -48,22 +54,20 @@
 {#if $user === null}
     {$goto('/search')}
 {:else if $user !== undefined}
-    <div class="main-container">
+    <div class="main-container" bind:offsetWidth>
 
+        <div id="window" class:open={segment} class:mobileDisplay>
+            {#if segment }
+                <div class="item" class:simple-card={!mobileDisplay} class:no-margin-right={!mobileDisplay} in:fade|local={{delay: 200}}>
 
-        <div id="window" class:open={segment}>
-            {#if segment}
-                <div class="item no-margin-right simple-card" in:fade|local={{delay: 200}}>
+                    
+                        <a class="w3-right w3-padding" href="/activity">
+                            <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
+                        </a>
+                        <h3 class="mdc-typography--headline6" style="margin: 0;">{segment.title || trocSelected && trocSelected.name}</h3>
+                    
 
-
-                        <div class="w3-padding">
-                            <a class="w3-right w3-padding" href="/activity">
-                                <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
-                            </a>
-                            <h3 class="mdc-typography--headline6" style="margin: 0;">{segment.title || trocSelected && trocSelected.name}</h3>
-                        </div>
-
-                        <slot scoped={{trocSelected}}/>
+                    <slot scoped={{trocSelected}}/>
 
                 </div>
             {/if}
@@ -71,22 +75,23 @@
             
 
     
-        <div class="right-container">
+        {#if !mobileDisplay || !segment}
+        <div class="right-container" class:withoutWindow={!segment} class:mobileDisplay transition:fly|local={{ x: 500 }}>
+
             <!-- LISTE DES TROCS-->
-            <div class="item simple-card">
+            <div class="item">
+                <div class="simple-card">
+                    <div style="height: 66px;">
 
-                    <div style="padding: 1rem; height: 66px;">
-                        <Actions class="w3-right" style="transform: translate(0px, -4px);">
-
-                            <Button href="/activity/create" rel="prefetch">
+                        <div class="w3-right" style="transform: translate(0px, 4px);">
+                            <Button href="/activity/create">
                                 <Label>Organiser</Label>
                             </Button>
-                            
-                            <Button href="/activity/search" rel="prefetch">
+                            <Button href="/activity/search">
                                 <Label>Trouver</Label>
                             </Button>
-                            
-                        </Actions>
+                        </div>
+
                         <h3 class="mdc-typography--headline6" style="margin: 0;">Mes trocs</h3>
                     </div>
 
@@ -124,18 +129,17 @@
                             Vous n'avez pas encore de troc
                         {/each}
                     </List>
+                </div>
                 
             </div>
 
-
-                    <!-- ACTIVITE -->
+            <!-- ACTIVITE -->
             <div class="item no-margin-top">
-                <Card>
-                    <div style="padding: 1rem;">
-                        <h3 class="mdc-typography--headline6" style="margin: 0;">Actualités</h3>
-                    </div>
+                <div class="simple-card">
+                    
+                    <h3 class="mdc-typography--headline6" style="margin: 0;">Actualités</h3>
 
-                    <CardContent component={List} twoLine avatarList>
+                    <List twoLine avatarList>
                         <Item>
                             <Text>
                                 <PrimaryText>Vente de machin</PrimaryText>
@@ -147,11 +151,11 @@
                                 
                             </Meta>
                         </Item>
-                    </CardContent>
-                </Card>
+                    </List>
+                </div>
             </div>
         </div>
-
+        {/if}
     </div>
 {/if}
 
@@ -165,6 +169,10 @@
     }
 
     .main-container {
+        /*
+        display: grid;
+        grid-template-columns: auto minmax(360px, 500px);
+        */
         display: flex;
         justify-content: center;
     }
@@ -172,19 +180,34 @@
     .right-container {
         display: flex;
         flex-direction: column;
+        height: 100%;
+        background: white;
+        /*transition: width 1s ease;
+        width: 100%;*/
+        max-width: 700px;
+        flex-grow: 1;
+    }
+
+    .right-container.withoutWindow {
+        /*width: 700px;*/
+    }
+
+    .right-container.mobileDisplay {
+        /*width: 100%;*/
     }
 
     .item {
         margin: 1em;
     }
 
-    #window {
+    #window:not(.mobileDisplay) {
         width: 0%;
         transition: all .3s ease;
     }
 
     #window.open{
         width: 100%;
+        flex-grow: 3;
     }
         
     .no-margin-top {
