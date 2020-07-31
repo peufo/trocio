@@ -144,39 +144,33 @@
 
 		<div class="w3-row">
 
-			<div class="w3-col m8">
+			<div class="w3-col s6">
+
+				<!-- Search -->
 				<Textfield
-				style="width: 100%;"
 				bind:value={search}
 				on:input={newSearch}
 				type="search"
 				label="Recherche"
-				></Textfield>	
-			</div>
+				></Textfield>
 
-			<div class="w3-col m4">
+				<!-- Map filter -->
 				<div class="w3-round w3-right w3-margin-left">
-					<div class="w3-left">
-						<Toggle bind:value={mapFilter} on:click="{() => {loadTrocs(); if (mapFilter) mapOpen = true}}"/>
-					</div>
-					<div class="w3-button" on:click="{() => mapOpen = !mapOpen}">
-						<i class="fas fa-globe-europe w3-large"></i>
-						<i class="fas fa-angle-right w3-large" class:open={mapOpen}></i>
-					</div>
+					<i class="fas fa-globe-europe w3-large"></i>
+					<Toggle bind:value={mapFilter} on:click={loadTrocs}/>
 				</div>
 
+				<!-- Time filter -->
 				<div class="w3-round w3-right">
-
-					<div class="w3-left">
-						<Toggle bind:value={timeFilter} on:click={loadTrocs}/>
-					</div>
-
-					<div class="w3-button" on:click="{() => timeOpen = !timeOpen}">
-						<i class="far fa-clock w3-large"></i>
-						<i class="fas fa-angle-right w3-large" class:open={timeOpen}></i>
-					</div>
+					<i class="far fa-clock w3-large"></i>
+					<Toggle bind:value={timeFilter} on:click={loadTrocs}/>
 				</div>
 			</div>
+
+			<div class="w3-col s6">
+				<div id="map" class="show" class:hide={!mapOpen}></div>
+			</div>
+
 		</div>
 
 		{#if timeOpen}
@@ -193,7 +187,7 @@
 			</div>
 		{/if}
 
-		<div id="map" class="show" class:hide={!mapOpen}></div>
+		
 		
 		
 		{#each trocs as troc, i (troc._id)}

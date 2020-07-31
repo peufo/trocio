@@ -23,9 +23,6 @@
 	let patchPromise
 	let patchCount = 0
 
-	let waitingOnAction // For hide
-	let onAction = false
-
 
 	onMount(() => {
 		document.getElementById(source).addEventListener('input', testInput)
@@ -55,12 +52,13 @@
 	}
 
 	function change() {
-		if (!noticeEdit) noticeEdit = notify.info({title: 'Modification...', icon : 'far fa-edit', hide: false,})
+		let options = {type: 'info', title: 'Modification...', icon : 'far fa-edit', hide: false}
+		if (!noticeEdit) noticeEdit = notify.info(options)
 		if(invalid) noticeEdit.update({type: 'notice', title: invalid, icon: 'fas fa-exclamation'})
+		else noticeEdit.update(options)
+
 		onModify = true
-		onAction = true
 		clearTimeout(waiting)
-		clearTimeout(waitingOnAction)
 		if (!invalid) waiting = setTimeout(getPatched, WAIT_FOR_PATCH)
 	}
 
@@ -71,9 +69,9 @@
 
 	async function patch() {
 
-		let noticePatch = noticeEdit
-		noticeEdit = null
-		noticePatch.update({type: 'info', title: 'Sauvegarde...', icon: 'fas fa-sync-alt w3-spin', hide: false})
+		//let noticePatch = noticeEdit
+		//noticeEdit = null
+		noticeEdit.update({type: 'info', title: 'Sauvegarde...', icon: 'fas fa-sync-alt w3-spin', hide: false})
 
 		patchCount++
 		const res = await fetch(path, getHeader(body, 'PATCH'))
@@ -82,14 +80,16 @@
 		if (json.success) {
 			if (patchCount == 0 && !onModify) {
 				if (trocRefresh) troc.refresh(json.message)
-				waitingOnAction = setTimeout(() => onAction = false, 1000)
+				console.log({noticeEdit})
+				noticeEdit.update({type: 'success', title: 'Sauvegardé', icon: 'fas fa-check', hide: true})
+				noticeEdit.on('pnotify:afterClose', () => noticeEdit = null)
 			}
-			noticePatch.update({type: 'success', title: 'Sauvegardé', icon: 'fas fa-check', hide: true})
-			noticePatch = null
+			//noticePatch = null
 			return 
 		}else{
-			noticePatch.update({type: 'error', title: json.message, icon: 'fas fa-bug', hide: true})
-			noticePatch = null
+			noticeEdit.update({type: 'error', title: json.message, icon: 'fas fa-bug', hide: true})
+			noticeEdit.on('pnotify:afterClose', () => noticeEdit = null)
+			//noticePatch = null
 			throw Error(json.message)
 		}
 	}

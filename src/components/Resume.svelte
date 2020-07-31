@@ -296,17 +296,7 @@
 		
 		<span slot="head">
 			<!-- Provide button -->
-			<span class:w3-hide={onPrint}>
-
-
-				{#if $details.provided.length}
-					<Button dense
-					on:click={clickDownladCSV}
-					title="Télécharger les données"
-					color="secondary">
-						<i class="fas fa-download"></i>
-					</Button>
-				{/if}
+			<span class:w3-hide={onPrint} style="margin-left: 30px;">
 
 				<!-- Bonton pour proposer un articles -->
 				{#await createArticlePromise}
@@ -333,14 +323,24 @@
 					</Button>
 				{:else}
 					{#await createImportArticlesPromise}
-						<Button  color="secondary">
+						<Button  color="secondary" dense>
 							<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création des articles ...
 						</Button>
 					{:then}
-						<Button on:click="{() => createImportArticlesPromise = createImportArticles()}" variant="raised" style="color: white;">
+						<Button on:click="{() => createImportArticlesPromise = createImportArticles()}" variant="raised" dense style="color: white;">
 							Proposer les {importArticles.length} articles
 						</Button>
 					{/await}
+				{/if}
+
+				<!-- Bonton pour télécharger le fichier .csv -->
+				{#if $details.provided.length}
+					<Button dense
+					on:click={clickDownladCSV}
+					title="Télécharger les données"
+					color="secondary">
+						<i class="fas fa-download"></i>
+					</Button>
 				{/if}
 
 			</span>
