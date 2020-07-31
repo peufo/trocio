@@ -14,7 +14,9 @@
 
     let offsetWidth = 0
     let mobileDisplay = false
+    let verySmallDisplay = false
     $: mobileDisplay = offsetWidth < 1100
+    $: verySmallDisplay = offsetWidth < 500
 
     let rightMenuOpen = false
 
@@ -59,13 +61,10 @@
         <div id="window" class:open={segment} class:mobileDisplay>
             {#if segment }
                 <div class="item" class:simple-card={!mobileDisplay} class:no-margin-right={!mobileDisplay} in:fade|local={{delay: 200}}>
-
                     
-                        <a class="w3-right w3-padding" href="/activity">
-                            <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
-                        </a>
-                        <h3 class="mdc-typography--headline6" style="margin: 0;">{segment.title || trocSelected && trocSelected.name}</h3>
-                    
+                    <a class="w3-right w3-padding" href="/activity">
+                        <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
+                    </a>
 
                     <slot scoped={{trocSelected}}/>
 
@@ -76,11 +75,11 @@
 
     
         {#if !mobileDisplay || !segment}
-        <div class="right-container" class:withoutWindow={!segment} class:mobileDisplay transition:fly|local={{ x: 500 }}>
+        <div class="right-container" class:mobileDisplay transition:fly|local={{ x: 500 }}>
 
             <!-- LISTE DES TROCS-->
             <div class="item">
-                <div class="simple-card">
+                <div class:simple-card={!verySmallDisplay}>
                     <div style="height: 66px;">
 
                         <div class="w3-right" style="transform: translate(0px, 4px);">
@@ -135,7 +134,7 @@
 
             <!-- ACTIVITE -->
             <div class="item no-margin-top">
-                <div class="simple-card">
+                <div class:simple-card={!verySmallDisplay}>
                     
                     <h3 class="mdc-typography--headline6" style="margin: 0;">Actualités</h3>
 
@@ -181,19 +180,10 @@
         display: flex;
         flex-direction: column;
         height: 100%;
-        background: white;
         /*transition: width 1s ease;
         width: 100%;*/
         max-width: 700px;
         flex-grow: 1;
-    }
-
-    .right-container.withoutWindow {
-        /*width: 700px;*/
-    }
-
-    .right-container.mobileDisplay {
-        /*width: 100%;*/
     }
 
     .item {

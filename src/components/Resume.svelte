@@ -254,7 +254,7 @@
 		<Logo/>
 	</div>
 {:then}
-<div id="resume-container" in:fade|local style="max-width: 700px; margin: auto;">
+<div id="resume-container" in:fade|local >
 
 	<br>
 	<div class="w3-row w3-xlarge" style="padding-left: 7px;">

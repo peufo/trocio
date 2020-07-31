@@ -193,6 +193,7 @@
 				<Label>Créer mon troc</Label>
 			</Button>
 		</div>
+		<br><br>
 	{/if}
 	
 </form>
@@ -201,7 +202,8 @@
 
 	.container {
 		display: grid;
-		grid-template-columns: minmax(calc(50% - 1rem), 500px)  minmax(25%, calc(50% - 1rem));
+		width: 100%;
+		grid-template-columns: minmax(50%, 500px)  minmax(25%, 50%);
 		gap: 2rem;
 	}
 

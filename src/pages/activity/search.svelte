@@ -1,5 +1,7 @@
 <script>
-    import Search from '../search.svelte'
-</script>
+    import SearchTroc from 'SearchTroc.svelte'
 
-<Search mapDelay="250"/>
+</script>
+<div style="max-width: 850px; margin: auto;">
+    <SearchTroc mapDelay="350"/>
+</div>
