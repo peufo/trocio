@@ -144,7 +144,6 @@
     <div  class="w3-rest">
         <input
             bind:value={mail}
-            id="userName"
             class="userInput w3-input"
             type="email"
             placeholder="Email"
@@ -157,7 +156,6 @@
         <div class="w3-rest">
             <input
                 bind:value={password}
-                id="userPassword"
                 class="userInput w3-input"
                 type="password"
                 placeholder="Mot de passe"

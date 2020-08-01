@@ -1,5 +1,6 @@
 <script>
 	
+	import { redirect, params } from '@sveltech/routify'
 	import { onMount, onDestroy } from 'svelte'
 	import { spring } from 'svelte/motion'
 	import Tab, { Label, Icon } from '@smui/tab'
@@ -7,36 +8,33 @@
 
 	export let tabs = []
 	export let tabActived
-	export let baseUrl = ''
-	console.log('baseUrl', baseUrl)
+	export let index = tabs.indexOf(tabActived)
 	export let trackMouse = false
 	export let maxWidthToShowLabel = 700
-	let windowInnerWidth
 
 	let container
-	
+	let offsetWidth
+	let offsetHeight = []
 	let swip = spring(0, {stiffness: .15, damping: 1})
-
-	$: if(container) container.scrollLeft = $swip
 
 	let swipPosition = null
 	let swipPositionInitial = null
 	let velocityX = 0	//average of velocitys.x
 	let velocityY = 0	//average of velocitys.y
 	let initialClientX = null
-
 	let handleMove 		//instance of function
 
+	$: if (container) container.style.height = offsetHeight[index] + 'px'
+	$: if (container) container.scrollLeft = $swip
+
 	onMount(() => {
-		window.onresize = windowOnResize
-		windowInnerWidth = window.innerWidth
 		container.addEventListener('touchstart', handleStart)	
 		document.addEventListener('touchend', handleEnd)
 		if (trackMouse) {
 			container.addEventListener('mousedown', handleStart)
 			document.addEventListener('mouseup', handleEnd)
 		}
-		if (tabActived) activeTab(tabs.indexOf(tabActived), true)
+		if (tabActived) activeTab(index, true)
 	})
 
 	onDestroy(() => {
@@ -50,9 +48,15 @@
 		}
 	})
 
-	function windowOnResize(e) {
-		activeTab(undefined, true)
-		windowInnerWidth = window.innerWidth
+	function activeTab(newIndex, snap = false) {
+
+		if (newIndex !== null) index = newIndex
+		tabActived = tabs[index]
+		$redirect(location.pathname, {...$params, tab: tabActived.href})
+
+		swip.stiffness = snap ? 1 : .15
+		swip.set(index * offsetWidth)
+
 	}
 
 	function handleStart(e) {
@@ -111,7 +115,6 @@
 	function handleEnd(e) {
 		
 		if (swipPosition !== null && swipPositionInitial != swipPosition) {
-			let index = tabs.indexOf(tabActived)
 
 			if(Math.abs(velocityX) > 8) {
 				//dynamic handler
@@ -143,60 +146,31 @@
 		}
 	}
 
-	function activeTab(index, snap = false) {
-		if (typeof index == 'undefined') index = tabs.indexOf(tabActived)
-		else tabActived = tabs[index]
-		history.replaceState('', '', `${baseUrl}/${tabActived.href}${location.search}`)
-		resizeContainerHeight()
-		swipTo(index, snap)
-	}
-
-	function swipTo(index, snap = false) {
-		let width = getContainerWidth()
-		swip.stiffness = snap ? 1 : .15
-		swip.set(index * width)
-	}
-
-	function getContainerWidth() {
-		let { width } = container.getBoundingClientRect()
-		let { borderLeftWidth, borderRightWidth } = window.getComputedStyle(container)
-		borderLeftWidth = Number(borderLeftWidth.replace('px', ''))
-		borderRightWidth = Number(borderRightWidth.replace('px', ''))
-		let innerWidth = width - borderLeftWidth - borderRightWidth
-		return innerWidth
-	}
-
-	function resizeContainerHeight() {
-		let { borderTopWidth, borderBottomWidth } = window.getComputedStyle(container)
-		borderTopWidth = Number(borderTopWidth.replace('px', ''))
-		borderBottomWidth = Number(borderBottomWidth.replace('px', ''))
-		container.style.height = tabActived.dom.offsetHeight + borderTopWidth + borderBottomWidth + 'px'
-		return
-	}
-
 </script>
 
+<div class="simple-card" bind:offsetWidth>
+	<TabBar {tabs} let:tab active={tabActived} on:MDCTabBar:activated={e => activeTab(e.detail.index)}>
+		<Tab {tab} >
+			<Icon class={tab.icon}></Icon>
+			{#if offsetWidth > maxWidthToShowLabel}
+				<Label>{tab.label}</Label>
+			{/if}
+		</Tab>
+	</TabBar>
 
-<TabBar {tabs} let:tab active={tabActived} on:MDCTabBar:activated={e => activeTab(e.detail.index)}>
-	<Tab {tab} >
-		<Icon class={tab.icon}></Icon>
-		{#if windowInnerWidth > maxWidthToShowLabel}
-			<Label>{tab.label}</Label>
-		{/if}
-	</Tab>
-</TabBar>
-
-<div bind:this={container} class="container">
-	{#each tabs as tab}
-		<div class="item">
-			<div bind:this={tab.dom}>
-				<slot {tab}></slot>
+	<div bind:this={container} class="container">
+		{#each tabs as tab, i}
+			<div class="item">
+				<div bind:this={tab.dom} bind:offsetHeight={offsetHeight[i]}>
+					<slot {tab}></slot>
+				</div>
 			</div>
-		</div>
-	{/each}
+		{/each}
+	</div>
 </div>
 
-<style type="text/css">
+
+<style>
 	.container {
 		width: 100%!important;
 		overflow: hidden;
@@ -207,9 +181,7 @@
 
 	.item {
 		width: 100%!important;
-		text-align: center;
-		flex: 1 0 auto;
-		
+		flex: 1 0 auto;	
 	}
 
 </style>

@@ -23,7 +23,7 @@
 
 </script>
 
-<div class="simple-card">
+<div class="simple-card clickable">
 
     <div on:click={clickHandler} class="clickable w3-row header clickHandler">
         <div class="w3-col s1 w3-right-align w3-large clickHandler" style="padding-right: 20px;">{count}</div>
@@ -60,17 +60,6 @@
 </div>
 
 <style>
-
-    .simple-card {
-		border: 1px solid #eee;
-        border-radius: 4px;
-        transition: .3s;
-        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-    }
-
-    .simple-card:hover {
-        box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.1);
-    }
 
     .header {
         padding: 15px 7px;

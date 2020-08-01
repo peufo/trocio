@@ -104,14 +104,13 @@
                                         <SecondaryText>{troc.description}</SecondaryText>
                                     </Text>
                                     <Meta>
-                                        <!--
                                         <a href="{`/admin?troc=${troc._id}`}" title="Accéder à la page d'administration">
                                             <i class="fa fa-cog button-icon w3-large w3-padding"></i>
                                         </a>
                                         <a href="{`/cashier?troc=${troc._id}`}" title="Accéder à la caisse">
                                             <i class="fa fa-cash-register w3-large w3-padding"></i>
                                         </a>
-                                        -->
+                                        <!--
                                         {#if troc.isAdmin}
                                             <a href="{`/admin?troc=${troc._id}`}" title="Accéder à la page d'administration">
                                                 <i class="fa fa-cog button-icon w3-large w3-padding"></i>
@@ -121,6 +120,7 @@
                                                 <i class="fa fa-cash-register w3-large w3-padding"></i>
                                             </a>
                                         {/if}
+                                        -->
                                     </Meta>
                                 </Item>
                             </a>
@@ -160,13 +160,6 @@
 
 <style>
 
-    .simple-card {
-		border: 1px solid #eee;
-        border-radius: 4px;
-        box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.1);
-        padding: 16px;
-    }
-
     .main-container {
         /*
         display: grid;
@@ -188,6 +181,9 @@
 
     .item {
         margin: 1em;
+    }
+    .simple-card {
+        padding: 16px;
     }
 
     #window:not(.mobileDisplay) {

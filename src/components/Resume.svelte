@@ -1,16 +1,15 @@
 <script>
-
 	import { slide, fade } from 'svelte/transition'
 
 	import Dialog, {Title, Content} from '@smui/dialog'
 	import Button from '@smui/button'
-	import notify from './notify.js'
-
+	
 
 	import SearchTable from './SearchTable.svelte'
 	import ArticleDialog from './ArticleDialog.svelte'
 	import ProvidedTable from './ProvidedTable.svelte'
 
+	import notify from './notify.js'
 	import { trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
 	import { getFields, addStatutField, formatPrice, getHeader } from './utils'
 	
@@ -22,15 +21,6 @@
 	import 'dayjs/locale/fr'
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
-
-	
-	//Requested values
-	export let userId = false
-	export let troc = false
-
-	$: console.log({userId})
-	$: console.log({troc})
-	$: console.log({$details})
 
 	let providedFields = getFields('# Désignation Statut Frais Marge Prix', '')
 
@@ -75,7 +65,7 @@
 		}
 		
 		try {
-			let body = {troc: troc._id, provider: userId, name: newArticleName, price: newArticlePrice}
+			let body = {troc: $details.troc, provider: $details.user, name: newArticleName, price: newArticlePrice}
 			let res = await fetch('/articles', getHeader(body))
 			let json = await res.json()
 			if (json.success) {
@@ -155,8 +145,8 @@
 						importArticles.push({
 							name: cells[0].trim(),
 							price,
-							troc: troc._id,
-							provider: userId
+							troc: $details.troc,
+							provider: $details.user
 						})
 					}else if (line.length > 0){
 						failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
@@ -178,8 +168,8 @@
 							ref: cells[0].trim(),
 							name: cells[1].trim(),
 							price,
-							troc: troc._id,
-							provider: userId
+							troc: $details.troc,
+							provider: $details.user
 						}]
 					}else if (line.length > 0){
 						failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
@@ -254,6 +244,7 @@
 		<Logo/>
 	</div>
 {:then}
+{#if $details}
 <div id="resume-container" in:fade|local >
 
 	<br>
@@ -373,7 +364,7 @@
 			</div>
 		{/if}
 
-		<ProvidedTable {userId}/>
+		<ProvidedTable/>
 
 	</DetailCard>
 	<br>
@@ -385,7 +376,7 @@
 	<br>
 	
 </div>
-
+{/if}
 {:catch err}
 	<h1>Error {err}</h1>
 

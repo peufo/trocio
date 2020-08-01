@@ -1,19 +1,21 @@
 import { writable } from 'svelte/store'
-import { getHeader, getDetail, detailEmpty } from './utils'
+import { getHeader, getDetail } from './utils'
 import qs from 'qs'
-import { layout } from '@sveltech/routify'
 
 export let user = userBuilder()
 export let userPromise = writable()
-export let troc = trocBuilder()
+
+//Troc's meta
+export let troc = trocBuilder()			 
 export let trocPromise = writable()
+
+//Troc's details related of an user
 export let trocDetails = trocDetailsBuilder()
 export let trocDetailsPromise = writable()
 
 let userPromiseSubscribed
 userPromise.subscribe(v => {
 	userPromiseSubscribed = v
-	console.log({'userPromiseSubscribed': v})
 })
 
 
@@ -33,10 +35,8 @@ function buildListenQuery(query, promise, load, set) {
 	}
 	return set => {
 		createPromise()
-		console.log(`Start Listen Query ${query}`)
 		addEventListener('locationchange', createPromise)
 		return () => {
-			console.log(`Stop Listen Query ${query}`)
 			removeEventListener('locationchange', createPromise)
 		}
 	}
@@ -55,7 +55,6 @@ function userBuilder() {
 		login: async (mail, password, cb) => {
 			let res = await fetch('/users/login', getHeader({mail, password}))
 			let json = await res.json()
-			console.log('login', {res, json})
 			if (res.ok && !json.error) {
 				loadUser(set)
 				cb()
@@ -82,7 +81,6 @@ function loadUser(set) {
 async function authenticate(set) {
 	let res = await fetch('/users/me')
 	let json = await res.json()
-	console.log('authenticate', {res, json})
 	if (res.ok && !json.error) {
 		set(json)
 		return json
@@ -130,7 +128,6 @@ function listenQuery(set) {
 	setPromise()
 	addEventListener('locationchange', setPromise)
 	return () => {
-		console.log('Stop Listen Query')
 		removeEventListener('locationchange', setPromise)
 	}
 }
@@ -157,7 +154,7 @@ async function loadTroc(set, troc) {
 // 				       TROC DETAILS
 // ------------------------------------------------------
 function trocDetailsBuilder() {
-	const { subscribe, set } = writable({}, set => (buildListenQuery('troc client', trocDetailsPromise, loadTrocDetails, set))())
+	const { subscribe, set } = writable(null, set => (buildListenQuery('troc client', trocDetailsPromise, loadTrocDetails, set))())
 	return { 
 		subscribe, set,
 	}
@@ -165,12 +162,13 @@ function trocDetailsBuilder() {
 
 async function loadTrocDetails(set, {troc, client}) {
 	if(!troc) return set(null)
-	
+	console.log('Load detail')
 	//TODO: PAGE condition
 	// NON Il faut alimenté le composant Resume
 	let user = await userPromiseSubscribed
-	console.log('LOAD DETAILS ', {troc, client, user})
+
 	let details = await getDetail(troc, user._id)
+	console.log({details})
 	set(details)
 	return 
 }

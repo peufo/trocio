@@ -200,3 +200,17 @@ textarea {
     transform: translate(-4px, 4px);
 }
 
+
+.simple-card {
+    border: 1px solid #eee;
+    border-radius: 4px;
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.simple-card.clickable {
+    transition: .3s;
+}
+
+.simple-card.clickable:hover {
+    box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.1);
+}

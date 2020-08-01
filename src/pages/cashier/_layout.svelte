@@ -1,41 +1,7 @@
-<!--
-<script context="module">
-	import { getDetail } from '../_utils.js'
-
-	let lastClient = false
-
-    export async function preload(page, { user }) {
-		let { troc, client } = page.query
-		let { tab } = page.params
-
-        let detail = {}
-        if (!troc) return this.error(400, 'troc query is required')
-		if (!user) return this.error(401, 'authentication is required')
-		//if (!tab) return this.redirect(300, `${page.path}/resume?troc=${troc}${client ? `&client=${client}`: ''}`)
-        if (client != lastClient || typeof window === 'undefined') {
-			console.log('client changed')
-			console.log('last:', lastClient, 'actuel:', client)
-			lastClient = client
-			if (client) {
-				detail = await getDetail.call(this, troc, client)
-				client = await this.fetch(`/users/${client}`).then(res => res.json())
-				console.log('new client loaded')
-			}else{
-				client = {}
-				detail = {}
-				console.log('client unloaded')
-			}
-		}
-
-        return { user, troc, client, detail}
-    }
-</script>
--->
 <script>
 	
-	import qs from 'qs'
-	import { goto } from '@sveltech/routify'
-	import { onMount, tick } from 'svelte'
+	import { redirect, params } from '@sveltech/routify'
+	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
 
 	import Switch from '@smui/switch'
@@ -51,29 +17,10 @@
 	import SearchUser from 'SearchUser.svelte'
 	import Login from 'Login.svelte'
 	import Provide from 'Provide.svelte'
-	
-	$: console.log($trocDetails)
 
-	//import Buy from './Buy.svelte'
-	//import Recover from './Recover.svelte'
-	//import Giveback from './Giveback.svelte'
-	//import Resume from './Resume.svelte'
-
-	//const { session } = stores()
-	export let mobileDisplay = false
 	export let troc = ''
-    export let client = {}
-    export let segment
-
-    export let detail = {}
-	export let provided = detail.provided
-	//export let purchases = []
-	//export let payments = []
-	//export let givebacks = []
-
-	//$: console.log('clientOk', clientOk)
-	//$: console.log('payments', payments)
-
+	export let client = {}
+	
 	let dialogLogin // Create user
 
 	let searchClient = ''
@@ -123,19 +70,14 @@
 	})
 
 	async function updateClientQuery() {
-		let query = qs.parse(location.search.slice(1))
-		if (client._id) query.client = client._id
-		else delete query.client
-		await $goto(location.pathname, query)
+		await $redirect(location.pathname, {...$params, client: client._id})
 	}
     
-	function clientSelected(e){
+	async function clientSelected(e){
+		searchClient = e.detail.name
+		await updateClientQuery()
 		clientOk = true
 		clientAnonym = false
-		updateClientQuery()
-		searchClient = e.detail.name
-		
-		//client = e.detail // is binded
 	}
 
 	function inputSearchClient() {
@@ -313,12 +255,6 @@
 </svelt:head>
 
 <style>
-	/*
-	#userHandler {
-		display: flex;
-		justify-content: center;
-	}
-	*/
 
 	.icon {
 		display: inline-block;

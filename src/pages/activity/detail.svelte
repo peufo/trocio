@@ -5,9 +5,6 @@
 
     export let scoped
 
-    $: console.log({$user})
-    $: console.log({scoped})
-
 </script>
 
 <div style="max-width: 800px; margin: auto;">
@@ -18,6 +15,6 @@
 
     <hr>
 
-    <Resume troc={scoped.trocSelected} userId={$user._id}/>
+    <Resume/>
 
 </div>

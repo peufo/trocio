@@ -51,7 +51,7 @@
 
     {#if article.isRemovable}
         <div class="action w3-display-topright w3-padding">
-            <i 	class="fa fa-trash-alt clickable" style="margin-top: 4px;" on:click="{() => remove(article._id)}"></i>
+            <i 	class="far fa-trash-alt clickable" style="margin-top: 4px;" on:click="{() => remove(article._id)}"></i>
         </div>
     {:else if printable}
         <div class="action w3-display-topright w3-padding">
