@@ -163,11 +163,17 @@ function trocDetailsBuilder() {
 async function loadTrocDetails(set, {troc, client}) {
 	if(!troc) return set(null)
 	console.log('Load detail')
-	//TODO: PAGE condition
-	// NON Il faut alimenté le composant Resume
-	let user = await userPromiseSubscribed
-
-	let details = await getDetail(troc, user._id)
+	
+	let details = {}
+	//load client's details if he exist
+	if (client) {
+		details = await getDetail(troc, client)
+	} else {
+		let user = client || await userPromiseSubscribed
+		details = await getDetail(troc, user._id)
+	}
+	
 	set(details)
+
 	return 
 }

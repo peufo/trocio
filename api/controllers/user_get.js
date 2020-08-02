@@ -41,6 +41,13 @@ function getUser(req, res, next) {
     })
 }
 
+function getUserName(req, res, next) {
+    User.findOne({_id: req.params.id}, 'name').lean().exec((err, user) => {
+        if (err || !user) return next(err || Error('User not found'))
+        res.json(user)
+    })
+}
+
 function hideMail(user) {
 	let index = user.mail.indexOf('@')
 	if (index > -1) {
@@ -72,5 +79,6 @@ module.exports = {
     getMe, 
     searchUser,
     getUser,
+    getUserName,
     populateUserTrocs
 }

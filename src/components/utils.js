@@ -182,21 +182,10 @@ export async function getDetail(troc, user) {
 	//Compute values
 	//TODO: Deplacer coté serveur ?
 	let buySum = purchases.length ? -purchases.map(a => a.price).reduce((acc, cur) => acc + cur) : 0
-	let paySum = payments.length  ?  payments.map(a => a.amount).reduce((acc, cur) => acc + cur) : 0
-	let soldSum = 0
-	let feeSum = 0
-	if (provided.length) {
-		provided = addStatutField(provided, '')
-
-		let arr = provided.filter(a => a.sold).map(a => a.price)
-		soldSum = arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
-
-		arr = provided.filter(a => a.valided).map(a => a.fee)
-		feeSum = arr.length ? -arr.reduce((acc, cur) => acc + cur) : 0
-
-		arr = provided.filter(a => a.sold).map(a => a.margin)
-		feeSum -= arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
-	}
+	let paySum = payments.length  ?  payments.map(a => a.amount).reduce((acc, cur) => acc + cur) : 0	
+	let {soldSum, feeSum} = computeSum(provided)
+	provided = addStatutField(provided, '')
+	
 	let balance = Math.round((buySum + paySum + soldSum + feeSum) * 100) / 100
 
 	return {
@@ -209,6 +198,20 @@ export async function getDetail(troc, user) {
 		traderPrefix,
 		buySum, paySum, soldSum, feeSum, balance
 	 }
+}
+
+export function computeSum(articles) {
+	let soldSum = 0
+	let feeSum = 0
+	if (articles.length) {
+		let arr = articles.filter(a => a.sold).map(a => a.price)
+		soldSum = arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
+		arr = articles.filter(a => a.valided).map(a => a.fee)
+		feeSum = arr.length ? -arr.reduce((acc, cur) => acc + cur) : 0
+		arr = articles.filter(a => a.sold).map(a => a.margin)
+		feeSum -= arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
+	}
+	return {soldSum, feeSum}
 }
 
 //Options for SearchTable

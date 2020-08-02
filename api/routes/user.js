@@ -2,7 +2,7 @@ let express 	= require('express')
 let router = express.Router()
 let { login, logout } = require('../controllers/user_utils')
 let { createUser, patchMe, changepwd, resetpwd, sendValidMail, validMail} = require('../controllers/user_set')
-let { getMe, searchUser, getUser } = require('../controllers/user_get')
+let { getMe, searchUser, getUser, getUserName } = require('../controllers/user_get')
 
 router
 	.post('/', createUser)
@@ -16,5 +16,6 @@ router
 	.get('/me', getMe)
 	.get('/search/:search', searchUser)
 	.get('/:id', getUser)
+	.get('/name/:id', getUserName)
 
 module.exports = router

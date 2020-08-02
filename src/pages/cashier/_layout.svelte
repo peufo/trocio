@@ -43,7 +43,7 @@
 
 		if ($params.client) {
 			try {
-				let res = await fetch(`/users/${$params.client}`)
+				let res = await fetch(`/users/name/${$params.client}`)
 				client = await res.json()
 				searchClient = client.name
 				clientOk = true
