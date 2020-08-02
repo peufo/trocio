@@ -46,7 +46,7 @@
     <span class="w3-tiny" style="line-height: 1;">{comment}</span>
 
     <div class="ref w3-display-topright w3-padding" class:withAction={article.isRemovable || printable}>
-        <b style="margin-top: 4px;">#</b>{!article.isCreated ? article.ref : ''}
+        <b style="margin-top: 4px;">#</b>{article.ref}
     </div>
 
     {#if article.isRemovable}

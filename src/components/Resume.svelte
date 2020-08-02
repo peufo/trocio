@@ -39,19 +39,31 @@
 	let importArticlesValue = '' 		//Value of textarea
 	let importArticles = [] 			//Array formated
 	let failFormatRaison = ''			//Message if importArticlesValue is unavailable
+	let paymentShow = false
+
+	//For print ... not used now
+	let buyShow = false
 	let providedShow = false
 
-
 	function print() {
+		console.log('TODO, repair Create PDF ?')
 		/*
-		LIMIT_LIST_A = $details.purchases.length
-		LIMIT_LIST_B = $details.payments.length
-		LIMIT_LIST_C = $details.provided.length
-		*/
+		let paymentShowSave = paymentShow
+		let buyShowSave = buyShow
+		let providedShowSave = providedShow
+		paymentShow = true
+		buyShow = true
 		onPrint = true
+
 		//TODO: repair print
 		//setTimeout(() => goPrint('resume-container'), 300)
-		setTimeout(() => {onPrint = false; LIMIT_LIST_C = 50}, 400)
+		setTimeout(() => {
+			paymentShow = paymentShowSave
+			buyShow = buyShowSave
+			providedShow = providedShowSave
+			onPrint = false
+		}, 400)
+		*/
 	}
 
     async function createImportArticles() {
@@ -223,6 +235,7 @@
 	count={$details.payments.length}
 	sum={$details.paySum}
 	nonInteractive
+	show={paymentShow}
 	items={$details.payments}
 	let:item={payment}>
 		<span slot="col-1"></span>
@@ -234,6 +247,7 @@
 	<DetailCard title="Achats"
 	count={$details.purchases.length}
 	sum={$details.buySum}
+	show={buyShow}
 	items={$details.purchases}
 	let:item={article}>
 		<span slot="col-1">#{article.ref}</span>

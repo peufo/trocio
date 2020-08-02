@@ -15,7 +15,8 @@
     dayjs.extend(relativeTime)
 
     import { user, troc, trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
-    import { getHeader, crossfadeConfig, sortByUpdatedAt, goPrint, formatPrice } from './utils.js'
+    import { getHeader, crossfadeConfig, sortByUpdatedAt, goPrint, formatPrice, addStatutField} from './utils.js'
+    import notify from './notify.js'
     import ArticleCreateDialog from './ArticleCreateDialog.svelte'
     import TagsPrint from './TagsPrint.svelte'
     import Article from './Article.svelte'
@@ -33,21 +34,15 @@
     let LIMIT_LIST_A = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste
     let LIMIT_LIST_B = LIMIT_LIST_INIT //Nombre d'élément afficher pour la seconde liste
 
-    const proposedFilter = art => !art.recover && !art.sold && art.isRemovable && !art.isCreated
+    const proposedFilter = art => !art.recover && !art.sold && art.isRemovable
 
     let articlesToPrint = []
 
     function removeArticle(artId) {
         let index = $details.provided.map(a => a._id).indexOf(artId)
         if(index > -1) {
-            if ($details.provided[index].isCreated) {
-                $details.provided.splice(index, 1)
-                $details.provided = $details.provided
-            }else {            
-                $details.provided[index].valided = undefined
-                $details.provided[index].isRemovable = false
-            }
-
+            $details.provided[index].valided = undefined
+            $details.provided[index].isRemovable = false
             nbNewArticles--
         }
     }
@@ -69,69 +64,44 @@
 
     async function validProvided() {
 
-        let articlesCreated = $details.provided.filter(art => !art.recover && !art.sold && art.isCreated)
- 
-        let articlesValided = $details.provided.filter(art => !art.recover && !art.sold && art.isRemovable && !art.isCreated)
-        
+        let articlesValided = $details.provided.filter(art => !art.recover && !art.sold && art.isRemovable)
         let date = new Date()
-        articlesCreated.forEach(art => {
-            art.valided = date
-            //art.fee = getFee(art, tarif)
-            //art.margin = getMargin(art, tarif)
-        })
-        articlesValided.forEach(art => {
-            art.valided = date
-            //art.fee = getFee(art, tarif)
-            //art.margin = getMargin(art, tarif)
-        })
+        articlesValided.forEach(art => art.valided = date)
         
-        if (articlesCreated.length) {
-            articlesCreated = await validArticlesCreated(articlesCreated)
-        }
-        
-        if (articlesValided.length) {
-            await validArticlesValided(articlesValided)
-        }
-
-        //Impression des étiquettes
-        if (optionAutoPrintTag) {
-            printArticles([...articlesCreated, ...articlesValided])
-        }
-
-        return
-
-    }
-
-    async function validArticlesCreated(articlesCreated) {
-        let res = await fetch('/articles', getHeader(articlesCreated))
-        let json = await res.json()
-        if (res.ok && json.success) {
-
-            let index = 0
-            $details.provided = $details.provided.map(article => {
-                if (article.isCreated) {
-                    article = json.message[index]
-                    index++
-                }
-                return article
-            })
-            nbNewArticles -= articlesCreated.length
-            return json.message
-        }
-    }
-
-    async function validArticlesValided(articlesValided) {
         let res = await fetch('/articles', getHeader(articlesValided, 'PATCH'))
         let json = await res.json()
         if (res.ok && json.success) {
-            $details.provided = $details.provided.map(article => {
-                if (article.isRemovable && !article.isCreated) delete article.isRemovable
-                return article
+
+            //Update details
+            let articlespatched = json.message
+            let sumFee = 0
+            articlespatched.forEach(article => {
+                let index = $details.provided.map(art => art._id).indexOf(article._id)
+                if (index > -1) {
+                    $details.provided[index].valided = article.valided
+                    $details.provided[index].fee = article.fee
+                    delete $details.provided[index].isRemovable
+                    $details.provided[index] = addStatutField($details.provided[index])
+                    sumFee += article.fee
+                } else {
+                    notify.error(`L'article mis à jour ne correspond pas à un de vos articles !`)
+                }
             })
+ 
+            $details.feeSum -= sumFee
+            $details.balance -= sumFee
+
             nbNewArticles -= articlesValided.length
+
+            notify.success(articlespatched.length ? `${articlespatched.length} articles validés`: `Un article validé`)
+
+            //Impression des étiquettes
+            if (optionAutoPrintTag) printArticles(articlesValided)
+            
             return
         }
     }
+
 
     function printArticles(arts) {
         if (arts && arts.length) articlesToPrint = arts

@@ -34,7 +34,9 @@
 				newPrice = ''
 
 				//preserve dialog
-				document.getElementById(`newArticleName`).focus()
+				//document.getElementById(`newArticleName`).focus()
+				dialog.close()
+
 				notify.success('Article ajouté')
 				return
 				
