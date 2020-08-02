@@ -3,7 +3,7 @@ var Troc = require('../models/troc')
 var ctrl = require('../controllers/troc')
 var router = express.Router()
 const ObjectId 	= require('mongoose').Types.ObjectId
-let { getTarif, getTrader } = require('../controllers/troc_get')
+let { getSpec, getDetails } = require('../controllers/troc_get')
 
 router
 	.get('/me', (req, res, next) => {
@@ -20,6 +20,8 @@ router
 				res.json(trocs)
 		})
 	})
+	.get('/details', getDetails)
+	.get('/spec', getSpec)
 	.get('/search', (req, res, next) => {
 		let {search, start, end, north, east, sud, west} = req.query
 		let query= {}
@@ -60,8 +62,7 @@ router
 			res.json(trocs)
 		})
 	})
-	.get('/tarif', getTarif)
-	.get('/trader', getTrader)
+	
 	.get('/:id/stats', ctrl.checkAdmin, ctrl.getStats)
 	.get('/:id', (req, res, next) => {
 		if (req.session.user) {

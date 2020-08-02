@@ -1,31 +1,80 @@
-let Troc = require('../models/troc')
-let { findTarif } = require('./troc_utils')
+let Article = require('../models/article')
+let Payment = require('../models/payment')
+let { findSpec } = require('./troc_utils')
 
-function getTarif(req, res, next) {
+function getSpec(req, res, next) {
     let {troc, user} = req.query
-    findTarif(troc, user, (err, tarif) => {
+    findSpec(troc, user, (err, spec) => {
         if (err) return next(err)
-        res.json(tarif)
+        res.json(spec)
     })
 }
 
-function getTrader(req, res, next) {
-    let {troc, user} = req.query
-    if (!troc) return next(Error('troc query is required'))
+async function getDetails(req, res, next) {
 
-    //if (req.session.user != req.param.userId) //TODO: Check if req.session.user is cashier
-    Troc.findById(troc, {trader: 1}, (err, troc) => {
-        if(err || !troc) return next(err || Error('Troc not found !'))
-        let index = troc.trader.map(t => t.user).indexOf(user)	
-        if (index === -1) {
-            res.json({error: true, message: `User isn't a trader`})
-        }else{
-            res.json({success: true, message: 'User is a trader', prefix: troc.trader[index].prefix})
-        }
-    })
+	let { troc, user } = req.query
+    if (!troc || !user) return next(Error('Troc and user query is required'))
+    
+    try {
+
+        let providedPromise  = Article.find({troc, provider: user}).exec()
+        let purchasesPromise = Article.find({troc, buyer: user}).exec()
+        let givbacksPromise  = Article.find({troc, 'giveback.user': user}).exec()
+        let paymentsPromise  = Payment.find({troc, user}).exec()
+        let specPromise      = findSpec(troc, user)
+
+        let [
+            provided,
+            purchases,
+            givebacks,
+            payments,
+            {tarif, prefix}
+        ] = await Promise.all([
+            providedPromise,
+            purchasesPromise,
+            givbacksPromise,
+            paymentsPromise,
+            specPromise
+        ])
+        
+        
+        //Compute sum
+        let buySum = purchases.length ? -purchases.map(a => a.price).reduce((acc, cur) => acc + cur) : 0
+        let paySum = payments.length  ?  payments.map(a => a.amount).reduce((acc, cur) => acc + cur) : 0	
+        let {soldSum, feeSum} = computeSum(provided)
+        let balance = Math.round((buySum + paySum + soldSum + feeSum) * 100) / 100
+        
+        res.json({
+            troc, user,
+            provided,
+            purchases,
+            givebacks,
+            payments,
+            tarif, prefix,
+            buySum, paySum, soldSum, feeSum, balance
+        }) 
+        
+    } catch (error) {
+        next(error)
+    }
 }
+
+function computeSum(articles) {
+	let soldSum = 0
+	let feeSum = 0
+	if (articles.length) {
+		let arr = articles.filter(a => a.sold).map(a => a.price)
+		soldSum = arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
+		arr = articles.filter(a => a.valided).map(a => a.fee)
+		feeSum = arr.length ? -arr.reduce((acc, cur) => acc + cur) : 0
+		arr = articles.filter(a => a.sold).map(a => a.margin)
+		feeSum -= arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
+	}
+	return {soldSum, feeSum}
+}
+
 
 module.exports = {
-    getTarif,
-    getTrader
+    getSpec,
+	getDetails
 }

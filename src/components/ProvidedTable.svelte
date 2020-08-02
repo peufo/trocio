@@ -9,7 +9,7 @@
     import AutoPatch from './AutoPatch.svelte'
     import notify from './notify.js'
 
-    import { getHeader, sortByUpdatedAt, formatPrice, STATUTS, computeSum } from './utils'
+    import { getHeader, sortByUpdatedAt, formatPrice, STATUTS } from './utils'
     import { trocDetails as details } from './stores.js'
     import { getFee, getMargin } from '../../api/controllers/troc_utils'
     const uuid = uuidv4()
@@ -44,12 +44,6 @@
             if (ok && searchRef) ok = art.ref.indexOf(searchRef) > -1
             return ok
         }).sort(sortByUpdatedAt)
-        //Compute sub total 
-        //let computedSum = computeSum(provided)
-        //feeSum = computedSum.feeSum
-        //soldSum = computedSum.soldSum
-        //Décomposition not work !
-        //({ feeSum, soldSum } = computeSum(provided));
     }
     
 	//For AutoPatch

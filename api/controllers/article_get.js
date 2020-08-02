@@ -1,4 +1,4 @@
-var Article = require('../models/article')
+let Article = require('../models/article')
 const ObjectId 	= require('mongoose').Types.ObjectId
 
 function getArticle(req, res, next) {
@@ -102,8 +102,6 @@ function searchArticle(req, res, next) {
 		})
 	})
 }
-
-
 
 module.exports = {
 	getArticle,

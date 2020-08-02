@@ -53,13 +53,14 @@
     }
 
     function clickProposedArticle(artId) {
+        console.log('Click YOLO')
         let index = $details.provided.map(a => a._id).indexOf(artId)
         if (index > -1) {
             $details.provided[index].valided = new Date()
             $details.provided[index].updatedAt = new Date()
             $details.provided[index].isRemovable = true
+            nbNewArticles++
         }
-        nbNewArticles++
     }
 
     function clickProposedArticleAll() {

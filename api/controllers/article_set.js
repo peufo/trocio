@@ -3,7 +3,7 @@ let User = require('../models/user')
 let Troc = require('../models/troc')
 
 let { getRoles, createArticleContext } = require('./article_utils')
-let { findTarif, getFee, getMargin } = require('./troc_utils')
+let { findSpec, getFee, getMargin } = require('./troc_utils')
 const article_utils = require('./article_utils')
 
 function createArticle(req, res, next) {
@@ -15,7 +15,7 @@ function createArticle(req, res, next) {
 
 	createArticleContext(articles, async (err, newRef) => {
 		if (err) return next(err)
-		let tarif = await findTarif(articles[0].troc, articles[0].provider)
+		let { tarif } = await findSpec(articles[0].troc, articles[0].provider)
 
 		articles.forEach(art  => delete art._id)
 		
@@ -147,7 +147,7 @@ function patchArticle(req, res, next) {
 				if (!uniqueProvider) return next(Error('All articles not becomes from the same provider'))
 
 				//Find tarif to apply it if price change
-				let tarif = await findTarif(articles[0].troc, articles[0].provider)
+				let { tarif } = await findSpec(articles[0].troc, articles[0].provider)
 					//if (err) return next(Error(err))
 
 				articles = articles.map(art => {

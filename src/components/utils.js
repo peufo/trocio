@@ -162,45 +162,16 @@ export function convertDMS(lat, lng) {
 }
 
 export async function getDetail(troc, user) {
-
-    let providedRequest  = fetch(`/articles?user_provider=${user}&troc=${troc}&include_without_name=true`).then(res => res.json())
-    let purchasesRequest = fetch(`/articles?user_buyer=${user}&troc=${troc}`).then(res => res.json())
-    let givbacksRequest  = fetch(`/articles?user_giveback.user=${user}&troc=${troc}`).then(res => res.json())
-    let paymentsRequest  = fetch(`/payments?user=${user}&troc=${troc}`).then(res => res.json())
-    let tarifRequest     = fetch(`/trocs/tarif?user=${user}&troc=${troc}`).then(res => res.json())
-    let traderRequest    = fetch(`/trocs/trader?user=${user}&troc=${troc}`).then(res => res.json())
-
-    let [
-        {data: provided,  dataMatchCount: providedCount},
-        {data: purchases, dataMatchCount: purchasesCount},
-        {data: givebacks, dataMatchCount: givebacksCount},
-        payments,
-        tarif,
-        {prefix: traderPrefix}
-    ] = await Promise.all([providedRequest, purchasesRequest, givbacksRequest, paymentsRequest, tarifRequest, traderRequest])
-
-	//Compute values
-	//TODO: Deplacer coté serveur ?
-	let buySum = purchases.length ? -purchases.map(a => a.price).reduce((acc, cur) => acc + cur) : 0
-	let paySum = payments.length  ?  payments.map(a => a.amount).reduce((acc, cur) => acc + cur) : 0	
-	let {soldSum, feeSum} = computeSum(provided)
-	provided = addStatutField(provided, '')
-	
-	let balance = Math.round((buySum + paySum + soldSum + feeSum) * 100) / 100
-
-	return {
-		troc, user,
-		provided, providedCount,
-		purchases, purchasesCount,
-		givebacks, givebacksCount,
-		payments,
-		tarif,
-		traderPrefix,
-		buySum, paySum, soldSum, feeSum, balance
-	 }
+	try {
+		let details = await fetch(`/trocs/details?user=${user}&troc=${troc}`).then(res => res.json())
+		details.provided = addStatutField(details.provided, '')
+		return details
+	} catch (error) {
+		return error
+	}
 }
 
-export function computeSum(articles) {
+function computeSum(articles) {
 	let soldSum = 0
 	let feeSum = 0
 	if (articles.length) {

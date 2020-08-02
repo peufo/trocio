@@ -182,7 +182,7 @@
 		width: 100%!important;
 		overflow: hidden;
 		display: flex;
-		transition: .3s all ease-out;
+		/*transition: .3s all ease-out;*/
 		outline: none;
 	}
 

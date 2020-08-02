@@ -98,7 +98,7 @@
 			let cells = []
 			let price = 0
 
-			if (!$details.traderPrefix) {// utilsateur simple
+			if (!$details.prefix) {// utilsateur simple
 				lines.forEach((line, i) => {
 					cells = line.split(/[\t:;]/)
 					if (cells.length >= 2) {
@@ -125,8 +125,8 @@
 							failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
 						}
 						
-						if (isNaN(cells[0].replace($details.traderPrefix, '')) || cells[0].indexOf('.') != -1) failFormatRaison = `Vous devez mettre un nombre après le préfixe !`
-						if (cells[0].trim()[0] != $details.traderPrefix) failFormatRaison = `Vous devez utilier un "${$details.traderPrefix}" comme préfixe !`
+						if (isNaN(cells[0].replace($details.prefix, '')) || cells[0].indexOf('.') != -1) failFormatRaison = `Vous devez mettre un nombre après le préfixe !`
+						if (cells[0].trim()[0] != $details.prefix) failFormatRaison = `Vous devez utilier un "${$details.prefix}" comme préfixe !`
 
 						importArticles = [...importArticles, {
 							ref: cells[0].trim(),
@@ -232,7 +232,7 @@
 
 
 	<DetailCard title="Achats"
-	count={$details.purchasesCount}
+	count={$details.purchases.length}
 	sum={$details.buySum}
 	items={$details.purchases}
 	let:item={article}>
@@ -310,7 +310,7 @@
 			<div class="w3-row w3-margin-top" transition:slide|local>
 				<textarea class="w3-round" rows="10" 
 						bind:value={importArticlesValue} on:input={inputImportArticles}
-						placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${$details.traderPrefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${$details.traderPrefix ? `${$details.traderPrefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${$details.traderPrefix ? `${$details.traderPrefix}2 : ` : ''} Mon deuxième article : 15.35\n${$details.traderPrefix ? `${$details.traderPrefix}3 ; ` : ''} Mon troisième article ; 5,40\n ...`}></textarea>
+						placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${$details.prefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${$details.prefix ? `${$details.prefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${$details.prefix ? `${$details.prefix}2 : ` : ''} Mon deuxième article : 15.35\n${$details.prefix ? `${$details.prefix}3 ; ` : ''} Mon troisième article ; 5,40\n ...`}></textarea>
 			</div>
 		{/if}
 

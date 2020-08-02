@@ -1,15 +1,17 @@
 let Troc = require('../models/troc')
 let noop = () => {}
 
-async function findTarif(troc, user, cb = noop) {
+async function findSpec(troc, user, cb = noop) {
     if (!troc) return cb(Error('troc query is required'))
-    troc = await Troc.findById(troc, {tarif: 1}).exec()
+    troc = await Troc.findById(troc, {tarif: 1, trader: 1}).exec()
 	if (!troc) return cb(Error('Troc not found !'))
-	let tarifMatched = troc.tarif.filter(t => t.apply.map(a => a._id).indexOf(user) != -1)
-	cb(null, tarifMatched[0] || troc.tarif[0])
-	return tarifMatched[0] || troc.tarif[0]
-    
+	let tarif = troc.tarif.filter(t => t.apply.map(a => a._id).indexOf(user) != -1)[0] || troc.tarif[0]
+	let prefix = troc.trader.filter(t => t._id == user)[0]
+
+	cb(null, {tarif, prefix})
+	return {tarif, prefix}
 }
+
 
 function getFee(art, tarif) {
 	if (tarif && tarif.fee.length && art.price > 0) {
@@ -28,7 +30,7 @@ function getMargin(art, tarif) {
 }
 
 module.exports = {
-    findTarif,
+	findSpec,
     getFee,
     getMargin
 }
