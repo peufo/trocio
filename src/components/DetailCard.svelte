@@ -41,8 +41,7 @@
         <div transition:slide|local>
             {#if free}
                 <slot></slot>
-            {:else}
-                
+            {:else if items.length}
                 <List style="padding: 7px;" {nonInteractive}>
                     {#each items as item}
                         <Item style="padding: 0 6px">
