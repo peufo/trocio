@@ -6,6 +6,7 @@
 	import Tab, { Label, Icon } from '@smui/tab'
 	import TabBar from '@smui/tab-bar'
 
+	export let tabId = 'no-id'
 	export let tabs = []
 	export let tabActived
 	export let index = tabs.indexOf(tabActived)
@@ -34,7 +35,10 @@
 			container.addEventListener('mousedown', handleStart)
 			document.addEventListener('mouseup', handleEnd)
 		}
-		if (tabActived) activeTab(index, true)
+		if (tabActived) {
+			swip.stiffness = 1
+			swip.set(index * offsetWidth)
+		}
 	})
 
 	onDestroy(() => {
@@ -48,13 +52,13 @@
 		}
 	})
 
-	function activeTab(newIndex, snap = false) {
+	function activeTab(newIndex) {
 
 		if (newIndex !== null) index = newIndex
 		tabActived = tabs[index]
 		$redirect(location.pathname, {...$params, tab: tabActived.href})
 
-		swip.stiffness = snap ? 1 : .15
+		swip.stiffness = .15
 		swip.set(index * offsetWidth)
 
 	}
@@ -149,7 +153,10 @@
 </script>
 
 <div class="simple-card" bind:offsetWidth>
-	<TabBar {tabs} let:tab active={tabActived} on:MDCTabBar:activated={e => activeTab(e.detail.index)}>
+	<TabBar {tabs} let:tab id={tabId}
+		active={tabActived}
+		on:MDCTabBar:activated={e => activeTab(e.detail.index)}
+		style="border-bottom: 1px #eee solid">
 		<Tab {tab} >
 			<Icon class={tab.icon}></Icon>
 			{#if offsetWidth > maxWidthToShowLabel}
@@ -175,8 +182,8 @@
 		width: 100%!important;
 		overflow: hidden;
 		display: flex;
-		box-sizing: border-box;
-		transition: 500ms all ease-out;
+		transition: .3s all ease-out;
+		outline: none;
 	}
 
 	.item {

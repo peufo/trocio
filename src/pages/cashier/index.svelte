@@ -11,7 +11,7 @@
 
 
     let tabs = [
-        {href: 'provide',	label: 'Fournit', 		icon: 'fas fa-sign-in-alt',     component: Provide},
+        {href: 'provide',	label: 'Fourni', 		icon: 'fas fa-sign-in-alt',     component: Provide},
 		//{href: 'recover',	label: 'Récupère', 		icon: 'fas fa-sign-out-alt',    component: Recover},
 		//{href: 'buy',		label: 'Achète', 		icon: 'fas fa-shopping-basket', component: Buy,         clientAnonymAutorised: true},
 		//{href: 'giveback',  label: 'Retourne', 		icon: 'fas fa-undo', 			component: Giveback,    clientAnonymAutorised: true},
@@ -22,11 +22,9 @@
 
 </script>
 
-<Swip {tabs} {tabActived} let:tab >
-    {#if $trocDetails}
-        <div style="padding: 16px;">
-            <svelte:component this={tab.component}></svelte:component>
-        </div>
-    {/if}
+<Swip {tabs} {tabActived} let:tab tabId="cashierTabs">
+    <div style="padding: 16px;">
+        <svelte:component this={tab.component}></svelte:component>
+    </div>
 </Swip>
 

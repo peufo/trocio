@@ -22,8 +22,6 @@
 
     export let optionAutoPrintTag = true
 
-    $:console.log({$details})
-
     let validPromise //Valid button
     let addArticleDialog
 	let nbNewArticles = 0
@@ -208,7 +206,7 @@
 
 </Dialog>
 
-{#await detailsPromise}
+{#await $detailsPromise}
     LOAD
 {:then}
     <div class="w3-row">

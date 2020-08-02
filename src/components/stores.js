@@ -168,7 +168,6 @@ async function loadTrocDetails(set, {troc, client}) {
 	let user = await userPromiseSubscribed
 
 	let details = await getDetail(troc, user._id)
-	console.log({details})
 	set(details)
 	return 
 }

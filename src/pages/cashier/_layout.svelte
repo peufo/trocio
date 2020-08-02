@@ -14,6 +14,7 @@
 
 	import { user, trocDetails } from 'stores.js'
 	import { getHeader } from 'utils.js'
+	import notify from 'notify.js'
 	import SearchUser from 'SearchUser.svelte'
 	import Login from 'Login.svelte'
 	import Provide from 'Provide.svelte'
@@ -30,26 +31,27 @@
 	let clientAnonym = false
 	let popupPaymentOpen = false
 
-	let actions = [
-		{link: 'provide',	label: 'Fournit', 		icon: 'fas fa-sign-in-alt'},
-		{link: 'recover',	label: 'Récupère', 		icon: 'fas fa-sign-out-alt'},
-		{link: 'buy',		label: 'Achète', 		icon: 'fas fa-shopping-basket', clientAnonymAutorised: true},
-		{link: 'giveback',  label: 'Retourne', 		icon: 'fas fa-undo', 			clientAnonymAutorised: true},
-		{link: 'resume',	label: 'Aperçu', 		icon: 'far fa-eye', 			clientAnonymAutorised: true},
-	]
-	let tabActive = actions[4]
-
 	let validPaymentPromise
 
 	let balance = 0 //bind to Resume.svelte
-
-
 
 	//Options
 	let optionAutoPrintTag = true
 
 
-    onMount(() => {
+    onMount(async () => {
+
+		if ($params.client) {
+			try {
+				let res = await fetch(`/users/${$params.client}`)
+				client = await res.json()
+				searchClient = client.name
+				clientOk = true
+				clientAnonym = false
+			} catch (error) {
+				notify.error(error.message)
+			}
+		}
 
 		//Keyboard shortcut listener
 		document.addEventListener('keydown', e => {
@@ -62,15 +64,16 @@
 					case 'ArrowUp':
 						document.querySelector('#cashierTabs .mdc-tab[aria-selected="true"]').focus()
 						break
-				}
-					
+				}	
 			}
 		})
-
 	})
 
 	async function updateClientQuery() {
-		await $redirect(location.pathname, {...$params, client: client._id})
+		let query = {...$params}
+		if (client._id) query.client = client._id
+		else delete query.client
+		await $redirect(location.pathname, query)
 	}
     
 	async function clientSelected(e){
@@ -83,11 +86,9 @@
 	function inputSearchClient() {
 
 		balance = 0 // not work ?? why?
-
 		clientOk = false
 		clientAnonym = false
 		client = {}
-		//updateClientQuery()
 		clientPlaceHodler = clientPlaceHodlerDefault
 	}
 
@@ -95,7 +96,7 @@
 		clientOk = false
 		clientAnonym = false
 		client = {}
-		//updateClientQuery()
+		updateClientQuery()
 		clientPlaceHodler = clientPlaceHodlerDefault
 		searchClient = ''
 	}
@@ -105,7 +106,6 @@
 		clientAnonym = true
 		client = {}
 		updateClientQuery()
-		tabActive = actions.filter(a => !clientAnonym || a.clientAnonymAutorised)[0]
 		searchClient = ''
 		clientPlaceHodler = 'Anonyme'
 	}
@@ -197,6 +197,7 @@
 
 	{#if clientOk}
 
+		<br>
 		<slot></slot>
 		
 	{:else}
