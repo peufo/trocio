@@ -15,15 +15,15 @@
     dayjs.extend(relativeTime)
 
     import { user, troc, trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
-    //import { getHeader, crossfadeConfig, getFee, getMargin, sortByUpdatedAt, goPrint, formatPrice } from './utils.js'
     import { getHeader, crossfadeConfig, sortByUpdatedAt, goPrint, formatPrice } from './utils.js'
+    import ArticleCreateDialog from './ArticleCreateDialog.svelte'
     import TagsPrint from './TagsPrint.svelte'
     import Article from './Article.svelte'
 
     export let optionAutoPrintTag = true
 
     let validPromise //Valid button
-    let addArticleDialog
+    let createArticleDialog
 	let nbNewArticles = 0
 	let newArticle = {name: '', price: ''}
 
@@ -36,31 +36,6 @@
     const proposedFilter = art => !art.recover && !art.sold && art.isRemovable && !art.isCreated
 
     let articlesToPrint = []
-
-    function createArticle() {
-		
-        addArticleDialog.close()
-
-        let art = {
-            _id: new Date().getTime(),
-            troc: $troc._id, 
-            provider: $params.client._id,
-            name: newArticle.name,
-            price: Number(newArticle.price),
-            valided: new Date(),
-            validator: user._id,
-            isRemovable: true,
-            isCreated: true,
-            fee: 0,
-            margin: 0
-        }
-        $details.provided = [art, ...$details.provided]
-        nbNewArticles++
-        newArticle = {name: '', price: ''}
-    
-        document.getElementById('inputNewArticle').focus()
-		
-    }
 
     function removeArticle(artId) {
         let index = $details.provided.map(a => a._id).indexOf(artId)
@@ -169,42 +144,7 @@
     <TagsPrint id="providedTags" articles={articlesToPrint} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
 {/if}
 
-<Dialog bind:this={addArticleDialog}>
-
-    <Title>Ajouter un article</Title>
-
-    <Content>
-        <br>
-
-        <Textfield
-        id="inputNewArticle"
-        bind:value={newArticle.name} 
-        type="text"
-        label="Désignation"
-        class="shaped-outlined"
-        style="width: 100%;"
-        variant="outlined"/>
-
-        <br><br>
-
-        <Textfield
-        bind:value={newArticle.price}
-        use={() => formatPrice}
-        label="Prix"
-        class="shaped-outlined"
-        variant="outlined"/>
-
-        <Button
-        disabled={newArticle.name.length <= 2 || !newArticle.price.length}
-        on:click={createArticle}
-        style="transform: translate(0px, 20px);"
-        variant="outlined" color="secondary" class="w3-right w3-margin-left">
-            Ajouter
-        </Button>
-
-    </Content>
-
-</Dialog>
+<ArticleCreateDialog bind:dialog={createArticleDialog}/>
 
 {#await $detailsPromise}
     LOAD
@@ -220,7 +160,7 @@
                     </Button>
                 {/if}
 
-                <Button on:click="{() => addArticleDialog.open()}" class="w3-right w3-margin-right" variant="outlined" color="secondary">
+                <Button on:click="{() => createArticleDialog.open()}" class="w3-right w3-margin-right" variant="outlined" color="secondary">
                     Ajouter
                 </Button>
 
@@ -231,7 +171,7 @@
                         <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
                     </div>
                 {:then}
-                    {#each $details.provided.filter(art => !art.valided).slice(0, LIMIT_LIST_A) as article (article._id)}
+                    {#each $details.provided.filter(art => !art.valided).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_A) as article (article._id)}
                         <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
                             <Article article={article} clickable on:select="{() => clickProposedArticle(article._id)}"/>

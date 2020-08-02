@@ -6,7 +6,8 @@
 	
 
 	import SearchTable from './SearchTable.svelte'
-	import ArticleDialog from './ArticleDialog.svelte'
+	//import ArticleDialog from './ArticleDialog.svelte'
+	import ArticleCreateDialog from './ArticleCreateDialog.svelte'
 	import ProvidedTable from './ProvidedTable.svelte'
 
 	import notify from './notify.js'
@@ -27,13 +28,12 @@
 	let articleDialog
 	let article = {} //Article selected
 
+	let createArticleDialog
+	let createArticlePromise
+
 	let onPrint = false
 
 	//Création d'article (buttons)
-	let createArticleDialog
-	let createArticlePromise
-	let newArticleName = ''
-	let newArticlePrice = ''
 	let createImportArticlesPromise
 	let importArticlesListOpen = false 	//Modal popup for import list of articles
 	let importArticlesValue = '' 		//Value of textarea
@@ -53,40 +53,6 @@
 		//setTimeout(() => goPrint('resume-container'), 300)
 		setTimeout(() => {onPrint = false; LIMIT_LIST_C = 50}, 400)
 	}
-
-	async function createArticle(e) {
-
-		if ($details.tarif && $details.provided.length + 1 > $details.tarif.maxarticles) {
-			notify.warning({
-				title: `Trop d'articles`,
-				text: `Vous avez atteint le nombre maximal d'articles pouvant être proposés.\nRenseignez-vous auprès de l'organisateur pour lever cette limite.`
-			})
-			return
-		}
-		
-		try {
-			let body = {troc: $details.troc, provider: $details.user, name: newArticleName, price: newArticlePrice}
-			let res = await fetch('/articles', getHeader(body))
-			let json = await res.json()
-			if (json.success) {
-				
-				$details.provided = [...$details.provided, addStatutField(json.message[0])]
-				
-				newArticleName = ''
-				newArticlePrice = ''
-				document.getElementById(`newArticleName`).focus()
-
-				notify.success('Article ajouté')
-
-				return
-				
-			}else notify.error(json.message)
-		} catch (error) {
-			console.error(error)
-		}
-		
-		
-    }
 
     async function createImportArticles() {
 
@@ -119,10 +85,8 @@
 		} catch (error) {
 			console.error(error)
 		}
-		
-
-    }
-
+	}
+	
 	function inputImportArticles() {
 
 		importArticles = []
@@ -336,23 +300,9 @@
 
 			</span>
 
-			<!-- Dialoge de création d'article -->
-			<Dialog bind:this={createArticleDialog}>
-				<Title>Proposer un article</Title>
-				<Content>
-					<textarea id="newArticleName" cols="30" rows="3" placeholder="Désignation" bind:value={newArticleName}></textarea>
-					<input use:formatPrice style="width: 30%; height: 36px;" bind:value={newArticlePrice}  />
-					{#await createArticlePromise}
-						<Button color="secondary" variant="outlined" class="w3-right">
-							<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
-						</Button>
-					{:then}
-						<Button variant="outlined" class="w3-right" on:click={e => createArticlePromise = createArticle(e)}>
-							Valider
-						</Button>
-					{/await}
-				</Content>
-			</Dialog>
+			<!-- Dialog de création d'article -->
+			<ArticleCreateDialog bind:dialog={createArticleDialog} bind:createPromise={createArticlePromise}/>
+
 		</span>
 
 		<!-- Insertion de plusieurs d'article -->

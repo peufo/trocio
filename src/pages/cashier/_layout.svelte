@@ -38,7 +38,6 @@
 	//Options
 	let optionAutoPrintTag = true
 
-
     onMount(async () => {
 
 		if ($params.client) {
