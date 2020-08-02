@@ -93,7 +93,7 @@
 
             nbNewArticles -= articlesValided.length
 
-            notify.success(articlespatched.length > 1 ? `${articlespatched.length} articles validés`: `Un article validé`)
+            notify.success(articlespatched.length > 1 ? `${articlespatched.length} articles validés`: `Article validé`)
 
             //Impression des étiquettes
             if (optionAutoPrintTag) printArticles(articlesValided)

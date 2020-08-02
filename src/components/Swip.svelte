@@ -167,7 +167,7 @@
 
 	<div bind:this={container} class="container">
 		{#each tabs as tab, i}
-			<div class="item">
+			<div class="item" class:no-print={tab != tabActived}>
 				<div bind:this={tab.dom} bind:offsetHeight={offsetHeight[i]}>
 					<slot {tab}></slot>
 				</div>
@@ -190,6 +190,14 @@
 		width: 100%!important;
 		flex: 1 0 auto;	
 	}
+
+	@media print {
+		.no-print {
+			display: none;
+		}		
+	}
+
+
 
 </style>
 
