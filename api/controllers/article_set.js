@@ -4,7 +4,6 @@ let Troc = require('../models/troc')
 
 let { getRoles, createArticleContext } = require('./article_utils')
 let { findSpec, getFee, getMargin } = require('./troc_utils')
-const article_utils = require('./article_utils')
 
 function createArticle(req, res, next) {
 
@@ -139,6 +138,9 @@ function patchArticle(req, res, next) {
 		getRoles(req.session.user._id, articles[0], async roles => {
 
 			if (!roles.length) return next(Error('Not authorized'))
+			
+			//Find tarif to apply it if price change
+			let { tarif } = await findSpec(articles[0].troc, articles[0].provider)
 
 			if (roles.indexOf('provider') != -1) {
 
@@ -146,9 +148,8 @@ function patchArticle(req, res, next) {
 				uniqueProvider = articles.map(a => a.provider.toString()).filter((v, i, self) => self.indexOf(v) === i).length == 1
 				if (!uniqueProvider) return next(Error('All articles not becomes from the same provider'))
 
-				//Find tarif to apply it if price change
-				let { tarif } = await findSpec(articles[0].troc, articles[0].provider)
-					//if (err) return next(Error(err))
+
+				//if (err) return next(Error(err))
 
 				articles = articles.map(art => {
 					let patchedArt = patchedArticles[ids.indexOf(String(art._id))]
@@ -172,10 +173,6 @@ function patchArticle(req, res, next) {
 					if (err) errors.push(err)
 					return art
 				})
-					
-
-					
-				
 
 			}
 			
@@ -189,6 +186,13 @@ function patchArticle(req, res, next) {
 					let recoverPatched = patchedArt.recover && patchedArt.recover != art.recover
 
 					//PATCH
+					if (!art.valided) {
+						if (!isNaN(patchedArt.price) && patchedArt.price !== null){
+							art.price 	= patchedArt.price
+							art.fee 	= getFee(art, tarif)
+							art.margin 	= getMargin(art, tarif)
+						}
+					}
 					if (patchedArt.name) 	art.name 	= patchedArt.name
 					if (patchedArt.valided) art.valided = patchedArt.valided
 					if (patchedArt.refused) art.refused = patchedArt.refused

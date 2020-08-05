@@ -53,7 +53,7 @@
         
 		if (e.target.classList.contains('price-input')) {
             art.price = e.target.value
-            $details.provided[index].price = art.price
+            $details.provided[index].price = Number(art.price)
             $details.provided[index].fee = getFee(art, $details.tarif)
             $details.provided[index].margin = getMargin(art, $details.tarif)
         } else {
@@ -66,7 +66,8 @@
 			modifiedArticles = [...modifiedArticles, art]
 		}else{
 			modifiedArticles[index] = art
-		}
+        }
+
 		clearTimeout(clearModifiedArticles)
 		clearModifiedArticles = setTimeout(() => modifiedArticles = [], 700)
     }

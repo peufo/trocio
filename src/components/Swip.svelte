@@ -194,7 +194,13 @@
 	@media print {
 		.no-print {
 			display: none;
-		}		
+		}
+
+		.container {
+			/* TODO: HYPER BOF*/
+			overflow: visible;
+		}
+
 	}
 
 

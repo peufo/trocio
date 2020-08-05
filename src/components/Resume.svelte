@@ -12,7 +12,7 @@
 
 	import notify from './notify.js'
 	import { trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
-	import { getFields, addStatutField, formatPrice, getHeader } from './utils'
+	import { getFields, addStatutField, formatPrice, getHeader, sortByUpdatedAt } from './utils'
 	
 	import Logo from './Logo.svelte'
 	import DetailCard from './DetailCard.svelte'
@@ -236,7 +236,7 @@
 	sum={$details.paySum}
 	nonInteractive
 	show={paymentShow}
-	items={$details.payments}
+	items={$details.payments.sort(sortByUpdatedAt)}
 	let:item={payment}>
 		<span slot="col-1"></span>
 		<span slot="col-2">{payment.message} {dayjs(payment.createdAt).fromNow()}</span>
@@ -248,7 +248,7 @@
 	count={$details.purchases.length}
 	sum={$details.buySum}
 	show={buyShow}
-	items={$details.purchases}
+	items={$details.purchases.sort(sortByUpdatedAt)}
 	let:item={article}>
 		<span slot="col-1">#{article.ref}</span>
 		<span slot="col-2">{article.name}</span>
