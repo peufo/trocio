@@ -1,20 +1,16 @@
 <script>
+    import { getHeader, crossfadeConfig } from './utils'
+    import Article from './Article.svelte'
+    import { trocDetails as details, trocDetailsPromise as detailsPromise} from './stores.js'
+    import { params } from '@sveltech/routify'
 	import { crossfade, fade, slide } from 'svelte/transition'
     import { flip } from 'svelte/animate'
     import Button from '@smui/button'
-    import { getHeader, crossfadeConfig } from './utils'
-    import Article from './Article.svelte'
     import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
-
-    export let trocId = ''
-    export let client = ''
-    export let purchases = []
-    export let purchasesCount = 0
-    export let purchasesPromise
 
     const [send, receive] = crossfade(crossfadeConfig)
     
@@ -37,11 +33,11 @@
 
     async function getArticles() {
 
-        let req = `/articles?troc=${trocId}&limit=${LIMIT_LIST_A}&skip=${skip}`
+        let req = `/articles?troc=${$details.troc}&limit=${LIMIT_LIST_A}&skip=${skip}`
         req += `&filter_statut=valided`
         req += `&or_search_name=${search}`
         req += `&or_search_ref=${search}`
-        req += `${client ? `&providernot=${client}` :''}`
+        req += `${$params.client ? `&providernot=${$params.client}` :''}`
 
         let res = await fetch(req)
         let json = await res.json()
@@ -98,15 +94,15 @@
             return {
                 _id: article._id,
                 sold,
-                buyer: client
+                buyer: $params.client
             }
         })
 
         let res = await fetch('/articles', getHeader(patchedArticles, 'PATCH'))
         let json = await res.json()
         if (res.ok && json.success) {
-            purchases = [...json.message, ...purchases]
-            purchases[0].soldTime = new Date(purchases[0].sold).getTime()
+            $details.purchases = [...json.message, ...$details.purchases]
+            $details.purchases[0].soldTime = new Date($details.purchases[0].sold).getTime()
             cart = []
             return
         }
@@ -208,10 +204,10 @@
         <div class="w3-margin-left">
             <span class="w3-large">Achats</span>
 
-            {#await purchasesPromise}
+            {#await $detailsPromise}
                 <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
             {:then}
-                {#each purchases.slice(0, LIMIT_LIST_B) as article (article._id)}
+                {#each $details.purchases.slice(0, LIMIT_LIST_B) as article (article._id)}
                     <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
                         <Article article={article} timeKey={'soldTime'}/>
                     </div>
@@ -220,10 +216,10 @@
                 {/each}
                 
                 <!-- Bouton pour prolongé la liste -->
-                {#if purchases.length > LIMIT_LIST_B}
+                {#if $details.purchases.length > LIMIT_LIST_B}
                     <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
                         <span class="underline-span w3-opacity">
-                            Afficher plus d'éléments ({purchases.length - LIMIT_LIST_B})
+                            Afficher plus d'éléments ({$details.purchases.length - LIMIT_LIST_B})
                         </span>
                     </div>
                 {/if}

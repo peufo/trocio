@@ -1,13 +1,15 @@
 <script>
+    import { getHeader, crossfadeConfig } from './utils'
+    import Article from './Article.svelte'
+    import { trocDetails as details, trocDetailsPromise as detailsPromise} from './stores.js'
+
+    import { params } from '@sveltech/routify'
     import { onMount } from 'svelte'
     import { troc } from './stores'
 	import { crossfade } from 'svelte/transition'
     import { flip } from 'svelte/animate'
     import Button from '@smui/button'
-    import { getHeader, crossfadeConfig } from './utils'
-    import Article from './Article.svelte'
 
-    export let userId = false
     export let trocId = false
     export let purchases = []
     export let purchasesPromise
@@ -27,7 +29,7 @@
     })
 
     async function getGivebacks() {
-        let res = await fetch(`/articles?user_giveback.user=${userId}&troc=${trocId}`)
+        let res = await fetch(`/articles?user_giveback.user=${$params.client}&troc=${trocId}`)
 		let json = await res.json()		
         if (res.ok) {
 			givebacks = json.data.map(art => {
@@ -47,7 +49,7 @@
             if (index != -1) {
                 let back = purchases[index]
                 if (!back.giveback) back.giveback = []
-                back.giveback = [...back.giveback, {sold: back.sold, back: new Date(), raison, user: userId}]
+                back.giveback = [...back.giveback, {sold: back.sold, back: new Date(), raison, user: $params.client}]
                 back.isRemovable = true
                 givebacks = [back, ...givebacks]
                 givebacks[0].givebackRaison = raison
@@ -92,8 +94,8 @@
 
     function getMyLastGiveBack(art) {
         let backs = []
-        if (userId) {
-            backs = art.giveback.filter(back => back.user == userId)
+        if ($params.client) {
+            backs = art.giveback.filter(back => back.user == $params.client)
         }else{
             backs = art.giveback.filter(back => !back.user)
         }

@@ -119,7 +119,6 @@
 		let json = await res.json()
 		if (res.ok && json.success) {
 			let newPayment = json.message
-			console.log({newPayment})
 			$details.payments = [newPayment, ...$details.payments]
 			$details.balance += newPayment.amount
 			popupPaymentOpen = false
