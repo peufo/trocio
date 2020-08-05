@@ -1,7 +1,8 @@
 <script>
-    import { onMount } from 'svelte'
+    import { onMount, createEventDispatcher } from 'svelte'
     import { flip } from 'svelte/animate'
     import { crossfade } from 'svelte/transition'
+    const dispatch = createEventDispatcher()
 
     import { params } from '@sveltech/routify'
     import Button from '@smui/button'
@@ -112,6 +113,10 @@
         setTimeout(() => goPrint('providedTags'), 100)
     }
 
+    function openCreateDialog() {
+        createArticleDialog.open()
+        //dispatch('openCreateDialog')
+    }
 
 </script>
 
@@ -119,7 +124,7 @@
     <TagsPrint id="providedTags" articles={articlesToPrint} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
 {/if}
 
-<ArticleCreateDialog bind:dialog={createArticleDialog}/>
+<ArticleCreateDialog bind:dialog={createArticleDialog} moveToBody/>
 
 {#await $detailsPromise}
     <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"><br><br></div>
@@ -135,7 +140,7 @@
                     </Button>
                 {/if}
 
-                <Button on:click="{() => createArticleDialog.open()}" class="w3-right w3-margin-right" variant="outlined" color="secondary">
+                <Button on:click={openCreateDialog} class="w3-right w3-margin-right" variant="outlined" color="secondary">
                     Ajouter
                 </Button>
 

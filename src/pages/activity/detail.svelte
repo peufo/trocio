@@ -2,8 +2,13 @@
     import { user } from 'stores.js'
     import TrocInfo from 'TrocInfo.svelte'
     import Resume from '../../components/Resume.svelte'
+    import ArticleCreateDialog from 'ArticleCreateDialog.svelte'
+    import TarifInfoDialog from 'TarifInfoDialog.svelte'
 
     export let scoped
+
+    let articleCreateDialog
+    let tarifInfoDialog
 
 </script>
 
@@ -15,6 +20,11 @@
 
     <hr>
 
-    <Resume/>
+    <Resume on:openCreateDialog={articleCreateDialog.open} on:openTarifDialog={tarifInfoDialog.open}/>
+
+
+    <ArticleCreateDialog bind:dialog={articleCreateDialog}/>
+
+    <TarifInfoDialog bind:dialog={tarifInfoDialog}/>
 
 </div>

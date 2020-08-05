@@ -1,4 +1,5 @@
 <script>
+	import { createEventDispatcher } from 'svelte'
 	import { slide, fade } from 'svelte/transition'
 
 	import Dialog, {Title, Content} from '@smui/dialog'
@@ -22,6 +23,7 @@
 	import 'dayjs/locale/fr'
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
+	const dispatch = createEventDispatcher()
 
 	let providedFields = getFields('# Désignation Statut Frais Marge Prix', '')
 
@@ -196,7 +198,8 @@
 
 	function clickOpenCreateArticle(e) {
 		providedShow = true
-		setTimeout(() => createArticleDialog.open(), 0)
+		dispatch('openCreateDialog')
+		//setTimeout(() => createArticleDialog.open(), 0)
 	}
 
 	function clickOpenImportArticle(e) {
@@ -328,7 +331,7 @@
 			</div>
 		{/if}
 
-		<ProvidedTable/>
+		<ProvidedTable on:openTarifDialog/>
 
 	</DetailCard>
 	<br>

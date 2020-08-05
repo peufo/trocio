@@ -101,8 +101,13 @@
         let res = await fetch('/articles', getHeader(patchedArticles, 'PATCH'))
         let json = await res.json()
         if (res.ok && json.success) {
-            $details.purchases = [...json.message, ...$details.purchases]
+            let newPurchases = json.message
+            $details.purchases = [...newPurchases, ...$details.purchases]
             $details.purchases[0].soldTime = new Date($details.purchases[0].sold).getTime()
+            let newBuySum = newPurchases.map(art => art.price).reduce((acc, cur) => acc += cur)
+            $details.buySum -= newBuySum
+            $details.balance -= newBuySum
+            newBuySum = 0
             cart = []
             return
         }
@@ -177,8 +182,8 @@
                 </Button>
             {:then}
                 {#if cart.length}
-                    <Button on:click="{() => buyPromise = validBuy()}" class="w3-right" variant="outlined">
-                        Valider l'achat de{cart.length <= 1 ? ` l'article` : `s ${cart.length} articles`}
+                    <Button on:click="{() => buyPromise = validBuy()}" class="w3-right" variant="raised">
+                        Valider l'achat de{cart.length <= 1 ? ` l'article` : `s ${cart.length} articles`} : {cart.map(a => a.price).reduce((acc, cur) => acc += cur).toFixed(2)}
                     </Button>
                 {/if}
             {/await}

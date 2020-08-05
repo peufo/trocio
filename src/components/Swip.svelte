@@ -72,7 +72,7 @@
 				<div class="swiper-slide" bind:offsetHeight={offsetHeight[i]}>
 					<slot {tab}></slot>
 				</div>
-			{/each}		
+			{/each}
 		</div>
 	</div>
 

@@ -120,6 +120,7 @@
 		if (res.ok && json.success) {
 			let newPayment = json.message
 			$details.payments = [newPayment, ...$details.payments]
+			$details.paySum += newPayment.amount
 			$details.balance += newPayment.amount
 			popupPaymentOpen = false
 			notify.success({title: `Paiement validé`, text: `${newPayment.amount.toFixed(2)} ${newPayment.message}`})

@@ -8,7 +8,8 @@
     import Buy      from 'Buy.svelte'
     import Giveback from 'Giveback.svelte'
     import Resume   from 'Resume.svelte'
-
+    import ArticleCreateDialog from 'ArticleCreateDialog.svelte'
+    import TarifInfoDialog from 'TarifInfoDialog.svelte'
 
     let tabs = [
         {href: 'provide',	label: 'Fourni', 		icon: 'fas fa-sign-in-alt',     component: Provide},
@@ -20,11 +21,21 @@
 
     let tabActived = tabs[tabs.map(t => t.href).indexOf($params.tab || 'resume')]
 
+    let articleCreateDialog
+    let tarifInfoDialog
+
 </script>
 
 <Swip {tabs} {tabActived} let:tab tabId="cashierTabs">
     <div style="padding: 16px;">
-        <svelte:component this={tab.component}></svelte:component>
+        <svelte:component
+        this={tab.component}
+        on:openCreateDialog={articleCreateDialog.open}
+        on:openTarifDialog={tarifInfoDialog.open}
+        ></svelte:component>
     </div>
 </Swip>
 
+<ArticleCreateDialog bind:dialog={articleCreateDialog}/>
+
+<TarifInfoDialog bind:dialog={tarifInfoDialog}/>

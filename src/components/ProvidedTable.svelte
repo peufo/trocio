@@ -1,6 +1,8 @@
 <script>
     import { v4 as uuidv4 } from 'uuid'
     import { slide } from 'svelte/transition'
+    import { createEventDispatcher } from 'svelte'
+    const dispatch = createEventDispatcher()
 	import Dialog, {Title, Content} from '@smui/dialog'
     import Menu from '@smui/menu'
     import List, { Item, Text } from '@smui/list'
@@ -19,8 +21,6 @@
     
 	let deleteArticlePromise
 	let articleWaitValidationForDelete = -1
-
-	let tarifInfoDialog
 
     const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
     let limitList= LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste (Achat)
@@ -142,7 +142,7 @@
                 </Menu>
             </th>
 
-            <th class="clickable" on:click="{() => tarifInfoDialog.open()}">
+            <th class="clickable" on:click={() => dispatch('openTarifDialog')}>
                 <span>Frais</span><br>
                 <span class="w3-small fee w3-right">
                     {$details.feeSum.toFixed(2)}
@@ -205,7 +205,7 @@
                     <td>{article.statut}</td>
 
                     <!-- Frais -->
-                    <td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided} on:click="{() => tarifInfoDialog.open()}">
+                    <td class:w3-opacity={!article.valided} class="fee" class:unvalided={!article.valided} on:click={() => dispatch('openTarifDialog')}>
                         {article.fee.toFixed(2)}
                         {@html article.sold ? ` <span class="w3-tiny">+</span> ${article.margin.toFixed(2)}` : ''}
                     </td>
@@ -250,40 +250,6 @@
         </span>
     </div>
     <br>
-{/if}
-
-<!-- Dialogue d'information sur les tarifs -->
-{#if $details.tarif}
-	<Dialog bind:this={tarifInfoDialog}>
-		<Title>Vous êtes soumis au tarif <b>{$details.tarif.name}</b>: </Title>
-		<Content>
-			<h5>Nombre maximum d'article proposés</h5><br>
-			<div style="text-align: center;">
-				<b>{$details.tarif.maxarticles}</b> <i class="fas fa-cube"></i>
-			</div>
-			<br><br>
-
-			<h5>Frais de traitement
-				<span class="w3-small w3-opacity">Appliqué au dépot de l'article</span>
-			</h5><br>
-			<div style="text-align: center;">
-				{#each $details.tarif.fee.sort((a, b) => a.price - b.price) as fee}
-					A partir de <b>{fee.price.toFixed(2)} </b><i class="fas fa-arrow-right"></i> <b>{fee.value.toFixed(2)}</b>
-					<br>
-				{/each}
-			</div>
-			<br><br>
-
-			<h5>Marge
-				<span class="w3-small w3-opacity">Appliquée à la vente de l'article</span>
-			</h5><br>
-			<div style="text-align: center;">
-				<b>{$details.tarif.margin * 100}</b> <i class="fas fa-percent"></i>
-			</div>
-			<br>
-			
-		</Content>
-	</Dialog>
 {/if}
 
 <style>
