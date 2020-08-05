@@ -23,6 +23,10 @@
 
     export let optionAutoPrintTag = true
 
+    let proposed = []
+    $: proposed = $details ? $details.provided.filter(art => !art.valided) : []
+    
+
     let validPromise //Valid button
     let createArticleDialog
 	let nbNewArticles = 0
@@ -59,7 +63,7 @@
     }
 
     function clickProposedArticleAll() {
-        $details.provided.filter(art => !art.valided).forEach(art => clickProposedArticle(art._id))
+        proposed.forEach(art => clickProposedArticle(art._id))
     }
 
     async function validProvided() {
@@ -118,14 +122,14 @@
 <ArticleCreateDialog bind:dialog={createArticleDialog}/>
 
 {#await $detailsPromise}
-    LOAD
+    <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"><br><br></div>
 {:then}
     <div class="w3-row">
 
         <div class="w3-col m6">
             <div class="w3-margin-right">
 
-                {#if $details.provided.filter(art => !art.valided).length}
+                {#if proposed.length}
                     <Button on:click={clickProposedArticleAll} class="w3-right" variant="outlined" color="secondary">
                         Tout accepter
                     </Button>
@@ -142,10 +146,10 @@
                         <img src="/favicon.ico" alt="Logo trocio" class="w3-spin">
                     </div>
                 {:then}
-                    {#each $details.provided.filter(art => !art.valided).sort(sortByUpdatedAt).slice(0, LIMIT_LIST_A) as article (article._id)}
+                    {#each proposed.sort(sortByUpdatedAt).slice(0, LIMIT_LIST_A) as article (article._id)}
                         <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
 
-                            <Article article={article} clickable on:select="{() => clickProposedArticle(article._id)}"/>
+                            <Article article={article} clickable={!article.refused} on:select="{() => clickProposedArticle(article._id)}"/>
     
                         </div>
                     {:else}
@@ -153,10 +157,10 @@
                     {/each}
 
                     <!-- Bouton pour prolongé la liste -->
-                    {#if $details.provided.filter(art => !art.valided).length > LIMIT_LIST_A}
+                    {#if proposed.length > LIMIT_LIST_A}
                         <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
                             <span class="underline-span w3-opacity">
-                                Afficher plus d'éléments ({$details.provided.filter(art => !art.valided).length - LIMIT_LIST_A})
+                                Afficher plus d'éléments ({proposed.length - LIMIT_LIST_A})
                             </span>
                         </div>
                     {/if}

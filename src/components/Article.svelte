@@ -20,7 +20,7 @@
     }
 
     function select() {
-        dispatch('select', article)
+        if (clickable) dispatch('select', article)
     }
 
     function print() {
@@ -56,6 +56,12 @@
     {:else if printable}
         <div class="action w3-display-topright w3-padding">
             <i 	class="fa fa-print clickable" style="margin-top: 4px;" on:click={print}></i>
+        </div>
+    {/if}
+
+    {#if article.refused}
+        <div class="w3-display-middle">
+            <span class="w3-red w3-padding-small w3-round w3-opacity">Refusé</span>
         </div>
     {/if}
 

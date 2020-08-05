@@ -22,6 +22,9 @@ export function updateTroc(json, cb) {
 export function sortByUpdatedAt(a, b) {
 	return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
 }
+export function sortByRecover(a, b) {
+	return new Date(b.recover).getTime() - new Date(a.recover).getTime()
+}
 
 export function goPrint(id) {
 	console.log('TODO: printJS(id)')
