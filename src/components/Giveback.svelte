@@ -77,11 +77,15 @@
         let res = await fetch('/articles/giveback', getHeader(newGivebacks))
         let json = await res.json()
         if (res.ok && json.success) {
-            //let givebacksUpdated = json.message
+            let givebacksUpdated = json.message
+            let priceSum = givebacksUpdated.map(art => art.price).reduce((acc, cur) => acc += cur)
+            $details.buySum += priceSum
+            $details.balance += priceSum
+
             givebacks = givebacks.map(art => {
                 art.isRemovable = false
                 art.sold = undefined
-				art.buyer = undefined
+                art.buyer = undefined
                 return art
             })
             
