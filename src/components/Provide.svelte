@@ -18,7 +18,6 @@
     import { user, troc, trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
     import { getHeader, crossfadeConfig, sortByUpdatedAt, goPrint, formatPrice, addStatutField} from './utils.js'
     import notify from './notify.js'
-    import ArticleCreateDialog from './ArticleCreateDialog.svelte'
     import TagsPrint from './TagsPrint.svelte'
     import Article from './Article.svelte'
 
@@ -29,7 +28,6 @@
     
 
     let validPromise //Valid button
-    let createArticleDialog
 	let nbNewArticles = 0
 	let newArticle = {name: '', price: ''}
 
@@ -114,8 +112,7 @@
     }
 
     function openCreateDialog() {
-        createArticleDialog.open()
-        //dispatch('openCreateDialog')
+        dispatch('openCreateDialog')
     }
 
 </script>
@@ -123,8 +120,6 @@
 {#if $troc && $troc.tag}
     <TagsPrint id="providedTags" articles={articlesToPrint} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
 {/if}
-
-<ArticleCreateDialog bind:dialog={createArticleDialog} moveToBody/>
 
 {#await $detailsPromise}
     <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"><br><br></div>

@@ -22,7 +22,6 @@
 
     <Resume on:openCreateDialog={articleCreateDialog.open} on:openTarifDialog={tarifInfoDialog.open}/>
 
-
     <ArticleCreateDialog bind:dialog={articleCreateDialog}/>
 
     <TarifInfoDialog bind:dialog={tarifInfoDialog}/>

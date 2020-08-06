@@ -1,5 +1,5 @@
 <script>
-    import { getHeader, crossfadeConfig } from './utils'
+    import { getHeader, crossfadeConfig, sortByUpdatedAt } from './utils'
     import Article from './Article.svelte'
     import { trocDetails as details, trocDetailsPromise as detailsPromise} from './stores.js'
     import { params } from '@sveltech/routify'
@@ -212,7 +212,7 @@
             {#await $detailsPromise}
                 <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
             {:then}
-                {#each $details.purchases.slice(0, LIMIT_LIST_B) as article (article._id)}
+                {#each $details.purchases.sort(sortByUpdatedAt).slice(0, LIMIT_LIST_B) as article (article._id)}
                     <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
                         <Article article={article} timeKey={'soldTime'}/>
                     </div>

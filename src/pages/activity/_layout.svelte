@@ -158,7 +158,10 @@
     </div>
 {/if}
 
+<svelte:head><style>body {background: #fafafa;}</style></svelte:head>
 <style>
+
+    
 
     .main-container {
         /*
@@ -181,6 +184,7 @@
 
     .item {
         margin: 1em;
+        background: #fff;
     }
     .simple-card {
         padding: 16px;

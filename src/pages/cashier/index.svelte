@@ -15,10 +15,10 @@
         {href: 'provide',	label: 'Fourni', 		icon: 'fas fa-sign-in-alt',     component: Provide},
 		{href: 'recover',	label: 'Récupère', 		icon: 'fas fa-sign-out-alt',    component: Recover},
 		{href: 'buy',		label: 'Achète', 		icon: 'fas fa-shopping-basket', component: Buy,         clientAnonymAutorised: true},
-		//{href: 'giveback',  label: 'Retourne', 		icon: 'fas fa-undo', 			component: Giveback,    clientAnonymAutorised: true},
+		{href: 'giveback',  label: 'Retourne', 		icon: 'fas fa-undo', 			component: Giveback,    clientAnonymAutorised: true},
 		{href: 'resume',	label: 'Aperçu', 		icon: 'far fa-eye', 			component: Resume,      clientAnonymAutorised: true},
     ]
-
+    
     let tabActived = tabs[tabs.map(t => t.href).indexOf($params.tab || 'resume')]
 
     let articleCreateDialog

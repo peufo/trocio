@@ -10,9 +10,6 @@
     import { flip } from 'svelte/animate'
     import Button from '@smui/button'
 
-    export let trocId = false
-    export let purchases = []
-    export let purchasesPromise
     export let givebacks = []
     export let givebacksPromise
 
@@ -29,7 +26,7 @@
     })
 
     async function getGivebacks() {
-        let res = await fetch(`/articles?user_giveback.user=${$params.client}&troc=${trocId}`)
+        let res = await fetch(`/articles?user_giveback.user=${$details.user}&troc=${$details.troc}`)
 		let json = await res.json()		
         if (res.ok) {
 			givebacks = json.data.map(art => {
@@ -45,9 +42,9 @@
     function select(artId) {
         let raison = prompt('Quelle est la raison du retour ?')
         if (raison != null) {
-            let index = purchases.map(art => art._id).indexOf(artId)
+            let index = $details.purchases.map(art => art._id).indexOf(artId)
             if (index != -1) {
-                let back = purchases[index]
+                let back = $details.purchases[index]
                 if (!back.giveback) back.giveback = []
                 back.giveback = [...back.giveback, {sold: back.sold, back: new Date(), raison, user: $params.client}]
                 back.isRemovable = true
@@ -55,8 +52,8 @@
                 givebacks[0].givebackRaison = raison
                 givebacks[0].givebackTime = new Date().getTime()
 
-                purchases.splice(index, 1)
-                purchases = purchases
+                $details.purchases.splice(index, 1)
+                $details.purchases = $details.purchases
             }
         }
     }
@@ -64,8 +61,8 @@
     function remove(artId) {
         let index = givebacks.map(art => art._id).indexOf(artId)
         if (index != -1) {
-            purchases = [...givebacks.splice(index, 1), ...purchases]
-            purchases[0].isRemovable = false
+            $details.purchases = [...givebacks.splice(index, 1), ...$details.purchases]
+            $details.purchases[0].isRemovable = false
             givebacks = givebacks
         }
     }
@@ -113,10 +110,10 @@
             
             <h4>Achats</h4>
         
-            {#await purchasesPromise}
+            {#await $detailsPromise}
                 <div class="w3-center"><img src="/favicon.ico" alt="Logo Trocio" class="w3-spin"></div>
             {:then}
-                {#each purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
+                {#each $details.purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
                     <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
                         <Article article={article} timeKey={'soldTime'} clickable on:select="{() => select(article._id)}"/>
                     </div>
@@ -125,10 +122,10 @@
                 {/each}
 
                 <!-- Bouton pour prolongé la liste -->
-                {#if purchases.length > LIMIT_LIST_A}
+                {#if $details.purchases.length > LIMIT_LIST_A}
                     <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
                         <span class="underline-span w3-opacity">
-                            Afficher plus d'éléments ({purchases.length - LIMIT_LIST_A})
+                            Afficher plus d'éléments ({$details.purchases.length - LIMIT_LIST_A})
                         </span>
                     </div>
                 {/if}
