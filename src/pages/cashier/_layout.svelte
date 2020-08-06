@@ -32,6 +32,7 @@
 
 	let validPaymentPromise
 
+	let offsetWidth
 
 	//Options
 	let optionAutoPrintTag = true
@@ -132,8 +133,9 @@
 
 </script>
 
+	
 <!-- Check if all is OK ! -->
-<div class="w3-padding">
+<div class="w3-padding" bind:offsetWidth style="max-width: 1100px; margin: auto;">
 
 	<!-- Utilisateur -->
 	<div id="userHandler">
@@ -196,12 +198,11 @@
 			</div>
 		{/if}
 	</div>
+</div>
 
+<div class:w3-padding={offsetWidth > 700} style="max-width: 1100px; margin: auto;">
 	{#if clientOk}
-
-		<br>
 		<slot></slot>
-		
 	{:else}
 
 		<i class="fas fa-cash-register noUserLogo"></i>
@@ -218,8 +219,9 @@
 		</div>
 		
 	{/if}
-
 </div>
+
+
 
 {#if popupPaymentOpen}
 	<div class="w3-modal" transition:fade|local={{duration: 150}}>
