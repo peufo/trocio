@@ -1,7 +1,8 @@
 <script>
-    import { user } from 'stores.js'
+    import { user, trocDetailsPromise } from 'stores.js'
     import TrocInfo from 'TrocInfo.svelte'
-    import Resume from '../../components/Resume.svelte'
+    import Logo from 'Logo.svelte'
+    import Resume from 'Resume.svelte'
     import ArticleCreateDialog from 'ArticleCreateDialog.svelte'
     import TarifInfoDialog from 'TarifInfoDialog.svelte'
 
@@ -19,9 +20,13 @@
     <TrocInfo troc={scoped.trocSelected} />
 
     <hr>
-
-    <Resume on:openCreateDialog={articleCreateDialog.open} on:openTarifDialog={tarifInfoDialog.open}/>
-
+    {#await $trocDetailsPromise}
+        <div style="position: relative; height: 383px;">
+            <Logo/>
+        </div>
+    {:then}
+        <Resume on:openCreateDialog={articleCreateDialog.open} on:openTarifDialog={tarifInfoDialog.open}/>
+    {/await}
     <ArticleCreateDialog bind:dialog={articleCreateDialog}/>
 
     <TarifInfoDialog bind:dialog={tarifInfoDialog}/>

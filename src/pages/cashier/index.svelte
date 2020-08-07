@@ -37,6 +37,7 @@
         </div>
         
     {:then}
+    {#if $trocDetails}
         <div in:fade|locale>
             <Swip tabs={tabs.filter(filter)} {tabActived} let:tab tabId="cashierTabs">
                 <div style="padding: 16px; min-height: 450px;">
@@ -48,6 +49,7 @@
                 </div>
             </Swip>
         </div>
+    {/if}
     {/await}
 </div>
 <ArticleCreateDialog bind:dialog={articleCreateDialog}/>

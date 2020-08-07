@@ -95,44 +95,16 @@ async function authenticate(set) {
 // ------------------------------------------------------
 
 function trocBuilder() {
-	const { subscribe, set } = writable({}, listenQuery)
+	const { subscribe, set } = writable(null, set => (buildListenQuery('troc', trocPromise, loadTroc, set))())
 	return {
 		subscribe, set,
-		//TODO: Can be removed ?
-		find: async id => {
-			let res = await fetch(`/trocs/${id}`)
-			let json = await res.json()	
-			if (res.ok) {
-				set(json)
-			}else{
-				switch (res.status) {
-					case 401:
-						set({failed: true, reason: 'Login required'})
-						break;
-					default:
-						set({failed: true, reason: 'Not found'})
-						break;
-				}
-			}
-		},
 		refresh: newTroc => {
 			set(newTroc)
 		}
 	}
 }
 
-function listenQuery(set) {
-	let setPromise = () => {
-		trocPromise.set(loadTroc(set))
-	}
-	setPromise()
-	addEventListener('locationchange', setPromise)
-	return () => {
-		removeEventListener('locationchange', setPromise)
-	}
-}
-
-async function loadTroc(set, troc) {
+async function loadTroc(set, { troc }) {
 	if(!troc) return set(null)
 	let res = await fetch(`/trocs/${troc}`)
 	let json = await res.json()	

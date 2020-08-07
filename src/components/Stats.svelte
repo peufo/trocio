@@ -382,6 +382,7 @@
         }
 
         //add shedule range and annotations
+        
         if ($troc.schedule.length) {
             layout.xaxis.range = [
                 new Date($troc.schedule[0].open).getTime() - 1000 * 60 * 60 * 24,
@@ -396,6 +397,7 @@
                 x: $troc.schedule[$troc.schedule.length - 1].close
             })
         }
+        
 
         let data = [recover, solded, available, proposed, pie]
 
@@ -424,12 +426,15 @@
         Plotly.newPlot('stockGraph', data, layout)
         console.timeEnd('create plot')
 
+        //TODO: Limite price obligé pour éviter le rammage... Faire un avertissement ?
+        const LIMIT_PRICE = 1000
+
         //Histogram
         let proposedHisto = {
             name: 'Proposé',
             hoverinfo: 'y',
             marker: {color: 'rgb(200, 200, 200)'},
-            x: articlesProposed.filter(art => !art.valided).map(art => art.price),
+            x: articlesProposed.filter(art => !art.valided && art.price < LIMIT_PRICE).map(art => art.price),
             type: 'histogram', xbins: {size: 10}
         }
 
@@ -437,7 +442,7 @@
             name: 'En vente',
             hoverinfo: 'y',
             marker: {color: 'rgb(33, 119, 181)'},
-            x: articlesProvided.filter(art => !art.solded && !art.recover).map(art => art.price),
+            x: articlesProvided.filter(art => !art.solded && !art.recover && art.price < LIMIT_PRICE).map(art => art.price),
             type: 'histogram', xbins: {size: 10}
         }
 
@@ -445,7 +450,7 @@
             name: 'Vendu',
             hoverinfo: 'y',
             marker: {color: 'rgb(44, 160, 43)'},
-            x: articlesSolded.map(art => art.price),
+            x: articlesSolded.filter(art => art.price < LIMIT_PRICE).map(art => art.price),
             type: 'histogram', xbins: {size: 10}
         }
 
@@ -453,7 +458,7 @@
             name: 'Récupéré',
             hoverinfo: 'y',
             marker: {color: 'rgb(255, 127, 14)'},
-            x: articlesRecovered.map(art => art.price),
+            x: articlesRecovered.filter(art => art.price < LIMIT_PRICE).map(art => art.price),
             type: 'histogram', xbins: {size: 10}
         }
 
@@ -479,12 +484,13 @@
         }
 
         let dataHisto = []
-        if (numberProposed) dataHisto.push(proposedHisto)
-        if (numberProvided - numberSolded - numberRecovered) dataHisto.push(availableHisto)
-        if (numberSolded) dataHisto.push(soldedHisto)
         if (numberRecovered) dataHisto.push(recoverHisto)
-        console.log(dataHisto)
+        if (numberSolded) dataHisto.push(soldedHisto)
+        if (numberProvided - numberSolded - numberRecovered) dataHisto.push(availableHisto)
+        if (numberProposed) dataHisto.push(proposedHisto)
+        console.log({dataHisto})
 
+        //Plotly.newPlot('stockGraphHisto', dataHisto, layoutHisto)
         Plotly.newPlot('stockGraphHisto', dataHisto, layoutHisto)
 
         stockLoading = false

@@ -19,7 +19,6 @@
     let articleEdited = {}
     let isModified = false
     let editClientDialog
-    let priceToFixed2 = 0
     let tarif = undefined
     let tarifPromise
 
@@ -27,8 +26,6 @@
         isModified = false
         articleEdited = {}
         Object.assign(articleEdited, article)
-        priceToFixed2 = ''
-        priceToFixed2 = article.price.toFixed(2)
         tarif = undefined
     }
 
@@ -101,7 +98,6 @@
     }
 
     async function editPrice(e) {
-        formatPrice(e)
         articleEdited.price = Number(e.target.value)
         if (!tarif) {
             tarifPromise = getTarif($troc._id, articleEdited.provider._id).then(updateFeeAndMargin)
@@ -277,7 +273,7 @@
             <br>
             <span>
                 Prix: 
-                <input value={priceToFixed2} type="text" on:input={editPrice} style="width: 80px;">
+                <input value={articleEdited.price && articleEdited.price.toFixed(2)} use:formatPrice on:input={editPrice} style="width: 80px;">
             </span><br>
 
             {#await tarifPromise}
