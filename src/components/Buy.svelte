@@ -37,7 +37,7 @@
         req += `&filter_statut=valided`
         req += `&or_search_name=${search}`
         req += `&or_search_ref=${search}`
-        req += `${$params.client ? `&providernot=${$params.client}` :''}`
+        req += `${$params.client && $params.client !== 'undefined' ? `&providernot=${$params.client}` :''}`
 
         let res = await fetch(req)
         let json = await res.json()
@@ -91,11 +91,9 @@
     async function validBuy() {
         let sold = new Date()
         let patchedArticles = cart.map(article => {
-            return {
-                _id: article._id,
-                sold,
-                buyer: $params.client
-            }
+            let art = {_id: article._id, sold}
+            if ($params.client !== 'undefined') art.buyer = $params.client
+            return art
         })
 
         let res = await fetch('/articles', getHeader(patchedArticles, 'PATCH'))

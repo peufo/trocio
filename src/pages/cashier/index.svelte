@@ -18,15 +18,17 @@
 		{href: 'giveback',  label: 'Retourne', 		icon: 'fas fa-undo', 			component: Giveback,    clientAnonymAutorised: true},
 		{href: 'resume',	label: 'Aperçu', 		icon: 'far fa-eye', 			component: Resume,      clientAnonymAutorised: true},
     ]
-    
+
     let tabActived = tabs[tabs.map(t => t.href).indexOf($params.tab || 'resume')]
 
     let articleCreateDialog
     let tarifInfoDialog
 
+    let filter = tab => tab.clientAnonymAutorised || $params.client != 'undefined'
+
 </script>
 
-<Swip {tabs} {tabActived} let:tab tabId="cashierTabs">
+<Swip tabs={tabs.filter(filter)} {tabActived} let:tab tabId="cashierTabs">
     <div style="padding: 16px;">
         <svelte:component
         this={tab.component}

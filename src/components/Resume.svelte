@@ -8,7 +8,6 @@
 
 	import SearchTable from './SearchTable.svelte'
 	//import ArticleDialog from './ArticleDialog.svelte'
-	import ArticleCreateDialog from './ArticleCreateDialog.svelte'
 	import ProvidedTable from './ProvidedTable.svelte'
 
 	import notify from './notify.js'
@@ -29,9 +28,6 @@
 
 	let articleDialog
 	let article = {} //Article selected
-
-	let createArticleDialog
-	let createArticlePromise
 
 	let onPrint = false
 
@@ -199,7 +195,6 @@
 	function clickOpenCreateArticle(e) {
 		providedShow = true
 		dispatch('openCreateDialog')
-		//setTimeout(() => createArticleDialog.open(), 0)
 	}
 
 	function clickOpenImportArticle(e) {
@@ -258,84 +253,78 @@
 		<span slot="col-3">{article.price.toFixed(2)}</span>
 	</DetailCard><br>
 
-	
-	<DetailCard title="Ventes"
-	free
-	bind:show={providedShow}
-	on:close={closeProvidedTable}
-	count={$details.provided.length}
-	sum={$details.soldSum + $details.feeSum}>
-		
-		<span slot="head">
-			<!-- Provide button -->
-			<span class:w3-hide={onPrint} style="margin-left: 30px;">
+	{#if $details.provided}
+		<DetailCard title="Ventes"
+		free
+		bind:show={providedShow}
+		on:close={closeProvidedTable}
+		count={$details.provided.length}
+		sum={$details.soldSum + $details.feeSum}>
+			
+			<span slot="head">
+				<!-- Provide button -->
+				<span class:w3-hide={onPrint} style="margin-left: 30px;">
 
-				<!-- Bonton pour proposer un articles -->
-				{#await createArticlePromise}
-					<Button color="secondary" dense >
-						<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
-					</Button>
-				{:then}
+					<!-- Bonton pour proposer un articles -->
 					{#if !importArticlesListOpen}
 						<Button dense
 						on:click={clickOpenCreateArticle}>
 							Proposer un article
 						</Button>
 					{/if}
-				{/await}
-			
-				<!-- Bonton pour proposer une liste d'articles -->
-				{#if !importArticlesListOpen}
-					<Button on:click={clickOpenImportArticle} dense title="Proposer une liste d'articles">
-						<i class="fas fa-list"></i>
-					</Button>
-				{:else if !importArticles.length}
-					<Button on:click="{() => importArticlesListOpen = false}"  color="secondary" dense>
-						{failFormatRaison.length ? failFormatRaison : `Annuler la proposition`}
-					</Button>
-				{:else}
-					{#await createImportArticlesPromise}
-						<Button  color="secondary" dense>
-							<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création des articles ...
+					
+				
+					<!-- Bonton pour proposer une liste d'articles -->
+					{#if !importArticlesListOpen}
+						<Button on:click={clickOpenImportArticle} dense title="Proposer une liste d'articles">
+							<i class="fas fa-list"></i>
 						</Button>
-					{:then}
-						<Button on:click="{() => createImportArticlesPromise = createImportArticles()}" variant="raised" dense style="color: white;">
-							Proposer les {importArticles.length} articles
+					{:else if !importArticles.length}
+						<Button on:click="{() => importArticlesListOpen = false}"  color="secondary" dense>
+							{failFormatRaison.length ? failFormatRaison : `Annuler la proposition`}
 						</Button>
-					{/await}
-				{/if}
+					{:else}
+						{#await createImportArticlesPromise}
+							<Button  color="secondary" dense>
+								<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création des articles ...
+							</Button>
+						{:then}
+							<Button on:click="{() => createImportArticlesPromise = createImportArticles()}" variant="raised" dense style="color: white;">
+								Proposer les {importArticles.length} articles
+							</Button>
+						{/await}
+					{/if}
 
-				<!-- Bonton pour télécharger le fichier .csv -->
-				{#if $details.provided.length}
-					<Button dense
-					on:click={clickDownladCSV}
-					title="Télécharger les données"
-					color="secondary">
-						<i class="fas fa-download"></i>
-					</Button>
-				{/if}
+					<!-- Bonton pour télécharger le fichier .csv -->
+					{#if $details.provided.length}
+						<Button dense
+						on:click={clickDownladCSV}
+						title="Télécharger les données"
+						color="secondary">
+							<i class="fas fa-download"></i>
+						</Button>
+					{/if}
+
+				</span>
 
 			</span>
+			
 
-			<!-- Dialog de création d'article -->
-			<ArticleCreateDialog bind:dialog={createArticleDialog} bind:createPromise={createArticlePromise}/>
+			<!-- Insertion de plusieurs d'article -->
+			{#if importArticlesListOpen}
+				<div class="w3-row w3-margin-top" transition:slide|local>
+					<textarea class="w3-round" rows="10" 
+							bind:value={importArticlesValue} on:input={inputImportArticles}
+							placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${$details.prefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${$details.prefix ? `${$details.prefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${$details.prefix ? `${$details.prefix}2 : ` : ''} Mon deuxième article : 15.35\n${$details.prefix ? `${$details.prefix}3 ; ` : ''} Mon troisième article ; 5,40\n ...`}></textarea>
+				</div>
+			{/if}
 
-		</span>
+			<ProvidedTable on:openTarifDialog/>
 
-		<!-- Insertion de plusieurs d'article -->
-		{#if importArticlesListOpen}
-			<div class="w3-row w3-margin-top" transition:slide|local>
-				<textarea class="w3-round" rows="10" 
-						bind:value={importArticlesValue} on:input={inputImportArticles}
-						placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${$details.prefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${$details.prefix ? `${$details.prefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${$details.prefix ? `${$details.prefix}2 : ` : ''} Mon deuxième article : 15.35\n${$details.prefix ? `${$details.prefix}3 ; ` : ''} Mon troisième article ; 5,40\n ...`}></textarea>
-			</div>
-		{/if}
-
-		<ProvidedTable on:openTarifDialog/>
-
-	</DetailCard>
+		</DetailCard>
+	{/if}
 	<br>
-
+	
 	<div on:click={print} class="w3-opacity w3-small underline-div w3-right" class:w3-hide={onPrint}>
 		<i class="fa fa-print"></i>
 		<span class="underline-span">imprimer</span>

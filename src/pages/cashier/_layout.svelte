@@ -20,6 +20,8 @@
 	import Provide from 'Provide.svelte'
 
 	export let client = {}
+
+	$:console.log({$details})
 	
 	let dialogLogin // Create user
 
@@ -39,7 +41,13 @@
 
     onMount(async () => {
 
-		if ($params.client) {
+		if ($params.client === 'undefined') {
+			client = {}
+			clientOk = true
+			clientAnonym = true
+			searchClient = ''
+			clientPlaceHodler = 'Anonyme'
+		}else if ($params.client) {
 			try {
 				let res = await fetch(`/users/name/${$params.client}`)
 				client = await res.json()
@@ -70,7 +78,9 @@
 	async function updateClientQuery() {
 		let query = {...$params}
 		if (client._id) query.client = client._id
+		else if (clientAnonym) query.client = 'undefined'
 		else delete query.client
+		console.log({query})
 		await $redirect(location.pathname, query)
 	}
     
@@ -82,7 +92,6 @@
 	}
 
 	function inputSearchClient() {
-
 		clientOk = false
 		clientAnonym = false
 		client = {}
@@ -98,11 +107,11 @@
 		searchClient = ''
 	}
 
-	function clickClientAnonym() {
-		clientOk = true
+	async function clickClientAnonym() {
 		clientAnonym = true
+		await updateClientQuery()
+		clientOk = true
 		client = {}
-		updateClientQuery()
 		searchClient = ''
 		clientPlaceHodler = 'Anonyme'
 	}
@@ -200,7 +209,7 @@
 	</div>
 </div>
 
-<div class:w3-padding={offsetWidth > 700} style="max-width: 1100px; margin: auto;">
+<div class:w3-padding={offsetWidth > 740} style="max-width: 1100px; margin: auto;">
 	{#if clientOk}
 		<slot></slot>
 	{:else}
