@@ -1,7 +1,7 @@
 <script>
     import { getHeader, crossfadeConfig, sortByUpdatedAt } from './utils'
     import Article from './Article.svelte'
-    import { trocDetails as details, trocDetailsPromise as detailsPromise} from './stores.js'
+    import { trocDetails as details} from './stores.js'
     import { params } from '@sveltech/routify'
 	import { crossfade, fade, slide } from 'svelte/transition'
     import { flip } from 'svelte/animate'
@@ -207,28 +207,22 @@
         <div class="w3-margin-left">
             <span class="w3-large">Achats</span>
 
-            {#await $detailsPromise}
-                <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
-            {:then}
-                {#each $details.purchases.sort(sortByUpdatedAt).slice(0, LIMIT_LIST_B) as article (article._id)}
-                    <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
-                        <Article article={article} timeKey={'soldTime'}/>
-                    </div>
-                {:else}
-                    <span class="w3-opacity w3-margin-left">Pas d'achat</span>
-                {/each}
-                
-                <!-- Bouton pour prolongé la liste -->
-                {#if $details.purchases.length > LIMIT_LIST_B}
-                    <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
-                        <span class="underline-span w3-opacity">
-                            Afficher plus d'éléments ({$details.purchases.length - LIMIT_LIST_B})
-                        </span>
-                    </div>
-                {/if}
-
-            {/await}
-
+            {#each $details.purchases.sort(sortByUpdatedAt).slice(0, LIMIT_LIST_B) as article (article._id)}
+                <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
+                    <Article article={article} timeKey={'soldTime'}/>
+                </div>
+            {:else}
+                <span class="w3-opacity w3-margin-left">Pas d'achat</span>
+            {/each}
+            
+            <!-- Bouton pour prolongé la liste -->
+            {#if $details.purchases.length > LIMIT_LIST_B}
+                <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
+                    <span class="underline-span w3-opacity">
+                        Afficher plus d'éléments ({$details.purchases.length - LIMIT_LIST_B})
+                    </span>
+                </div>
+            {/if}
 
         </div>
 

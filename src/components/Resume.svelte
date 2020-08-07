@@ -213,11 +213,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
 </svelte:head>
 
-{#await $detailsPromise}
-	<div style="position: relative; height: 500px">
-		<Logo/>
-	</div>
-{:then}
+
 {#if $details}
 <div id="resume-container" in:fade|local >
 
@@ -333,10 +329,6 @@
 	
 </div>
 {/if}
-{:catch err}
-	<h1>Error {err}</h1>
-
-{/await}
 
 
 <style>

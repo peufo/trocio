@@ -1,13 +1,16 @@
 <script>
+    import { fade } from 'svelte/transition'
     import { params } from '@sveltech/routify'
-    import { trocDetails } from 'stores.js'
-    import Card     from '@smui/card'
+    import Card from '@smui/card'
+
+    import { trocDetails, trocDetailsPromise } from 'stores.js'
     import Swip     from 'Swip.svelte'
     import Provide  from 'Provide.svelte'
     import Recover  from 'Recover.svelte'
     import Buy      from 'Buy.svelte'
     import Giveback from 'Giveback.svelte'
     import Resume   from 'Resume.svelte'
+    import Logo     from 'Logo.svelte'
     import ArticleCreateDialog from 'ArticleCreateDialog.svelte'
     import TarifInfoDialog from 'TarifInfoDialog.svelte'
 
@@ -27,17 +30,26 @@
     let filter = tab => tab.clientAnonymAutorised || $params.client != 'undefined'
 
 </script>
-
-<Swip tabs={tabs.filter(filter)} {tabActived} let:tab tabId="cashierTabs">
-    <div style="padding: 16px;">
-        <svelte:component
-        this={tab.component}
-        on:openCreateDialog={articleCreateDialog.open}
-        on:openTarifDialog={tarifInfoDialog.open}
-        ></svelte:component>
-    </div>
-</Swip>
-
+<div class="simple-card">
+    {#await $trocDetailsPromise}
+        <div style="position: relative; height: 500px;">
+            <Logo/>
+        </div>
+        
+    {:then}
+        <div in:fade|locale>
+            <Swip tabs={tabs.filter(filter)} {tabActived} let:tab tabId="cashierTabs">
+                <div style="padding: 16px; min-height: 450px;">
+                    <svelte:component
+                    this={tab.component}
+                    on:openCreateDialog={articleCreateDialog.open}
+                    on:openTarifDialog={tarifInfoDialog.open}
+                    ></svelte:component>
+                </div>
+            </Swip>
+        </div>
+    {/await}
+</div>
 <ArticleCreateDialog bind:dialog={articleCreateDialog}/>
 
 <TarifInfoDialog bind:dialog={tarifInfoDialog}/>

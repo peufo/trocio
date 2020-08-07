@@ -113,69 +113,63 @@
             
             <h4>Achats</h4>
         
-            {#await $detailsPromise}
-                <div class="w3-center"><img src="/favicon.ico" alt="Logo Trocio" class="w3-spin"></div>
-            {:then}
-                {#each $details.purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
-                    <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
-                        <Article article={article} timeKey={'soldTime'} clickable on:select="{() => select(article._id)}"/>
-                    </div>
-                {:else}
-                    <span class="w3-opacity">Pas d'achat à retourner</span>
-                {/each}
+            {#each $details.purchases.slice(0, LIMIT_LIST_A) as article (article._id)}
+                <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
+                    <Article article={article} timeKey={'soldTime'} clickable on:select="{() => select(article._id)}"/>
+                </div>
+            {:else}
+                <span class="w3-opacity">Pas d'achat à retourner</span>
+            {/each}
 
-                <!-- Bouton pour prolongé la liste -->
-                {#if $details.purchases.length > LIMIT_LIST_A}
-                    <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
-                        <span class="underline-span w3-opacity">
-                            Afficher plus d'éléments ({$details.purchases.length - LIMIT_LIST_A})
-                        </span>
-                    </div>
-                {/if}
-            {/await}
+            <!-- Bouton pour prolongé la liste -->
+            {#if $details.purchases.length > LIMIT_LIST_A}
+                <div on:click="{() => LIMIT_LIST_A += 25}" class="underline-div w3-center">
+                    <span class="underline-span w3-opacity">
+                        Afficher plus d'éléments ({$details.purchases.length - LIMIT_LIST_A})
+                    </span>
+                </div>
+            {/if}
+
         </div>
     </div>
 
     <div class="w3-col m6">
         <div class="w3-margin-left">
-            {#await $detailsPromise}
-                <div class="w3-center"><img src="/favicon.ico" alt="Logo Trocio" class="w3-spin"></div>
+
+            {#await validPromise}
+                <Button class="w3-right" variant="outlined">
+                    <i class="fas fa-circle-notch w3-spin"></i>
+                    Validation du retour...
+                </Button>
             {:then}
-
-                {#await validPromise}
-                    <Button class="w3-right" variant="outlined">
-                        <i class="fas fa-circle-notch w3-spin"></i>
-                        Validation du retour...
+                {#if $details.givebacks.filter(art => art.isRemovable).length}
+                    <Button on:click="{() => validPromise = valid()}" class="w3-right" variant="raised">
+                        Valider le retour de{$details.givebacks.filter(art => art.isRemovable).length <= 1 ? ` l'article` : `s ${$details.givebacks.filter(art => art.isRemovable).length} articles`}
                     </Button>
-                {:then}
-                    {#if $details.givebacks.filter(art => art.isRemovable).length}
-                        <Button on:click="{() => validPromise = valid()}" class="w3-right" variant="raised">
-                            Valider le retour de{$details.givebacks.filter(art => art.isRemovable).length <= 1 ? ` l'article` : `s ${$details.givebacks.filter(art => art.isRemovable).length} articles`}
-                        </Button>
-                    {/if}
-                {/await}
-                
-                <h4>Retours</h4>
-
-                {#each $details.givebacks.sort((a, b) => b.giveback.back - a.giveback.back).slice(0, LIMIT_LIST_B) as article (article._id)}
-                    <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
-                        <Article article={article}
-                            on:remove="{() => remove(article._id)}"
-                            comment="{article.giveback.raison}"/>
-                    </div>
-                {:else}
-                    <span class="w3-opacity">Pas de retour</span>
-                {/each}
-
-                    <!-- Bouton pour prolongé la liste -->
-                    {#if $details.givebacks.length > LIMIT_LIST_B}
-                        <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
-                            <span class="underline-span w3-opacity">
-                                Afficher plus d'éléments ({$details.givebacks.length - LIMIT_LIST_B})
-                            </span>
-                        </div>
-                    {/if}
+                {/if}
             {/await}
+            
+            <h4>Retours</h4>
+
+            {#each $details.givebacks.sort((a, b) => b.giveback.back - a.giveback.back).slice(0, LIMIT_LIST_B) as article (article._id)}
+                <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
+                    <Article article={article}
+                        on:remove="{() => remove(article._id)}"
+                        comment="{article.giveback.raison}"/>
+                </div>
+            {:else}
+                <span class="w3-opacity">Pas de retour</span>
+            {/each}
+
+            <!-- Bouton pour prolongé la liste -->
+            {#if $details.givebacks.length > LIMIT_LIST_B}
+                <div on:click="{() => LIMIT_LIST_B += 25}" class="underline-div w3-center">
+                    <span class="underline-span w3-opacity">
+                        Afficher plus d'éléments ({$details.givebacks.length - LIMIT_LIST_B})
+                    </span>
+                </div>
+            {/if}
+            
         </div>
     </div>
 

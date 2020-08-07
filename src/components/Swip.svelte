@@ -55,7 +55,7 @@
 
 </script>
 
-<div class="simple-card" bind:offsetWidth>
+<div bind:offsetWidth>
 	<TabBar {tabs} let:tab id={tabId}
 		active={tabActived}
 		on:MDCTabBar:activated={e => activeTab(e.detail.index)}
