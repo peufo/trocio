@@ -171,7 +171,8 @@ export async function getDetail(troc, user) {
 		//select last giveback
 		console.log({givebacks: details.givebacks})
 		details.givebacks = details.givebacks.map(art => {
-			art.giveback = art.giveback.filter(back => !back.user).reverse()[0]
+			art.giveback = art.giveback.filter(back => user === 'undefined' ? !back.user : back.user == user).reverse()[0]
+			if (art.giveback) art.giveback.back = new Date(art.giveback.back).getTime()
 			return art
 		})
 		console.log({givebacks: details.givebacks})
@@ -180,20 +181,6 @@ export async function getDetail(troc, user) {
 	} catch (error) {
 		return error
 	}
-}
-
-function computeSum(articles) {
-	let soldSum = 0
-	let feeSum = 0
-	if (articles.length) {
-		let arr = articles.filter(a => a.sold).map(a => a.price)
-		soldSum = arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
-		arr = articles.filter(a => a.valided).map(a => a.fee)
-		feeSum = arr.length ? -arr.reduce((acc, cur) => acc + cur) : 0
-		arr = articles.filter(a => a.sold).map(a => a.margin)
-		feeSum -= arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
-	}
-	return {soldSum, feeSum}
 }
 
 //Options for SearchTable

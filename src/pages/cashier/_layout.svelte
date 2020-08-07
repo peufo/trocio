@@ -86,6 +86,7 @@
     
 	async function clientSelected(e){
 		searchClient = e.detail.name
+		client = e.detail
 		await updateClientQuery()
 		clientOk = true
 		clientAnonym = false
@@ -172,7 +173,6 @@
 			<div style="display: inline-block; width: 260px;">
 				<SearchUser modeSelect 
 							id="1"
-							bind:itemSelected={client}
 							bind:search={searchClient}
 							on:input={inputSearchClient}
 							on:focusin={focusInSearchClient}

@@ -2,6 +2,7 @@
     import { getHeader, crossfadeConfig } from './utils'
     import Article from './Article.svelte'
     import { trocDetails as details, trocDetailsPromise as detailsPromise} from './stores.js'
+    import notify from './notify.js'
 
     import { params } from '@sveltech/routify'
     import { onMount } from 'svelte'
@@ -26,7 +27,7 @@
 			$details.givebacks = json.data.map(art => {
                 let { raison, time} = getMyLastGiveBack(art)
                 art.giveback.raison = raison
-                art.giveback.time = new Date(time).getTime()
+                art.giveback.back = new Date(time).getTime()
                 return art
             })
             return
@@ -55,7 +56,7 @@
                 back.isRemovable = true
                 $details.givebacks = [back, ...$details.givebacks]
                 $details.givebacks[0].giveback.raison = raison
-                $details.givebacks[0].giveback.time = new Date().getTime()
+                $details.givebacks[0].giveback.back = new Date().getTime()
 
                 $details.purchases.splice(index, 1)
                 $details.purchases = $details.purchases
@@ -87,6 +88,7 @@
             $details.buySum += priceSum
             $details.balance += priceSum
 
+            //Reset
             $details.givebacks = $details.givebacks.map(art => {
                 art.isRemovable = false
                 art.sold = undefined
@@ -94,6 +96,10 @@
                 return art
             })
             
+            notify.success(givebacksUpdated.length > 1 ? `${givebacksUpdated.length} artciles retournés` : 'Un article retourné')
+
+        }else{
+            notify.error(json.message)
         }
         return
     }
@@ -143,7 +149,7 @@
                     </Button>
                 {:then}
                     {#if $details.givebacks.filter(art => art.isRemovable).length}
-                        <Button on:click="{() => validPromise = valid()}" class="w3-right" variant="outlined">
+                        <Button on:click="{() => validPromise = valid()}" class="w3-right" variant="raised">
                             Valider le retour de{$details.givebacks.filter(art => art.isRemovable).length <= 1 ? ` l'article` : `s ${$details.givebacks.filter(art => art.isRemovable).length} articles`}
                         </Button>
                     {/if}
@@ -151,7 +157,7 @@
                 
                 <h4>Retours</h4>
 
-                {#each $details.givebacks.sort((a, b) => b.giveback.time - a.giveback.time).slice(0, LIMIT_LIST_B) as article (article._id)}
+                {#each $details.givebacks.sort((a, b) => b.giveback.back - a.giveback.back).slice(0, LIMIT_LIST_B) as article (article._id)}
                     <div in:receive|local="{{key: article._id}}" out:send|local="{{key: article._id}}" animate:flip="{{duration: 200}}">
                         <Article article={article}
                             on:remove="{() => remove(article._id)}"
