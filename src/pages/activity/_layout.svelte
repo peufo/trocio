@@ -30,6 +30,7 @@
 
     let segment = undefined
     $: segment = segments[$page.title]
+    $: console.log({trocSelected})
 
     //Juste pour ne pas attendre sur les détails
     async function updateTrocByQuery() {
@@ -38,7 +39,9 @@
         if (troc && $user) {
             let index = $user.trocs.map(t => t._id).indexOf(troc)
             trocSelected = $user.trocs[index]
-        }  
+        }else if (!troc) {
+            trocSelected = {}
+        }
     }
 
     onMount(() => {
@@ -138,19 +141,8 @@
                     
                     <h3 class="mdc-typography--headline6" style="margin: 0;">Actualités</h3>
 
-                    <List twoLine avatarList>
-                        <Item>
-                            <Text>
-                                <PrimaryText>Vente de machin</PrimaryText>
-                                <SecondaryText>Date et heure</SecondaryText>
-                            </Text>
-                            <Meta>
-                                
-                                <i class="fa fa-cog button-icon w3-large w3-padding"></i>
-                                
-                            </Meta>
-                        </Item>
-                    </List>
+
+                    <p>Aucune actualité</p>
                 </div>
             </div>
         </div>
@@ -161,13 +153,13 @@
 <svelte:head><style>body {background: #fafafa;}</style></svelte:head>
 <style>
 
-    
-
     .main-container {
         /*
         display: grid;
         grid-template-columns: auto minmax(360px, 500px);
         */
+        margin: auto;
+        max-width: 1500px;
         display: flex;
         justify-content: center;
     }
@@ -179,6 +171,7 @@
         /*transition: width 1s ease;
         width: 100%;*/
         max-width: 700px;
+        min-width: 400px;
         flex-grow: 1;
     }
 

@@ -1,7 +1,9 @@
 <script>
 	import { onMount } from 'svelte'
 	import { troc, trocPromise } from 'stores.js'
-	import { fade } from 'svelte/transition'
+    import { fade } from 'svelte/transition'
+    
+    import Logo from 'Logo.svelte'
 	import EditForm from 'EditForm.svelte'
 	import SearchUser from 'SearchUser.svelte'
 	import AutoPatch from 'AutoPatch.svelte'
@@ -10,9 +12,9 @@
 	import Tarif from 'Tarif.svelte'
 	import Correction from 'Correction.svelte'
 	import Stats from 'Stats.svelte'
+    import TagEdit from 'TagEdit.svelte'
 	import Cashier from '../cashier/_layout.svelte'
 	import CashierIndex from '../cashier/index.svelte'
-	import TagEdit from 'TagEdit.svelte'
 	import { getHeader, updateTroc } from 'utils.js'
 
 	export let user = {}
@@ -52,7 +54,7 @@
 
 <!-- Check if all is OK ! -->
 {#await $trocPromise}
-    LOAD
+    <Logo/>
 {:then}
     {#if $troc.failed}
         <div class="w3-display-container">

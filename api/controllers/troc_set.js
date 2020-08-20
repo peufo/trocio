@@ -1,84 +1,6 @@
 var Troc = require('../models/troc')
 var User = require('../models/user')
-var Article = require('../models/article')
-var Payment = require('../models/payment')
-
-function checkAdmin(req, res, next) {
-	if (!req.session.user) return next(Error('Login required'))
-	Troc.findOne({_id: req.params.id || req.params.trocId || req.query.troc}, {admin: 1}, (err, troc) => {
-		if (err || !troc) return next(err || Error('troc not found !'))
-		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
-		if (isAdmin) {
-			next()
-		}else{
-			return next(Error('Sorry, you are not a administrator of this troc'))
-		}
-	})
-}
-
-function checkCashier(req, res, next) {
-	if (!req.session.user) return next(Error('Login required'))
-	Troc.findOne({_id: req.params.id || req.params.trocId || req.query.troc}, {admin: 1, cashier: 1}, (err, troc) => {
-		if (err || !troc) return next(err || Error('troc not found !'))
-		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
-		let isCashier = troc.cashier.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
-		if (isAdmin || isCashier) {
-			next()
-		}else{
-			return next(Error('Sorry, you are not a cashier of this troc'))
-		}
-	})
-}
-
-function getTrocUser(id, cb){
-	Troc.findById(id)
-		.populate('creator', 'name mail')
-		.populate('admin', 'name mail')
-		.populate('trader.user', 'name mail')
-		.populate('cashier', 'name mail')
-		.populate('tarif.apply', 'name mail')
-		.lean()
-		.exec(cb)
-}
-
-function getStats(req, res, next) {
-	Troc.findOne({_id: req.params.id}).exec((err, troc) => {
-		if (err || !troc) return next(err || Error('Troc not found'))
-
-		let query = {troc: troc._id}
-		let user = req.query.user
-
-		if (req.query.view == 'traders') {
-			user = {$in: troc.trader.map(t => t.user)}
-		}else if (req.query.view == 'privates') {
-			user = {$nin: troc.trader.map(t => t.user)}
-		}
-		
-		if (req.query.view != 'global' || user){
-			query.provider = user
-		}
-
-		Article.find(query).sort({createdAt: 1}).lean().exec((err, articlesProposed) => {
-			if (err) return next(err)
-
-			delete query.provider
-			if (user) query.buyer = user
-			query.sold = {$exists: true}
-			Article.find(query).sort({createdAt: 1}).lean().exec((err, articlesBuyed) => {
-				if (err) return next(err)
-
-				delete query.buyer
-				delete query.sold
-				if (user) query.user = user
-				Payment.find(query).sort({createdAt: 1}).lean().exec((err, payments) => {
-					if (err) return next(err)
-					res.json({articlesProposed, articlesBuyed, payments})
-				})
-			})
-		})
-
-	})
-}
+let { lookupIfAdmin, populateTrocUser } = require('../controllers/troc_utils')
 
 function createTroc(req, res, next) {
 	if (!req.session.user) return next(Error('Login required'))
@@ -108,7 +30,7 @@ function createTroc(req, res, next) {
 			user.creditTroc--
 			user.save(err => {
 				if (err) return next(err)
-				getTrocUser(troc._id, (err, troc) => {
+				populateTrocUser(troc._id, (err, troc) => {
 					if(err) return next(err)
 					res.json({success: true, message: troc})
 				})
@@ -117,12 +39,23 @@ function createTroc(req, res, next) {
 	})
 }
 
-
-function resTrocUser(req, res, next) {
-	getTrocUser(req.params.id, (err, troc) => {
-		if(err) return next(err)
-		res.json({success: true, message: troc})
-	})
+function patchTroc(req, res, next) {
+    if (!req.session.user) return next(Error('Login required'))
+    Troc.findOne({_id: req.params.id}).exec((err, troc) => {
+        if(err || !troc) return next(err || Error('Not found'))
+        
+        if (req.body._id) delete req.body._id
+        if (req.body.__v) delete req.body.__v
+        for(p in req.body){troc[p] = req.body[p]}
+        troc.save(err => {
+            if (err) return next(err)
+            
+            lookupIfAdmin(troc, req.session.user._id.toString(), (err, troc) => {
+                if (err || !troc) return next(err || Error('Not found'))
+                res.json({success: true, message: troc})
+            })
+        })
+    })
 }
 
 function addAdmin(req, res, next) {
@@ -296,6 +229,7 @@ function editTraderPrefix(req, res, next){
 	})
 }
 
+//TODO: replace with subscribe system
 function addInUserList(user, troc, cb) {
 	//Doit s'assurer que le troc n'éxiste pas déjà
 	var index = user.trocs.map(t => t.troc).indexOf(troc._id)
@@ -320,13 +254,16 @@ function removeInUserList(user, troc, cb) {
 	}else cb()
 }
 
+function resTrocUser(req, res, next) {
+	populateTrocUser(req.params.id, (err, troc) => {
+		if(err) return next(err)
+		res.json({success: true, message: troc})
+	})
+}
+
 module.exports = {
-	getTrocUser,
-	getStats,
-	checkAdmin,
-	checkCashier,
-	createTroc,
-	resTrocUser,
+    createTroc,
+    patchTroc,
 	addAdmin,
 	addCashier,
 	addTrader,

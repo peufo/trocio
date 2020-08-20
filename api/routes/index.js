@@ -3,8 +3,6 @@ let router = express.Router()
 let got = require('got')
 let path = require('path')
 let bwipjs = require('bwip-js')
-let { checkCashier, checkAdmin } = require('../controllers/troc')
-let { getRoot } = require('./utils')
 
 router
 	.get('/mailConfirmation', (req, res, next) => {
@@ -32,4 +30,4 @@ router
 		bwipjs(req, res)
 	})
 
-module.exports = router;
+module.exports = router

@@ -3,6 +3,14 @@
 	
 </script>
 
-<div style="max-width: 850px; margin: auto;" class="w3-margin-top">
+<div class="w3-margin-top">
 	<SearchTroc/>
 </div>
+
+<style>
+	div {
+		max-width: 850px;
+		margin: auto;
+		padding: 1em;
+	}
+</style>

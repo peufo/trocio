@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+var mongoose = require('mongoose')
+const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
 
-var trocModel = new Schema({
+let trocModel = new Schema({
 	name: {type: String, required: true},
 	society: String,
 	societyweb: String,
@@ -37,9 +37,8 @@ var trocModel = new Schema({
 		padding: {type: Number, default: 2},
 		border: {type: Boolean, default: true}
 	}
-
 })
 
 trocModel.set('timestamps', true)
 
-module.exports = mongoose.model('troc', trocModel);
+module.exports = mongoose.model('troc', trocModel)

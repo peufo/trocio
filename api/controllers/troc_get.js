@@ -1,6 +1,7 @@
+let Troc = require('../models/troc')
 let Article = require('../models/article')
 let Payment = require('../models/payment')
-let { findSpec } = require('./troc_utils')
+let { findSpec, lookupIfAdmin } = require('./troc_utils')
 
 function getSpec(req, res, next) {
     let {troc, user} = req.query
@@ -94,6 +95,106 @@ async function getDetails(req, res, next) {
     }
 }
 
+function getStats(req, res, next) {
+	Troc.findOne({_id: req.params.id}).exec((err, troc) => {
+		if (err || !troc) return next(err || Error('Troc not found'))
+
+		let query = {troc: troc._id}
+		let user = req.query.user
+
+		if (req.query.view == 'traders') {
+			user = {$in: troc.trader.map(t => t.user)}
+		}else if (req.query.view == 'privates') {
+			user = {$nin: troc.trader.map(t => t.user)}
+		}
+		
+		if (req.query.view != 'global' || user){
+			query.provider = user
+		}
+
+		Article.find(query).sort({createdAt: 1}).lean().exec((err, articlesProposed) => {
+			if (err) return next(err)
+
+			delete query.provider
+			if (user) query.buyer = user
+			query.sold = {$exists: true}
+			Article.find(query).sort({createdAt: 1}).lean().exec((err, articlesBuyed) => {
+				if (err) return next(err)
+
+				delete query.buyer
+				delete query.sold
+				if (user) query.user = user
+				Payment.find(query).sort({createdAt: 1}).lean().exec((err, payments) => {
+					if (err) return next(err)
+					res.json({articlesProposed, articlesBuyed, payments})
+				})
+			})
+		})
+
+	})
+}
+
+function search(req, res, next) {
+    let {search, start, end, north, east, sud, west} = req.query
+    let query= {}
+
+    if (search && search.length) {
+        let regexp = new RegExp(search, 'i')
+        query.$or = []
+        query.$or.push({'name': regexp})
+        query.$or.push({'description': 	regexp})
+        query.$or.push({'address': 	regexp})
+        query.$or.push({'society': 	regexp})
+    }
+
+    if (start || end || north || east || sud || west) query.$and = []
+
+    if (start) 			query.$and.push({'schedule.close': {$gte: start}})
+    if (end) 			query.$and.push({'schedule.open': {$lte: end}})
+    if (!isNaN(north)) 	query.$and.push({'location.lat': {$lt: north}})
+    if (!isNaN(east))  	query.$and.push({'location.lng': {$lt: east}})
+    if (!isNaN(sud))   	query.$and.push({'location.lat': {$gt: sud}})
+    if (!isNaN(west))  	query.$and.push({'location.lng': {$gt: west}})
+
+    Troc.find(query).lean().exec((err, trocs) => {
+        if (err) return next(err)
+
+        //Admin and cashier becomes booleans
+        if (req.session.user) {
+            trocs.forEach(troc => {
+                troc.isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+                troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(req.session.user._id.toString()) != -1
+            })
+        }else{
+            trocs.forEach(troc => {
+                delete troc.admin
+                delete troc.cashier
+            })
+        }
+        res.json(trocs)
+    })
+}
+
+function getTroc(req, res, next) {
+    if (req.session.user) {
+        Troc.findOne({_id: req.params.id}).lean().exec((err, troc) => {
+            if (err || !troc) return next(err || Error('Not found'))
+            lookupIfAdmin(troc, req.session.user._id.toString(), (err, troc) => {
+                if (err || !troc) return next(err || Error('Not found'))
+                res.json(troc)
+            })
+        })
+    }else{
+        Troc.findOne({_id: req.params.id}).lean().exec((err, troc) => {
+            if (err || !troc) return next(err || Error('Not found'))
+            delete troc.admin
+            delete troc.cashier
+            res.json(troc)
+        })
+    }
+    
+}
+
 function computeSum(articles) {
 	let soldSum = 0
 	let feeSum = 0
@@ -108,8 +209,18 @@ function computeSum(articles) {
 	return {soldSum, feeSum}
 }
 
+function getProviderName (req, res, next) {
+    Troc.findOne({_id: req.params.id}, {provider: 1}).populate('provider', 'name').exec((err, troc) => {
+        if (err) return next(err)
+        res.json(troc.provider)
+    })
+}
 
 module.exports = {
     getSpec,
-	getDetails
+    getDetails,
+    getStats,
+    search,
+    getTroc,
+    getProviderName
 }

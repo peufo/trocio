@@ -1,6 +1,44 @@
 let Troc = require('../models/troc')
 let noop = () => {}
 
+function checkAdmin(req, res, next) {
+	if (!req.session.user) return next(Error('Login required'))
+	Troc.findOne({_id: req.params.id || req.params.trocId || req.query.troc}, {admin: 1}, (err, troc) => {
+		if (err || !troc) return next(err || Error('troc not found !'))
+		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+		if (isAdmin) {
+			next()
+		}else{
+			return next(Error('Sorry, you are not a administrator of this troc'))
+		}
+	})
+}
+
+function checkCashier(req, res, next) {
+	if (!req.session.user) return next(Error('Login required'))
+	Troc.findOne({_id: req.params.id || req.params.trocId || req.query.troc}, {admin: 1, cashier: 1}, (err, troc) => {
+		if (err || !troc) return next(err || Error('troc not found !'))
+		let isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+		let isCashier = troc.cashier.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+		if (isAdmin || isCashier) {
+			next()
+		}else{
+			return next(Error('Sorry, you are not a cashier of this troc'))
+		}
+	})
+}
+
+function populateTrocUser(id, cb){
+	Troc.findById(id)
+		.populate('creator', 'name mail')
+		.populate('admin', 'name mail')
+		.populate('trader.user', 'name mail')
+		.populate('cashier', 'name mail')
+		.populate('tarif.apply', 'name mail')
+		.lean()
+		.exec(cb)
+}
+
 async function findSpec(troc, user, cb = noop) {
     if (!troc) return cb(Error('troc query is required'))
     troc = await Troc.findById(troc, {tarif: 1, trader: 1}).exec()
@@ -29,8 +67,28 @@ function getMargin(art, tarif) {
 	}
 }
 
+function lookupIfAdmin(troc, userId, cb) {
+	let isAdmin = troc.admin.map(a => a.toString()).indexOf(userId) != -1
+	if (isAdmin) {
+		populateTrocUser(troc._id, (err, troc) => {
+			if (err || !troc) return cb(err || Error('Not found'))
+			troc.isAdmin = true
+			troc.isCashier = false
+			cb(null, troc)
+		})
+	}else{
+		troc.isAdmin = false
+		troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(userId) != -1
+		cb(null, troc)
+	}
+}
+
 module.exports = {
+	checkAdmin,
+	checkCashier,
+	populateTrocUser,
 	findSpec,
     getFee,
-    getMargin
+	getMargin,
+	lookupIfAdmin
 }

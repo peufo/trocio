@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+var mongoose = require('mongoose')
+const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
 
-var articleModel = new Schema({
+let articleModel = new Schema({
 	troc: {type: ObjectId, ref: 'troc', required: true},
 	provider: {type: ObjectId, ref: 'user', required: true},
 	ref: {type: String},

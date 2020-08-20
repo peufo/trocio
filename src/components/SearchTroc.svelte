@@ -139,16 +139,17 @@
 
 </script>
 
-<h3 class="mdc-typography--headline6" style="margin: 0;">Trouver un troc</h3>
+<h3 class="mdc-typography--headline6" >Trouver un troc</h3><br>
 
 <!-- Commande -->
 <div class="w3-row">
 
-    <div class="w3-col m6">
+    <div class="w3-col m6 w3-padding">
 
         <!-- Search -->
         <Textfield
         class="w3-large"
+		style="width: 100%;"
         bind:value={search}
         on:input={newSearch}
         type="search"
@@ -165,15 +166,15 @@
             </span>
         </FormField>
         
-        <br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <!-- Time filter -->
-        <FormField class="w3-margin-bottom">
+        <FormField>
             <Switch bind:checked={timeFilter} on:input={() => setTimeout(loadTrocs, 0)}/>
             <span slot="label">
                 <i class="far fa-clock w3-large"></i>
                 <span class="w3-large">Période</span>
             </span>
-        </FormField>
+        </FormField><br><br>
 
         {#if timeFilter}
             <div transition:slide|local class="w3-margin-bottom">
