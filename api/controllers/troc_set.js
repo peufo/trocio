@@ -25,8 +25,6 @@ function createTroc(req, res, next) {
 		troc.save(err => {
 			if (err) return next(err)
 		
-		
-			user.trocs.push(troc._id)
 			user.creditTroc--
 			user.save(err => {
 				if (err) return next(err)
@@ -77,10 +75,7 @@ function addAdmin(req, res, next) {
 
 			troc.save(err => {
 				if (err) return next(err)
-				addInUserList(user, troc, err => {
-					if (err) return next(err)
-					resTrocUser(req, res, next)
-				})
+				resTrocUser(req, res, next)
 			})
 		})
 	})
@@ -108,10 +103,7 @@ function addCashier(req, res, next) {
 			troc.cashier.push(req.body.cashier)
 			troc.save(err => {
 				if (err) return next(err)
-				addInUserList(user, troc, err => {
-					if (err) return next(err)
-					resTrocUser(req, res, next)
-				})
+				resTrocUser(req, res, next)
 			})					
 
 		})
@@ -129,12 +121,8 @@ function addTrader(req, res, next) {
 			troc.trader.push({user: req.body.trader, prefix: req.body.prefix ? req.body.prefix : ''})
 			troc.save(err => {
 				if (err) return next(err)
-				addInUserList(user, troc, err => {
-					if (err) return next(err)
-					resTrocUser(req, res, next)
-				})
-			})					
-
+				resTrocUser(req, res, next)
+			})
 		})
 	})
 }
@@ -155,10 +143,7 @@ function removeAdmin(req, res, next) {
 
 			troc.save(err => {
 				if (err) return next(err)
-				removeInUserList(user, troc, err => {
-					if (err) return next(err)
-					resTrocUser(req, res, next)
-				})
+				resTrocUser(req, res, next)
 			})
 		})
 	})
@@ -177,10 +162,7 @@ function removeCashier(req, res, next) {
 			troc.cashier.splice(index, 1)
 			troc.save(err => {
 				if (err) return next(err)
-				removeInUserList(user, troc, err => {
-					if (err) return next(err)
-					resTrocUser(req, res, next)
-				})
+				resTrocUser(req, res, next)
 			})
 		})
 	})
@@ -199,10 +181,7 @@ function removeTrader(req, res, next) {
 			troc.trader.splice(index, 1)
 			troc.save(err => {
 				if (err) return next(err)
-				removeInUserList(user, troc, err => {
-					if (err) return next(err)
-					resTrocUser(req, res, next)
-				})
+				resTrocUser(req, res, next)
 			})
 		})
 	})
@@ -227,31 +206,6 @@ function editTraderPrefix(req, res, next){
 			})
 		})
 	})
-}
-
-//TODO: replace with subscribe system
-function addInUserList(user, troc, cb) {
-	//Doit s'assurer que le troc n'éxiste pas déjà
-	var index = user.trocs.map(t => t.troc).indexOf(troc._id)
-	if (index == -1) {
-		user.trocs.push(troc._id)
-		user.save(err => {
-			if (err) return cb(err)
-			cb()
-		})
-	}else cb()
-}
-
-//Vraiment util ?
-function removeInUserList(user, troc, cb) {
-	var index = user.trocs.indexOf(troc._id)
-	if (index != -1) {
-		user.trocs.splice(index, 1)
-		user.save(err => {
-			if (err) return cb(err)
-			cb()
-		})
-	}else cb()
 }
 
 function resTrocUser(req, res, next) {

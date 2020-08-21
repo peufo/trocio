@@ -1,6 +1,7 @@
 let Troc = require('../models/troc')
 let Article = require('../models/article')
 let Payment = require('../models/payment')
+let Subscribe = require('../models/subscribe')
 let { findSpec, lookupIfAdmin } = require('./troc_utils')
 
 function getSpec(req, res, next) {
@@ -159,19 +160,31 @@ function search(req, res, next) {
     Troc.find(query).lean().exec((err, trocs) => {
         if (err) return next(err)
 
-        //Admin and cashier becomes booleans
+        //Admin and cashier becomes booleans + add subscribed boolean
         if (req.session.user) {
-            trocs.forEach(troc => {
-                troc.isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
-                troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(req.session.user._id.toString()) != -1
+            let query = {user: req.session.user._id, troc: {$in: trocs.map(t => t._id)}}
+            console.log({query}) 
+            Subscribe.find({user: req.session.user._id, troc: {$in: trocs.map(t => t._id)}}).exec((err, subs) => {
+                if (err) return next(err)
+                subs = subs.map(s => s.troc)
+                console.log({subs})
+                let index = trocs.map(t => subs.indexOf(t._id))
+                console.log({index})
+                trocs.forEach((troc, i) => {
+                    troc.isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
+                    troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(req.session.user._id.toString()) != -1
+                    troc.isSubscribed = index[i] > -1
+                })
+                console.log({trocs})
+                res.json(trocs)
             })
         }else{
             trocs.forEach(troc => {
                 delete troc.admin
                 delete troc.cashier
             })
+            res.json(trocs)
         }
-        res.json(trocs)
     })
 }
 
@@ -209,18 +222,10 @@ function computeSum(articles) {
 	return {soldSum, feeSum}
 }
 
-function getProviderName (req, res, next) {
-    Troc.findOne({_id: req.params.id}, {provider: 1}).populate('provider', 'name').exec((err, troc) => {
-        if (err) return next(err)
-        res.json(troc.provider)
-    })
-}
-
 module.exports = {
     getSpec,
     getDetails,
     getStats,
     search,
-    getTroc,
-    getProviderName
+    getTroc
 }

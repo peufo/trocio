@@ -17,7 +17,6 @@ let trocModel = new Schema({
 	admin: [{type: ObjectId, ref: 'user'}],
 	cashier: [{type: ObjectId, ref: 'user'}],
 	trader: [{user : {type: ObjectId, ref: 'user'}, prefix: {type: String, uppercase: true}}],
-	provider: [{type: ObjectId, ref: 'user'}],
 	schedule: [{open: Date, close: Date}],
 	tarif: [{	
 		name: String,

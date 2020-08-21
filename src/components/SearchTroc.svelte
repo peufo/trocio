@@ -16,6 +16,8 @@
 	import L from 'leaflet'
 
 	import { user } from 'stores.js'
+	import { getHeader } from 'utils.js'
+	import notify from 'notify.js'
 	import TrocInfo from 'TrocInfo.svelte'
 	import Resume 	from 'Resume.svelte'
 	import Articles from 'Articles.svelte'
@@ -124,9 +126,16 @@
 		})
 	}
 
-	function clickActivity(trocId) {
+	async function clickActivity(trocId) {
+		console.log('clickActivity')
 		if ($user) {
-			$goto(`/activity/detail?troc=${trocId}`)
+			if (!trocs[trocs.map(t => t._id).indexOf(trocId)].isSubscribed) {
+				let res = await fetch('/subscribes', getHeader({troc: trocId}))
+				let json = await res.json()
+				if (json.error) return notify.error(json.message)
+				notify.success('Vous participez à un nouveau troc')
+			}
+			//$goto(`/activity/detail?troc=${trocId}`)
 		}else{
 			dialogLogin.open()
 		}
@@ -209,17 +218,17 @@
             </Button>
 
             <Button
-            on:click="{() => clickActivity(troc._id)}"
+            on:click={() => clickActivity(troc._id)}
             color="secondary" variant="outlined" style="margin-top: 5px;">
-                Voir mon activité
+				{troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
             </Button>
 
             {#if !!$user && troc.isAdmin}
-                <Button href="{`/admin/${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
+                <Button href="{`/admin?troc=${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
                     <i class="fa fa-cog w3-large"></i>
                 </Button>
             {:else if !!$user && troc.isCashier}
-                <Button href="{`/cashier/${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
+                <Button href="{`/cashier?troc=${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
                     <i class="fa fa-cash-register w3-large"></i>
                 </Button>
             {/if}

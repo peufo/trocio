@@ -90,7 +90,7 @@
                 <div class="tab" class:center={tabSelected == 0} class:left={tabSelected > 0}>
                     <br>
                     <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
-                        <EditForm {...$troc} />
+                        <EditForm {...$troc}/>
                     </div>
                     <br>
                 </div>

@@ -1,10 +1,9 @@
 let express = require('express')
 let router = express.Router()
 
-let { getSpec, getDetails, getStats, search, getTroc, getProviderName } = require('../controllers/troc_get')
+let { getSpec, getDetails, getStats, search, getTroc } = require('../controllers/troc_get')
 let { createTroc, patchTroc, addAdmin, addCashier, addTrader, removeAdmin, removeCashier, removeTrader, editTraderPrefix } = require('../controllers/troc_set')
 let { checkAdmin } = require('../controllers/troc_utils')
-
 
 router
 	.get('/details', getDetails)
@@ -12,7 +11,6 @@ router
 	.get('/search', search)
 	.get('/:id/stats', checkAdmin, getStats)
 	.get('/:id', getTroc)
-	.get('/:id/providername', getProviderName)
 	.post('/', createTroc)
 	.patch('/:id', checkAdmin, patchTroc)
 	.post('/:id/admin', checkAdmin, addAdmin)

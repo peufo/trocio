@@ -39,6 +39,7 @@ app.use('/users',     require('./routes/user'), 	catchError404)
 app.use('/articles',  require('./routes/article'), 	catchError404)
 app.use('/trocs',     require('./routes/troc'), 	catchError404)
 app.use('/payments',  require('./routes/payment'), 	catchError404)
+app.use('/subscribes',  require('./routes/subscribe'), 	catchError404)
 app.use('/superadmin', checkSuperAdmin, require('./routes/admin'), catchError404)
 
 // catch 404 and forward to error handler

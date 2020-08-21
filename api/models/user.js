@@ -15,7 +15,6 @@ var userModel = new Schema({
 	mail: { type: String, required: true, lowercase: true, unique: true, validate: EMAIL_REGEX },
 	mailvalided : { type: Boolean, default: false },
 	password: { type: String, required: true },
-	trocs: [{type: Schema.Types.ObjectId, ref: 'troc'}],
 	loginAttempts: {type: Number, required: true, default: 0},
 	lockUntil: Number,
 	creditTroc: Number
