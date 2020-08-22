@@ -163,19 +163,15 @@ function search(req, res, next) {
         //Admin and cashier becomes booleans + add subscribed boolean
         if (req.session.user) {
             let query = {user: req.session.user._id, troc: {$in: trocs.map(t => t._id)}}
-            console.log({query}) 
             Subscribe.find({user: req.session.user._id, troc: {$in: trocs.map(t => t._id)}}).exec((err, subs) => {
                 if (err) return next(err)
-                subs = subs.map(s => s.troc)
-                console.log({subs})
-                let index = trocs.map(t => subs.indexOf(t._id))
-                console.log({index})
+                subs = subs.map(s => s.troc.toString())
+                let indexSubs = trocs.map(t => subs.indexOf(t._id.toString()))
                 trocs.forEach((troc, i) => {
                     troc.isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id.toString()) != -1
                     troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(req.session.user._id.toString()) != -1
-                    troc.isSubscribed = index[i] > -1
+                    troc.isSubscribed = indexSubs[i] > -1
                 })
-                console.log({trocs})
                 res.json(trocs)
             })
         }else{

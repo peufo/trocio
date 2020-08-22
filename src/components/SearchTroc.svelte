@@ -129,13 +129,15 @@
 	async function clickActivity(trocId) {
 		console.log('clickActivity')
 		if ($user) {
-			if (!trocs[trocs.map(t => t._id).indexOf(trocId)].isSubscribed) {
+			let troc = trocs[trocs.map(t => t._id).indexOf(trocId)]
+			if (!troc.isSubscribed) {
 				let res = await fetch('/subscribes', getHeader({troc: trocId}))
 				let json = await res.json()
 				if (json.error) return notify.error(json.message)
 				notify.success('Vous participez à un nouveau troc')
+				$user.trocs.push(troc)
 			}
-			//$goto(`/activity/detail?troc=${trocId}`)
+			$goto(`/activity/detail?troc=${trocId}`)
 		}else{
 			dialogLogin.open()
 		}

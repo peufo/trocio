@@ -11,6 +11,7 @@ function createArticle(req, res, next) {
 	if (!Array.isArray(articles)) articles = [articles]
 
 	//TODO: verifier si le troc n'est pas dépasser
+	//TODO: Checker la limite du nombre d'article
 
 	createArticleContext(articles, async (err, newRef) => {
 		if (err) return next(err)

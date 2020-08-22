@@ -1,21 +1,29 @@
 let User = require('../models/user')
+let Subscibe = require('../models/subscribe')
 
 function getMe(req, res, next) {
     if (!req.session.user) return res.json({error: true, message: 'Login required'})
     User.findOne({_id: req.session.user._id}, {name: 1, mail: 1, mailvalided: 1, trocs: 1, creditTroc: 1})
-    .populate('trocs', 'name description address location admin cashier schedule society societyweb')
     .lean() // <== lean() Pour pouvoir retravailler le resultat
     .exec((err, user) => {
         if (err || !user) return next(err || Error('User not found !'))
+        Subscibe.find({user: req.session.user._id})
+        .populate('troc', 'name description address location admin cashier schedule society societyweb')
+        .exec((err, subs) => {
+            if (err) return next(err)
+            //Admin and cashier becomes booleans
+            user.trocs = subs.map(sub => {
+                let troc = sub.troc
+                troc.isAdmin = troc.admin.map(a => a.toString()).indexOf(user._id.toString()) != -1
+                troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(user._id.toString()) != -1
+                troc.isSubscribed = true
+                if (!troc.isAdmin && !troc.isCashier) troc.admin = troc.cashier = undefined
+                return troc
+            })
+    
+            res.json(user)
 
-        //Admin and cashier becomes booleans
-        user.trocs.forEach(troc => {
-            troc.isAdmin = troc.admin.map(a => a.toString()).indexOf(user._id.toString()) != -1
-            troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(user._id.toString()) != -1
-            if (!troc.isAdmin && !troc.isCashier) troc.admin = troc.cashier = undefined
         })
-
-        res.json(user)
     })
 }
 

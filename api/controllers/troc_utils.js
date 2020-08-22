@@ -90,5 +90,5 @@ module.exports = {
 	findSpec,
     getFee,
 	getMargin,
-	lookupIfAdmin
+	lookupIfAdmin,
 }
