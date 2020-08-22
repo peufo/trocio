@@ -49,7 +49,7 @@
 			clientPlaceHodler = 'Anonyme'
 		}else if ($params.client) {
 			try {
-				let res = await fetch(`/users/name/${$params.client}`)
+				let res = await fetch(`/users/name?user=${$params.client}`)
 				client = await res.json()
 				searchClient = client.name
 				clientOk = true

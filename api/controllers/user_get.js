@@ -34,9 +34,7 @@ function searchUser(req, res, next) {
         .lean()
         .exec((err, users) => {
         if (err) return next(err)
-
         users.forEach(hideMail)
-
         res.json(users)
     })
 }
@@ -44,7 +42,7 @@ function searchUser(req, res, next) {
 function getUser(req, res, next) {
     User.findById(req.params.id).lean().exec((err, user) => {
         if (err || !user) return next(err || Error('User not found'))
-        hideMail(user)
+        delete user.password
         res.json(user)
     })
 }
@@ -65,6 +63,7 @@ function hideMail(user) {
 	}
 }
 
+//TODO: user.trocs is removed
 function populateUserTrocs(userId, cb) {
     User.findOne({_id: userId}, {name: 1, mail: 1, mailvalided: 1, trocs: 1, creditTroc: 1})
     .populate('trocs', 'name description address location admin cashier schedule society societyweb')

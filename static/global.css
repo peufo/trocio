@@ -214,3 +214,9 @@ textarea {
 .simple-card.clickable:hover {
     box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.1);
 }
+
+.string { color: green; }
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: red; }

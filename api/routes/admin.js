@@ -7,16 +7,17 @@ var Payment = require('../models/payment')
 
 router
     .get('/', (req, res, next) => {
-        res.json('Hey super admin')
+        res.json({success: true, message: 'Yo root user'})
     })
-    .post('/addCredit/:userId', (req, res, next) => {
-        User.findOne({_id: req.params.userId}, {mail: 1, creditTroc: 1}, (err, user) => {
+    .post('/addcredit', (req, res, next) => {
+        let { user } = req.body
+        User.findOne({_id: user}, {mail: 1, creditTroc: 1}, (err, user) => {
             if (err || !user) return next(err || Error('User not found'))
             if (user.creditTroc) user.creditTroc++
             else user.creditTroc = 1
             user.save(err => {
                 if (err) return next(err)
-                res.json({success: true, message: `One credit is added for ${user.mail}\nTotal: ${user.creditTroc}`})
+                res.json({message: `One credit is added for ${user.mail}\nTotal: ${user.creditTroc}`})
             })
         })
     })
