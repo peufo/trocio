@@ -24,9 +24,6 @@
 
 </script>
 
-
-
-
 {#if nameDisplay}
     <h3>{troc.name}</h3>
 {/if}
@@ -35,14 +32,14 @@
 
 <List>
 
-    {#if troc.societyweb}
+    {#if troc.societyweb && troc.society}
         <a href={`https://${troc.societyweb}`} target="_blank" title="Accéder au site internet de l'organisateur">
             <Item>
                 <Graphic class="fas fa-user-tie"></Graphic>
                 <Text>{troc.society}</Text>
             </Item>
         </a>
-    {:else}
+    {:else if troc.society}
         <Item>
             <Graphic class="fas fa-user-tie"></Graphic>
             <Text>{troc.society}</Text>

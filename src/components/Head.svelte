@@ -10,7 +10,7 @@
 	import Login from './Login.svelte'
 
 	export let title = ''
-	
+
 	let dialogLogin
 	//let userMenu
 

@@ -5,11 +5,14 @@
 
     function createTroc(e) {
         let troc = e.detail
-        $user.trocs = [troc, ...$user.trocs]
         $goto(`/admin?troc=${troc._id}`)
     }
 
 </script>
+
+<svelte:head>
+    <title>Organiser - Trocio</title>
+</svelte:head>
 
 <h3 class="mdc-typography--headline6" style="margin: 0;">Organiser un troc</h3>
 

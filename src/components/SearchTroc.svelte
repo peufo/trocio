@@ -15,7 +15,7 @@
 
 	import L from 'leaflet'
 
-	import { user } from 'stores.js'
+	import { user, subscribedTrocs } from 'stores.js'
 	import { getHeader } from 'utils.js'
 	import notify from 'notify.js'
 	import TrocInfo from 'TrocInfo.svelte'
@@ -135,7 +135,7 @@
 				let json = await res.json()
 				if (json.error) return notify.error(json.message)
 				notify.success('Vous participez à un nouveau troc')
-				$user.trocs.push(troc)
+				$subscribedTrocs.push(troc)
 			}
 			$goto(`/activity/detail?troc=${trocId}`)
 		}else{

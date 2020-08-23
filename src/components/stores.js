@@ -13,6 +13,9 @@ export let trocPromise = writable()
 export let trocDetails = trocDetailsBuilder()
 export let trocDetailsPromise = writable()
 
+export let subscribedTrocs = writable([])
+
+
 let userPromiseSubscribed
 userPromise.subscribe(v => {
 	userPromiseSubscribed = v

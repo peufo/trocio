@@ -10,7 +10,10 @@
     import Button, { Label } from '@smui/button'
     
     import qs from 'qs'
-    import { user, userPromise } from 'stores.js'
+    import { user, userPromise, subscribedTrocs } from 'stores.js'
+
+    let subscribedTrocsPromise
+    $:console.log({$subscribedTrocs})
 
     let offsetWidth = 0
     let mobileDisplay = false
@@ -37,14 +40,15 @@
         let { troc } = qs.parse(location.search.substr(1))
         if (!$user) await $userPromise
         if (troc && $user) {
-            let index = $user.trocs.map(t => t._id).indexOf(troc)
-            trocSelected = $user.trocs[index]
+            let index = $subscribedTrocs.map(t => t._id).indexOf(troc)
+            trocSelected = $subscribedTrocs[index]
         }else if (!troc) {
             trocSelected = {}
         }
     }
 
-    onMount(() => {
+    onMount(async () => {
+        subscribedTrocsPromise = await getSubscribedTrocs()
         updateTrocByQuery()
         addEventListener('locationchange', updateTrocByQuery)
     })
@@ -53,6 +57,12 @@
         removeEventListener('locationchange', updateTrocByQuery)
     })
 
+    async function getSubscribedTrocs() {
+        let res = await fetch('/subscribes/me')
+        let json = await res.json()
+        if (json.error) return notify.error(json.message)
+        return $subscribedTrocs = json
+    }
 
 </script>
 
@@ -97,40 +107,35 @@
                         <h3 class="mdc-typography--headline6" style="margin: 0;">Mes trocs</h3>
                     </div>
 
-                    <List twoLine avatarList singleSelection>
-                        {#each $user.trocs as troc, i}
-                            <a href={`/activity/detail?troc=${troc._id}`}>
-                                <Item selected={trocSelected && trocSelected._id === troc._id} title={troc.address}>
-                                
-                                    <Text>
-                                        <PrimaryText>{troc.name}</PrimaryText>
-                                        <SecondaryText>{troc.description}</SecondaryText>
-                                    </Text>
-                                    <Meta>
-                                        <a href="{`/admin?troc=${troc._id}`}" title="Accéder à la page d'administration">
-                                            <i class="fa fa-cog button-icon w3-large w3-padding"></i>
-                                        </a>
-                                        <a href="{`/cashier?troc=${troc._id}`}" title="Accéder à la caisse">
-                                            <i class="fa fa-cash-register w3-large w3-padding"></i>
-                                        </a>
-                                        <!--
-                                        {#if troc.isAdmin}
-                                            <a href="{`/admin?troc=${troc._id}`}" title="Accéder à la page d'administration">
-                                                <i class="fa fa-cog button-icon w3-large w3-padding"></i>
-                                            </a>
-                                        {:else if troc.isCashier}
-                                            <a href="{`/cashier?troc=${troc._id}`}" title="Accéder à la caisse">
-                                                <i class="fa fa-cash-register w3-large w3-padding"></i>
-                                            </a>
-                                        {/if}
-                                        -->
-                                    </Meta>
-                                </Item>
-                            </a>
-                        {:else}
-                            Vous n'avez pas encore de troc
-                        {/each}
-                    </List>
+                    {#await subscribedTrocsPromise}
+                        Loading...
+                    {:then}
+                        <List twoLine avatarList singleSelection>
+                            {#each $subscribedTrocs as troc, i}
+                                <a href={`/activity/detail?troc=${troc._id}`}>
+                                    <Item selected={trocSelected && trocSelected._id === troc._id} title={troc.address}>
+                                        <Text>
+                                            <PrimaryText>{troc.name}</PrimaryText>
+                                            <SecondaryText>{troc.description}</SecondaryText>
+                                        </Text>
+                                        <Meta>
+                                            {#if troc.isAdmin}
+                                                <a href="{`/admin?troc=${troc._id}`}" title="Accéder à la page d'administration">
+                                                    <i class="fa fa-cog button-icon w3-large w3-padding"></i>
+                                                </a>
+                                            {:else if troc.isCashier}
+                                                <a href="{`/cashier?troc=${troc._id}`}" title="Accéder à la caisse">
+                                                    <i class="fa fa-cash-register w3-large w3-padding"></i>
+                                                </a>
+                                            {/if}
+                                        </Meta>
+                                    </Item>
+                                </a>
+                            {:else}
+                                Vous n'avez pas encore de troc
+                            {/each}
+                        </List>
+                    {/await}
                 </div>
                 
             </div>
