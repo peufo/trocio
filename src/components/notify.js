@@ -33,7 +33,7 @@ function success(options) {
 }
 
 function warning(options) {
-    return PNotify.notice(formatOptions(options, 'fas fa-exclamation'))
+    return PNotify.notice(formatOptions(options, 'fas fa-exclamation-triangle'))
 }
 
 function error(options) {

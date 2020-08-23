@@ -1,5 +1,6 @@
 var Troc = require('../models/troc')
 var User = require('../models/user')
+var Subscribe = require('../models/subscribe')
 let { lookupIfAdmin, populateTrocUser } = require('../controllers/troc_utils')
 
 function createTroc(req, res, next) {
@@ -17,23 +18,19 @@ function createTroc(req, res, next) {
 			{price: 5, value: 1}
 		]
 	}
+	
+	let subscribe = new Subscribe({user: req.session.user._id, troc: troc._id})
 
 	User.findOne({_id: req.session.user._id}, (err, user) => {
 		if (err || !user) return next(err || Error('User not found !'))
 		if (!user.creditTroc) return next(Error('No credit'))
-
-		troc.save(err => {
-			if (err) return next(err)
-		
-			user.creditTroc--
-			user.save(err => {
-				if (err) return next(err)
-				populateTrocUser(troc._id, (err, troc) => {
-					if(err) return next(err)
-					res.json({success: true, message: troc})
-				})
+		user.creditTroc--
+		Promise.all([troc.save(), user.save(), subscribe.save()]).then(() => {
+			populateTrocUser(troc._id, (err, troc) => {
+				if(err) return next(err)
+				res.json({success: true, message: troc})
 			})
-		})
+		}).catch(next)
 	})
 }
 

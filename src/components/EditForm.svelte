@@ -9,8 +9,9 @@
 	import Button, { Label } from '@smui/button'
 	import DataTable, {Head, Body, Row, Cell} from '@smui/data-table'
 
-	import { troc } from './stores'
-	import { getHeader, updateTroc } from './utils'
+	import notify from 'notify.js'
+	import { troc, user } from './stores'
+	import { getHeader } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
 	import SearchAddress from './SearchAddress.svelte'
 
@@ -24,6 +25,9 @@
 	export let society = ''
 	export let societyweb = ''
 	export let mapDelay = 0
+
+	let createPromise
+
 	let offsetWidth = 0
 	let smallDisplay = false
 
@@ -82,22 +86,20 @@
 		if (!name) invalid = 'Pas de nom'
 		else if (!address) invalid = 'Adresse incomplette'
 		else if (!location.lat) invalid =  'Adresse non localisé'
-		else if (description.length < 10) invalid = 'Déscription trop courte'
+		else if (description.length < 10) invalid = `Déscription trop courte (${description.length}/10)`
 		else if (!scheduleIn.length) invalid = 'Pas de plage horaire'
 		else if (schedule.indexOf(undefined) != -1) invalid = 'Plage horaire incomplette'
 	}
 
-	function create() {
-		if (!invalid) {
+	async function create() {
+		if (invalid) return notify.warning(invalid)
+		let res = await fetch(`/trocs`, getHeader({name, address, location, description, schedule, society, societyweb}))
+		let json = await res.json()
+		if (json.error) return notify.error(json.message)
+		notify.success('Nouveau troc créer !')
+		$user.creditTroc--
+		dispatch('create', json.message)
 
-			fetch(`/trocs`, getHeader({name, address, location, description, schedule, society, societyweb}))
-			.then(res => res.json())
-			.then(json => updateTroc(json, () => {
-				user.creditTroc--
-				dispatch('create')
-			}))
-
-		}
 	}
 
 	//For SearchLocation to Autopatch
@@ -106,18 +108,7 @@
 
 </script>
 
-{#if !createMode}
-	<AutoPatch 	source="editForm"
-				path="{`/trocs/${_id}`}"
-				invalid={invalid}
-				body="{{name, address, location, description, schedule, society, societyweb}}"
-				trocRefresh
-				bind:changeFlag={changeFlag}/>
-
-	<!-- Il faudra gerer les mise a jour de l'image en plus !!! -->
-{/if}
-
-<form id="editForm" name="editForm" enctype="multipart/form-data" bind:offsetWidth>
+<div id="editForm" bind:offsetWidth>
 	<div class="container" class:smallDisplay>
 		<div class="item troc">
 			<h4>Mon troc</h4><br>
@@ -165,7 +156,6 @@
 				</Body>
 			</DataTable>
 			
-
 			<Button on:click={addSchedule} variant="outlined" color="secondary" class="patchButton w3-right" title="Ajouter un période">
 				<Label>+1 période</Label>
 			</Button>
@@ -181,22 +171,26 @@
 	</div>
 	
 	{#if createMode}
-		<!--
-			<div on:click={create} 
-				class:w3-disabled={!!invalid} 
-				class="w3-button w3-border w3-round">
-				Créer mon troc
-			</div>
-		-->
 		<div style="margin-top: 40px;">
-			<Button variant="raised" class="w3-right" title="Valider la création de mon troc">
-				<Label>Créer mon troc</Label>
-			</Button>
+			{#await createPromise}
+				<Button>Création en cours...</Button>
+			{:then}
+				<Button on:click={create} variant="raised" class="w3-right" title="Valider la création de mon troc">
+					<Label>Créer mon troc</Label>
+				</Button>
+			{/await}
 		</div>
 		<br><br>
+	{:else}
+		<AutoPatch 	source="editForm"
+				path="{`/trocs/${_id}`}"
+				invalid={invalid}
+				body="{{name, address, location, description, schedule, society, societyweb}}"
+				trocRefresh
+				bind:changeFlag={changeFlag}/>
 	{/if}
 	
-</form>
+</div>
 
 <style>
 
