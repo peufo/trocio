@@ -1,7 +1,6 @@
 <script>
     import { goto } from '@sveltech/routify'
     import { layout, page } from '@sveltech/routify'
-
     import { onMount, onDestroy } from 'svelte'
     import { fade, fly } from 'svelte/transition'
 
@@ -11,9 +10,12 @@
     
     import qs from 'qs'
     import { user, userPromise, subscribedTrocs } from 'stores.js'
-
+    import RowsPromise from 'RowsPromise.svelte'
+    
+    let subscribedSkip = 0
+    let subscribedLimit = 5
     let subscribedTrocsPromise
-    $:console.log({$subscribedTrocs})
+    let moreSubscribedTrocsPromise
 
     let offsetWidth = 0
     let mobileDisplay = false
@@ -47,10 +49,11 @@
         }
     }
 
-    onMount(async () => {
-        subscribedTrocsPromise = await getSubscribedTrocs()
-        updateTrocByQuery()
-        addEventListener('locationchange', updateTrocByQuery)
+    onMount(() => {
+        subscribedTrocsPromise = getSubscribedTrocs().then(() => {
+            updateTrocByQuery()
+            addEventListener('locationchange', updateTrocByQuery)
+        })
     })
 
     onDestroy(() => {
@@ -58,10 +61,17 @@
     })
 
     async function getSubscribedTrocs() {
-        let res = await fetch('/subscribes/me')
+        let res = await fetch(`/subscribes/me?skip=${subscribedSkip}&limit=${subscribedLimit}`)
         let json = await res.json()
         if (json.error) return notify.error(json.message)
-        return $subscribedTrocs = json
+        if (subscribedSkip == 0) $subscribedTrocs = json
+        else $subscribedTrocs = [...$subscribedTrocs, ...json]
+        return
+    }
+
+    function clickMoreSubscribedTroc() {
+        subscribedSkip += subscribedLimit
+        moreSubscribedTrocsPromise = getSubscribedTrocs()
     }
 
 </script>
@@ -108,7 +118,9 @@
                     </div>
 
                     {#await subscribedTrocsPromise}
-                        Loading...
+                        <List twoLine>
+                            <RowsPromise listMode twoLine meta/>
+                        </List>
                     {:then}
                         <List twoLine avatarList singleSelection>
                             {#each $subscribedTrocs as troc, i}
@@ -133,8 +145,22 @@
                                 </a>
                             {:else}
                                 Vous n'avez pas encore de troc
-                            {/each}
+                            {/each}  
+                                                     
+                            {#await moreSubscribedTrocsPromise}
+                                <RowsPromise listMode twoLine meta/>
+                            {/await}
+                            
                         </List>
+                        
+                        {#if $subscribedTrocs.length == subscribedSkip + subscribedLimit}
+                            <div class="w3-center">
+                                <Button color="secondary" on:click={clickMoreSubscribedTroc}>
+                                    Afficher plus
+                                </Button>
+                            </div>
+                        {/if}
+
                     {/await}
                 </div>
                 

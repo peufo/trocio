@@ -1,6 +1,5 @@
 <script>
-	import { troc, user } from './stores'
-
+	import { user } from './stores'
 	import Menu from '@smui/menu'
 	import List, { Item, Graphic } from '@smui/list'
 	import Button from '@smui/button'
@@ -9,13 +8,15 @@
 
 	import Login from './Login.svelte'
 
-	export let title = ''
-
 	let dialogLogin
 	//let userMenu
 
 
 </script>
+
+<svelte:head>
+	<title>Trocio</title>
+</svelte:head>
 
 <TopAppBar variant="static" color="secondary" dense>
 	<Row>
@@ -24,7 +25,6 @@
 				<Title>
 					<img src="/favicon.ico" alt="logo Trocio" height="35">
 					TROCIO
-					<i>{title}</i>
 				</Title>
 			</a>
 		</Section>
