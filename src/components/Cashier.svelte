@@ -89,6 +89,7 @@
 	}
     
 	function clientSelected(e){
+		console.log('selectClient')
 		clientOk = true
 		clientAnonym = false
 		updateClientQuery()

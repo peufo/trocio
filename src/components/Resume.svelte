@@ -310,7 +310,7 @@
 
 			<!-- Insertion de plusieurs d'article -->
 			{#if importArticlesListOpen}
-				<div class="w3-row w3-margin-top" transition:slide|local>
+				<div class="w3-row w3-margin" transition:slide|local>
 					<textarea class="w3-round" rows="10" 
 							bind:value={importArticlesValue} on:input={inputImportArticles}
 							placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${$details.prefix ? '[ Référence ] ' : ''}[ Désignation ] [ Prix ] --\n\n\n${$details.prefix ? `${$details.prefix}1 ⭢ ` : ''} Mon premier article ⭢ 20\n${$details.prefix ? `${$details.prefix}2 : ` : ''} Mon deuxième article : 15.35\n${$details.prefix ? `${$details.prefix}3 ; ` : ''} Mon troisième article ; 5,40\n ...`}></textarea>
