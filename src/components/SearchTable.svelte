@@ -143,7 +143,7 @@
 <div style="display: flex; justify-content: center; flex-wrap: wrap-reverse;">
     <div style="display: flex; flex-direction: column;">
         <span class="w3-large">{title}</span>
-        <DataTable class="clickable" style="min-width: 690px; overflow-x: visible; border: none;">
+        <DataTable class="clickable" style="min-width: 690px; overflow-x: visible;">
             <Head>
                 <Row>
                     {#each fields.filter(f => showAllFields || f.checked) as field}
@@ -223,7 +223,7 @@
                     <RowsPromise cellsWidth={fields.filter(f => showAllFields || f.checked).map(f => f.cellWidth)}></RowsPromise>
                 {:then}
                     {#each items as item, index}
-                        <Row style="text-align: left; border: none;" on:click={() => select(index)} class={selectedIndex == index ? 'row-selected' : ''}>
+                        <Row style="text-align: left;" on:click={() => select(index)} class={selectedIndex == index ? 'row-selected' : ''}>
                             {#each fields.filter(f => showAllFields || f.checked) as field}
                                 <Cell numeric={field.dataType == 'number'}>
                                     {#if field.dataName.indexOf('.') === -1}

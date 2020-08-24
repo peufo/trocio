@@ -1,7 +1,7 @@
 <script>
 	import { user } from '../stores'
 	
-	import { onMount, tick } from 'svelte'
+	import { onMount, onDestroy, tick } from 'svelte'
 	import { fade } from 'svelte/transition'
 	import Switch from '@smui/switch'
 	import FormField from '@smui/form-field'
@@ -75,10 +75,8 @@
 						document.querySelector('#cashierTabs .mdc-tab[aria-selected="true"]').focus()
 						break
 				}
-					
 			}
 		})
-
 	})
 	
 	async function updateClientQuery() {
@@ -100,8 +98,6 @@
 	}
 
 	function inputSearchClient() {
-
-		balance = 0 // not work ?? why?
 
 		clientOk = false
 		clientAnonym = false

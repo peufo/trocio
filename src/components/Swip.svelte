@@ -27,7 +27,7 @@
 					index = swiper.activeIndex
 					tabActived = tabs[index]
 					console.log('Swip onMount slideChange redirect', $params)
-					$redirect(location.pathname, {...$params, tab: tabActived.href})
+					$redirect(location.pathname, {...$params, tab: tabActived.ref})
 				}
 			},
 			initialSlide: index,
@@ -42,7 +42,7 @@
 		tabActived = tabs[index]
 		swiper.slideTo(index)
 		console.log('Active Tab redirect')
-		$redirect(location.pathname, {...$params, tab: tabActived.href})
+		$redirect(location.pathname, {...$params, tab: tabActived.ref})
 		desableFocus()
 	}
 
@@ -56,6 +56,7 @@
 </script>
 
 <div bind:offsetWidth>
+
 	<TabBar {tabs} let:tab id={tabId}
 		active={tabActived}
 		on:MDCTabBar:activated={e => activeTab(e.detail.index)}

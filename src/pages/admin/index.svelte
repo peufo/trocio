@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte'
 	import { troc, trocPromise } from 'stores.js'
     import { fade } from 'svelte/transition'
+	import Tab, { Label, Icon } from '@smui/tab'
+	import TabBar from '@smui/tab-bar'
     
     import Logo from 'Logo.svelte'
 	import EditForm from 'EditForm.svelte'
@@ -19,17 +21,17 @@
 
 	export let user = {}
 
-	let tabSelected = 5
-	let oldTabSelected = -1
-	let tabs = [
-		{num: 0, name: 'Informations', 	icon: '<i class="fas fa-info-circle"></i>'},
-		{num: 1, name: 'Collaborateurs', icon: '<i class="fas fa-users"></i>'}, 
-		{num: 2, name: 'Tarifications', icon: '<i class="fas fa-coins"></i>'},
-		{num: 3, name: 'Etiquetage', 	icon: '<i class="fas fa-tag"></i>'},
-		{num: 4, name: 'Statistique', 	icon: '<i class="fas fa-chart-pie"></i>'},
-		{num: 5, name: 'Correction', 	icon: '<i class="fas fa-eraser"></i>'},
-		{num: 6, name: 'Caisse', 		icon: '<i class="fas fa-cash-register"></i>'}
-	]
+    let tabs = [
+        {ref: 'info',	    label: 'Informations', 	    icon: 'fas fa-info-circle'},
+		{ref: 'collab',	    label: 'Collaborateurs',    icon: 'fas fa-users'},
+		{ref: 'tarif',		label: 'Tarifications',     icon: 'fas fa-coins'},
+		{ref: 'tag',        label: 'Etiquetage', 	    icon: 'fas fa-tag'},
+		{ref: 'statistic',	label: 'Statistique', 	    icon: 'fas fa-chart-pie'},
+		{ref: 'managment',	label: 'Gestion', 		    icon: 'fas fa-eraser'},
+		{ref: 'cashier',	label: 'Caisse', 		    icon: 'fas fa-cash-register'},
+    ]
+    let index = 0
+    let tabActived = tabs[index]
 
 	onMount(() => {
 		//let query = queryString.parse(location.search)
@@ -48,7 +50,15 @@
 	}
 
 	let changeFlag = false //For SearchUser to AutoPatch 
-	let tag = {} // For tag edit
+    let tag = {} // For tag edit
+    
+
+	function activeTab(newIndex) {
+		index = newIndex
+		tabActived = tabs[index]
+		console.log('Active Tab redirect')
+		//$redirect(location.pathname, {...$params, tab: tabActived.ref})
+	}
 
 </script>
 
@@ -70,97 +80,77 @@
             </div>
         </div>
     {:else}
-        <div in:fade style="height: calc(100% - 58px);">
             
-            <div class="onglets w3-center">
-                {#each tabs as tab}
-                    <div class="w3-padding underline-div onglet"
-                        on:click="{() => tabSelected = tab.num}"
-                        class:actived="{tabSelected == tab.num}">
-                        {@html tab.icon}
-                        <span class="underline-span tab-name">{tab.name}</span>
-                    </div>
+        <TabBar {tabs} let:tab
+            active={tabActived}
+            on:MDCTabBar:activated={e => activeTab(e.detail.index)}
+            style="border-bottom: 1px #eee solid">
+            <Tab {tab} >
+                <Icon class={tab.icon}></Icon>
+                <Label>{tab.label}</Label>
+            </Tab>
+        </TabBar>
+
+        <br>
+
+        {#if tabActived.ref === 'info'}
+            <div in:fade class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
+                <EditForm {...$troc}/>
+            </div>
+
+        {:else if tabActived.ref === 'collab'}
+            <div in:fade>
+                <Collaborators {user} />
+            </div>
+
+        {:else if tabActived.ref === 'tarif'}
+            <AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}" bind:changeFlag={changeFlag} trocRefresh/>
+            <div id="editTarif" in:fade>
+                {#each $troc.tarif as tarif, i}
+                    <Tarif 	index={i}
+                            bind:name={tarif.name}
+                            bind:apply={tarif.apply}
+                            bind:margin={tarif.margin}
+                            bind:fee={tarif.fee}
+                            bind:maxarticles={tarif.maxarticles}
+                            bind:bydefault={tarif.bydefault}
+                            on:remove="{() => removeTarif(i)}"
+                            on:selectUser="{() => changeFlag = true}"
+                            on:removeUser="{() => changeFlag = true}"/>
                 {/each}
+                <div id="addTarif">
+                    <div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"
+                        class="patchButton w3-button w3-border w3-round w3-right">
+                        +1 tarif
+                    </div>
+                </div>
             </div>
 
-            {#if $troc._id}
-            <div class="tabs" style="height: calc(100% - 38px);">
-
-                <!-- Apercu -->
-                <div class="tab" class:center={tabSelected == 0} class:left={tabSelected > 0}>
-                    <br>
-                    <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
-                        <EditForm {...$troc}/>
-                    </div>
-                    <br>
-                </div>
-
-                <!-- Worker -->
-                <div class="tab" class:center={tabSelected == 1} class:left={tabSelected > 1} class:right={tabSelected < 1}>
-                    <br>
-                    <Collaborators {user} />
-                </div>
-
-                <!-- Tarif  -->
-                <div class="tab" class:center={tabSelected == 2} class:left={tabSelected > 2} class:right={tabSelected < 2}>
-                    <br>
-                    <AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}" bind:changeFlag={changeFlag} trocRefresh/>
-                    <div id="editTarif" in:fade>
-                    {#each $troc.tarif as tarif, i}
-                        <Tarif 	index={i}
-                                bind:name={tarif.name}
-                                bind:apply={tarif.apply}
-                                bind:margin={tarif.margin}
-                                bind:fee={tarif.fee}
-                                bind:maxarticles={tarif.maxarticles}
-                                bind:bydefault={tarif.bydefault}
-                                on:remove="{() => removeTarif(i)}"
-                                on:selectUser="{() => changeFlag = true}"
-                                on:removeUser="{() => changeFlag = true}"/>
-                    {/each}
-                        <div id="addTarif">
-                            <div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"
-                                class="patchButton w3-button w3-border w3-round w3-right">
-                                +1 tarif
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Etiquetage  -->
-                <div class="tab" class:center={tabSelected == 3} class:left={tabSelected > 3} class:right={tabSelected < 3}>
-                    <br>
-                    <AutoPatch source="tagEdit" body="{{tag: $troc.tag}}" path="{`/trocs/${$troc._id}`}" trocRefresh/>
-                    <div id="tagEdit">
-                        <TagEdit bind:width={$troc.tag.width} bind:height={$troc.tag.height} bind:padding={$troc.tag.padding} bind:border={$troc.tag.border}/>
-                    </div>
-                </div>
-
-                <!-- Stats  -->
-                <div class="tab" class:center={tabSelected == 4} class:left={tabSelected > 4} class:right={tabSelected < 4}>
-                    <br>
-                    <Stats />
-                </div>
-
-                <!-- Correction  -->
-                <div class="tab" class:center={tabSelected == 5} class:left={tabSelected > 5} class:right={tabSelected < 5}>
-                    <br>
-                    <Correction {user} troc={$troc._id} />
-                </div>
-
-                <!-- Caisse  -->
-                <div class="tab" class:center={tabSelected == 6} class:left={tabSelected > 6} class:right={tabSelected < 6}>
-                    <br>
-                    <Cashier adminIntegration>
-                        <CashierIndex/>
-                    </Cashier>
-                </div>
-                
+        {:else if tabActived.ref === 'tag'}
+            <AutoPatch source="tagEdit" body="{{tag: $troc.tag}}" path="{`/trocs/${$troc._id}`}" trocRefresh/>
+            <div id="tagEdit" in:fade>
+                <TagEdit bind:width={$troc.tag.width} bind:height={$troc.tag.height} bind:padding={$troc.tag.padding} bind:border={$troc.tag.border}/>
             </div>
-            {/if}
 
-        </div>
+        {:else if tabActived.ref === 'statistic'}
+            <div in:fade>
+                <Stats/>
+            </div>
+
+        {:else if tabActived.ref === 'managment'}
+            <div in:fade>
+                <Correction {user} troc={$troc._id} />
+            </div>
+
+        {:else if tabActived.ref === 'cashier'}
+            <div in:fade>
+                <Cashier adminIntegration>
+                    <CashierIndex/>
+                </Cashier>
+            </div>
+        
+        {/if}
+        
     {/if}
 {/await}
 
@@ -170,27 +160,9 @@
 
 <style>
 
-	@media screen and (max-width: 970px) {
-		.tab-name {
-			display: none;
-		}
-    }
-    
-    .tab {
-        display: none;
-    }
-
-    .tab.center {
-        display: block;
-    }
-
 	#addTarif {
 		max-width: 850px;
 		margin: auto;
-	}
-
-	.underline-div {
-		display: inline-block;
 	}
 
 	.w3-display-container {
