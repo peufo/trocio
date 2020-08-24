@@ -286,7 +286,7 @@
 	.noUserLogo {
 		font-size: 140px;
 		opacity: .08;
-		position: absolute;
+		position: fixed;
 		left: calc(50% - 70px);
 		top: calc(50% - 70px);
 	}

@@ -19,7 +19,10 @@
 	import CashierIndex from '../cashier/index.svelte'
 	import { getHeader, updateTroc } from 'utils.js'
 
-	export let user = {}
+    export let user = {}
+    
+    let maxWidthToShowLabel = 1150
+    let offsetWidth
 
     let tabs = [
         {ref: 'info',	    label: 'Informations', 	    icon: 'fas fa-info-circle'},
@@ -80,77 +83,83 @@
             </div>
         </div>
     {:else}
-            
-        <TabBar {tabs} let:tab
-            active={tabActived}
-            on:MDCTabBar:activated={e => activeTab(e.detail.index)}
-            style="border-bottom: 1px #eee solid">
-            <Tab {tab} >
-                <Icon class={tab.icon}></Icon>
-                <Label>{tab.label}</Label>
-            </Tab>
-        </TabBar>
+        
+        <div bind:offsetWidth>
 
-        <br>
+            <TabBar {tabs} let:tab
+                active={tabActived}
+                on:MDCTabBar:activated={e => activeTab(e.detail.index)}
+                style="border-bottom: 1px #eee solid; max-width: 1400px; margin: auto;">
+                <Tab {tab} >
+                    {#if offsetWidth > maxWidthToShowLabel}
+                        <Icon class={tab.icon}></Icon>
+                        <Label>{tab.label}</Label>
+                    {:else}
+                        <Icon class={`${tab.icon} w3-large`}></Icon>
+                    {/if}
+                </Tab>
+            </TabBar>
 
-        {#if tabActived.ref === 'info'}
-            <div in:fade class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
-                <EditForm {...$troc}/>
-            </div>
+            <br>
 
-        {:else if tabActived.ref === 'collab'}
-            <div in:fade>
-                <Collaborators {user} />
-            </div>
+            {#if tabActived.ref === 'info'}
+                <div in:fade class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
+                    <EditForm {...$troc}/>
+                </div>
 
-        {:else if tabActived.ref === 'tarif'}
-            <AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}" bind:changeFlag={changeFlag} trocRefresh/>
-            <div id="editTarif" in:fade>
-                {#each $troc.tarif as tarif, i}
-                    <Tarif 	index={i}
-                            bind:name={tarif.name}
-                            bind:apply={tarif.apply}
-                            bind:margin={tarif.margin}
-                            bind:fee={tarif.fee}
-                            bind:maxarticles={tarif.maxarticles}
-                            bind:bydefault={tarif.bydefault}
-                            on:remove="{() => removeTarif(i)}"
-                            on:selectUser="{() => changeFlag = true}"
-                            on:removeUser="{() => changeFlag = true}"/>
-                {/each}
-                <div id="addTarif">
-                    <div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"
-                        class="patchButton w3-button w3-border w3-round w3-right">
-                        +1 tarif
+            {:else if tabActived.ref === 'collab'}
+                <div in:fade>
+                    <Collaborators {user} />
+                </div>
+
+            {:else if tabActived.ref === 'tarif'}
+                <AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}" bind:changeFlag={changeFlag} trocRefresh/>
+                <div id="editTarif" in:fade>
+                    {#each $troc.tarif as tarif, i}
+                        <Tarif 	index={i}
+                                bind:name={tarif.name}
+                                bind:apply={tarif.apply}
+                                bind:margin={tarif.margin}
+                                bind:fee={tarif.fee}
+                                bind:maxarticles={tarif.maxarticles}
+                                bind:bydefault={tarif.bydefault}
+                                on:remove="{() => removeTarif(i)}"
+                                on:selectUser="{() => changeFlag = true}"
+                                on:removeUser="{() => changeFlag = true}"/>
+                    {/each}
+                    <div id="addTarif">
+                        <div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"
+                            class="patchButton w3-button w3-border w3-round w3-right">
+                            +1 tarif
+                        </div>
                     </div>
                 </div>
-            </div>
 
-        {:else if tabActived.ref === 'tag'}
-            <AutoPatch source="tagEdit" body="{{tag: $troc.tag}}" path="{`/trocs/${$troc._id}`}" trocRefresh/>
-            <div id="tagEdit" in:fade>
-                <TagEdit bind:width={$troc.tag.width} bind:height={$troc.tag.height} bind:padding={$troc.tag.padding} bind:border={$troc.tag.border}/>
-            </div>
+            {:else if tabActived.ref === 'tag'}
+                <AutoPatch source="tagEdit" body="{{tag: $troc.tag}}" path="{`/trocs/${$troc._id}`}" trocRefresh/>
+                <div id="tagEdit" in:fade>
+                    <TagEdit bind:width={$troc.tag.width} bind:height={$troc.tag.height} bind:padding={$troc.tag.padding} bind:border={$troc.tag.border}/>
+                </div>
 
-        {:else if tabActived.ref === 'statistic'}
-            <div in:fade>
-                <Stats/>
-            </div>
+            {:else if tabActived.ref === 'statistic'}
+                <div in:fade>
+                    <Stats/>
+                </div>
 
-        {:else if tabActived.ref === 'managment'}
-            <div in:fade>
-                <Correction {user} troc={$troc._id} />
-            </div>
+            {:else if tabActived.ref === 'managment'}
+                <div in:fade>
+                    <Correction {user} troc={$troc._id} />
+                </div>
 
-        {:else if tabActived.ref === 'cashier'}
-            <div in:fade>
-                <Cashier adminIntegration>
-                    <CashierIndex/>
-                </Cashier>
-            </div>
-        
-        {/if}
-        
+            {:else if tabActived.ref === 'cashier'}
+                <div in:fade>
+                    <Cashier adminIntegration>
+                        <CashierIndex/>
+                    </Cashier>
+                </div>
+            
+            {/if}
+        </div>
     {/if}
 {/await}
 
