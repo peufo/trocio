@@ -1,20 +1,31 @@
 <script>
-    import { ready } from '@sveltech/routify'
+    import { onMount } from 'svelte'
     import Button from '@smui/button'
+    import DataTable, { Head, Body, Row, Cell } from '@smui/data-table'
 
     import { getHeader, syntaxHighlight } from 'utils.js'
     import notify from 'notify.js'
     import SearchUser from 'SearchUser.svelte'
 
     let isRootUser = false
-    fetch('/superadmin')
-    .then(res => res.json())
-    .then(json => {isRootUser = json.success})
-    .then($ready)
+
+    onMount(() => {
+        fetch('/superadmin')
+        .then(res => res.json())
+        .then(json => {
+            if (json.success) {
+               isRootUser = true
+               getOptions()
+            }
+        }) 
+    })
+    
 
     let userSelected = {}
     let userSelectedPromise
     let addCreditPromise
+
+    let options = []
 
     async function selectUser(event){
         let res = await fetch(`/superadmin/users?_id=${event.detail._id}`)
@@ -31,14 +42,43 @@
         return notify.success(json.message)
     }
 
+    async function getOptions() {
+        let res = await fetch('/superadmin/options')
+        let json = await res.json()
+        options = json
+    }
+
 </script>
 
 {#if !isRootUser}
     <h1 style="color: red;">Access denied</h1>
 {:else}
     <div class="main">
+
         <div class="simple-card">
-            <h3>Ajouter un crédit de création de troc</h3>
+            <h3>Options globals</h3>
+            
+            <DataTable>
+                <Head>
+                    <Row>
+                        <Cell>Name</Cell>
+                        <Cell>Value</Cell>
+                    </Row>
+                </Head>
+                <Body>
+                    {#each options as option}
+                        <Row>
+                            <Cell>{option.name}</Cell>
+                            <Cell>{option.value}</Cell>
+                        </Row>
+                    {/each}
+                </Body>
+            </DataTable>
+
+        </div>
+
+        <div class="simple-card">
+            <h3>Utilisateurs</h3>
             <div class="w3-row">
                 <div class="w3-col s6">
                     <SearchUser modeSelect on:select={e => userSelectedPromise = selectUser(e)}/>
@@ -76,6 +116,7 @@
 
     .simple-card {
         padding: 16px;
+        margin-bottom: 20px;
     }
 
 </style>

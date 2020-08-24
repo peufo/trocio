@@ -9,6 +9,15 @@ router
     .get('/', (req, res, next) => {
         res.json({success: true, message: 'Yo root user'})
     })
+    .get('/options', (req, res, next) => {
+        let options = []
+        for (const key in process.env) {
+            if (key.indexOf('TROCIO_OPTIONS_') === 0) {
+                options.push({name: key.replace('TROCIO_OPTIONS_', ''), value: process.env[key]})
+            }
+        }
+        res.json(options)
+    })
     .post('/addcredit', (req, res, next) => {
         let { user } = req.body
         User.findOne({_id: user}, {mail: 1, creditTroc: 1}, (err, user) => {
