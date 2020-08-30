@@ -61,7 +61,7 @@
 
             </Item>
             
-            {#if scheduleOpen}
+            {#if scheduleOpen && troc.schedule}
                 <div class="schedule" transition:slide|local>
                     {#each troc.schedule as day}
                         

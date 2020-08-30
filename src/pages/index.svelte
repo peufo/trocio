@@ -7,7 +7,7 @@
 
 <img class="participeImg" class:w3-hide={!!$user} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
 
-<div class="content">
+<main>
     
     <span class="w3-jumbo">TROCIO</span>
     
@@ -146,7 +146,11 @@
         <p>Accède à une vue d'ensemble du trafic de ton événement.</p>
     </div>
 
-</div>
+</main>
+
+<footer>
+    Hey
+</footer>
 
 <svelte:head>
     <style>#waitLoaded {display: none;}</style>
@@ -154,13 +158,22 @@
 
 <style>
 
+    footer {
+        background: #efefef;
+    }
+
+    main {
+        max-width: 1200px;
+        margin: auto;
+    }
+
     @media only screen and (min-width: 850px) {
-        .content {
+        main {
             padding: 50px 100px 100px 50px;
         }
     }
     @media only screen and (max-width: 850px) {
-        .content {
+        main {
             padding: 10px;
         }
     }
@@ -188,11 +201,6 @@
             margin: 30px 5px 30px 5px;
             padding: 0px;
         }
-    }
-
-    .content {
-        max-width: 1200px;
-        margin: auto;
     }
 
     li {
