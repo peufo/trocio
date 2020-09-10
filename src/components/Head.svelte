@@ -1,5 +1,5 @@
 <script>
-	import { user } from './stores'
+	import { user, troc } from './stores'
 	import Menu from '@smui/menu'
 	import List, { Item, Graphic } from '@smui/list'
 	import Button from '@smui/button'
@@ -15,7 +15,9 @@
 </script>
 
 <svelte:head>
-	<title>Trocio</title>
+	<title>
+		Trocio {$troc ? ` - ${$troc.name}` : ''}
+	</title>
 </svelte:head>
 
 <TopAppBar variant="static" color="secondary" dense>
@@ -24,7 +26,7 @@
 			<a href="/">
 				<Title>
 					<img src="/favicon.ico" alt="logo Trocio" height="35">
-					TROCIO
+					TROCIO {$troc ? ` - ${$troc.name}` : ''}
 				</Title>
 			</a>
 		</Section>
