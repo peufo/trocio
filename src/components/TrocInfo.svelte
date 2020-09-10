@@ -56,7 +56,7 @@
             <Item on:click={() => scheduleOpen = !scheduleOpen} title="{scheduleOpen ? 'Cacher': 'Afficher'} l'horaire">
                 <Graphic class="far fa-calendar-alt"></Graphic>
                 <Text>
-                    {dayjs(troc.schedule && troc.schedule[0].open).fromNow()}
+                    {dayjs(troc.schedule && troc.schedule[0] && troc.schedule[0].open).fromNow()}
                 </Text>
 
             </Item>

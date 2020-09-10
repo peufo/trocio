@@ -7,8 +7,7 @@
     import SearchUser from './SearchUser.svelte'
     import UserLi from './UserLi.svelte'
     import { getHeader, updateTroc } from './utils'
-
-    export let user = {}
+    import { user } from './stores'
 
     let selectedTrader = -1
     let selectedTraderName = ''
@@ -105,7 +104,7 @@
                     <PrimaryText>{admin.name}</PrimaryText>
                     <SecondaryText>{admin.mail}</SecondaryText>
                 </Text>
-                {#if admin._id != $troc.creator._id && admin._id != user._id}
+                {#if admin._id != $troc.creator._id && admin._id != $user._id}
                     <Meta class="material-icons clickable" on:click={() => removeAdmin(admin._id)}>clear</Meta>
                 {/if}
             </Item>

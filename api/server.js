@@ -1,6 +1,5 @@
 require('dotenv').config()
 var express = require('express')
-var path = require('path')
 var cookieParser = require('cookie-parser')
 var logger = require('morgan')
 var { DBPATH, SECRET_STRING_COOKIE } = require('../config.js')
@@ -9,7 +8,6 @@ var session = require('express-session')
 var mongoose = require('mongoose')
 var MongoStore = require('connect-mongo')(session)
 const compression = require('compression')
-const { ssr } = require('@sveltech/ssr')
 let createError = require('http-errors')
 
 let catchError404 = (req, res, next) => next(createError(404))
@@ -34,6 +32,7 @@ app.use(session({
 }))
 app.use(compression({ threshold: 0 }))
 app.use(express.static('../dist'))
+
 app.use('/',     	  require('./routes/index'))
 app.use('/users',     require('./routes/user'), 	catchError404)
 app.use('/articles',  require('./routes/article'), 	catchError404)
@@ -41,13 +40,6 @@ app.use('/trocs',     require('./routes/troc'), 	catchError404)
 app.use('/payments',  require('./routes/payment'), 	catchError404)
 app.use('/subscribes',  require('./routes/subscribe'), 	catchError404)
 app.use('/superadmin', checkSuperAdmin, require('./routes/admin'), catchError404)
-
-// catch 404 and forward to error handler
-/*
-app.use(function(req, res, next) {
-	next(createError(404))
-})
-*/
 
 // error handler
 app.use(function(err, req, res, next) {
@@ -62,12 +54,5 @@ app.use(function(err, req, res, next) {
   	}
   
 })
-
-
-/*
-app.listen(PORT, () => {
-	console.log('Trocio listen on ' + PORT)
-})
-*/
 
 module.exports = app

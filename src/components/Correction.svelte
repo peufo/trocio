@@ -3,10 +3,7 @@
     import { addStatutField, statutFiltersOptions, sortOptions } from './utils.js'
     import SearchTable from './SearchTable.svelte'
     import ArticleDialog from './ArticleDialog.svelte'
-
-
-    export let user = {}
-    export let troc = ''
+    import { user } from './stores'
 
     let articleDialog
     let articles = []
@@ -51,6 +48,6 @@
 
 </script>
 
-<SearchTable title="Articles" {troc} {fields} on:select={selectArticle} bind:items={articles}/>
+<SearchTable title="Articles" {fields} on:select={selectArticle} bind:items={articles}/>
 
-<ArticleDialog {user} {article} bind:dialog={articleDialog} on:patched={articlePatched}/>
+<ArticleDialog {article} bind:dialog={articleDialog} on:patched={articlePatched}/>

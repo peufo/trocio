@@ -148,6 +148,14 @@
 		setTimeout(() => clickActivity(trocSelected), 100)
 	}
 
+	function clickTroc(troc) {
+		trocSelected = troc._id
+		trocSelectedName = troc.name
+		console.log('YOLO')
+	}
+
+	$: console.log({trocSelected})
+
 </script>
 
 <h3 class="mdc-typography--headline6" >Trouver un troc</h3><br>
@@ -207,7 +215,7 @@
 {#each trocs as troc, i (troc._id)}
     
     <!--  En-tête  -->
-    <div transition:slide|local class="card" on:click="{() => {trocSelected = troc._id; trocSelectedName = troc.name}}">
+    <div transition:slide|local class="card" on:click={() => clickTroc(troc)}>
 
         <TrocInfo {troc} nameDisplay/>
         
@@ -216,7 +224,7 @@
             <Button
             on:click="{() => dialogArticles.open()}"
             color="secondary" variant="outlined" style="margin-top: 5px;">
-                Fouiller les articles ({troc.articlelastref})
+                Fouiller les articles
             </Button>
 
             <Button

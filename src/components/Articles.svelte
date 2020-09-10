@@ -1,5 +1,4 @@
 <script>
-    import { onMount } from 'svelte'
     import { fade } from 'svelte/transition'
     import TextField from '@smui/textfield'
 
@@ -13,36 +12,32 @@
 
     let noMoreResults = false
     const LIMIT = 20
-    let skip = 0
 
-    onMount(() => {
+    $:  if (troc) initArticles()
+        else articles = []
+
+    function initArticles() {
+        articles = []
         articlesPromise = getArticles()
-    })
-
+    }
+    function getMoreResults() {
+        moreResultsPromise = getArticles()
+    }
     function searchInput() {
-        skip = 0
+        articles = []
         if (wait) clearTimeout(wait)
         wait = setTimeout(() => articlesPromise = getArticles(), 200)
     }
 
-    function getMoreResults() {
-        skip += LIMIT
-        moreResultsPromise = getArticles()
-    }
-
     async function getArticles() {
-        let res = await fetch(`/articles?troc=${troc}&search_name=${search}&limit=${LIMIT}&skip=${skip}`)
+        let res = await fetch(`/articles?troc=${troc}&search_name=${search}&skip=${articles.length}&limit=${LIMIT}`)
         let json = await res.json()
         if(res.ok) {
 
             if (json.data.length < LIMIT) noMoreResults = true
             else noMoreResults = false
 
-            if (!!skip) {
-                articles = [...articles, ...json.data]
-            }else{
-                articles = json.data
-            }
+            articles = [...articles, ...json.data]
 
             return
         }

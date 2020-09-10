@@ -9,6 +9,7 @@
     "export": "routify export",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
+    "db:exemple": "cross-env NODE_ENV=development node ./scripts/dbExemple.js",
     "test": "run-p --race dev cy:run",
     "rollup": "rollup -cw",
     "nollup": "nollup -c",

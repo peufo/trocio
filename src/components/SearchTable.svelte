@@ -11,11 +11,11 @@
     import MenuSurface from '@smui/menu-surface'
     import Icon from '@smui/textfield/icon'
     
+    import { troc } from './stores.js'
     import { addStatutField, getFields } from './utils'
     import RowsPromise from './RowsPromise.svelte'
     import SearchUser from './SearchUser.svelte'
     
-    export let troc = ''
     export let title = ''
     export let baseURL = '/articles?'
     export let fields = getFields()
@@ -101,7 +101,7 @@
     
     async function getData() {
         
-        let req = `${baseURL}troc=${troc}&limit=${limitData}&skip=${skipData}`
+        let req = `${baseURL}troc=${$troc._id}&limit=${limitData}&skip=${skipData}`
         
         fields.filter(f => f.queryValue.length).forEach(f => {
             req += `&${f.typeMenu}_${f.dataName.split('.')[0]}=${f.queryValue}`

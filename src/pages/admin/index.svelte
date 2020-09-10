@@ -1,4 +1,5 @@
 <script>
+    import { goto } from '@sveltech/routify'
 	import { onMount } from 'svelte'
 	import { troc, trocPromise } from 'stores.js'
     import { fade } from 'svelte/transition'
@@ -17,9 +18,8 @@
     import TagEdit from 'TagEdit.svelte'
 	import Cashier from '../cashier/_layout.svelte'
 	import CashierIndex from '../cashier/index.svelte'
-	import { getHeader, updateTroc } from 'utils.js'
-
-    export let user = {}
+    import { getHeader, updateTroc } from 'utils.js'
+    import { user } from 'stores.js'
     
     let maxWidthToShowLabel = 1150
     let offsetWidth
@@ -69,7 +69,9 @@
 {#await $trocPromise}
     <Logo/>
 {:then}
-    {#if $troc.failed}
+    {#if $troc === null || $user === null}
+        {$goto('/')}
+    {:else if $troc.failed}
         <div class="w3-display-container">
             <div class="w3-display-middle w3-red w3-padding w3-round w3-large w3-center">
                 <i class="fas fa-bug"></i> Oups ! <br>
@@ -109,7 +111,7 @@
 
             {:else if tabActived.ref === 'collab'}
                 <div in:fade>
-                    <Collaborators {user} />
+                    <Collaborators />
                 </div>
 
             {:else if tabActived.ref === 'tarif'}
@@ -148,7 +150,7 @@
 
             {:else if tabActived.ref === 'managment'}
                 <div in:fade>
-                    <Correction {user} troc={$troc._id} />
+                    <Correction/>
                 </div>
 
             {:else if tabActived.ref === 'cashier'}
