@@ -18,7 +18,8 @@
 	import { user, subscribedTrocs } from 'stores.js'
 	import { getHeader } from 'utils.js'
 	import notify from 'notify.js'
-	import TrocInfo from 'TrocInfo.svelte'
+	//import TrocInfo from 'TrocInfo.svelte'
+	import TrocInfo from 'TrocInfoV2.svelte'
 	import Resume 	from 'Resume.svelte'
 	import Articles from 'Articles.svelte'
 	import Login 	from 'Login.svelte'
@@ -151,10 +152,8 @@
 	function clickTroc(troc) {
 		trocSelected = troc._id
 		trocSelectedName = troc.name
-		console.log('YOLO')
 	}
 
-	$: console.log({trocSelected})
 
 </script>
 
@@ -218,27 +217,27 @@
     <div transition:slide|local class="card" on:click={() => clickTroc(troc)}>
 
         <TrocInfo {troc} nameDisplay/>
-        
+        <br>
         <!-- Button -->
-        <div class="w3-center">
+        <div class="w3-right">
             <Button
             on:click="{() => dialogArticles.open()}"
-            color="secondary" variant="outlined" style="margin-top: 5px;">
+            color="secondary" style="margin-top: 5px;">
                 Fouiller les articles
             </Button>
 
             <Button
             on:click={() => clickActivity(troc._id)}
-            color="secondary" variant="outlined" style="margin-top: 5px;">
+            color="secondary" style="margin-top: 5px;">
 				{troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
             </Button>
 
             {#if !!$user && troc.isAdmin}
-                <Button href="{`/admin?troc=${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
+                <Button href="{`/admin?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
                     <i class="fa fa-cog w3-large"></i>
                 </Button>
             {:else if !!$user && troc.isCashier}
-                <Button href="{`/cashier?troc=${troc._id}`}" color="secondary" variant="outlined" style="margin-top: 5px;">
+                <Button href="{`/cashier?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
                     <i class="fa fa-cash-register w3-large"></i>
                 </Button>
             {/if}
