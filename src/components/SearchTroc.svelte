@@ -1,9 +1,9 @@
 <script>
 	import { goto } from '@sveltech/routify'
 	import { onMount } from 'svelte'
-	import { slide } from 'svelte/transition'
+	import { flip } from 'svelte/animate'
+    import { crossfade, slide } from 'svelte/transition'
 
-	import Button from '@smui/button'
 	import Dialog, {Title, Content} from '@smui/dialog'
 	import Textfield from '@smui/textfield'
 	import Switch from '@smui/switch'
@@ -16,7 +16,7 @@
 	import L from 'leaflet'
 
 	import { user, subscribedTrocs } from 'stores.js'
-	import { getHeader } from 'utils.js'
+	import { getHeader, crossfadeConfig } from 'utils.js'
 	import notify from 'notify.js'
 	import TrocInfo from 'TrocInfo.svelte'
 	import Resume 	from 'Resume.svelte'
@@ -27,6 +27,8 @@
 
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
+
+	const [send, receive] = crossfade(crossfadeConfig)
 
 
 	let map,
@@ -44,10 +46,6 @@
 	//Dialogs
 	let dialogLogin, dialogArticles
 
-	let tabs = [
-		{id: 0, name: 'Voir les articles fournis', icon: '<i class="fas fa-sign-in-alt"></i>'},
-		{id: 2, name: 'Récupère', icon: '<i class="fas fa-sign-out-alt"></i>'}
-	]
 
 	onMount(() => {
 		setTimeout(() => {
@@ -94,8 +92,6 @@
 	function loadTrocs() {
 		let query = `/trocs/search?search=${search}`
 
-		console.log({timeFilter, mapFilter})
-
 		if (timeFilter) {
 			if (start) query += `&start=${start}`
 			if (end) query += `&end=${end}`
@@ -110,24 +106,40 @@
 		fetch(query)
 		.then(res => res.json())
 		.then(json => {
-			trocs = json
+			let up = new Date().getTime()
+			trocs = json.map(troc =>  {
+				return {...troc, up}
+			})
 
-			//Period
+			//Format les période
 			trocs.forEach(troc => {
 				let dates = troc.schedule.map(s => new Date(s.open).getTime()).sort((a, b) => a - b)
 				troc.start = new Date(dates[0]).toJSON()
 				troc.end = new Date(dates[dates.length - 1]).toJSON()
 			})
 
-			//Map
-			markers.forEach(m => m.remove())
-			if (trocs.length) markers = trocs.map(j => L.marker(j.location, {icon}).addTo(map).bindTooltip(j.name))
-
+			//Mise à jour des markers
+			trocs.slice(0, markers.length).forEach((troc, i) => {
+				markers[i].off('click')
+				markers[i].setLatLng(troc.location).bindTooltip(troc.name).on('click', () => clickMarker(troc._id))
+			})
+			if (trocs.length > markers.length) {
+				trocs.slice(markers.length).forEach(troc => {
+					markers.push(L.marker(troc.location, {icon}).addTo(map).bindTooltip(troc.name).on('click', () => clickMarker(troc._id)))
+				})
+			}else {
+				markers.slice(trocs.length).forEach(m => m.remove())
+				markers.splice(trocs.length)
+			}
 		})
 	}
 
+	function clickMarker(trocId) {
+		let index = trocs.map(troc => troc._id).indexOf(trocId)
+		if (index > -1) trocs[index].up = new Date().getTime()
+	}
+
 	async function clickActivity(trocId) {
-		console.log('clickActivity')
 		if ($user) {
 			let troc = trocs[trocs.map(t => t._id).indexOf(trocId)]
 			if (!troc.isSubscribed) {
@@ -210,47 +222,31 @@
 </div>
 
 <!-- Résultat -->
-{#each trocs as troc, i (troc._id)}
-    
-    <!--  En-tête  -->
-    <div transition:slide|local class="card" on:click={() => clickTroc(troc)}>
+{#each trocs.sort((a, b) => b.up - a.up) as troc (troc._id)}
 
-        <TrocInfo {troc} nameDisplay/>
-        <br>
-        <!-- Button -->
-        <div class="w3-right">
-            <Button
-            on:click="{() => dialogArticles.open()}"
-            color="secondary" style="margin-top: 5px;">
-                Fouiller les articles
-            </Button>
-
-            <Button
-            on:click={() => clickActivity(troc._id)}
-            color="secondary" style="margin-top: 5px;">
-				{troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
-            </Button>
-
-            {#if !!$user && troc.isAdmin}
-                <Button href="{`/admin?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
-                    <i class="fa fa-cog w3-large"></i>
-                </Button>
-            {:else if !!$user && troc.isCashier}
-                <Button href="{`/cashier?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
-                    <i class="fa fa-cash-register w3-large"></i>
-                </Button>
-            {/if}
-
-        </div>
+    <div 
+		in:receive|local={{key: troc._id}}
+		out:send|local={{key: troc._id}}
+		animate:flip={{duration: 500}}
+		on:click={() => clickTroc(troc)}
+		class="simple-card">
+		
+        <TrocInfo {troc}
+			nameDisplay
+			buttonsDisplay
+			on:clickArticles={dialogArticles.open}
+			on:clickActivity={() => clickActivity(troc._id)}/>
+		
+		{troc.up}
 
     </div>
-
 
 {:else}
     <br>
     <span class="w3-large">
         Aucun troc ne correspond à la recherche
     </span>
+
 {/each}
 
 
@@ -283,33 +279,22 @@
 		z-index: 0;
 	}
 
-	.card {
-		box-shadow: 0px 0px 10px rgba(78, 78, 78, 0.2);
-		transition: .2s ease all;
-		border-radius: 4px;
+	.simple-card {
 		margin-top: 30px;
 		margin-bottom: 30px;
-		overflow-x: auto;
 		padding: 1em;
+		box-shadow: 0px 0px 10px rgba(78, 78, 78, 0.15);
+		transition: all .2s;
+		background: #fff;
 	}
 
-	.card:hover {
-		box-shadow: 0px 0px 10px rgba(78, 78, 78, 0.35);
+	.simple-card:hover {
+		box-shadow: 0px 0px 10px rgba(78, 78, 78, 0.25);
 	}
 
-	.card:last-child {
+	.simple-card:last-child {
 		margin-bottom: 80px;
 	}
 	
-	@media screen and (max-width: 790px) {
-		.fa-arrow-right {
-			transform: translate(10px, 20px) rotate(90deg);
-		}
-	}
-
-	input[type="date"] {
-		display: inline-block;
-		width: 150px;
-	}
 
 </style>

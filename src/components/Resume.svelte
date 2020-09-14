@@ -14,7 +14,6 @@
 	import { trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
 	import { getFields, addStatutField, formatPrice, getHeader, sortByUpdatedAt } from './utils'
 	
-	import Logo from './Logo.svelte'
 	import DetailCard from './DetailCard.svelte'
 
 	import dayjs from 'dayjs'

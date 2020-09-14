@@ -1,16 +1,22 @@
 <script>
+    import { createEventDispatcher } from 'svelte'
     import { fly, fade } from 'svelte/transition'
 
+    import Button from '@smui/button'
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
     import 'dayjs/locale/fr'
     dayjs.locale('fr')
     dayjs.extend(relativeTime)
     
+    import { user } from './stores.js'
     import { convertDMS } from './utils.js'
+
+    const dispatch = createEventDispatcher()
     
     export let troc = {}
     export let nameDisplay = false
+    export let buttonsDisplay = false
 
     let tabs = ['fas fa-map-marker-alt', 'far fa-calendar-alt']
     let tabSelected = 0
@@ -33,7 +39,7 @@
 
     <div class="w3-col m6 info">
         <div class="content-info w3-display-container">
-            {#if tabSelected === 0}
+            {#if tabSelected === 0 && !!troc.address}
                 <div
                     in:fly|local={{x: 60, duration: 300, delay: 200}}
                     out:fade|local={{duration: 300}}
@@ -81,7 +87,7 @@
 
                     {#if !!troc.societyweb}
                         <a  class="w3-opacity" style="line-height: 2.5;"
-                            href={troc.societyweb}
+                            href={`http://${troc.societyweb}`}
                             target="_blank"
                             title="Ouvrir le site internet de l'organisateur">
                             {troc.societyweb}
@@ -105,6 +111,38 @@
 
         </div>
     </div>
+
+    {#if buttonsDisplay}
+        <br>
+        <!-- Button -->
+        <div class="w3-right">
+            <Button
+            on:click={() => dispatch('clickArticles')}
+            color="secondary" style="margin-top: 5px;">
+                Fouiller les articles
+            </Button>
+
+            <Button
+            on:click={() => dispatch('clickActivity')}
+            color="secondary" style="margin-top: 5px;">
+				{troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
+            </Button>
+
+            {#if !!$user && troc.isAdmin}
+                <Button href="{`/admin?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
+                    <i class="fa fa-cog w3-large"></i>&nbsp;
+					Page d'administration
+                </Button>
+            {:else if !!$user && troc.isCashier}
+                <Button href="{`/cashier?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
+                    <i class="fa fa-cash-register w3-large"></i>&nbsp;
+					Caisse
+                </Button>
+            {/if}
+
+        </div>
+
+    {/if}
 
 </div>
 

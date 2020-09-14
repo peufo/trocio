@@ -18,10 +18,8 @@
     let moreSubscribedTrocsPromise
 
     let offsetWidth = 0
-    let mobileDisplay = false
-    let verySmallDisplay = false
-    $: mobileDisplay = offsetWidth < 1100
-    $: verySmallDisplay = offsetWidth < 500
+    let smallDisplay = false
+    $: smallDisplay = offsetWidth < 1300
 
     let rightMenuOpen = false
 
@@ -81,14 +79,14 @@
 {:else if $user !== undefined}
     <div class="main-container" bind:offsetWidth>
 
-        <div id="window" class:open={segment} class:mobileDisplay>
+        <div id="window" class:open={segment} class:smallDisplay>
             {#if segment }
-                <div class="item" class:simple-card={!mobileDisplay} class:no-margin-right={!mobileDisplay} in:fade|local={{delay: 200}}>
-                    
-                    <a class="w3-right w3-padding" href="/activity">
-                        <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
-                    </a>
-
+                <div class="item no-margin-right simple-card" class:no-margin={smallDisplay} in:fade|local={{delay: 200}}>
+                    <!--
+                        <a class="w3-right w3-padding" href="/activity">
+                            <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
+                        </a>
+                    -->
                     <slot scoped={{trocSelected}}/>
 
                 </div>
@@ -97,12 +95,12 @@
             
 
     
-        {#if !mobileDisplay || !segment}
-        <div class="right-container" class:mobileDisplay transition:fly|local={{ x: 500 }}>
+        {#if !smallDisplay || !segment}
+        <div class="right-container" class:smallDisplay transition:fly|local={{ x: 500 }}>
 
             <!-- LISTE DES TROCS-->
             <div class="item">
-                <div class:simple-card={!verySmallDisplay}>
+                <div class:simple-card={!smallDisplay}>
                     <div style="height: 66px;">
 
                         <div class="w3-right" style="transform: translate(0px, 4px);">
@@ -168,7 +166,7 @@
 
             <!-- ACTIVITE -->
             <div class="item no-margin-top">
-                <div class:simple-card={!verySmallDisplay}>
+                <div class:simple-card={!smallDisplay}>
                     
                     <h3 class="mdc-typography--headline6" style="margin: 0;">Actualités</h3>
 
@@ -214,7 +212,7 @@
         padding: 16px;
     }
 
-    #window:not(.mobileDisplay) {
+    #window:not(.smallDisplay) {
         width: 0%;
         transition: all .3s ease;
     }
@@ -230,6 +228,10 @@
 
     .no-margin-right {
         margin-right: 0px;
+    }
+
+    .no-margin {
+        margin: 0px;
     }
 
 </style>

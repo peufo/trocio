@@ -105,7 +105,7 @@
             <br>
 
             {#if tabActived.ref === 'info'}
-                <div in:fade class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
+                <div in:fade class="w3-padding w3-card w3-round" style="max-width: 1200px; margin: auto;">
                     <EditForm {...$troc}/>
                 </div>
 

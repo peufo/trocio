@@ -14,13 +14,13 @@
                 video.srcObject = stream
             })
         }
-        //qrScanner = new QrScanner(video, res => result = res)
-        //qrScanner.start()
+        qrScanner = new QrScanner(video, res => result = res)
+        qrScanner.start()
         //console.log(qrScanner.hasCamera())
     })
 
     onDestroy(() => {
-        //qrScanner.destroy()
+        qrScanner.destroy()
     })
 
 </script>

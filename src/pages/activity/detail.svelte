@@ -1,7 +1,7 @@
 <script>
     import { user, trocDetailsPromise } from 'stores.js'
     import TrocInfo from 'TrocInfo.svelte'
-    import Logo from 'Logo.svelte'
+    import Logo from 'LogoV2.svelte'
     import Resume from 'Resume.svelte'
     import ArticleCreateDialog from 'ArticleCreateDialog.svelte'
     import TarifInfoDialog from 'TarifInfoDialog.svelte'
