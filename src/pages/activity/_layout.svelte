@@ -99,8 +99,8 @@
         <div class="right-container" class:smallDisplay transition:fly|local={{ x: 500 }}>
 
             <!-- LISTE DES TROCS-->
-            <div class="item">
-                <div class:simple-card={!smallDisplay}>
+            <div class="item" class:no-margin={smallDisplay}>
+                <div class="simple-card">
                     <div style="height: 66px;">
 
                         <div class="w3-right" style="transform: translate(0px, 4px);">
@@ -165,12 +165,9 @@
             </div>
 
             <!-- ACTIVITE -->
-            <div class="item no-margin-top">
-                <div class:simple-card={!smallDisplay}>
-                    
+            <div class="item no-margin-top" class:no-margin={smallDisplay}>
+                <div class="simple-card">
                     <h3 class="mdc-typography--headline6" style="margin: 0;">Actualités</h3>
-
-
                     <p>Aucune actualité</p>
                 </div>
             </div>

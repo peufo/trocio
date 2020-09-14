@@ -30,7 +30,6 @@
 
 	const [send, receive] = crossfade(crossfadeConfig)
 
-
 	let map,
 		icon,
 		trocs = [],
@@ -41,11 +40,18 @@
 		timeFilter = false,
 		search = '',
 		start = dayjs().format('YYYY-MM-DD'), 
-		end = ''
+		end = '',
+		limitTrocsDisplay = 3,
+		scrollY = 0,
+		innerHeight
 
 	//Dialogs
 	let dialogLogin, dialogArticles
 
+	$: if(scrollY && scrollY + innerHeight > document.body.offsetHeight - 50 ) {
+		console.log({scrollY, innerHeight, height: document.body.offsetHeight})
+		limitTrocsDisplay++
+	}
 
 	onMount(() => {
 		setTimeout(() => {
@@ -106,6 +112,8 @@
 		fetch(query)
 		.then(res => res.json())
 		.then(json => {
+			limitTrocsDisplay = 3
+			
 			let up = new Date().getTime()
 			trocs = json.map(troc =>  {
 				return {...troc, up}
@@ -168,6 +176,8 @@
 
 </script>
 
+<svelte:window bind:scrollY bind:innerHeight></svelte:window>
+
 <h3 class="mdc-typography--headline6" >Trouver un troc</h3><br>
 
 <!-- Commande -->
@@ -221,34 +231,32 @@
 
 </div>
 
-<!-- Résultat -->
-{#each trocs.sort((a, b) => b.up - a.up) as troc (troc._id)}
+<div class="results">
+	{#each trocs.sort((a, b) => b.up - a.up).slice(0, limitTrocsDisplay) as troc (troc._id)}
 
-    <div 
-		in:receive|local={{key: troc._id}}
-		out:send|local={{key: troc._id}}
-		animate:flip={{duration: 500}}
-		on:click={() => clickTroc(troc)}
-		class="simple-card">
-		
-        <TrocInfo {troc}
-			nameDisplay
-			buttonsDisplay
-			on:clickArticles={dialogArticles.open}
-			on:clickActivity={() => clickActivity(troc._id)}/>
-		
-		{troc.up}
+		<div 
+			in:receive|local={{key: troc._id}}
+			out:send|local={{key: troc._id}}
+			animate:flip={{duration: 500}}
+			on:click={() => clickTroc(troc)}
+			class="simple-card">
+			
+			<TrocInfo {troc}
+				nameDisplay
+				buttonsDisplay
+				on:clickArticles={dialogArticles.open}
+				on:clickActivity={() => clickActivity(troc._id)}/>
 
-    </div>
+		</div>
 
-{:else}
-    <br>
-    <span class="w3-large">
-        Aucun troc ne correspond à la recherche
-    </span>
+	{:else}
+		<br>
+		<span class="w3-large">
+			Aucun troc ne correspond à la recherche
+		</span>
 
-{/each}
-
+	{/each}
+</div>
 
 
 <!-- Dialogs -->
@@ -293,8 +301,7 @@
 	}
 
 	.simple-card:last-child {
-		margin-bottom: 80px;
+		margin-bottom: 120px;
 	}
 	
-
 </style>
