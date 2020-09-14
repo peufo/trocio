@@ -49,7 +49,6 @@
 	let dialogLogin, dialogArticles
 
 	$: if(scrollY && scrollY + innerHeight > document.body.offsetHeight - 50 ) {
-		console.log({scrollY, innerHeight, height: document.body.offsetHeight})
 		limitTrocsDisplay++
 	}
 
@@ -113,7 +112,7 @@
 		.then(res => res.json())
 		.then(json => {
 			limitTrocsDisplay = 3
-			
+
 			let up = new Date().getTime()
 			trocs = json.map(troc =>  {
 				return {...troc, up}
