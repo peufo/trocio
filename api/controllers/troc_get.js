@@ -136,7 +136,7 @@ function getStats(req, res, next) {
 }
 
 function search(req, res, next) {
-    let {search, start, end, north, east, sud, west} = req.query
+    let {search, skip = 0, start, end, north, east, sud, west} = req.query
     let query= {}
 
     if (search && search.length) {
@@ -157,12 +157,11 @@ function search(req, res, next) {
     if (!isNaN(sud))   	query.$and.push({'location.lat': {$gt: sud}})
     if (!isNaN(west))  	query.$and.push({'location.lng': {$gt: west}})
 
-    Troc.find(query).lean().exec((err, trocs) => {
+    Troc.find(query).skip(Number(skip)).limit(5).lean().exec((err, trocs) => {
         if (err) return next(err)
 
         //Admin and cashier becomes booleans + add subscribed boolean
         if (req.session.user) {
-            let query = {user: req.session.user._id, troc: {$in: trocs.map(t => t._id)}}
             Subscribe.find({user: req.session.user._id, troc: {$in: trocs.map(t => t._id)}}).exec((err, subs) => {
                 if (err) return next(err)
                 subs = subs.map(s => s.troc.toString())

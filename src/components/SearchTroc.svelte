@@ -50,6 +50,7 @@
 
 	$: if(scrollY && scrollY + innerHeight > document.body.offsetHeight - 50 ) {
 		limitTrocsDisplay++
+		if (limitTrocsDisplay === trocs.length) loadTrocs(trocs.length)
 	}
 
 	onMount(() => {
@@ -94,8 +95,9 @@
 		waiting = setTimeout(() => loadTrocs(), 200)
 	}
 
-	function loadTrocs() {
-		let query = `/trocs/search?search=${search}`
+	async function loadTrocs(skip = 0) {
+		console.log('get trocs')
+		let query = `/trocs/search?search=${search}&skip=${skip}`
 
 		if (timeFilter) {
 			if (start) query += `&start=${start}`
@@ -108,15 +110,15 @@
 			query += `&north=${ne.lat}&east=${ne.lng}&sud=${sw.lat}&west=${sw.lng}`
 		}
 
-		fetch(query)
-		.then(res => res.json())
-		.then(json => {
-			limitTrocsDisplay = 3
+		try {
+			const json = await fetch(query).then(res => res.json())
+			if (json.error) throw json.message
+			limitTrocsDisplay = skip + 3
 
-			let up = new Date().getTime()
-			trocs = json.map(troc =>  {
-				return {...troc, up}
-			})
+			let up = skip ? trocs[trocs.length - 1].up : new Date().getTime()
+			let newTrocs =  json.map(troc =>  {return {...troc, up}})
+			trocs = skip ? [...trocs, ...newTrocs] : newTrocs
+			
 
 			//Format les période
 			trocs.forEach(troc => {
@@ -138,7 +140,11 @@
 				markers.slice(trocs.length).forEach(m => m.remove())
 				markers.splice(trocs.length)
 			}
-		})
+				
+		} catch (error) {
+			notify.error(error)
+		}
+		
 	}
 
 	function clickMarker(trocId) {
