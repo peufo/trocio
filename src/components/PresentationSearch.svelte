@@ -10,6 +10,7 @@
     let writeIndex = 0
 
     let icons = []
+    let showIcon = false
 
     let interval
 
@@ -23,9 +24,9 @@
 
     function write() {
         text += WORDS[wordIndex][writeIndex++]
+        if (writeIndex === WORDS[wordIndex].length - 3) showIcons()
         if (!WORDS[wordIndex][writeIndex]) {
             clearInterval(interval)
-            showIcons()
             setTimeout(() => {
                 interval = setInterval(erase, ERASE_WAIT)
             }, 1500)
@@ -38,7 +39,6 @@
             clearInterval(interval)
             writeIndex = 0
             wordIndex = wordIndex === WORDS.length - 1 ? 0 : wordIndex + 1
-            
             setTimeout(() => {
                 interval = setInterval(write, WRITE_WAIT)
             }, 500)
@@ -46,7 +46,7 @@
     }
 
     function showIcons() {
-        icons = []
+        showIcon = false
         setTimeout(() => {
             icons = Array(10).fill().map(() => {
                 return {
@@ -54,7 +54,8 @@
                     y: 2 + Math.round(Math.random() * 80)
                 }
             })
-        })
+            showIcon = true  
+        }, 50)
     }
 
 
@@ -64,13 +65,13 @@
 <div class="container">
     
     {#each icons as {x, y}, i}
-        <img class="icon"
+        <img class="icon" class:showIcon
             style={`left: ${x}%; top: ${y}%; animation-delay: ${i * 50}ms;`}
             src="/images/marker-icon-2x.png"
             alt="icon">
     {/each}
 
-    <div class="w3-xlarge search">
+    <div class="w3-large search">
         <i class="fas fa-search"></i>
         <input type="text" readonly value={text}>
     </div>
@@ -93,23 +94,26 @@
         border: 1px solid #ccc;
         border-radius: 6px;
         padding: 8px; 
-        padding-left: 50px;
-        width: 300px;
+        padding-left: 40px;
+        width: 200px;
     }
 
     .fa-search {
-        transform: translateX(45px);
+        transform: translateX(35px);
         opacity: .5;
     }
 
     .search {
-        transform: translate(-60px, -25px);
+        transform: translate(-23px, -50%);
     }
 
     .icon {
         position: absolute;
-        width: 28px;
+        width: 25px;
         transform: scale(0);
+    }
+
+    .icon.showIcon {
         animation-name: showIcon;
         animation-duration: 2.5s;
         animation-timing-function: ease;
@@ -118,7 +122,7 @@
     @keyframes showIcon {
         0% {transform: scale(0);}
         20% {transform: scale(1.1);}
-        25% {transform: scale(1);}
+        30% {transform: scale(1);}
         80% {transform: scale(1);}
         100% {transform: scale(0);}
     }
