@@ -1,7 +1,9 @@
 <script>
     import { onMount, onDestroy } from 'svelte'
+    import { fade } from 'svelte/transition'
 
-    const DURATION = 3 // SECONDS
+    export let duration = 3 // SECONDS
+    export let cubeSize = 50 // %
 
     const WIDTH = 200
     const HEIGHT = 200
@@ -94,7 +96,7 @@
 
     onMount(() => {
         animation = setInterval(() => {
-            cube.rotateX3D((360 / 50) / DURATION)
+            cube.rotateX3D((360 / 50) / duration)
         }, 20)
 
     })
@@ -105,7 +107,7 @@
 
 </script>
 
-<div class="container" style={`--duration-rotation-logo: ${DURATION / 4}s;`}>
+<div class="container" transition:fade|local style={`--duration-rotation-logo: ${duration / 4}s; --cube-size: ${cubeSize}%;`}>
 
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
 
@@ -169,7 +171,7 @@
 
     .container {
         max-width: 400px;
-        width: 50%;
+        width: var(--cube-size);
         position: absolute;
         left: 50%;
         top: 50%;

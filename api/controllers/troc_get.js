@@ -157,7 +157,7 @@ function search(req, res, next) {
     if (!isNaN(sud))   	query.$and.push({'location.lat': {$gt: sud}})
     if (!isNaN(west))  	query.$and.push({'location.lng': {$gt: west}})
 
-    Troc.find(query).skip(Number(skip)).limit(5).lean().exec((err, trocs) => {
+    Troc.find(query).skip(Number(skip)).limit(20).lean().exec((err, trocs) => {
         if (err) return next(err)
 
         //Admin and cashier becomes booleans + add subscribed boolean

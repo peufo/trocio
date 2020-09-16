@@ -1,5 +1,6 @@
 <script>
-
+    import PresentationSearch from 'PresentationSearch.svelte'
+    import Logo from 'LogoV2.svelte'
     import Button from '@smui/button'
     import { user } from "stores.js";
 
@@ -25,53 +26,87 @@
     </p>
 
     <div class="w3-row">
-        <div class="w3-col l6">
+        <div class="w3-col l7">
             <div id="is" class="w3-card-4">
-                <div class="w3-xlarge w3-green w3-padding w3-center">
+                <div class="w3-xlarge w3-green w3-padding w3-center w3-opacity">
                     <span>C'est ...</span>
                 </div>
                 <ul class="w3-padding w3-large w3-ul">
                     <li>
                         <i class="fas fa-check w3-xlarge"></i>&nbsp;
-                        <b>Des points de rendez-vous pour faire de bonnes affaires</b>
+                        <span>Des évenements pour échanger vos objets</span>
                     </li>
                     <li>
                         <i class="fas fa-check w3-xlarge"></i>&nbsp;
-                        <b>Un moyen d'offrir une nouvelle vie à tes objets</b>
-                    </li>
-                    <li>
-                        <i class="fas fa-check w3-xlarge"></i>&nbsp;
-                        <b>Un outil efficace pour organiser des magasins éphémères</b>
+                        <span>Un outil d'organisation simple et efficace</span>
                     </li>
                 </ul>
             </div>
         </div>
 
-        <div class="w3-col l6">
+        <div class="w3-col l5">
             <div id="isnt" class="w3-card-4">
-                <div class="w3-xlarge w3-red w3-padding w3-center">
+                <div class="w3-xlarge w3-red w3-padding w3-center w3-opacity">
                     Ce n'est pas ...
                 </div>
                 <ul class="w3-padding w3-large w3-ul">
                     <li>
                         <i class="fas fa-times w3-xlarge"></i>&nbsp;
-                        <b>Un site de vente en ligne</b>
+                        <span>Un site de vente en ligne</span>
                     </li>
                     <li>
                         <i class="fas fa-times w3-xlarge"></i>&nbsp;
-                        <b>Un intermédiaire à but lucratif</b>
+                        <span>Un intermédiaire à but lucratif</span>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <br><br><br>
+    <br>
+    <div class="w3-row">
+        <div class="w3-col l4" style="height: 250px;">
+            <div style="position: relative; height: 100%;">
+                <!--
+
+                <Logo duration="30" cubeSize="90"/>
+                -->
+            </div>
+        </div>
+
+        <div class="w3-col l8">
+            <div id="and" class="w3-card-4">
+                <div class="w3-xlarge w3-blue w3-padding w3-center w3-opacity">
+                    Et donc ?
+                </div>
+                <div class="w3-padding text-content">
+                    <p>
+                        Que vous soyez organisateur ou amateur de bonnes affaires,
+                        Trocio vous offre une structure pour facilité vos échanges d'objets lors d'évenements éphemères.
+                    </p>
+                    <p>
+                        L'interface fournis de nombreuse fonctionalitées qui vous permettrons de gagner un temps précieux,
+                        d'éviter de grâves erreurs et d'être informé en temps réel.
+                    </p>
+                    <p>
+                        Vous pouvez enfin dire adieux à vos vieux tableurs : )
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+   
+
+    <br><br>
 
     <div class="w3-center w3-xlarge">
         
-        <Button href="#buy" color="secondary" class="w3-large" style="width: 130px;">
-            Acheter
+        <i class="fas fa-arrow-down" style="margin-right: 40px;"></i>
+
+        <Button href="#discover" color="secondary" class="w3-large" style="width: 130px;">
+            Découvrir
         </Button>
 
         <Button href="#sale" color="secondary" class="w3-large" style="width: 130px;">
@@ -81,34 +116,49 @@
         <Button href="#organize" color="secondary" class="w3-large" style="width: 130px;">
             Organiser
         </Button>
-        
-        <br><br>
-
-        <i class="fas fa-arrow-down"></i>
+        <i class="fas fa-arrow-down" style="margin-left: 40px;"></i>
+        <br>
 
     </div>
 
     <br><br>
 
     <hr>
-    <div id="buy">
+    <section id="discover">
 
-        <Button
-        href="/search"
-        variant="outlined"
-        color="secondary"
-        class="w3-right w3-large w3-margin-left">
-            Trouver un troc
-        </Button>
-        <span class="w3-xlarge">Acheter</span>
-        <p>Trouve un troc qui correspond à tes attentes près de chez toi et regarde les articles qui y sont proposés.</p>
-        <p>Rends-toi à l'événement pour effectuer tes achats.</p>
-     
-    </div>
+        
+        <span class="w3-xlarge">Découvrir</span>
 
+        <div class="w3-row">
+            
+            <div class="w3-col l6 text-content" style="margin-top: 30px; margin-bottom: 30px;">
+
+                <p>Trouvez un troc qui correspond à vos attentes près de chez vous et fouillez dans les articles qui y sont proposés.</p>
+                
+                <br>
+                
+                <p>Il ne vous reste plus qu'a vous rendre sur place pour profiter de l'évenement.</p> 
+
+                <br><br>
+
+                <Button
+                href="/search"
+                variant="outlined"
+                color="secondary"
+                class="w3-large">
+                    Trouver un troc
+                </Button>
+
+            </div>
+
+            <div class="w3-col l6" style="margin-top: 30px; margin-bottom: 30px;">
+                <PresentationSearch/>
+            </div>
+        </div>
+    </section>
 
     <br><hr>
-    <div id="sale">
+    <section id="sale">
 
         <Button
         href="/search"
@@ -119,17 +169,16 @@
         </Button>
 
         <span class="w3-xlarge">Vendre</span>
-        <p>Trouve un troc dans ta région qui correspond aux objets dont tu souhaites te débarrasser</p>
-        <p>Propose tes articles avant l'événement en leur donnant une désignation et un prix</p>
-        <p>Rends-toi à l'ouverture de l'événement pour les fournir à un bénévole</p>
-        <p>Suis en temps réel l'état de tes ventes</p>
-        <p>Récupère tes gains et tes invendus quand tu le souhaites</p>
+        <p>Proposez vos articles avant l'événement et faite gagner du temps à tout le monde</p>
+        <p>Rendez-vous à l'ouverture de l'événement pour fournir vos objets à l'organisateur</p>
+        <p>Suivez en temps réel l'état de vos ventes</p>
+        <p>Récupèrez vos gains et vos invendus quand vous le souhaité</p>
 
-    </div>
+    </section>
 
 
     <br><hr>
-    <div id="organize">
+    <section id="organize">
 
         <Button
         variant="outlined"
@@ -140,16 +189,17 @@
         </Button>
 
         <span id="organize" class="w3-xlarge">Organiser</span>
-        <p>Définis le lieu et la date de ton événement.</p>
-        <p>Monte ton équipe et définis tes tarifs.</p>
-        <p>Gère les dépôts, les récupérations, les achats, les retours et les paiements sur une interface simple et accessible.</p>
-        <p>Accède à une vue d'ensemble du trafic de ton événement.</p>
-    </div>
+        <p>Définisez le lieu et la date de votre événement.</p>
+        <p>Montez ton équipe et définissez vos tarifs.</p>
+        <p>Gèrez les dépôts, les récupérations, les achats, les retours et les paiements sur une interface simple et accessible.</p>
+        <p>Accèdez à une vue d'ensemble du trafic de votre événement.</p>
+
+    </section>
 
 </main>
 
 <footer>
-    Hey
+    Hey, je suis le footer
 </footer>
 
 <svelte:head>
@@ -157,6 +207,10 @@
 </svelte:head>
 
 <style>
+
+    section {
+        padding: 40px 0px;
+    }
 
     footer {
         background: #efefef;
@@ -207,7 +261,7 @@
         margin: 30px;
     }
 
-    #is, #isnt {
+    #is, #isnt, #and {
        border-radius: 10px;
     }
 
@@ -215,7 +269,11 @@
         border: none;
     }
 
-    #is div, #isnt div {
+    #is li i, #isnt li i {
+        transform: translateY(2px);
+    }
+
+    #is div, #isnt div, #and div {
         border-radius: 10px 10px 0px 0px;
     }
 
@@ -231,5 +289,25 @@
         color: #F44336;
     }
 
+    .text-content {
+        text-align: justify;
+        font-size: 1.1em;
+    }
+
+    .fa-arrow-down {
+        animation-name: scrollPlease;
+        animation-duration: 5s;
+        animation-iteration-count: infinite;
+        opacity: .5;
+    }
+
+    @keyframes scrollPlease {
+        0% {transform: translateY(0px);}
+        80% {transform: translateY(0px);}
+        85% {transform: translateY(5px);}
+        90% {transform: translateY(0px);}
+        95% {transform: translateY(5px);}
+        100% {transform: translateY(0px);}
+    }
 
 </style>
