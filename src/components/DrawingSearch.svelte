@@ -48,10 +48,10 @@
     function showIcons() {
         showIcon = false
         setTimeout(() => {
-            icons = Array(10).fill().map(() => {
+            icons = Array(12).fill().map(() => {
                 return {
                     x: 10 + Math.round(Math.random() * 80),
-                    y: 2 + Math.round(Math.random() * 80)
+                    y: 10 + Math.round(Math.random() * 80)
                 }
             })
             showIcon = true  
@@ -85,6 +85,7 @@
         max-width: 400px;
         height: 300px;
         margin: auto;
+        margin-top: 30px;
         position: relative;
         border-radius: 10px;
         background: url(/images/carte.PNG);

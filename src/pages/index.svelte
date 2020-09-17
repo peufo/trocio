@@ -144,16 +144,6 @@
                 
                 <p>Il ne vous reste plus qu'a vous rendre sur place pour profiter de l'évenement.</p> 
 
-                <br><br>
-
-                <Button
-                href="/search"
-                variant="outlined"
-                color="secondary"
-                class="w3-large">
-                    Trouver un troc
-                </Button>
-
             </div>
 
             <div class="w3-col l6">
@@ -161,37 +151,61 @@
             </div>
 
         </div>
+
+        <br>
+
+        <Button
+        href="/search"
+        variant="outlined"
+        color="secondary"
+        class="w3-large">
+            Trouver un troc
+        </Button>
+
     </section>
 
     <br><hr>
 
     <section id="propose">
 
-        <Button
-        href="/search"
-        variant="outlined"
-        color="secondary"
-        class="w3-right w3-large w3-margin-left">
-            Trouver un troc
-        </Button>
+
 
         <span class="w3-xlarge">Proposer</span>
 
+        <br><br>
+
         <div class="w3-row">
             
-            <div class="w3-col l6">
-                <DrawingSold/>
-            </div>
-
             <div class="w3-col l6 text-content">
+
+                <br>
                 <p>Proposez vos articles avant l'événement et faite gagner du temps à tout le monde.</p>
                 <p>Rendez-vous à l'ouverture de l'événement pour fournir vos objets à l'organisateur.</p>
                 <p>Suivez en temps réel votre solde et l'état de vos ventes.</p>
                 <p>Récupèrez vos gains et vos invendus quand vous le souhaité.</p>
+
+                
+
+
+
             </div>
 
+            <div class="w3-col l6">
+                <DrawingSold/>
+            </div>
+
+
         </div>    
+
+        <br>
         
+        <Button
+        href="/search"
+        variant="outlined"
+        color="secondary"
+        class="w3-large">
+            Trouver un troc
+        </Button>        
 
     </section>
 

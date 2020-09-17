@@ -3,23 +3,29 @@
 <div class="container">
 
     <svg>
-        <!-- User - Proposé -->
+        <!-- Provider - Proposé -->
         <line x1="50" y1="23" x2="180" y2="23"/>
 
         <!-- Proposé - Validé -->
         <line x1="240" y1="46" x2="240" y2="133"/>
 
         <!-- Validé - Vendu -->
-        <line x1="240" y1="179" x2="240" y2="266"/>
+        <line x1="240" y1="179" x2="240" y2="264"/>
 
         <!-- Vendu - client-->
         <line x1="300" y1="291" x2="345" y2="291"/>
 
         <!-- Proposé - Refusé -->
-        <path d="M 240 56 Q 240 90 207 90 L 180 90"/>
+        <path d="M 240 56 Q 240 90 206 90 L 180 90"/>
 
         <!-- Validé - Rendu -->
-        <path d="M 240 189 Q 240 225 207 225 L 180 225"/>
+        <path d="M 240 189 Q 240 225 206 225 L 180 225"/>
+
+        <!-- Refusé - Provider -->
+        <path d="M 120 113 L 120 122 Q 120 156 86 156 L 57 156 Q 23 156 23 122 L 23 46" class="w3-opacity"/>
+
+        <!-- Rendu - Provider -->
+        <path d="M 120 197 L 120 180 Q 120 156 86 156" class="w3-opacity"/>
 
     </svg>
 
