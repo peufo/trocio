@@ -120,11 +120,11 @@
     }
 
     @keyframes showIcon {
-        0% {transform: scale(0);}
-        20% {transform: scale(1.1);}
-        30% {transform: scale(1);}
-        80% {transform: scale(1);}
-        100% {transform: scale(0);}
+        0% {transform: scale(0) translateY(-50%);}
+        20% {transform: scale(1.1) translateY(-50%);}
+        30% {transform: scale(1) translateY(-50%);}
+        80% {transform: scale(1) translateY(-50%);}
+        100% {transform: scale(0) translateY(-50%);}
     }
 
 

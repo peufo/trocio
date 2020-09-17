@@ -1,5 +1,6 @@
 <script>
-    import PresentationSearch from 'PresentationSearch.svelte'
+    import DrawingSearch from 'DrawingSearch.svelte'
+    import DrawingSold from 'DrawingSold.svelte'
     import Logo from 'LogoV2.svelte'
     import Button from '@smui/button'
     import { user } from "stores.js";
@@ -26,7 +27,8 @@
     </p>
 
     <div class="w3-row">
-        <div class="w3-col l7">
+
+        <div id="is-card" class="w3-col l7">
             <div id="is" class="w3-card-4">
                 <div class="w3-xlarge w3-green w3-padding w3-center w3-opacity">
                     <span>C'est ...</span>
@@ -44,7 +46,7 @@
             </div>
         </div>
 
-        <div class="w3-col l5">
+        <div id="isnt-card" class="w3-col l5">
             <div id="isnt" class="w3-card-4">
                 <div class="w3-xlarge w3-red w3-padding w3-center w3-opacity">
                     Ce n'est pas ...
@@ -109,8 +111,8 @@
             Découvrir
         </Button>
 
-        <Button href="#sale" color="secondary" class="w3-large" style="width: 130px;">
-            Vendre
+        <Button href="#propose" color="secondary" class="w3-large" style="width: 130px;">
+            Proposer
         </Button>
 
         <Button href="#organize" color="secondary" class="w3-large" style="width: 130px;">
@@ -126,12 +128,15 @@
     <hr>
     <section id="discover">
 
-        
         <span class="w3-xlarge">Découvrir</span>
+
+        <br><br>
 
         <div class="w3-row">
             
-            <div class="w3-col l6 text-content" style="margin-top: 30px; margin-bottom: 30px;">
+            <div class="w3-col l6 text-content">
+                
+                <br>
 
                 <p>Trouvez un troc qui correspond à vos attentes près de chez vous et fouillez dans les articles qui y sont proposés.</p>
                 
@@ -151,14 +156,16 @@
 
             </div>
 
-            <div class="w3-col l6" style="margin-top: 30px; margin-bottom: 30px;">
-                <PresentationSearch/>
+            <div class="w3-col l6">
+                <DrawingSearch/>
             </div>
+
         </div>
     </section>
 
     <br><hr>
-    <section id="sale">
+
+    <section id="propose">
 
         <Button
         href="/search"
@@ -168,16 +175,28 @@
             Trouver un troc
         </Button>
 
-        <span class="w3-xlarge">Vendre</span>
-        <p>Proposez vos articles avant l'événement et faite gagner du temps à tout le monde</p>
-        <p>Rendez-vous à l'ouverture de l'événement pour fournir vos objets à l'organisateur</p>
-        <p>Suivez en temps réel l'état de vos ventes</p>
-        <p>Récupèrez vos gains et vos invendus quand vous le souhaité</p>
+        <span class="w3-xlarge">Proposer</span>
+
+        <div class="w3-row">
+            
+            <div class="w3-col l6">
+                <DrawingSold/>
+            </div>
+
+            <div class="w3-col l6 text-content">
+                <p>Proposez vos articles avant l'événement et faite gagner du temps à tout le monde.</p>
+                <p>Rendez-vous à l'ouverture de l'événement pour fournir vos objets à l'organisateur.</p>
+                <p>Suivez en temps réel votre solde et l'état de vos ventes.</p>
+                <p>Récupèrez vos gains et vos invendus quand vous le souhaité.</p>
+            </div>
+
+        </div>    
+        
 
     </section>
 
-
     <br><hr>
+
     <section id="organize">
 
         <Button
@@ -212,6 +231,11 @@
         padding: 40px 0px;
     }
 
+    section .w3-row .w3-col {
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+
     footer {
         background: #efefef;
     }
@@ -222,32 +246,19 @@
     }
 
     @media only screen and (min-width: 850px) {
-        main {
-            padding: 50px 100px 100px 50px;
-        }
+        main { padding: 50px 100px 100px 50px;}
     }
     @media only screen and (max-width: 850px) {
-        main {
-            padding: 10px;
-        }
+        main { padding: 10px;}
     }
 
     @media only screen and (min-width: 992px) {
-        .w3-col:first-child {
-            padding: 0px 12px 0px 0px;
-        }
-        .w3-col:last-child {
-            padding: 0px 0px 0px 12px;
-        } 
+        #is-card {padding: 0px 12px 0px 0px;}
+        #isnt-card { padding: 0px 0px 0px 12px;} 
     } 
     @media only screen and (max-width: 992px) {
-        .w3-col:first-child {
-            padding: 0px 0px 12px 0px;
-        }
-
-        .w3-col:last-child {
-            padding: 0px 0px 0px 0px;
-        } 
+        #is-card {padding: 0px 0px 12px 0px;}
+        #isnt-card {padding: 0px 0px 0px 0px;} 
     }
 
     @media only screen and (max-width: 500px) {
