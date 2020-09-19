@@ -10,98 +10,53 @@
 <img class="participeImg" class:w3-hide={!!$user} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
 
 <main>
-    
+
+    <Button
+    href="/search"
+    variant="outlined"
+    color="secondary"
+    style="transform: translate(0px, 10px);"
+    class="w3-right w3-large w3-margin-left">
+        Trouver un troc
+    </Button>
+
     <span class="w3-jumbo">TROCIO</span>
     
     <p class="w3-xxlarge" style="margin-top: 6px; margin-bottom: 66px;">
         Pour troquer organisé
-        <Button
-        href="/search"
-        variant="outlined"
-        color="secondary"
-        style="transform: translate(0px, 10px);"
-        class="w3-right w3-large w3-margin-left">
-            Trouver un troc
-        </Button>
-        
     </p>
-
+ 
     <div class="w3-row">
-
-        <div id="is-card" class="w3-col l7">
-            <div id="is" class="w3-card-4">
-                <div class="w3-xlarge w3-green w3-padding w3-center w3-opacity">
-                    <span>C'est ...</span>
-                </div>
-                <ul class="w3-padding w3-large w3-ul">
-                    <li>
-                        <i class="fas fa-check w3-xlarge"></i>&nbsp;
-                        <span>Des évenements pour échanger vos objets</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-check w3-xlarge"></i>&nbsp;
-                        <span>Un outil d'organisation simple et efficace</span>
-                    </li>
-                </ul>
+        <div class="w3-col l4">
+            <div style="position: relative; height: 400px;">
+                <Logo duration="20" cubeSize="100"/>    
             </div>
         </div>
 
-        <div id="isnt-card" class="w3-col l5">
-            <div id="isnt" class="w3-card-4">
-                <div class="w3-xlarge w3-red w3-padding w3-center w3-opacity">
-                    Ce n'est pas ...
-                </div>
-                <ul class="w3-padding w3-large w3-ul">
-                    <li>
-                        <i class="fas fa-times w3-xlarge"></i>&nbsp;
-                        <span>Un site de vente en ligne</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-times w3-xlarge"></i>&nbsp;
-                        <span>Un intermédiaire à but lucratif</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <br>
-    <div class="w3-row">
-        <div class="w3-col l4" style="height: 250px;">
-            <div style="position: relative; height: 100%;">
-                <!--
-
-                <Logo duration="30" cubeSize="90"/>
-                -->
-            </div>
-        </div>
 
         <div class="w3-col l8">
-            <div id="and" class="w3-card-4">
-                <div class="w3-xlarge w3-blue w3-padding w3-center w3-opacity">
-                    Et donc ?
-                </div>
-                <div class="w3-padding text-content">
-                    <p>
-                        Que vous soyez organisateur ou amateur de bonnes affaires,
-                        Trocio vous offre une structure pour facilité vos échanges d'objets lors d'évenements éphemères.
-                    </p>
-                    <p>
-                        L'interface fournis de nombreuse fonctionalitées qui vous permettrons de gagner un temps précieux,
-                        d'éviter de grâves erreurs et d'être informé en temps réel.
-                    </p>
-                    <p>
-                        Vous pouvez enfin dire adieux à vos vieux tableurs : )
-                    </p>
-                </div>
+            <div class="w3-card w3-round-large w3-padding">
+                
+                <p>
+                    Trocio est un outil simple et éfficace pour échanger vos objects.
+                </p><br>
+                <p>
+                    Que vous soyez organisateur ou amateur de bonnes affaires,
+                    Trocio vous offre une structure pour améliorer votre expérience sur des évenements éphemères.
+                </p><br>
+                <p>
+                    L'interface fournit de nombreuses fonctionalitées qui vous permettent de gagner un temps précieux,
+                    d'éviter des erreurs et d'être informé en temps réel.
+                </p><br>
+                <p>
+                    Vous pouvez enfin dire adieux à vos vieux tableurs 🙂
+                </p><br>     
             </div>
         </div>
-
     </div>
-    
-   
 
-    <br><br>
+    <br><br><br><br>
+    
 
     <div class="w3-center w3-xlarge">
         
@@ -123,7 +78,7 @@
 
     </div>
 
-    <br><br>
+    <br><br><br>
 
     <hr>
     <section id="discover">
@@ -134,7 +89,7 @@
 
         <div class="w3-row">
             
-            <div class="w3-col l6 text-content">
+            <div class="w3-col l6">
                 
                 <br>
 
@@ -142,7 +97,7 @@
                 
                 <br>
                 
-                <p>Il ne vous reste plus qu'a vous rendre sur place pour profiter de l'évenement.</p> 
+                <p>Il ne vous reste plus qu'à vous rendre sur place pour profiter de l'évènement.</p> 
 
             </div>
 
@@ -168,25 +123,19 @@
 
     <section id="propose">
 
-
-
         <span class="w3-xlarge">Proposer</span>
 
         <br><br>
 
         <div class="w3-row">
             
-            <div class="w3-col l6 text-content">
+            <div class="w3-col l6">
 
                 <br>
-                <p>Proposez vos articles avant l'événement et faite gagner du temps à tout le monde.</p>
-                <p>Rendez-vous à l'ouverture de l'événement pour fournir vos objets à l'organisateur.</p>
+                <p>Proposez vos articles avant l'évènement et faites gagner du temps à tout le monde.</p>
+                <p>Rendez-vous à l'ouverture de l'évènement pour fournir vos objets à l'organisateur.</p>
                 <p>Suivez en temps réel votre solde et l'état de vos ventes.</p>
-                <p>Récupèrez vos gains et vos invendus quand vous le souhaité.</p>
-
-                
-
-
+                <p>Récupérez vos gains et vos invendus quand vous le souhaitez.</p>
 
             </div>
 
@@ -194,11 +143,10 @@
                 <DrawingSold/>
             </div>
 
-
         </div>    
 
         <br>
-        
+
         <Button
         href="/search"
         variant="outlined"
@@ -222,6 +170,85 @@
         </Button>
 
         <span id="organize" class="w3-xlarge">Organiser</span>
+
+        <br><br>
+
+        <div class="feature">
+            <div class="feature-title">
+                <i class="far fa-calendar-alt"></i>
+                <span>Planification</span>
+            </div>
+            <div class="feature-content">
+                <p>Définisez un nom, un lieu et un horaire.</p>
+                <p>Deux minutes suffisent pour créer votre troc.</p>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-title">
+                <i class="fas fa-users"></i>
+                <span>Collaborateurs</span>
+            </div>
+            <div class="feature-content">
+                <p>Attribuez des droits d'accès à la page d'administration aux responsables.</p>
+                <p>Désignez des caissiers.</p>
+                <p>Listez vos plus gros commerçants et permettez-leur d'utiliser un préfixe dans la réference de leurs articles.</p>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-title">
+                <i class="fas fa-coins"></i>
+                <span>Tarifications</span>
+            </div>
+            <div class="feature-content">
+                <p>Définisez votre part sur les articles vendus ainsi que les frais de traitement.</p>
+                <p>Établissez la liste des utilisateurs soumis à un tarif.</p>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-title">
+                <i class="fas fa-tags"></i>
+                <span>Étiquetage</span>
+            </div>
+            <div class="feature-content">
+                <p>Paramétrez le format de vos étiquettes pour qu'elles correspondent à vos imprimantes.</p>
+                <p>Utilisez des QR-Codes pour réduire les temps de passage en caisse.</p>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-title">
+                <i class="fas fa-cash-register"></i>
+                <span>Caisse</span>
+            </div>
+            <div class="feature-content">
+
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-title">
+
+            </div>
+            <div class="feature-content">
+
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-title">
+
+            </div>
+            <div class="feature-content">
+
+            </div>
+        </div>
+
+        <br><br><br>
+
+        
         <p>Définisez le lieu et la date de votre événement.</p>
         <p>Montez ton équipe et définissez vos tarifs.</p>
         <p>Gèrez les dépôts, les récupérations, les achats, les retours et les paiements sur une interface simple et accessible.</p>
@@ -240,6 +267,11 @@
 </svelte:head>
 
 <style>
+
+    main {
+        text-align: justify;
+        font-size: 1.1em;
+    }
 
     section {
         padding: 40px 0px;
@@ -266,59 +298,6 @@
         main { padding: 10px;}
     }
 
-    @media only screen and (min-width: 992px) {
-        #is-card {padding: 0px 12px 0px 0px;}
-        #isnt-card { padding: 0px 0px 0px 12px;} 
-    } 
-    @media only screen and (max-width: 992px) {
-        #is-card {padding: 0px 0px 12px 0px;}
-        #isnt-card {padding: 0px 0px 0px 0px;} 
-    }
-
-    @media only screen and (max-width: 500px) {
-        #is li , #isnt li {
-            margin: 30px 5px 30px 5px;
-            padding: 0px;
-        }
-    }
-
-    li {
-        margin: 30px;
-    }
-
-    #is, #isnt, #and {
-       border-radius: 10px;
-    }
-
-    #is li , #isnt li {
-        border: none;
-    }
-
-    #is li i, #isnt li i {
-        transform: translateY(2px);
-    }
-
-    #is div, #isnt div, #and div {
-        border-radius: 10px 10px 0px 0px;
-    }
-
-    #is ul, #isnt ul {
-        border-radius: 0px 0px 10px 10px;
-    }
-
-    #is li .fa-check {
-        color: #4CAF50;
-    }
-
-    #isnt li .fa-times {
-        color: #F44336;
-    }
-
-    .text-content {
-        text-align: justify;
-        font-size: 1.1em;
-    }
-
     .fa-arrow-down {
         animation-name: scrollPlease;
         animation-duration: 5s;
@@ -333,6 +312,30 @@
         90% {transform: translateY(0px);}
         95% {transform: translateY(5px);}
         100% {transform: translateY(0px);}
+    }
+
+    .feature-title {
+        text-transform: uppercase;
+        font-size: 1.1em;
+    }
+    .feature-title i {
+        opacity: .6;
+        font-size: 1.2em;
+    }
+    .feature-title span {
+        margin-left: 10px;
+    }
+
+    .feature-content {
+        margin-left: .6em;
+        padding-left: 1em;
+        border-left: 2px solid #ddd;
+    }
+
+    .feature-content p {
+        line-height: 2;
+        margin-top: .6em;
+        margin-bottom: .6em;
     }
 
 </style>

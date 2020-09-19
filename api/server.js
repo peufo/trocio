@@ -13,7 +13,11 @@ let createError = require('http-errors')
 let catchError404 = (req, res, next) => next(createError(404))
 
 //Connection database
-mongoose.connect(DBPATH, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true})
+try {
+	mongoose.connect(DBPATH, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true})
+}catch (error) {
+	console.log(error)
+}
 
 var app = express()
 

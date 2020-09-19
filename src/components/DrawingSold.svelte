@@ -3,29 +3,41 @@
 <div class="container">
 
     <svg>
+
+        <defs>
+            <!-- Définit une pointe de flèche -->
+            <marker id="arrow" viewBox="0 0 12 12" refX="0" refY="5"
+                markerWidth="5" markerHeight="5" style="overflow: visible;"
+                orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" stroke-linejoin="round" style="animation: none; stroke-dasharray: none;"/>
+            </marker>
+
+        </defs>
+
+
         <!-- Provider - Proposé -->
-        <line x1="50" y1="23" x2="180" y2="23"/>
+        <line x1="50" y1="23" x2="170" y2="23" marker-end="url(#arrow)"/>
 
         <!-- Proposé - Validé -->
-        <line x1="240" y1="46" x2="240" y2="133"/>
+        <line x1="240" y1="47" x2="240" y2="128" marker-end="url(#arrow)"/>
 
         <!-- Validé - Vendu -->
-        <line x1="240" y1="179" x2="240" y2="264"/>
+        <line x1="240" y1="185" x2="240" y2="264" marker-end="url(#arrow)"/>
 
         <!-- Vendu - client-->
-        <line x1="300" y1="291" x2="345" y2="291"/>
+        <line x1="300" y1="300" x2="335" y2="300" marker-end="url(#arrow)"/>
 
         <!-- Proposé - Refusé -->
-        <path d="M 240 56 Q 240 90 206 90 L 180 90"/>
+        <path d="M 240 47 L 240 56 Q 240 90 206 90 L 190 90" marker-end="url(#arrow)" class="w3-opacity"/>
 
         <!-- Validé - Rendu -->
-        <path d="M 240 189 Q 240 225 206 225 L 180 225"/>
+        <path d="M 240 185 L 240 189 Q 240 225 206 225 L 190 225" marker-end="url(#arrow)" class="w3-opacity"/>
 
         <!-- Refusé - Provider -->
-        <path d="M 120 113 L 120 122 Q 120 156 86 156 L 57 156 Q 23 156 23 122 L 23 46" class="w3-opacity"/>
+        <path d="M 120 116 L 120 122 Q 120 156 86 156 L 57 156 Q 23 156 23 122 L 23 62"  marker-end="url(#arrow)" class="w3-opacity"/>
 
         <!-- Rendu - Provider -->
-        <path d="M 120 197 L 120 180 Q 120 156 86 156" class="w3-opacity"/>
+        <path d="M 120 206 L 120 180 Q 120 156 86 156" class="w3-opacity"/>
 
     </svg>
 
@@ -75,11 +87,7 @@
         stroke:rgb(200, 200, 200);
         stroke-width: 2;
         stroke-dasharray: 6;
-        animation: dash .5s linear infinite;
-    }
-
-    line.reverse {
-        animation-direction: reverse;
+        animation: dash .8s linear infinite;
     }
 
     @keyframes dash {
