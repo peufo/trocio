@@ -4,6 +4,7 @@
     import Logo from 'LogoV2.svelte'
     import Rayons from 'Rayons.svelte'
     import Button from '@smui/button'
+    import Footer from 'Footer.svelte'
     import { user } from "stores.js";
 
 </script>
@@ -31,10 +32,10 @@
     <div class="w3-row">
 
         <div class="w3-col l6">
-            <div style="position: relative; height: 400px; z-index: -10;">
+            <div class="rayons">
                 <Rayons/>
                 <!--
-                <Logo duration="20" cubeSize="70"/>
+                <Logo duration="20" cubeSize="50"/>
                 -->
             </div>
         </div>
@@ -56,7 +57,7 @@
 
                 <span class="warning">
                     <i class="fas fa-exclamation-triangle"></i>&nbsp;
-                    La plateforme est encore en phase de test. Elle n'est donc pas encore ouverte aux public.
+                    La plateforme est en phase de test. Elle n'est donc pas ouverte aux public.
                 </span>   
             </div>
         </div>
@@ -200,24 +201,6 @@
                 </div>
                 <div class="feature">
                     <div class="feature-title">
-                        <i class="fas fa-cash-register"></i>
-                        <span>Caisse</span>
-                    </div>
-                    <div class="feature-content">
-                        <p>Validez les articles proposés par vos fournisseurs.</p>
-                        <p>Vendez ou rendez votre stock.</p>
-                        <p>
-                            Acceptez des retours en fonction de votre politique.
-                            <span class="warning">
-                                <i class="fas fa-exclamation-triangle"></i>&nbsp;
-                                En développement
-                            </span>
-                        </p>
-                        <p>Visualisez le compte de vos clients et effectuez des paiements</p>
-                    </div>
-                </div>
-                <div class="feature">
-                    <div class="feature-title">
                         <i class="fas fa-eraser"></i>
                         <span>Gestion</span>
                     </div>
@@ -230,6 +213,16 @@
                                 En développement
                             </span>
                         </p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Statistique</span>
+                    </div>
+                    <div class="feature-content">
+                        <p>Ayez une vue d'ensemble sur l'activité de votre troc.</p>
+                        <p>Fournissez de précieux rapport à votre équipe pour vous amélioré.</p>
                     </div>
                 </div>
             </div>
@@ -264,24 +257,38 @@
                         </p>
                     </div>
                 </div>
-
                 <div class="feature">
                     <div class="feature-title">
-                        <i class="fas fa-chart-pie"></i>
-                        <span>Statistique</span>
+                        <i class="fas fa-cash-register"></i>
+                        <span>Caisse</span>
                     </div>
                     <div class="feature-content">
-                        <p>Ayez une vue d'ensemble sur l'activité de votre troc.</p>
-                        <p>Fournissez de précieux rapport à votre équipe pour vous amélioré.</p>
+                        <p>Validez les articles proposés par vos fournisseurs.</p>
+                        <p>Vendez ou rendez votre stock.</p>
+                        <p>
+                            Acceptez des retours en fonction de votre politique.
+                            <span class="warning">
+                                <i class="fas fa-exclamation-triangle"></i>&nbsp;
+                                En développement
+                            </span>
+                        </p>
+                        <p>Visualisez le compte de vos clients et effectuez des paiements</p>
                     </div>
                 </div>
 
             </div>
         </div>
-
-        <br><br>
-
+           
         <div class="w3-center">
+            <div class="w3-card w3-round-large w3-padding" style="max-width: 500px; margin: auto;">
+                
+                <p>L'organisation d'un troc est <b class="w3-text-green">gratuite</b>.</p>
+                <p>Seul les benefices réalisés sont prélevés à hauteur de <b class="w3-text-orange">2%</b>.</p>
+                <p>Nous souhaitons ainsi soutenir les trocs à but non lucratif.</p>
+            </div>
+
+            <br><br>
+
             <Button
             on:click={console.log}
             href="/activity/create"
@@ -292,16 +299,13 @@
             </Button>
         </div>
 
-        <br><br><br>
         
 
     </section>
 
 </main>
 
-<footer>
-    Hey, je suis le footer
-</footer>
+<Footer/>
 
 <svelte:head>
     <style>#waitLoaded {display: none;}</style>
@@ -323,20 +327,19 @@
         margin-bottom: 30px;
     }
 
-    footer {
-        background: #efefef;
-    }
-
     main {
         max-width: 1200px;
         margin: auto;
     }
 
     @media only screen and (min-width: 850px) {
-        main { padding: 50px 100px 100px 50px;}
+        main { padding: 50px 50px;}
     }
     @media only screen and (max-width: 850px) {
         main { padding: 10px;}
+    }
+    @media only screen and (max-width: 992px) {
+        .rayons {height: 200px!important;}
     }
 
     .fa-arrow-down {
@@ -379,15 +382,22 @@
     }
 
     .feature {
-        margin: 0 3em 2em 2em;
+        margin: 0 3em 4em 2em;
     }
 
     .warning {
         display: inline-block;
+        font-size: .8em;
         background: #ffa012;
         color: #fff;
         border-radius: 4px;
         padding: 2px 10px;
+    }
+
+    .rayons {
+        position: relative;
+        height: 400px;
+        z-index: -10;
     }
 
 </style>

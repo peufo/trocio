@@ -6,5 +6,6 @@
 </script>
 
 <Head/>
-
-<slot decorator={FadeDecorator} />
+<div id="main-content">
+	<slot decorator={FadeDecorator} />
+</div>

@@ -1,39 +1,35 @@
 <script>
-	export let status
+	import Footer from 'Footer.svelte'
+
 </script>
 
-<style>
-	h1, p {
-		margin: 0 auto;
-	}
-	h1 {
-		font-size: 2.8em;
-		font-weight: 700;
-		margin: 0 0 0.5em 0;
-	}
-	p {
-		margin: 1em auto;
-	}
-	@media (min-width: 480px) {
-		h1 {
-			font-size: 4em;
-		}
-	}
+<main class="w3-center">
+	<br><br><br><br>
+	<h1>Nous ne trouvons pas ce que vous cherchez</h1>
+</main>
 
-	img {
-		position: fixed;
-		bottom: 0px;
-		right: 15%;
+<Footer/>
+
+<svelte:head>
+	<style>
+		html, body, #routify-app {
+			height: 100%;
+		}
+		#main-content, #main-content>div {
+			height: calc(100% - 100px);
+		}
+	</style>
+</svelte:head>
+
+<style>
+
+	main {
+		height: 100%;
+		text-transform: uppercase;
+		color: #fff;
+		background: url('/images/forest.png');
+		background-position-x: center;
+		background-size: cover;
 	}
 
 </style>
-
-<svelte:head>
-	<title>{status}</title>
-</svelte:head>
-
-
-<img src="/images/John_Travoltat_confused.gif" alt="John Travoltat confused">
-
-
-

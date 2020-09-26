@@ -29,7 +29,7 @@
             <rect 
                 x={WIDTH / 2}
                 y={HEIGHT / 2 - LINE_WIDTH / 2}
-                width={Math.random() * 1000}
+                width={50 + Math.random() * 1000}
                 height={LINE_WIDTH}
                 fill="url(#gradient)"
                 style={`--rotate-angle: ${angle}deg; --show-delay: ${Math.random() * 1000 + 800}ms`}
