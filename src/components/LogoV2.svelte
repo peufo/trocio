@@ -96,8 +96,8 @@
 
     onMount(() => {
         animation = setInterval(() => {
-            cube.rotateX3D((360 / 50) / duration)
-        }, 20)
+            cube.rotateX3D((360 / 25) / duration)
+        }, 40)
 
     })
 
@@ -176,7 +176,6 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%)
-
     }
 
 </style>

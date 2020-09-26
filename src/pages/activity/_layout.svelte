@@ -1,5 +1,4 @@
 <script>
-    import { goto } from '@sveltech/routify'
     import { layout, page } from '@sveltech/routify'
     import { onMount, onDestroy } from 'svelte'
     import { fade, fly } from 'svelte/transition'
@@ -11,6 +10,7 @@
     import qs from 'qs'
     import { user, userPromise, subscribedTrocs } from 'stores.js'
     import RowsPromise from 'RowsPromise.svelte'
+    import Login from 'Login.svelte'
     
     let subscribedSkip = 0
     let subscribedLimit = 5
@@ -75,7 +75,9 @@
 </script>
 
 {#if $user === null}
-    {$goto('/search')}
+    <div class="login">
+        <Login/>
+    </div>
 {:else if $user !== undefined}
     <div class="main-container" bind:offsetWidth>
 
@@ -229,6 +231,15 @@
 
     .no-margin {
         margin: 0px;
+    }
+
+    .login {
+        background: #fff;
+        border-radius: 5px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
     }
 
 </style>
