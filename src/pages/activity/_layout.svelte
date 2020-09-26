@@ -48,15 +48,19 @@
     }
 
     onMount(() => {
-        subscribedTrocsPromise = getSubscribedTrocs().then(() => {
-            updateTrocByQuery()
-            addEventListener('locationchange', updateTrocByQuery)
-        })
+        //if (!!$user) initTrocsSubscribedList()
     })
 
     onDestroy(() => {
         removeEventListener('locationchange', updateTrocByQuery)
     })
+
+    function initTrocsSubscribedList() {
+        subscribedTrocsPromise = getSubscribedTrocs().then(() => {
+            updateTrocByQuery()
+            addEventListener('locationchange', updateTrocByQuery)
+        })
+    }
 
     async function getSubscribedTrocs() {
         let res = await fetch(`/subscribes/me?skip=${subscribedSkip}&limit=${subscribedLimit}`)
@@ -79,6 +83,10 @@
         <Login/>
     </div>
 {:else if $user !== undefined}
+
+    <span style="display: none;">{initTrocsSubscribedList()}</span>
+    
+
     <div class="main-container" bind:offsetWidth>
 
         <div id="window" class:open={segment} class:smallDisplay>

@@ -84,6 +84,7 @@
         return user.login(mail, password, err => {
             if (err) return alert(err.message)
             dispatch('close')
+            dispatch('done')
             close = true
             return
         })

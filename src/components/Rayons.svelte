@@ -32,7 +32,7 @@
                 width={50 + Math.random() * 1000}
                 height={LINE_WIDTH}
                 fill="url(#gradient)"
-                style={`--rotate-angle: ${angle}deg; --show-delay: ${Math.random() * 1000 + 800}ms`}
+                style={`--rotate-angle: ${angle}deg; --show-delay: ${Math.random() * 1000 + 300}ms`}
             />
         {/each}
     </svg>
