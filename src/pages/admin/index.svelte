@@ -70,8 +70,10 @@
 {#await $trocPromise}
     <Logo/>
 {:then}
-    {#if $troc === null || $user === null}
+    {#if $troc === null && $user === null}
         {$goto('/')}
+    {:else if $troc === null}
+        {$goto('/activity')}
     {:else if $troc.failed}
         <div class="w3-display-container">
             <div class="w3-display-middle w3-red w3-padding w3-round w3-large w3-center">

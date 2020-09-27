@@ -1,6 +1,6 @@
 <script>
 	import { user } from 'stores.js'
-	import { goto } from '@sveltech/routify'
+	import { redirect } from '@sveltech/routify'
 	import SearchTroc from 'SearchTroc.svelte'
 	
 </script>
@@ -10,7 +10,7 @@
 		<SearchTroc/>
 	</div>
 {:else}
-	{$goto('/activity/search')}
+	{$redirect('/activity/search')}
 {/if}
 
 <style>
