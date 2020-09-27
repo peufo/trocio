@@ -38,7 +38,11 @@ export const config = {
 	serve: !production,
 	production,
 	rollupWrapper: rollup => {
-		rollup.plugins = [aliases, ...rollup.plugins, postcss(postcssOptions())]
+		rollup.plugins = [
+			aliases,
+			...rollup.plugins,
+			postcss(postcssOptions())
+		]
 		return rollup
 	},
 	svelteWrapper: svelte => {

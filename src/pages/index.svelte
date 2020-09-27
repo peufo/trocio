@@ -6,6 +6,8 @@
     import Button from '@smui/button'
     import Footer from 'Footer.svelte'
     import { user } from "stores.js";
+    import { prefetch } from '@sveltech/routify'
+    prefetch('/search', { validFor: 60 * 1 })
 
 </script>
 
@@ -44,7 +46,7 @@
             <div class="w3-card w3-round-large w3-padding" style="margin-top: 50px; background: #fff;">
                 
                 <p>
-                    Trocio est un outil simple et efficace pour échanger vos objects.
+                    Trocio est un outil simple et efficace pour échanger vos objets.
                 </p>
                 <p>
                     Que vous soyez organisateur ou amateur de bonnes affaires,

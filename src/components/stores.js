@@ -51,8 +51,7 @@ function buildListenQuery(query, promise, load, set) {
 // ------------------------------------------------------
 
 function userBuilder() {
-	//const { subscribe, set} = writable({}, loadUser)
-	const { subscribe, set} = writable({})
+	const { subscribe, set} = writable({}, loadUser)
 	set(undefined)
 	return {
 		subscribe, set,

@@ -12,8 +12,11 @@ app.use(api)
 app.use(express.static('dist'))
 
 app.get('*', async (req, res) => {
+    /*
     const html = await ssr(ENTRYPOINT, APP, req.url)
     res.send(html)
+    */
+   res.sendFile(ENTRYPOINT, { root: __dirname })
 })
 
 app.listen(PORT, () => console.log(`Server listen on port ${PORT}`))
