@@ -50,10 +50,14 @@
 	$: selectOk = itemSelected.name == search
 	
 	async function searchUser() {
-		const res = await fetch(`/users/search/${search}`)
-		const json = await res.json()
-		if (res.ok)	return json
-		else return []
+		try {
+			const res = await fetch(`/users/search/${search}`)
+			const json = await res.json()
+			if (res.ok)	return json
+			else return []
+		} catch(error) {
+			console.trace(error)
+		}
 	}
 
 	function input(){

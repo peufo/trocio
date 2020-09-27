@@ -17,7 +17,8 @@
                isRootUser = true
                getOptions()
             }
-        }) 
+        })
+        .catch(console.trace)
     })
     
 
@@ -28,24 +29,36 @@
     let options = []
 
     async function selectUser(event){
-        let res = await fetch(`/superadmin/users?_id=${event.detail._id}`)
-        let json = await res.json()
-        userSelected = json[0]
-        return
+        try {
+            let res = await fetch(`/superadmin/users?_id=${event.detail._id}`)
+            let json = await res.json()
+            userSelected = json[0]
+            return
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
     async function addCredit() {
-        let res = await fetch(`/superadmin/addcredit`, getHeader({user: userSelected._id}))
-        let json = await res.json()
-        if (json.error) return notify.error(json.message)
-        userSelected.creditTroc++
-        return notify.success(json.message)
+        try {
+            let res = await fetch(`/superadmin/addcredit`, getHeader({user: userSelected._id}))
+            let json = await res.json()
+            if (json.error) return notify.error(json.message)
+            userSelected.creditTroc++
+            return notify.success(json.message)
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
     async function getOptions() {
-        let res = await fetch('/superadmin/options')
-        let json = await res.json()
-        options = json
+        try {
+            let res = await fetch('/superadmin/options')
+            let json = await res.json()
+            options = json
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
 </script>

@@ -126,18 +126,22 @@
 			amount: -$details.balance, 
 			message: $details.balance > 0 ? `Versé par ${$user.name}` : `Encaissé par ${$user.name}`
 		}
-		let res = await fetch(`/payments`, getHeader(payment))
-		let json = await res.json()
-		if (res.ok && json.success) {
-			let newPayment = json.message
-			$details.payments = [newPayment, ...$details.payments]
-			$details.paySum += newPayment.amount
-			$details.balance += newPayment.amount
-			popupPaymentOpen = false
-			notify.success({title: `Paiement validé`, text: `${newPayment.amount.toFixed(2)} ${newPayment.message}`})
-			return
-		}else{
-			notify.error(json.message)
+		try {
+			let res = await fetch(`/payments`, getHeader(payment))
+			let json = await res.json()
+			if (res.ok && json.success) {
+				let newPayment = json.message
+				$details.payments = [newPayment, ...$details.payments]
+				$details.paySum += newPayment.amount
+				$details.balance += newPayment.amount
+				popupPaymentOpen = false
+				notify.success({title: `Paiement validé`, text: `${newPayment.amount.toFixed(2)} ${newPayment.message}`})
+				return
+			}else{
+				notify.error(json.message)
+			}
+		} catch(error) {
+			console.trace(error)
 		}
 	}
 

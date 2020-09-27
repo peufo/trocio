@@ -1,5 +1,6 @@
 <script>
-	import { user, troc } from './stores'
+	import { user, userPromise, troc } from './stores'
+	import { ready } from '@sveltech/routify'
 	import Menu from '@smui/menu'
 	import List, { Item, Graphic } from '@smui/list'
 	import Button from '@smui/button'
@@ -11,6 +12,25 @@
 	let dialogLogin
 	//let userMenu
 
+	$userPromise = authenticate()
+
+	async function authenticate() {
+		try {
+			let res = await fetch('users/me')
+			let json = await res.json()
+			if (res.ok && !json.error) {
+				$user = json
+				//$ready()
+				return json
+			}else{
+				$user = null
+				//$ready()
+				return Error(json.message)
+			}
+		} catch(error) {
+			console.trace(error)
+		}
+	}
 
 </script>
 

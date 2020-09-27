@@ -80,28 +80,32 @@
             giveback.back = date
             return {_id: art._id, giveback}
         })
-        let res = await fetch('/articles/giveback', getHeader(newGivebacks))
-        let json = await res.json()
-        if (res.ok && json.success) {
-            let givebacksUpdated = json.message
-            let priceSum = givebacksUpdated.map(art => art.price).reduce((acc, cur) => acc += cur)
-            $details.buySum += priceSum
-            $details.balance += priceSum
-
-            //Reset
-            $details.givebacks = $details.givebacks.map(art => {
-                art.isRemovable = false
-                art.sold = undefined
-                art.buyer = undefined
-                return art
-            })
-            
-            notify.success(givebacksUpdated.length > 1 ? `${givebacksUpdated.length} artciles retournés` : 'Un article retourné')
-
-        }else{
-            notify.error(json.message)
-        }
-        return
+        try {
+            let res = await fetch('/articles/giveback', getHeader(newGivebacks))
+            let json = await res.json()
+            if (res.ok && json.success) {
+                let givebacksUpdated = json.message
+                let priceSum = givebacksUpdated.map(art => art.price).reduce((acc, cur) => acc += cur)
+                $details.buySum += priceSum
+                $details.balance += priceSum
+    
+                //Reset
+                $details.givebacks = $details.givebacks.map(art => {
+                    art.isRemovable = false
+                    art.sold = undefined
+                    art.buyer = undefined
+                    return art
+                })
+                
+                notify.success(givebacksUpdated.length > 1 ? `${givebacksUpdated.length} artciles retournés` : 'Un article retourné')
+    
+            }else{
+                notify.error(json.message)
+            }
+            return
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
 </script>

@@ -39,23 +39,27 @@
         req += `&or_search_ref=${search}`
         req += `${$params.client && $params.client !== 'undefined' ? `&providernot=${$params.client}` :''}`
 
-        let res = await fetch(req)
-        let json = await res.json()
-
-        if(res.ok) {
-            
-            noMoreResults  = json.data.length < LIMIT_LIST_A
-            countArticleAvailable = json.dataMatchCount
-
-            if (!!skip) {
-                articles = [...articles, ...json.data]
-            }else{
-                articles = json.data
+        try {
+            let res = await fetch(req)
+            let json = await res.json()
+    
+            if(res.ok) {
+                
+                noMoreResults  = json.data.length < LIMIT_LIST_A
+                countArticleAvailable = json.dataMatchCount
+    
+                if (!!skip) {
+                    articles = [...articles, ...json.data]
+                }else{
+                    articles = json.data
+                }
+                
+                articles = articles.filter(a => cart.map(c => c._id).indexOf(a._id) == -1)
+    
+                return
             }
-            
-            articles = articles.filter(a => cart.map(c => c._id).indexOf(a._id) == -1)
-
-            return
+        } catch(error) {
+            console.trace(error)
         }
     }
 
@@ -96,18 +100,22 @@
             return art
         })
 
-        let res = await fetch('/articles', getHeader(patchedArticles, 'PATCH'))
-        let json = await res.json()
-        if (res.ok && json.success) {
-            let newPurchases = json.message
-            $details.purchases = [...newPurchases, ...$details.purchases]
-            $details.purchases[0].soldTime = new Date($details.purchases[0].sold).getTime()
-            let newBuySum = newPurchases.map(art => art.price).reduce((acc, cur) => acc += cur)
-            $details.buySum -= newBuySum
-            $details.balance -= newBuySum
-            newBuySum = 0
-            cart = []
-            return
+        try {
+            let res = await fetch('/articles', getHeader(patchedArticles, 'PATCH'))
+            let json = await res.json()
+            if (res.ok && json.success) {
+                let newPurchases = json.message
+                $details.purchases = [...newPurchases, ...$details.purchases]
+                $details.purchases[0].soldTime = new Date($details.purchases[0].sold).getTime()
+                let newBuySum = newPurchases.map(art => art.price).reduce((acc, cur) => acc += cur)
+                $details.buySum -= newBuySum
+                $details.balance -= newBuySum
+                newBuySum = 0
+                cart = []
+                return
+            }
+        } catch(error) {
+            console.trace(error)
         }
     }
 

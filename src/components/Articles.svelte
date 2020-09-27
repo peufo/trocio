@@ -30,16 +30,20 @@
     }
 
     async function getArticles() {
-        let res = await fetch(`/articles?troc=${troc}&search_name=${search}&skip=${articles.length}&limit=${LIMIT}`)
-        let json = await res.json()
-        if(res.ok) {
-
-            if (json.data.length < LIMIT) noMoreResults = true
-            else noMoreResults = false
-
-            articles = [...articles, ...json.data]
-
-            return
+        try {
+            let res = await fetch(`/articles?troc=${troc}&search_name=${search}&skip=${articles.length}&limit=${LIMIT}`)
+            let json = await res.json()
+            if(res.ok) {
+    
+                if (json.data.length < LIMIT) noMoreResults = true
+                else noMoreResults = false
+    
+                articles = [...articles, ...json.data]
+    
+                return
+            }
+        } catch(error) {
+            console.trace(error)
         }
     }
 

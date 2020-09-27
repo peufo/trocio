@@ -130,40 +130,44 @@
         }else{
             req += `view=${selectedView}`
         }
-        let res = await fetch(req)
-        let json = await res.json()
-        console.log(json)
-
-        articlesProposed = json.articlesProposed
-        articlesProvided = articlesProposed.filter(art => art.valided)
-        articlesSolded = articlesProvided.filter(art => art.sold)
-        articlesRecovered = articlesProvided.filter(art => art.recover)
-        articlesBuyed = json.articlesBuyed
-        payments = json.payments
-
-        //Compute reduce
-        //here, articles proposed is equivalent to articles not valided
-        numberProposed = articlesProposed.filter(art => !art.valided).length
-        numberProvided = articlesProvided.length
-        numberSolded = articlesSolded.length
-        numberRecovered = articlesRecovered.length
-        numberBuyed = articlesBuyed.length
-        numberPayment = payments.length
-        numberPaymentPositif = payments.filter(pay => pay.amount > 0).length
-        numberPaymentNegatif = numberPayment - numberPaymentPositif
-        sumProposed = numberProposed ? articlesProposed.filter(art => !art.valided).map(art => art.price).reduce((acc, cur) => acc + cur) : 0
-        sumProvided = numberProvided ? articlesProvided.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
-        sumSolded = numberSolded ? articlesSolded.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
-        sumRecovered = numberRecovered ? articlesRecovered.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
-        sumBuyed = numberBuyed ? articlesBuyed.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
-        sumFee = numberProvided ? articlesProvided.map(art => art.fee).reduce((acc, cur) => acc + cur) : 0
-        sumMargin = numberSolded ? articlesSolded.map(art => art.margin).reduce((acc, cur) => acc + cur) : 0  
-        sumPaymentPositif = numberPaymentPositif ? payments.map(pay => pay.amount).filter(p => p > 0).reduce((acc, cur) => acc + cur) : 0
-        sumPaymentNegatif = numberPaymentNegatif ? -payments.map(pay => pay.amount).filter(p => p < 0).reduce((acc, cur) => acc + cur) : 0
-        sumPayment = sumPaymentPositif + sumPaymentNegatif
-
-        events = getEvents()
-        return
+        try {
+            let res = await fetch(req)
+            let json = await res.json()
+            console.log(json)
+    
+            articlesProposed = json.articlesProposed
+            articlesProvided = articlesProposed.filter(art => art.valided)
+            articlesSolded = articlesProvided.filter(art => art.sold)
+            articlesRecovered = articlesProvided.filter(art => art.recover)
+            articlesBuyed = json.articlesBuyed
+            payments = json.payments
+    
+            //Compute reduce
+            //here, articles proposed is equivalent to articles not valided
+            numberProposed = articlesProposed.filter(art => !art.valided).length
+            numberProvided = articlesProvided.length
+            numberSolded = articlesSolded.length
+            numberRecovered = articlesRecovered.length
+            numberBuyed = articlesBuyed.length
+            numberPayment = payments.length
+            numberPaymentPositif = payments.filter(pay => pay.amount > 0).length
+            numberPaymentNegatif = numberPayment - numberPaymentPositif
+            sumProposed = numberProposed ? articlesProposed.filter(art => !art.valided).map(art => art.price).reduce((acc, cur) => acc + cur) : 0
+            sumProvided = numberProvided ? articlesProvided.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
+            sumSolded = numberSolded ? articlesSolded.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
+            sumRecovered = numberRecovered ? articlesRecovered.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
+            sumBuyed = numberBuyed ? articlesBuyed.map(art => art.price).reduce((acc, cur) => acc + cur) : 0
+            sumFee = numberProvided ? articlesProvided.map(art => art.fee).reduce((acc, cur) => acc + cur) : 0
+            sumMargin = numberSolded ? articlesSolded.map(art => art.margin).reduce((acc, cur) => acc + cur) : 0  
+            sumPaymentPositif = numberPaymentPositif ? payments.map(pay => pay.amount).filter(p => p > 0).reduce((acc, cur) => acc + cur) : 0
+            sumPaymentNegatif = numberPaymentNegatif ? -payments.map(pay => pay.amount).filter(p => p < 0).reduce((acc, cur) => acc + cur) : 0
+            sumPayment = sumPaymentPositif + sumPaymentNegatif
+    
+            events = getEvents()
+            return
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
     function getEvents() {

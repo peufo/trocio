@@ -92,7 +92,7 @@
 
 			}else notify.error(json.message)
 		} catch (error) {
-			console.error(error)
+			console.trace(error)
 		}
 	}
 	

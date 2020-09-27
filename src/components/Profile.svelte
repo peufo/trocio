@@ -22,55 +22,71 @@
     let mailValidatorSent = false
 
 
-    // FETCH FUNCTION
+    // FETCH FUNCTIONS
 
     async function patchName() {
-        let res = await fetch('/users/me', getHeader({name: $user.name}, 'PATCH'))
-        let json = await res.json()
-        if (json.success) {
-            changeName = false
-            return
-        }else{
-            alert(json.message)
-        }
+        try {
+            let res = await fetch('/users/me', getHeader({name: $user.name}, 'PATCH'))
+            let json = await res.json()
+            if (json.success) {
+                changeName = false
+                return
+            }else{
+                alert(json.message)
+            }
+        } catch(error) {
+			console.trace(error)
+		}
     }
     
     async function patchMail() {
-        let res = await fetch('/users/me', getHeader({mail: $user.mail}, 'PATCH'))
-        let json = await res.json()
-        if (json.success) {
-            changeMail = false
-            $user.mailvalided = false
-            return
-        }else{
-            //Pas sur mais ca ira...
-            alert('Le mail indiqué est invalide ou déjà pris !')
-        }
+        try {
+            let res = await fetch('/users/me', getHeader({mail: $user.mail}, 'PATCH'))
+            let json = await res.json()
+            if (json.success) {
+                changeMail = false
+                $user.mailvalided = false
+                return
+            }else{
+                //Pas sur mais ca ira...
+                alert('Le mail indiqué est invalide ou déjà pris !')
+            }
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
     async function sendMailValidator() {
-        let res = await fetch('/users/sendvalidmail', getHeader({}))
-        let json = await res.json()
-        if (json.success) {
-            mailValidatorSent = true
-            return
-        }else{
-            alert(json.message)
-        }
+        try {
+            let res = await fetch('/users/sendvalidmail', getHeader({}))
+            let json = await res.json()
+            if (json.success) {
+                mailValidatorSent = true
+                return
+            }else{
+                alert(json.message)
+            }
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
     async function validChangePassword() {
-        let res = await fetch('/users/changepwd', getHeader({oldPassword, newPassword}))
-        let json = await res.json()
-        if (json.success) {
-            changePassword = false
-            oldPassword = ''
-            newPassword = ''
-            newPassword2 = ''
-            alert('Changement du mot de passe accepté')
-        }else {
-            alert('Changement du mot de passe refusé')
-        }
+        try {
+            let res = await fetch('/users/changepwd', getHeader({oldPassword, newPassword}))
+            let json = await res.json()
+            if (json.success) {
+                changePassword = false
+                oldPassword = ''
+                newPassword = ''
+                newPassword2 = ''
+                alert('Changement du mot de passe accepté')
+            }else {
+                alert('Changement du mot de passe refusé')
+            }
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
 </script>

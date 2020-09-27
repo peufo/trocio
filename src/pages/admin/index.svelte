@@ -44,7 +44,8 @@
 	function saveMeta(e) {
 		fetch(`/trocs/${$troc._id}`, getHeader(e.detail, 'PATCH'))
 		.then(res => res.json())
-		.then(updateTroc)
+        .then(updateTroc)
+        .catch(console.trace)
 	}
 
 	function removeTarif(i) {

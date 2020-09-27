@@ -51,26 +51,35 @@ function buildListenQuery(query, promise, load, set) {
 // ------------------------------------------------------
 
 function userBuilder() {
-	const { subscribe, set} = writable({}, loadUser)
+	//const { subscribe, set} = writable({}, loadUser)
+	const { subscribe, set} = writable({})
 	set(undefined)
 	return {
 		subscribe, set,
 		login: async (mail, password, cb) => {
-			let res = await fetch('/users/login', getHeader({mail, password}))
-			let json = await res.json()
-			if (res.ok && !json.error) {
-				loadUser(set)
-				cb()
-			}else{
-				set(null)
-				cb(json)
+			try {
+				let res = await fetch('/users/login', getHeader({mail, password}))
+				let json = await res.json()
+				if (res.ok && !json.error) {
+					loadUser(set)
+					cb()
+				}else{
+					set(null)
+					cb(json)
+				}
+			}catch (error) {
+				console.trace(error)
 			}
 		},
 		logout: async () => {
-			let res = await fetch('/users/logout')
-			let json = await res.json()
-			//if (res.ok && json.success)
-			set(null)
+			try {
+				let res = await fetch('/users/logout')
+				let json = await res.json()
+				//if (res.ok && json.success)
+				set(null)
+			} catch(error) {
+				console.trace(error)
+			}
 		}
 	}
 
@@ -82,14 +91,18 @@ function loadUser(set) {
 }
 
 async function authenticate(set) {
-	let res = await fetch('/users/me')
-	let json = await res.json()
-	if (res.ok && !json.error) {
-		set(json)
-		return json
-	}else{
-		set(null)
-		return Error(json.message)
+	try {
+		let res = await fetch('/users/me')
+		let json = await res.json()
+		if (res.ok && !json.error) {
+			set(json)
+			return json
+		}else{
+			set(null)
+			return Error(json.message)
+		}
+	} catch(error) {
+		console.trace(error)
 	}
 }
 
@@ -109,19 +122,23 @@ function trocBuilder() {
 
 async function loadTroc(set, { troc }) {
 	if(!troc) return set(null)
-	let res = await fetch(`/trocs/${troc}`)
-	let json = await res.json()	
-	if (res.ok) {
-		set(json)
-	}else{
-		switch (res.status) {
-			case 401:
-				set({failed: true, reason: 'Login required'})
-				break;
-			default:
-				set({failed: true, reason: 'Not found'})
-				break;
+	try {
+		let res = await fetch(`/trocs/${troc}`)
+		let json = await res.json()	
+		if (res.ok) {
+			set(json)
+		}else{
+			switch (res.status) {
+				case 401:
+					set({failed: true, reason: 'Login required'})
+					break;
+				default:
+					set({failed: true, reason: 'Not found'})
+					break;
+			}
 		}
+	} catch(error) {
+		console.trace(error)
 	}
 }
 

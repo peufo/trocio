@@ -68,10 +68,14 @@
 
 	async function getAddress(e) {
 		marker.setLatLng(e.latlng).addTo(map)
-		let res = await fetch(`/geocode/${e.latlng.lat}+${e.latlng.lng}`)
-		let json = await res.json()
-		setLocation({location: e.latlng, address: json[0].address})
-		return
+		try {
+			let res = await fetch(`/geocode/${e.latlng.lat}+${e.latlng.lng}`)
+			let json = await res.json()
+			setLocation({location: e.latlng, address: json[0].address})
+			return
+		} catch(error) {
+			console.trace(error)
+		}
 	}
 
 	function searchLocation() {
@@ -81,15 +85,19 @@
 
 	async function getLocation() {
 		removeResults()
-		let res = await fetch(`/geocode/${address}`)
-		let json = await res.json()
-		if (json.length == 1) {
-			setLocation(json[0])
-			return json
-		}else if (json.length > 1) {
-			results = json
-			markers = json.map(j => L.marker(j.location, {icon, opacity: 0.5}).addTo(map).bindTooltip(j.address))
-			return json
+		try {
+			let res = await fetch(`/geocode/${address}`)
+			let json = await res.json()
+			if (json.length == 1) {
+				setLocation(json[0])
+				return json
+			}else if (json.length > 1) {
+				results = json
+				markers = json.map(j => L.marker(j.location, {icon, opacity: 0.5}).addTo(map).bindTooltip(j.address))
+				return json
+			}
+		} catch(error) {
+			console.trace(error)
 		}
 	}
 

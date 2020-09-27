@@ -1,8 +1,10 @@
 import { createRollupConfigs } from './scripts/base.config.js'
-import path from 'path'
+import autoPreprocess from 'svelte-preprocess'
+import postcssImport from 'postcss-import'
 import postcss from 'rollup-plugin-postcss'
 import alias from 'rollup-plugin-alias'
 import fs from 'fs'
+import path from 'path'
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -22,40 +24,49 @@ const postcssOptions = () => ({
 		}]
 	]
 })
+
+//Rend le dossier components plus accèssible
 const componentsFolder = `${__dirname}/src/components/`
 const arrComponents = fs.readdirSync(componentsFolder)
 let allEntries = arrComponents.map(component => ({find: component, replacement: `${componentsFolder}${component}`}))
 const aliases = alias({ resolve: ['.svelte', '.js'], entries: allEntries})
 
 export const config = {
-  staticDir: 'static',
-  distDir: 'dist',
-  buildDir: `dist/build`,
-  serve: !production,
-  production,
-  rollupWrapper: cfg => {
-	cfg.plugins = [aliases, ...cfg.plugins, postcss(postcssOptions())]
-	return cfg
-  },
-  svelteWrapper: cfg => cfg,
-  swWrapper: cfg => cfg,
+	staticDir: 'static',
+	distDir: 'dist',
+	buildDir: `dist/build`,
+	serve: !production,
+	production,
+	rollupWrapper: rollup => {
+		rollup.plugins = [aliases, ...rollup.plugins, postcss(postcssOptions())]
+		return rollup
+	},
+	svelteWrapper: svelte => {
+		svelte.preprocess = [
+		autoPreprocess({
+			postcss: { plugins: [postcssImport()] },
+			defaults: { style: 'postcss' }
+		})]
+	},
+	swWrapper: worker => worker,
 }
 
 const configs = createRollupConfigs(config)
 
 export default configs
 
+/**
+  Wrappers can either mutate or return a config
 
+  wrapper example 1
+  svelteWrapper: (cfg, ctx) => {
+    cfg.preprocess: mdsvex({ extension: '.md' }),
+  }
 
+  wrapper example 2
+  rollupWrapper: cfg => {
+    cfg.plugins = [...cfg.plugins, myPlugin()]
+    return cfg
+  }
+*/
 
-/** wrapper example 1 */
-// svelteWrapper: (cfg, ctx) => ({
-//   ...cfg,
-//   preprocess: mdsvex({ extension: '.md' }),
-// })
-
-/** wrapper example 2 */
-// rollupWrapper: cfg => {
-//   cfg.plugins = [...cfg.plugins, myPlugin()]
-//   return cfg
-// }

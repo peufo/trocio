@@ -93,12 +93,16 @@
 
 	async function create() {
 		if (invalid) return notify.warning(invalid)
-		let res = await fetch(`/trocs`, getHeader({name, address, location, description, schedule, society, societyweb}))
-		let json = await res.json()
-		if (json.error) return notify.error(json.message)
-		notify.success('Nouveau troc créer !')
-		$user.creditTroc--
-		dispatch('create', json.message)
+		try {
+			let res = await fetch(`/trocs`, getHeader({name, address, location, description, schedule, society, societyweb}))
+			let json = await res.json()
+			if (json.error) return notify.error(json.message)
+			notify.success('Nouveau troc créer !')
+			$user.creditTroc--
+			dispatch('create', json.message)
+		} catch(error) {
+			console.trace(error)
+		}
 
 	}
 

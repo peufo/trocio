@@ -51,19 +51,23 @@
     }
 
     async function Register() {
-        let res = await fetch('/users', getHeader({name, mail, password}))
-        let json = await res.json()
-        if (json.success) {
-            if ($user) {//Un Cassier à créer un utilisateur
-                alert(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
-                dispatch('newClient', json.message)
+        try {
+            let res = await fetch('/users', getHeader({name, mail, password}))
+            let json = await res.json()
+            if (json.success) {
+                if ($user) {//Un Cassier à créer un utilisateur
+                    alert(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
+                    dispatch('newClient', json.message)
+                }else{
+                    await Login()
+                }
+                return
             }else{
-                await Login()
+                alert(json.message)
             }
-            return
-        }else{
-            alert(json.message)
-        }
+        } catch(error) {
+			console.trace(error)
+		}
     }   
     /*
     async function Login(){
@@ -92,17 +96,21 @@
 
 
     async function Reset() {
-        let res = await fetch('/users/resetpwd', getHeader({mail}))
-        let json = await res.json()
-        if (res.ok) {
-            alert('Votre nouveau mot de passe vous à été envoyé par mail')
-            reset = false
-            password = ''
-            password2 = ''
-            return
-        }else{
-            alert(json.message)
-        }
+        try {
+            let res = await fetch('/users/resetpwd', getHeader({mail}))
+            let json = await res.json()
+            if (res.ok) {
+                alert('Votre nouveau mot de passe vous à été envoyé par mail')
+                reset = false
+                password = ''
+                password2 = ''
+                return
+            }else{
+                alert(json.message)
+            }
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
     $: {

@@ -63,12 +63,16 @@
     }
 
     async function getSubscribedTrocs() {
-        let res = await fetch(`/subscribes/me?skip=${subscribedSkip}&limit=${subscribedLimit}`)
-        let json = await res.json()
-        if (json.error) return notify.error(json.message)
-        if (subscribedSkip == 0) $subscribedTrocs = json
-        else $subscribedTrocs = [...$subscribedTrocs, ...json]
-        return
+        try {
+            let res = await fetch(`/subscribes/me?skip=${subscribedSkip}&limit=${subscribedLimit}`)
+            let json = await res.json()
+            if (json.error) return notify.error(json.message)
+            if (subscribedSkip == 0) $subscribedTrocs = json
+            else $subscribedTrocs = [...$subscribedTrocs, ...json]
+            return
+        } catch(error) {
+            console.trace(error)
+        }
     }
 
     function clickMoreSubscribedTroc() {
@@ -83,10 +87,9 @@
         <Login/>
     </div>
 {:else if $user !== undefined}
-
+    
     <span style="display: none;">{initTrocsSubscribedList()}</span>
     
-
     <div class="main-container" bind:offsetWidth>
 
         <div id="window" class:open={segment} class:smallDisplay>

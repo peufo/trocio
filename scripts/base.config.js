@@ -16,14 +16,14 @@ export function createRollupConfigs(config) {
     const useDynamicImports = process.env.BUNDLING === 'dynamic' || isNollup || !!production
 
     del.sync(distDir + '/**') // clear previous builds
-    
+
     if (serve && !isNollup)
         spassr({
             serveSpa: true, // serve app
             serveSsr: !isNollup, // Nollup doesn't need SSR
             silent: isNollup // Nollup needs Spassr internally
         })
-    
+
     // Combine configs as needed
     return [
         !isNollup && baseConfig(config, { dynamicImports: false }),
@@ -44,15 +44,18 @@ function baseConfig(config, ctx) {
         ? { format: 'esm', dir: buildDir }
         : { format: 'iife', file: `${buildDir}/bundle.js` }
 
-    const svelteConfig = {
+    const _svelteConfig = {
         dev: !production, // run-time checks      
         // Extract component CSS — better performance
         css: css => css.write(`${buildDir}/bundle.css`),
         hot: isNollup,
     }
+    
+    const svelteConfig = svelteWrapper(_svelteConfig, ctx) || _svelteConfig
 
-    const rollupConfig = {
+    const _rollupConfig = {
         inlineDynamicImports: !dynamicImports,
+        preserveEntrySignatures: false,
         input: `src/main.js`,
         output: {
             name: 'routify_app',
@@ -68,7 +71,7 @@ function baseConfig(config, ctx) {
                 copyOnce: true,
                 flatten: false
             }),
-            svelte(svelteWrapper(svelteConfig, ctx)),
+            svelte(svelteConfig),
 
             // resolve matching modules from current working directory
             resolve({
@@ -87,12 +90,15 @@ function baseConfig(config, ctx) {
         }
     }
 
-    return rollupWrapper(rollupConfig, ctx)
+    const rollupConfig = rollupWrapper(_rollupConfig, ctx) || _rollupConfig
+
+    return rollupConfig
 
     function transform(contents) {
-        return contents.toString().replace('__SCRIPT__', dynamicImports
-            ? '<script type="module" defer src="/build/main.js"></script>'
-            : '<script defer src="/build/bundle.js"></script>')
+        const scriptTag = typeof config.scriptTag != 'undefined' ?
+            config.scriptTag : '<script type="module" defer src="/build/main.js"></script>'
+        const bundleTag = '<script defer src="/build/bundle.js"></script>'
+        return contents.toString().replace('__SCRIPT__', dynamicImports ? scriptTag : bundleTag)
     }
 }
 
@@ -100,10 +106,10 @@ function baseConfig(config, ctx) {
 /**
  * Can be deleted if service workers aren't used
  */
-
+/*
 function serviceWorkerConfig(config) {
     const { distDir, production, swWrapper } = config
-    const rollupConfig = {
+    const _rollupConfig = {
         input: `src/sw.js`,
         output: {
             name: 'service_worker',
@@ -118,5 +124,8 @@ function serviceWorkerConfig(config) {
             replace({ 'process.env.NODE_ENV': "'production'" })
         ]
     }
-    return swWrapper(rollupConfig, {})
+    const rollupConfig = swWrapper(_rollupConfig, {}) || _rollupConfig
+    
+    return rollupConfig
 }
+*/

@@ -1,4 +1,5 @@
 <script>
+    import { onMount } from 'svelte'
 
     export let number = 40
 
@@ -6,11 +7,18 @@
     const HEIGHT = 200
     const LINE_WIDTH = 4
 
-    let angles = Array(number).fill().map((n, i) => {
-        return i * (360 / number)
+    let angles = []
+    onMount(() => {
+        //Desable SSR
+        if(typeof window !== 'undefined') {
+            angles = Array(number).fill().map((n, i) => {
+                return i * (360 / number)
+            })
+
+            console.log({angles})
+        }
     })
 
-    console.log({angles})
 
 </script>
 
@@ -20,7 +28,7 @@
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
         <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#f8f8f8"/>
+                <stop offset="0%" stop-color="#eee"/>
                 <stop offset="100%" stop-color="#fff"/>
             </linearGradient>
 

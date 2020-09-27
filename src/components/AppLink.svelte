@@ -12,7 +12,7 @@
             links[linkIndex].load()
         }else{
             links[0].load(`${location.pathname}?${location.search}`)
-            console.error('invalid link')
+            console.trace('invalid link')
         }
     })    
 

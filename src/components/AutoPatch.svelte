@@ -72,26 +72,30 @@
 		//let noticePatch = noticeEdit
 		//noticeEdit = null
 		noticeEdit.update({type: 'info', title: 'Sauvegarde...', icon: 'fas fa-sync-alt w3-spin', hide: false})
-
 		patchCount++
-		const res = await fetch(path, getHeader(body, 'PATCH'))
-		const json = await res.json()
-		patchCount--
-		if (json.success) {
-			if (patchCount == 0 && !onModify) {
-				if (trocRefresh) troc.refresh(json.message)
-				console.log({noticeEdit})
-				noticeEdit.update({type: 'success', title: 'Sauvegardé', icon: 'fas fa-check', hide: true})
+
+		try {
+			const res = await fetch(path, getHeader(body, 'PATCH'))
+			const json = await res.json()
+			patchCount--
+			if (json.success) {
+				if (patchCount == 0 && !onModify) {
+					if (trocRefresh) troc.refresh(json.message)
+					console.log({noticeEdit})
+					noticeEdit.update({type: 'success', title: 'Sauvegardé', icon: 'fas fa-check', hide: true})
+					noticeEdit.on('pnotify:afterClose', () => noticeEdit = null)
+				}
+				//noticePatch = null
+				return 
+			}else{
+				noticeEdit.update({type: 'error', title: json.message, icon: 'fas fa-bug', hide: true})
 				noticeEdit.on('pnotify:afterClose', () => noticeEdit = null)
+				//noticePatch = null
+				throw Error(json.message)
 			}
-			//noticePatch = null
-			return 
-		}else{
-			noticeEdit.update({type: 'error', title: json.message, icon: 'fas fa-bug', hide: true})
-			noticeEdit.on('pnotify:afterClose', () => noticeEdit = null)
-			//noticePatch = null
-			throw Error(json.message)
-		}
+		} catch(error) {
+            console.trace(error)
+        }
 	}
 
 

@@ -106,28 +106,32 @@
         fields.filter(f => f.queryValue.length).forEach(f => {
             req += `&${f.typeMenu}_${f.dataName.split('.')[0]}=${f.queryValue}`
         })
-        
-        let res = await fetch(req)
-        let json = await res.json()
-        let newItems = []
 
-        if(res.ok) {
-            
-            dataMatchCount = json.dataMatchCount
-            newItems = addStatutField(json.data, '') // TODO: server-side
-
-            if (!!skipData) {
-                items = [...items, ...newItems]
+        try {
+            let res = await fetch(req)
+            let json = await res.json()
+            let newItems = []
+    
+            if(res.ok) {
+                
+                dataMatchCount = json.dataMatchCount
+                newItems = addStatutField(json.data, '') // TODO: server-side
+    
+                if (!!skipData) {
+                    items = [...items, ...newItems]
+                }else{
+                    items = newItems
+                }
+    
+                noMoreData = items.length == dataMatchCount
+    
             }else{
-                items = newItems
+                item = []
             }
-
-            noMoreData = items.length == dataMatchCount
-
-        }else{
-            item = []
-        }
-        return
+            return
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
     function select(index) {

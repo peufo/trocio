@@ -115,9 +115,13 @@
     }
 
     async function getTarif(trocId, userId) {
-        let res = await fetch(`/trocs/${trocId}/tarif/${userId}`)
-        let json = await res.json()
-        tarif = json
+        try {
+            let res = await fetch(`/trocs/${trocId}/tarif/${userId}`)
+            let json = await res.json()
+            tarif = json
+        } catch(error) {
+            console.trace(error)
+        }
     }
     
     async function valid() {
@@ -129,14 +133,18 @@
             message += `Une demande lui sera transmise et le nouveau prix de ${articleEdited.price.toFixed(2)} sera appliqué dés qu'il l'aura accepté.`
 
             if (confirm(message)) {
-                let res = await fetch(`/articles/newprice`, getHeader({_id: article._id, price: articleEdited.price}, 'POST'))
-                let json = await res.json()
-                if (res.ok) {
-                    articleEdited.newPriceRequest = json.data.newPriceRequest
-                    articleEdited.price = article.price
-                    dispatch('patched', articleEdited)
-                }else{
-                    console.log(res)
+                try {
+                    let res = await fetch(`/articles/newprice`, getHeader({_id: article._id, price: articleEdited.price}, 'POST'))
+                    let json = await res.json()
+                    if (res.ok) {
+                        articleEdited.newPriceRequest = json.data.newPriceRequest
+                        articleEdited.price = article.price
+                        dispatch('patched', articleEdited)
+                    }else{
+                        console.log(res)
+                    }
+                } catch(error) {
+                    console.trace(error)
                 }
             }else{
                 //Rétablissement du prix
@@ -146,13 +154,17 @@
 
         //Patch request
         if (testIsModifed()) {
-            let res = await fetch(`/articles`, getHeader(articleEdited, 'PATCH'))
-            let json = await res.json()
-            if (res.ok) {
-                dispatch('patched', articleEdited)
-            }else {
-                console.log(res)
-            }            
+            try {
+                let res = await fetch(`/articles`, getHeader(articleEdited, 'PATCH'))
+                let json = await res.json()
+                if (res.ok) {
+                    dispatch('patched', articleEdited)
+                }else {
+                    console.log(res)
+                }            
+            } catch (error) {
+                console.trace(error)
+            }
         }
 
     }

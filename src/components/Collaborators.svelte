@@ -44,48 +44,58 @@
     }
 
     async function changePrefix(){
-        let res = await fetch(`/trocs/${$troc._id}/trader/prefix`, getHeader({trader: $troc.trader[selectedTrader].user._id, prefix: selectedTraderPrefix}))
-        let json = await res.json()
-        if (json.success) $troc.trader[selectedTrader].prefix = selectedTraderPrefix
-        else alert(json.message)
-        setTimeout(() => traderPrefixDialog.close(), 0)
-        return
+        try {
+            let res = await fetch(`/trocs/${$troc._id}/trader/prefix`, getHeader({trader: $troc.trader[selectedTrader].user._id, prefix: selectedTraderPrefix}))
+            let json = await res.json()
+            if (json.success) $troc.trader[selectedTrader].prefix = selectedTraderPrefix
+            else alert(json.message)
+            setTimeout(() => traderPrefixDialog.close(), 0)
+            return
+        } catch(error) {
+            console.trace(error)
+        }
     }
 
 	function addAdmin(e) {
 		fetch(`/trocs/${$troc._id}/admin`, getHeader({admin: e.detail._id}))
 		.then(res => res.json())
-		.then(updateTroc)
+        .then(updateTroc)
+        .catch(console.trace)
 	}
 
 	function addCashier(e) {
 		fetch(`/trocs/${$troc._id}/cashier`, getHeader({cashier: e.detail._id}))
 		.then(res => res.json())
-		.then(updateTroc)
+        .then(updateTroc)
+        .catch(console.trace)
     }
 
 	function addTrader(e) {
 		fetch(`/trocs/${$troc._id}/trader`, getHeader({trader: e.detail._id, prefix: findNewPrefix()}))
 		.then(res => res.json())
         .then(updateTroc)
+        .catch(console.trace)
 	}
 
 	function removeAdmin(userId) {
 		fetch(`/trocs/${$troc._id}/admin/remove`, getHeader({admin: userId}))
 		.then(res => res.json())
-		.then(updateTroc)
+        .then(updateTroc)
+        .catch(console.trace)
 	}
 
 	function removeCashier(userId) {
 		fetch(`/trocs/${$troc._id}/cashier/remove`, getHeader({cashier: userId}))
 		.then(res => res.json())
-		.then(updateTroc)
+        .then(updateTroc)
+        .catch(console.trace)
     }
 
     function removeTrader(userId) {
 		fetch(`/trocs/${$troc._id}/trader/remove`, getHeader({trader: userId}))
 		.then(res => res.json())
         .then(updateTroc)
+        .catch(console.trace)
     }
 
 </script>

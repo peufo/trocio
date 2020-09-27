@@ -71,38 +71,42 @@
         let date = new Date()
         articlesValided.forEach(art => art.valided = date)
         
-        let res = await fetch('/articles', getHeader(articlesValided, 'PATCH'))
-        let json = await res.json()
-        if (res.ok && json.success) {
-
-            //Update details
-            let articlespatched = json.message
-            let sumFee = 0
-            articlespatched.forEach(article => {
-                let index = $details.provided.map(art => art._id).indexOf(article._id)
-                if (index > -1) {
-                    $details.provided[index].valided = article.valided
-                    $details.provided[index].fee = article.fee
-                    delete $details.provided[index].isRemovable
-                    $details.provided[index] = addStatutField($details.provided[index])
-                    sumFee += article.fee
-                } else {
-                    notify.error(`L'article mis à jour ne correspond pas à un de vos articles !`)
-                }
-            })
- 
-            $details.feeSum -= sumFee
-            $details.balance -= sumFee
-
-            nbNewArticles -= articlesValided.length
-
-            notify.success(articlespatched.length > 1 ? `${articlespatched.length} articles validés`: `Article validé`)
-
-            //Impression des étiquettes
-            if (optionAutoPrintTag) printArticles(articlesValided)
-            
-            return
-        }
+        try {
+            let res = await fetch('/articles', getHeader(articlesValided, 'PATCH'))
+            let json = await res.json()
+            if (res.ok && json.success) {
+    
+                //Update details
+                let articlespatched = json.message
+                let sumFee = 0
+                articlespatched.forEach(article => {
+                    let index = $details.provided.map(art => art._id).indexOf(article._id)
+                    if (index > -1) {
+                        $details.provided[index].valided = article.valided
+                        $details.provided[index].fee = article.fee
+                        delete $details.provided[index].isRemovable
+                        $details.provided[index] = addStatutField($details.provided[index])
+                        sumFee += article.fee
+                    } else {
+                        notify.error(`L'article mis à jour ne correspond pas à un de vos articles !`)
+                    }
+                })
+     
+                $details.feeSum -= sumFee
+                $details.balance -= sumFee
+    
+                nbNewArticles -= articlesValided.length
+    
+                notify.success(articlespatched.length > 1 ? `${articlespatched.length} articles validés`: `Article validé`)
+    
+                //Impression des étiquettes
+                if (optionAutoPrintTag) printArticles(articlesValided)
+                
+                return
+            }
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
 

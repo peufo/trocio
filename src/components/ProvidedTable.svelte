@@ -78,18 +78,22 @@
     }
 
     async function deleteArticle(artId) {
-		let res = await fetch(`/articles/${artId}`, getHeader({}, 'DELETE'))
-		let json = await res.json()
-		if (json.success) {
-			let index = $details.provided.map(art => art._id).indexOf(artId)
-			if (index == -1) return notify.error('Index not found')
-			$details.provided.splice(index, 1)
-			$details.provided = $details.provided
-
-            notify.success({title: 'Article supprimé', icon: 'far fa-trash-alt'})
-
-			return
-		}else notify.error(json.message)
+        try {
+            let res = await fetch(`/articles/${artId}`, getHeader({}, 'DELETE'))
+            let json = await res.json()
+            if (json.success) {
+                let index = $details.provided.map(art => art._id).indexOf(artId)
+                if (index == -1) return notify.error('Index not found')
+                $details.provided.splice(index, 1)
+                $details.provided = $details.provided
+    
+                notify.success({title: 'Article supprimé', icon: 'far fa-trash-alt'})
+    
+                return
+            }else notify.error(json.message)
+        } catch(error) {
+			console.trace(error)
+		}
     }
 
 </script>
