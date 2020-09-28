@@ -27,7 +27,7 @@
 		height: 100%;
 		text-transform: uppercase;
 		color: #fff;
-		background: url('/images/forest.png');
+		background: url('/images/forest-720.png');
 		background-position-x: center;
 		background-size: cover;
 	}
