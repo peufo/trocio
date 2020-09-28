@@ -44,7 +44,6 @@
     "compression": "^1.7.4",
     "connect-mongo": "^3.2.0",
     "cookie-parser": "^1.4.4",
-    "cypress": "^4.9.0",
     "dayjs": "^1.8.16",
     "debug": "~2.6.9",
     "del": "^5.1.0",
@@ -77,5 +76,8 @@
     "svelte-preprocess": "^4.3.2",
     "swiper": "^6.1.1",
     "uuid": "^8.3.0"
+  },
+  "optionalDependencies": {
+    "cypress": "^4.12.1"
   }
 }
