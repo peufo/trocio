@@ -69,7 +69,7 @@
 	async function getAddress(e) {
 		marker.setLatLng(e.latlng).addTo(map)
 		try {
-			let res = await fetch(`/geocode/${e.latlng.lat}+${e.latlng.lng}`)
+			let res = await fetch(`__API__/geocode/${e.latlng.lat}+${e.latlng.lng}`)
 			let json = await res.json()
 			setLocation({location: e.latlng, address: json[0].address})
 			return
@@ -86,7 +86,7 @@
 	async function getLocation() {
 		removeResults()
 		try {
-			let res = await fetch(`/geocode/${address}`)
+			let res = await fetch(`__API__/geocode/${address}`)
 			let json = await res.json()
 			if (json.length == 1) {
 				setLocation(json[0])

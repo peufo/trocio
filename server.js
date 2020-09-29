@@ -1,21 +1,23 @@
-const { TROCIO_PORT } = require('./config.js')
-let api = require('./api/server')
-let { ssr } = require('@sveltech/ssr')
-let express = require('express')
-let app = express()
-let ENTRYPOINT = 'dist/__app.html'
-let APP = 'dist/build/bundle.js'
+const { TROCIO_FRONT_PORT, TROCIO_API_HOST } = require('./config.js')
+const express = require('express')
+const app = express()
+const logger = require('morgan')
+const { createProxyMiddleware } = require('http-proxy-middleware')
+//const ENTRYPOINT = 'dist/__app.html'
+//const APP = 'dist/build/bundle.js'
 
-app.use(api)
+app.use(logger('dev'))
+
+app.use('/api', createProxyMiddleware({ pathRewrite: {'^/api': '/'}, target: TROCIO_API_HOST, changeOrigin: true }))
 
 app.use(express.static('dist'))
 
 app.get('*', async (req, res) => {
-    /*
+    /* const { ssr } = require('@sveltech/ssr')
     const html = await ssr(ENTRYPOINT, APP, req.url)
     res.send(html)
     */
-   res.sendFile(ENTRYPOINT, { root: __dirname })
+    res.sendFile(ENTRYPOINT, { root: __dirname })
 })
 
-app.listen(TROCIO_PORT, () => console.log(`Server listen on port ${TROCIO_PORT}`))
+app.listen(TROCIO_FRONT_PORT, () => console.log(`Server listen on port ${TROCIO_FRONT_PORT}`))

@@ -79,7 +79,7 @@
 
     async function deleteArticle(artId) {
         try {
-            let res = await fetch(`/articles/${artId}`, getHeader({}, 'DELETE'))
+            let res = await fetch(`__API__/articles/${artId}`, getHeader({}, 'DELETE'))
             let json = await res.json()
             if (json.success) {
                 let index = $details.provided.map(art => art._id).indexOf(artId)

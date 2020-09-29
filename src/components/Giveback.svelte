@@ -21,7 +21,7 @@
 
     /*
     async function getGivebacks() {
-        let res = await fetch(`/articles?user_giveback.user=${$details.user}&troc=${$details.troc}`)
+        let res = await fetch(`__API__/articles?user_giveback.user=${$details.user}&troc=${$details.troc}`)
 		let json = await res.json()		
         if (res.ok) {
 			$details.givebacks = json.data.map(art => {
@@ -81,7 +81,7 @@
             return {_id: art._id, giveback}
         })
         try {
-            let res = await fetch('/articles/giveback', getHeader(newGivebacks))
+            let res = await fetch('__API__/articles/giveback', getHeader(newGivebacks))
             let json = await res.json()
             if (res.ok && json.success) {
                 let givebacksUpdated = json.message

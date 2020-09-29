@@ -72,7 +72,7 @@
         articlesValided.forEach(art => art.valided = date)
         
         try {
-            let res = await fetch('/articles', getHeader(articlesValided, 'PATCH'))
+            let res = await fetch('__API__/articles', getHeader(articlesValided, 'PATCH'))
             let json = await res.json()
             if (res.ok && json.success) {
     

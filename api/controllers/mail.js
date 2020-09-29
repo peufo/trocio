@@ -2,7 +2,7 @@ let nodemailer = require('nodemailer')
 let Mailvalidator = require('../models/mailvalidator')
 let randomize = require('randomatic')
 const { 
-    TROCIO_HOST,
+    TROCIO_API_HOST,
     TROCIO_SMTP_HOST,
     TROCIO_SMTP_PORT,
     TROCIO_SMTP_PASS,
@@ -42,7 +42,7 @@ module.exports = {
                     <b>${user.name}</b>, votre inscription s'est correctement déroulé. 
                 </p>
                 <p>
-                    <a href="${TROCIO_HOST}/users/validmail/${user._id}/${mailValidator.url}">
+                    <a href="${TROCIO_API_HOST}/users/validmail/${user._id}/${mailValidator.url}">
                         Cliquer ici pour valider votre adresse mail.
                     </a>
                 </p>
@@ -71,7 +71,7 @@ module.exports = {
             mailOptions.html = `
                 <h2>Validation de votre adresse mail</h2>
                 <p>
-                    <a href="${TROCIO_HOST}/${user._id}/${mailValidator.url}">
+                    <a href="${TROCIO_API_HOST}/${user._id}/${mailValidator.url}">
                         Cliquer ici pour valider votre adresse mail.
                     </a>
                 </p>

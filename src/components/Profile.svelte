@@ -26,7 +26,7 @@
 
     async function patchName() {
         try {
-            let res = await fetch('/users/me', getHeader({name: $user.name}, 'PATCH'))
+            let res = await fetch('__API__/users/me', getHeader({name: $user.name}, 'PATCH'))
             let json = await res.json()
             if (json.success) {
                 changeName = false
@@ -41,7 +41,7 @@
     
     async function patchMail() {
         try {
-            let res = await fetch('/users/me', getHeader({mail: $user.mail}, 'PATCH'))
+            let res = await fetch('__API__/users/me', getHeader({mail: $user.mail}, 'PATCH'))
             let json = await res.json()
             if (json.success) {
                 changeMail = false
@@ -58,7 +58,7 @@
 
     async function sendMailValidator() {
         try {
-            let res = await fetch('/users/sendvalidmail', getHeader({}))
+            let res = await fetch('__API__/users/sendvalidmail', getHeader({}))
             let json = await res.json()
             if (json.success) {
                 mailValidatorSent = true
@@ -73,7 +73,7 @@
 
     async function validChangePassword() {
         try {
-            let res = await fetch('/users/changepwd', getHeader({oldPassword, newPassword}))
+            let res = await fetch('__API__/users/changepwd', getHeader({oldPassword, newPassword}))
             let json = await res.json()
             if (json.success) {
                 changePassword = false

@@ -10,7 +10,7 @@
     let angles = []
     onMount(() => {
         //Desable SSR
-        if(typeof window !== 'undefined') {
+        if(!navigator.userAgent.includes("jsdom")) {
             angles = Array(number).fill().map((n, i) => {
                 return i * (360 / number)
             })

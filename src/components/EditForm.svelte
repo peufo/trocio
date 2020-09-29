@@ -94,7 +94,7 @@
 	async function create() {
 		if (invalid) return notify.warning(invalid)
 		try {
-			let res = await fetch(`/trocs`, getHeader({name, address, location, description, schedule, society, societyweb}))
+			let res = await fetch(`__API__/trocs`, getHeader({name, address, location, description, schedule, society, societyweb}))
 			let json = await res.json()
 			if (json.error) return notify.error(json.message)
 			notify.success('Nouveau troc créer !')

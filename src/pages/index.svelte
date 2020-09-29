@@ -6,8 +6,8 @@
     import Button from '@smui/button'
     import Footer from 'Footer.svelte'
     import { user } from "stores.js";
-    import { prefetch } from '@sveltech/routify'
-    prefetch('/search', { validFor: 60 * 1 })
+    //import { prefetch } from '@sveltech/routify'
+    //prefetch('/search', { validFor: 60 * 1 })
 
 </script>
 
@@ -29,16 +29,17 @@
     <p class="w3-xxlarge" style="margin-top: 6px; margin-bottom: 66px;">
         Pour troquer organisé
     </p>
-    
  
     <div class="w3-row">
 
         <div class="w3-col l6">
             <div class="rayons">
+                
                 <Rayons/>
                 <!--
                 <Logo duration="20" cubeSize="50"/>
                 -->
+                
             </div>
         </div>
 

@@ -97,7 +97,7 @@
 
 	async function loadTrocs(skip = 0) {
 		console.log('get trocs')
-		let query = `/trocs/search?search=${search}&skip=${skip}`
+		let query = `__API__/trocs/search?search=${search}&skip=${skip}`
 
 		if (timeFilter) {
 			if (start) query += `&start=${start}`
@@ -156,7 +156,7 @@
 		if ($user) {
 			let troc = trocs[trocs.map(t => t._id).indexOf(trocId)]
 			if (!troc.isSubscribed) {
-				let res = await fetch('/subscribes', getHeader({troc: trocId}))
+				let res = await fetch('__API__/subscribes', getHeader({troc: trocId}))
 				let json = await res.json()
 				if (json.error) return notify.error(json.message)
 				notify.success('Vous participez à un nouveau troc')

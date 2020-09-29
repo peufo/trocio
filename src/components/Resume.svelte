@@ -75,7 +75,7 @@
 
 		try {
 
-			let res = await fetch('/articles', getHeader(importArticles))
+			let res = await fetch('__API__/articles', getHeader(importArticles))
 			let json = await res.json()
 			if (json.success) {
 				let articlesImported = json.message

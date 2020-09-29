@@ -31,7 +31,7 @@
 
     async function getArticles() {
         try {
-            let res = await fetch(`/articles?troc=${troc}&search_name=${search}&skip=${articles.length}&limit=${LIMIT}`)
+            let res = await fetch(`__API__/articles?troc=${troc}&search_name=${search}&skip=${articles.length}&limit=${LIMIT}`)
             let json = await res.json()
             if(res.ok) {
     

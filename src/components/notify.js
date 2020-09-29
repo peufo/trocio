@@ -37,6 +37,8 @@ function warning(options) {
 }
 
 function error(options) {
+    console.trace(options)
+    if (options.stack) options = {title: options.message, text: options.stack} // Error type
     return PNotify.error(formatOptions(options, 'fas fa-bug'))
 }
 

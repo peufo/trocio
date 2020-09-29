@@ -1,13 +1,14 @@
 let express = require('express')
 let cookieParser = require('cookie-parser')
 let logger = require('morgan')
-let { TROCIO_DB, TROCIO_DEV, TROCIO_SECRET_STRING_COOKIE } = require('../config.js')
+let { TROCIO_API_PORT, TROCIO_FRONT_HOST, TROCIO_DB, TROCIO_DEV, TROCIO_SECRET_STRING_COOKIE } = require('../config.js')
 let { checkSuperAdmin } = require('./controllers/user_utils')
 let session = require('express-session')
 let mongoose = require('mongoose')
 let MongoStore = require('connect-mongo')(session)
 const compression = require('compression')
 let createError = require('http-errors')
+
 
 let catchError404 = (req, res, next) => next(createError(404))
 
@@ -58,5 +59,7 @@ app.use(function(err, req, res, next) {
   	}
   
 })
+
+app.listen(TROCIO_API_PORT, () => console.log(`API listen on port ${TROCIO_API_PORT}`))
 
 module.exports = app

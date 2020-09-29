@@ -52,7 +52,7 @@
 
     async function Register() {
         try {
-            let res = await fetch('/users', getHeader({name, mail, password}))
+            let res = await fetch('__API__/users', getHeader({name, mail, password}))
             let json = await res.json()
             if (json.success) {
                 if ($user) {//Un Cassier à créer un utilisateur
@@ -71,7 +71,7 @@
     }   
     /*
     async function Login(){
-        let res = await fetch('/users/login', getHeader({mail, password}))
+        let res = await fetch('__API__/users/login', getHeader({mail, password}))
         let json = await res.json()
         if (res.ok) {
             $user = json
@@ -97,7 +97,7 @@
 
     async function Reset() {
         try {
-            let res = await fetch('/users/resetpwd', getHeader({mail}))
+            let res = await fetch('__API__/users/resetpwd', getHeader({mail}))
             let json = await res.json()
             if (res.ok) {
                 alert('Votre nouveau mot de passe vous à été envoyé par mail')

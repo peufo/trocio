@@ -116,7 +116,7 @@
 
     async function getTarif(trocId, userId) {
         try {
-            let res = await fetch(`/trocs/${trocId}/tarif/${userId}`)
+            let res = await fetch(`__API__/trocs/${trocId}/tarif/${userId}`)
             let json = await res.json()
             tarif = json
         } catch(error) {
@@ -134,7 +134,7 @@
 
             if (confirm(message)) {
                 try {
-                    let res = await fetch(`/articles/newprice`, getHeader({_id: article._id, price: articleEdited.price}, 'POST'))
+                    let res = await fetch(`__API__/articles/newprice`, getHeader({_id: article._id, price: articleEdited.price}, 'POST'))
                     let json = await res.json()
                     if (res.ok) {
                         articleEdited.newPriceRequest = json.data.newPriceRequest
@@ -155,7 +155,7 @@
         //Patch request
         if (testIsModifed()) {
             try {
-                let res = await fetch(`/articles`, getHeader(articleEdited, 'PATCH'))
+                let res = await fetch(`__API__/articles`, getHeader(articleEdited, 'PATCH'))
                 let json = await res.json()
                 if (res.ok) {
                     dispatch('patched', articleEdited)

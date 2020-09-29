@@ -24,7 +24,7 @@
 		try {
 			let body = {troc: $details.troc, provider: $details.user, name: newName, price: newPrice}
 			console.log(body)
-			let res = await fetch('/articles', getHeader(body))
+			let res = await fetch('__API__/articles', getHeader(body))
 			let json = await res.json()
 			if (json.success) {
 				

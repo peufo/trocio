@@ -10,7 +10,7 @@
     let isRootUser = false
 
     onMount(() => {
-        fetch('/superadmin')
+        fetch('__API__/superadmin')
         .then(res => res.json())
         .then(json => {
             if (json.success) {
@@ -30,7 +30,7 @@
 
     async function selectUser(event){
         try {
-            let res = await fetch(`/superadmin/users?_id=${event.detail._id}`)
+            let res = await fetch(`__API__/superadmin/users?_id=${event.detail._id}`)
             let json = await res.json()
             userSelected = json[0]
             return
@@ -41,7 +41,7 @@
 
     async function addCredit() {
         try {
-            let res = await fetch(`/superadmin/addcredit`, getHeader({user: userSelected._id}))
+            let res = await fetch(`__API__/superadmin/addcredit`, getHeader({user: userSelected._id}))
             let json = await res.json()
             if (json.error) return notify.error(json.message)
             userSelected.creditTroc++
@@ -53,7 +53,7 @@
 
     async function getOptions() {
         try {
-            let res = await fetch('/superadmin/options')
+            let res = await fetch('__API__/superadmin/options')
             let json = await res.json()
             options = json
         } catch(error) {

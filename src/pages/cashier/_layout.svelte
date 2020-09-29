@@ -49,7 +49,7 @@
 			clientPlaceHodler = 'Anonyme'
 		}else if ($params.client) {
 			try {
-				let res = await fetch(`/users/name/${$params.client}`)
+				let res = await fetch(`__API__/users/name/${$params.client}`)
 				client = await res.json()
 				searchClient = client.name
 				clientOk = true
@@ -127,7 +127,7 @@
 			message: $details.balance > 0 ? `Versé par ${$user.name}` : `Encaissé par ${$user.name}`
 		}
 		try {
-			let res = await fetch(`/payments`, getHeader(payment))
+			let res = await fetch(`__API__/payments`, getHeader(payment))
 			let json = await res.json()
 			if (res.ok && json.success) {
 				let newPayment = json.message

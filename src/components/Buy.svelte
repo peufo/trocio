@@ -101,7 +101,7 @@
         })
 
         try {
-            let res = await fetch('/articles', getHeader(patchedArticles, 'PATCH'))
+            let res = await fetch('__API__/articles', getHeader(patchedArticles, 'PATCH'))
             let json = await res.json()
             if (res.ok && json.success) {
                 let newPurchases = json.message

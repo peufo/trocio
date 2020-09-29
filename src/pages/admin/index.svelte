@@ -42,7 +42,7 @@
 	})
 
 	function saveMeta(e) {
-		fetch(`/trocs/${$troc._id}`, getHeader(e.detail, 'PATCH'))
+		fetch(`__API__/trocs/${$troc._id}`, getHeader(e.detail, 'PATCH'))
 		.then(res => res.json())
         .then(updateTroc)
         .catch(console.trace)

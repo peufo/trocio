@@ -166,7 +166,7 @@ export function convertDMS(lat, lng) {
 
 export async function getDetail(troc, user) {
 	try {
-		let details = await fetch(`/trocs/details?user=${user}&troc=${troc}`).then(res => res.json())
+		let details = await fetch(`__API__/trocs/details?user=${user}&troc=${troc}`).then(res => res.json())
 		if (details.provided) details.provided = addStatutField(details.provided, '')
 		//select last giveback
 		console.log({givebacks: details.givebacks})

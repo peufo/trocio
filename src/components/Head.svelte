@@ -1,11 +1,11 @@
 <script>
+
 	import { user, userPromise, troc } from './stores'
 	import Menu from '@smui/menu'
 	import List, { Item, Graphic } from '@smui/list'
 	import Button from '@smui/button'
 	import Dialog, {Content} from '@smui/dialog'
 	import TopAppBar, {Row, Section, Title} from '@smui/top-app-bar'
-
 	import Login from './Login.svelte'
 
 	let dialogLogin
