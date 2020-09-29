@@ -1,12 +1,11 @@
-require('dotenv').config()
-var express = require('express')
-var cookieParser = require('cookie-parser')
-var logger = require('morgan')
-var { DBPATH, SECRET_STRING_COOKIE } = require('../config.js')
-var { checkSuperAdmin } = require('./controllers/user_utils')
-var session = require('express-session')
-var mongoose = require('mongoose')
-var MongoStore = require('connect-mongo')(session)
+let express = require('express')
+let cookieParser = require('cookie-parser')
+let logger = require('morgan')
+let { TROCIO_DB, TROCIO_DEV, TROCIO_SECRET_STRING_COOKIE } = require('../config.js')
+let { checkSuperAdmin } = require('./controllers/user_utils')
+let session = require('express-session')
+let mongoose = require('mongoose')
+let MongoStore = require('connect-mongo')(session)
 const compression = require('compression')
 let createError = require('http-errors')
 
@@ -14,21 +13,22 @@ let catchError404 = (req, res, next) => next(createError(404))
 
 //Connection database
 try {
-	mongoose.connect(DBPATH, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true})
+	mongoose.connect(TROCIO_DB, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true})
 }catch (error) {
 	console.log(error)
 }
 
-var app = express()
+let app = express()
 
-app.set('secret', SECRET_STRING_COOKIE)
+app.set('secret', TROCIO_SECRET_STRING_COOKIE)
+if (!TROCIO_SECRET_STRING_COOKIE && !TROCIO_DEV) console.warn('A SECRET_STRING_COOKIE must be defined')
 
 app.use(logger('dev'))
 app.use(express.json({limit: '2mb', extended: true}))
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(session({
-	secret: SECRET_STRING_COOKIE,
+	secret: TROCIO_SECRET_STRING_COOKIE,
     cookie: {maxAge: 72*60*60*1000},
     store: new MongoStore({mongooseConnection: mongoose.connection}),
     resave: false,

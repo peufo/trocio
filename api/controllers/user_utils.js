@@ -1,5 +1,6 @@
 let User = require('../models/user')
 let createError = require('http-errors')
+let { TROCIO_ADMIN } = require('../../config.js')
 
 function checkLogin(req, res, next) {
     if (!req.session.user) return next(createError(401))
@@ -8,8 +9,8 @@ function checkLogin(req, res, next) {
 
 function checkSuperAdmin(req, res, next) {
     if (!req.session.user) return next(createError(401))
-    if (!process.env.TROCIO_ADMIN) return next(Error('The environment variable TROCIO_ADMIN is undefined'))
-    if (process.env.TROCIO_ADMIN != req.session.user.mail) return next(Error('Access denied'))
+    if (!TROCIO_ADMIN) return next(Error('The environment variable TROCIO_ADMIN is undefined'))
+    if (TROCIO_ADMIN != req.session.user.mail) return next(Error('Access denied'))
     next()
 }
     

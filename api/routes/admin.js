@@ -1,8 +1,9 @@
-var router 	= require('express').Router()
-var User = require('../models/user')
-var Troc = require('../models/troc')
-var Article = require('../models/article')
-var Payment = require('../models/payment')
+const config = require('../../config.js')
+let router 	= require('express').Router()
+let User = require('../models/user')
+let Troc = require('../models/troc')
+let Article = require('../models/article')
+let Payment = require('../models/payment')
 
 
 router
@@ -11,7 +12,7 @@ router
     })
     .get('/options', (req, res, next) => {
         let options = []
-        for (const key in process.env) {
+        for (const key in config) {
             if (key.indexOf('TROCIO_OPTIONS_') === 0) {
                 options.push({name: key.replace('TROCIO_OPTIONS_', ''), value: process.env[key]})
             }

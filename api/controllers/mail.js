@@ -1,13 +1,20 @@
-var nodemailer = require('nodemailer')
-var Mailvalidator = require('../models/mailvalidator')
-var randomize = require('randomatic')
+let nodemailer = require('nodemailer')
+let Mailvalidator = require('../models/mailvalidator')
+let randomize = require('randomatic')
+const { 
+    TROCIO_HOST,
+    TROCIO_SMTP_HOST,
+    TROCIO_SMTP_PORT,
+    TROCIO_SMTP_PASS,
+    TROCIO_SMTP_USER
+} = require('../../config.js')
 
-var transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
+let transporter = nodemailer.createTransport({
+    host: TROCIO_SMTP_HOST,
+    port: TROCIO_SMTP_PORT,
 	auth: {
-		user: process.env.SMTP_USER,
-		pass: process.env.SMTP_PASS
+		user: TROCIO_SMTP_USER,
+		pass: TROCIO_SMTP_PASS
 	}
 })
 
@@ -19,7 +26,7 @@ transporter.verify(function(err, success) {
     }
 })
 
-var mailOptions = {
+let mailOptions = {
     from: 'TROCIO <postmaster@trocio.ch>'
 }
 
@@ -35,7 +42,7 @@ module.exports = {
                     <b>${user.name}</b>, votre inscription s'est correctement déroulé. 
                 </p>
                 <p>
-                    <a href="${process.env.BASE_MAIL_URL}/${user._id}/${mailValidator.url}">
+                    <a href="${TROCIO_HOST}/users/validmail/${user._id}/${mailValidator.url}">
                         Cliquer ici pour valider votre adresse mail.
                     </a>
                 </p>
@@ -64,7 +71,7 @@ module.exports = {
             mailOptions.html = `
                 <h2>Validation de votre adresse mail</h2>
                 <p>
-                    <a href="${process.env.BASE_MAIL_URL}/${user._id}/${mailValidator.url}">
+                    <a href="${TROCIO_HOST}/${user._id}/${mailValidator.url}">
                         Cliquer ici pour valider votre adresse mail.
                     </a>
                 </p>

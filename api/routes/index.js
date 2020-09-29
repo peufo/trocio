@@ -1,3 +1,4 @@
+const { TROCIO_OCD_API_KEY } = require('../../config.js')
 let express = require('express')
 let router = express.Router()
 let got = require('got')
@@ -9,8 +10,8 @@ router
 		res.sendFile(path.join(__dirname, '..', '..', 'views', 'mailConfirmation.html'))
 	})
 	.get('/geocode/:query', (req, res, next) => {
-		if (!process.env.OCD_API_KEY) return next(Error('Variable environement OCD_API_KEY is undefined ! Please visite https://opencagedata.com/api'))
-		got(`https://api.opencagedata.com/geocode/v1/json?q=${req.params.query}&language=fr&key=${process.env.OCD_API_KEY}`, {json: true})
+		if (!TROCIO_OCD_API_KEY) return next(Error('Variable environement TROCIO_OCD_API_KEY is undefined ! Please visite https://opencagedata.com/api'))
+		got(`https://api.opencagedata.com/geocode/v1/json?q=${req.params.query}&language=fr&key=${TROCIO_OCD_API_KEY}`, {json: true})
 		.then(response => {
 			if (!response.body.results) return next(Error('No result'))
 			var formatted = response.body.results.map(r => {

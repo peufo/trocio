@@ -1,11 +1,10 @@
+const { TROCIO_PORT } = require('./config.js')
 let api = require('./api/server')
 let { ssr } = require('@sveltech/ssr')
 let express = require('express')
 let app = express()
 let ENTRYPOINT = 'dist/__app.html'
 let APP = 'dist/build/bundle.js'
-let { PORT } = process.env
-PORT = PORT || 5000
 
 app.use(api)
 
@@ -19,4 +18,4 @@ app.get('*', async (req, res) => {
    res.sendFile(ENTRYPOINT, { root: __dirname })
 })
 
-app.listen(PORT, () => console.log(`Server listen on port ${PORT}`))
+app.listen(TROCIO_PORT, () => console.log(`Server listen on port ${TROCIO_PORT}`))

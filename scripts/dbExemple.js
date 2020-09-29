@@ -5,14 +5,14 @@ const Troc = require('../api/models/troc')
 const Subscribe = require('../api/models/subscribe')
 const Payment = require('../api/models/payment')
 
-var { DBPATH } = require('../config.js')
+var { TROCIO_DB } = require('../config.js')
 
 function drop(cb) {
-    mongoose.connect(DBPATH, { useNewUrlParser: true, useUnifiedTopology: true})
+    mongoose.connect(TROCIO_DB, { useNewUrlParser: true, useUnifiedTopology: true})
     mongoose.connection.once('open', () => {
         console.log('New connection ')
         mongoose.connection.db.dropDatabase(() => {
-            console.log(`Data base ${DBPATH} is dropped !`)
+            console.log(`Data base ${TROCIO_DB} is dropped !`)
             cb()
         })
     })
