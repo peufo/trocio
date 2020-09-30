@@ -115,7 +115,7 @@ function validMail(req, res, next) {
                 mv.remove(err => {
                     if (err) return next(err)
                     if (req.session.user) res.redirect('/me')
-                    else res.redirect('/mailConfirmation')
+                    else res.redirect('/mail-confirmation')
                 })					
             })
         })

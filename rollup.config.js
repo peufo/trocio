@@ -1,9 +1,9 @@
-const { TROCIO_API_HOST, TROCIO_DEV } = require('./config.js') 
+const { TROCIO_FRONT_HOST, TROCIO_API_HOST, TROCIO_DEV } = require('./config.js') 
 import { createRollupConfigs } from './scripts/base.config.js'
 import autoPreprocess from 'svelte-preprocess'
 import postcssImport from 'postcss-import'
 import postcss from 'rollup-plugin-postcss'
-import alias from 'rollup-plugin-alias'
+import alias from '@rollup/plugin-alias'
 import replace from '@rollup/plugin-replace'
 import fs from 'fs'
 import path from 'path'
@@ -42,7 +42,7 @@ export const config = {
 	rollupWrapper: rollup => {
 		rollup.plugins = [
 			aliases,
-			replace({__API__: '/api'}),
+			replace({__API__: `${TROCIO_FRONT_HOST}/api`}),
 			...rollup.plugins,
 			postcss(postcssOptions())
 		]

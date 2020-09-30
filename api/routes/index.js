@@ -6,9 +6,6 @@ let path = require('path')
 let bwipjs = require('bwip-js')
 
 router
-	.get('/mailConfirmation', (req, res, next) => {
-		res.sendFile(path.join(__dirname, '..', '..', 'views', 'mailConfirmation.html'))
-	})
 	.get('/geocode/:query', (req, res, next) => {
 		if (!TROCIO_OCD_API_KEY) return next(Error('Variable environement TROCIO_OCD_API_KEY is undefined ! Please visite https://opencagedata.com/api'))
 		got(`https://api.opencagedata.com/geocode/v1/json?q=${req.params.query}&language=fr&key=${TROCIO_OCD_API_KEY}`, {json: true})
