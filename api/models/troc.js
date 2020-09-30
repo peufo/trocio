@@ -18,7 +18,7 @@ let trocModel = new Schema({
 	cashier: [{type: ObjectId, ref: 'user'}],
 	trader: [{user : {type: ObjectId, ref: 'user'}, prefix: {type: String, uppercase: true}}],
 	schedule: [{open: Date, close: Date}],
-	tarif: [{	
+	tarif: [{
 		name: String,
 		bydefault: Boolean,
 		apply: [{type: ObjectId, ref: 'user'}], //Non nécéssaire pour le standard

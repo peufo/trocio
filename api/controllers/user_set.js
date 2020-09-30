@@ -5,7 +5,6 @@ let randomize = require('randomatic')
 
 
 function createUser(req, res, next) {
-    req.body.creditTroc = 0
 
     //Dans le cas ou l'utilisateur est déjà connecté
     //il sagit d'un cassier qui créer un compte pour un client 

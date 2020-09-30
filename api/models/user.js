@@ -8,16 +8,16 @@ var mongoose = require('mongoose'),
 	EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 var userModel = new Schema({
-	name: { type: String, required: true},
+	name: {type: String, required: true},
 	ref: Number, //Old id
 	birth: Date,
 	phone: String,
-	mail: { type: String, required: true, lowercase: true, unique: true, validate: EMAIL_REGEX },
-	mailvalided : { type: Boolean, default: false },
-	password: { type: String, required: true },
+	mail: {type: String, required: true, lowercase: true, unique: true, validate: EMAIL_REGEX},
+	mailvalided : { type: Boolean, default: false},
+	password: {type: String, required: true},
 	loginAttempts: {type: Number, required: true, default: 0},
 	lockUntil: Number,
-	creditTroc: Number
+	creditTroc: {type: Number, default: 0}
 })
 
 userModel.set('timestamps', true)

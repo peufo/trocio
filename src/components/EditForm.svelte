@@ -47,7 +47,7 @@
 		if (!!e) e.preventDefault()
 		if (scheduleIn.length == 0) {
 			scheduleIn = [...scheduleIn, {
-				day: dayjs().format('YYYY-MM-DD'),
+				day: dayjs().add(7, 'day').format('YYYY-MM-DD'),
 				open: dayjs().hour(8).minute(0).format('HH:mm'),
 				close: dayjs().hour(18).minute(0).format('HH:mm')
 			}]			

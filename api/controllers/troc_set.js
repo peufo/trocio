@@ -1,23 +1,23 @@
 var Troc = require('../models/troc')
 var User = require('../models/user')
 var Subscribe = require('../models/subscribe')
-let { lookupIfAdmin, populateTrocUser } = require('../controllers/troc_utils')
+let { lookupIfAdmin, populateTrocUser, scheduleValidation } = require('../controllers/troc_utils')
 
 function createTroc(req, res, next) {
 	if (!req.session.user) return next(Error('Login required'))
-	
+
+	let err = scheduleValidation(req.body)
+	if (err) return next(err)
+
 	var troc = new Troc(req.body)
 	troc.creator = req.session.user._id
 	troc.admin = [req.session.user._id]
-	troc.tarif = {
+	troc.tarif = [{
 		name: 'Standard', 
 		bydefault: true,
-		margin: 0.1,
-		fee: [
-			{price: 0, value: 0.5},
-			{price: 5, value: 1}
-		]
-	}
+		margin: 0,
+		fee: [{price: 0, value: 0}]
+	}]
 	
 	let subscribe = new Subscribe({user: req.session.user._id, troc: troc._id})
 
@@ -40,7 +40,11 @@ function patchTroc(req, res, next) {
     if (!req.session.user) return next(Error('Login required'))
     Troc.findOne({_id: req.params.id}).exec((err, troc) => {
         if (err || !troc) return next(err || Error('Not found'))
-        if (troc.schedule[0].open.getTime() < new Date().getTime()) return next(Error('Troc is started'))
+		if (troc.schedule[0].open.getTime() < new Date().getTime()) return next(Error(`You can't edit a troc after he's started`))
+		
+		err = scheduleValidation(req.body)
+		if (err) return next(err)
+
         if (req.body._id) delete req.body._id
         if (req.body.__v) delete req.body.__v
         for(p in req.body){troc[p] = req.body[p]}
