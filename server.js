@@ -3,7 +3,7 @@ const express = require('express')
 const app = express()
 const logger = require('morgan')
 const { createProxyMiddleware } = require('http-proxy-middleware')
-//const ENTRYPOINT = 'dist/__app.html'
+const ENTRYPOINT = 'dist/__app.html'
 //const APP = 'dist/build/bundle.js'
 
 app.use(logger('dev'))
