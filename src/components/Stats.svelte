@@ -133,7 +133,6 @@
         try {
             let res = await fetch(`__API__${req}`)
             let json = await res.json()
-            console.log(json)
     
             articlesProposed = json.articlesProposed
             articlesProvided = articlesProposed.filter(art => art.valided)
