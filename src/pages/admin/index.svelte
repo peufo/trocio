@@ -49,8 +49,8 @@
 	}
 
 	function removeTarif(i) {
-		$troc.tarif.splice(i, 1)
-		$troc.tarif = $troc.tarif
+        $troc.tarif = [...$troc.tarif.slice(0, i), ...$troc.tarif.slice(i + 1)]
+        changeFlag = true
 	}
 
 	let changeFlag = false //For SearchUser to AutoPatch 
@@ -118,7 +118,7 @@
                 </div>
 
             {:else if tabActived.ref === 'tarif'}
-                <AutoPatch source="editTarif" body="{{tarif: $troc.tarif}}" path="{`/trocs/${$troc._id}`}" bind:changeFlag={changeFlag} trocRefresh/>
+                <AutoPatch source="editTarif" body={{tarif: $troc.tarif}} path={`/trocs/${$troc._id}`} bind:changeFlag={changeFlag} trocRefresh/>
                 <div id="editTarif" in:fade>
                     {#each $troc.tarif as tarif, i}
                         <Tarif 	index={i}
@@ -128,12 +128,12 @@
                                 bind:fee={tarif.fee}
                                 bind:maxarticles={tarif.maxarticles}
                                 bind:bydefault={tarif.bydefault}
-                                on:remove="{() => removeTarif(i)}"
-                                on:selectUser="{() => changeFlag = true}"
-                                on:removeUser="{() => changeFlag = true}"/>
+                                on:remove={() => removeTarif(i)}
+                                on:selectUser={() => changeFlag = true}
+                                on:removeUser={() => changeFlag = true}/>
                     {/each}
                     <div id="addTarif">
-                        <div on:click="{() => $troc.tarif = [...$troc.tarif, {}]}"
+                        <div on:click={() => $troc.tarif = [...$troc.tarif, {fee: [], apply: []}]}
                             class="patchButton w3-button w3-border w3-round w3-right">
                             +1 tarif
                         </div>

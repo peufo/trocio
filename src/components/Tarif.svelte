@@ -32,7 +32,6 @@
 		}
 	}
 
-
 	let pourcent = margin * 100
 	//Pas util de calculé à chaque fois
 	$: margin = pourcent / 100
@@ -64,7 +63,7 @@
 <div class="tarif w3-card w3-padding w3-round w3-margin-bottom" in:slide>
 
 	<input bind:value={name} type="text" placeholder="Nom du tarif" readonly={bydefault} class="name w3-input w3-large w3-center">
-	<i 	on:click="{remove}" 
+	<i 	on:click={remove}
 		class:w3-hide={bydefault}
 		class="remove fa fa-times w3-large w3-right w3-padding"></i>
 
@@ -113,12 +112,12 @@
 								min="{i == 0 ? 0 : fee[i - 1].value}" 
 								max="{i == fee.length - 1 ? '' : fee[i + 1].value}">
 					</div>
-					<i 	on:click="{() => removeFee(i)}"
+					<i 	on:click={() => removeFee(i)}
 						class="patchButton fa fa-times w3-large w3-right w3-padding"></i>
 				</div>
 			{/each}
 
-			<div on:click="{addFee}"
+			<div on:click={addFee}
 				class="patchButton w3-button w3-border w3-round w3-margin-top w3-right">
 				+1 règle
 			</div>
@@ -202,9 +201,11 @@
 	}
 
 	.fa-times {
+		cursor: pointer;
+	}
+	.fee .fa-times {
 		transform: scale(0);
 		transition: all 0.2s ease;
-		cursor: pointer;
 	}
 	.fee:hover .fa-times {
 		transform: scale(1);
