@@ -5,7 +5,9 @@
     import Rayons from 'Rayons.svelte'
     import Button from '@smui/button'
     import Footer from 'Footer.svelte'
-    import { user } from "stores.js";
+    import { user } from "stores.js"
+    
+    //Ralentie considerablement l'animation de départ
     //import { prefetch } from '@sveltech/routify'
     //prefetch('/search', { validFor: 60 * 1 })
 
@@ -36,10 +38,9 @@
             <div class="rayons">
                 
                 <Rayons/>
-                <!--
+
                 <Logo duration="20" cubeSize="50"/>
-                -->
-                
+                                
             </div>
         </div>
 

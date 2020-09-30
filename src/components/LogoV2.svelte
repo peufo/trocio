@@ -7,6 +7,7 @@
 
     const WIDTH = 200
     const HEIGHT = 200
+    const FREQUENCE = 20 // image/second
     const OX = WIDTH / 2
     const OY = HEIGHT / 2
 
@@ -96,8 +97,8 @@
 
     onMount(() => {
         animation = setInterval(() => {
-            cube.rotateX3D((360 / 25) / duration)
-        }, 40)
+            cube.rotateX3D((360 / FREQUENCE) / duration)
+        }, 1000 / FREQUENCE)
 
     })
 
@@ -175,7 +176,17 @@
         position: absolute;
         left: 50%;
         top: 50%;
-        transform: translate(-50%, -50%)
+        transform: translate(-50%, -50%);
+    }
+
+    svg {
+        animation-name: scaleIn;
+        animation-duration: 6s;
+    }
+
+    @keyframes scaleIn {
+        from {transform: scale(0)}
+        to {transform: scale(1)}
     }
 
 </style>
