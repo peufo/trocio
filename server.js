@@ -5,10 +5,11 @@ const logger = require('morgan')
 const { createProxyMiddleware } = require('http-proxy-middleware')
 const ENTRYPOINT = 'dist/__app.html'
 //const APP = 'dist/build/bundle.js'
+const cors = require('cors')
 
 app.use(logger('dev'))
 
-app.use('/api', createProxyMiddleware({ pathRewrite: {'^/api': '/'}, target: TROCIO_API_HOST, changeOrigin: true }))
+app.use('/api', cors({origin: TROCIO_API_HOST}), createProxyMiddleware({ pathRewrite: {'^/api': '/'}, target: TROCIO_API_HOST, changeOrigin: true }))
 
 app.use(express.static('dist'))
 
