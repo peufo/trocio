@@ -39,11 +39,15 @@ function createTroc(req, res, next) {
 function patchTroc(req, res, next) {
     if (!req.session.user) return next(Error('Login required'))
     Troc.findOne({_id: req.params.id}).exec((err, troc) => {
-        if (err || !troc) return next(err || Error('Not found'))
-		if (troc.schedule[0].open.getTime() < new Date().getTime()) return next(Error(`You can't edit a troc after he's started`))
-		
-		err = scheduleValidation(req.body)
-		if (err) return next(err)
+		if (err || !troc) return next(err || Error('Not found'))
+
+		//Verifie si l'horaire est modifier
+		if (req.body.schedule && JSON.stringify(req.body.schedule) !== JSON.stringify(troc.schedule)){
+			if (troc.schedule[0].open.getTime() < new Date().getTime())
+				return next(Error(`You cannot edit shedule of troc after he's started`))
+			err = scheduleValidation(req.body)
+			if (err) return next(err)
+		}
 
         if (req.body._id) delete req.body._id
         if (req.body.__v) delete req.body.__v
