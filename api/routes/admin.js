@@ -13,7 +13,7 @@ router
     .get('/options', (req, res, next) => {
         let options = []
         for (const key in config) {
-            if (key.indexOf('TROCIO_OPTIONS_') === 0) {
+            if (key.indexOf('TROCIO_OPTION_') === 0) {
                 options.push({name: key.replace('TROCIO_OPTIONS_', ''), value: process.env[key]})
             }
         }
