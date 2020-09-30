@@ -158,7 +158,7 @@
 
     {/if}
 
-    {#if isClosed}<span class="warning">Terminé</span>{/if}
+    {#if isClosed}<span class="warning">Ce troc est terminé</span>{/if}
 
 </div>
 

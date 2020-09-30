@@ -108,7 +108,7 @@
         })
 
         try {
-            let res = await fetch(req)
+            let res = await fetch(`__API__${req}`)
             let json = await res.json()
             let newItems = []
     
