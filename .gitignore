@@ -1,7 +1,8 @@
 /node_modules/
 /dist/
-.env
+/dump/
 package-lock.json
+.env
 .routify
 .htaccess
 .htpasswd

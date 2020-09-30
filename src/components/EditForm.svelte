@@ -186,6 +186,14 @@
 		</div>
 		<br><br>
 	{:else}
+
+		<br>
+		<div class="w3-opactity w3-center w3-margin w3-text-red">
+			<span class="w3-opacity w3-center">
+				Attention,vous ne pourrez plus modifier ces informations une fois que l'évenement aurra débuté.
+			</span>
+		</div>
+
 		<AutoPatch 	source="editForm"
 				path="{`/trocs/${_id}`}"
 				invalid={invalid}

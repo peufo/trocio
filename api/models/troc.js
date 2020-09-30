@@ -40,4 +40,8 @@ let trocModel = new Schema({
 
 trocModel.set('timestamps', true)
 
+trocModel.virtual('isClosed').get(function() {
+	return this.schedule[this.schedule.length - 1].close.getTime() < new Date().getTime()
+})
+
 module.exports = mongoose.model('troc', trocModel)

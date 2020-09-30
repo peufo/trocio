@@ -39,8 +39,8 @@ function createTroc(req, res, next) {
 function patchTroc(req, res, next) {
     if (!req.session.user) return next(Error('Login required'))
     Troc.findOne({_id: req.params.id}).exec((err, troc) => {
-        if(err || !troc) return next(err || Error('Not found'))
-        
+        if (err || !troc) return next(err || Error('Not found'))
+        if (troc.schedule[0].open.getTime() < new Date().getTime()) return next(Error('Troc is started'))
         if (req.body._id) delete req.body._id
         if (req.body.__v) delete req.body.__v
         for(p in req.body){troc[p] = req.body[p]}

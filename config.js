@@ -16,8 +16,9 @@ const defaultConfig = {
 	TROCIO_API_PORT:				5001,							
 	TROCIO_API_HOST:				'http://localhost:5001',			
 	TROCIO_DB:						'mongodb://localhost:27017/trocio',	
+	TROCIO_BACKUP:					'../dump',
 	TROCIO_DEV: 					dev,
-	TROCIO_OPTION_FREE_TROC:		5,
+	TROCIO_OPTION_FREE_TROC:		5,						//Nombre de troc autorisé avant bloquage. Il faut ensuite accordé des crédits.
 }
 
 module.exports = {...defaultConfig, ...process.env}

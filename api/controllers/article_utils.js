@@ -5,6 +5,7 @@ var Troc = require('../models/troc')
 function createArticleContext(articles, cb) {
 	Troc.findOne({_id: articles[0].troc}, (err, troc) => {
 		if (err || !troc) return cb(err || Error('Troc is not found !'))
+		if (troc.isClosed) return cb(Error('Troc is closed'))
 
 		User.findOne({_id: articles[0].provider}, (err, user) => {
 			if (err || !user) return cb(err || Error('Provider is not found !'))

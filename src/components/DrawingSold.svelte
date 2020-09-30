@@ -34,7 +34,7 @@
         <path d="M 240 185 L 240 189 Q 240 225 206 225 L 190 225" marker-end="url(#arrow)" class="w3-opacity"/>
 
         <!-- Refusé - Provider -->
-        <path d="M 120 116 L 120 122 Q 120 156 86 156 L 57 156 Q 23 156 23 122 L 23 62"  marker-end="url(#arrow)" class="w3-opacity"/>
+        <path d="M 120 116 L 120 122 Q 120 156 86 156 L 59 156 Q 25 156 25 122 L 25 62"  marker-end="url(#arrow)" class="w3-opacity"/>
 
         <!-- Rendu - Provider -->
         <path d="M 120 206 L 120 180 Q 120 156 86 156" class="w3-opacity"/>

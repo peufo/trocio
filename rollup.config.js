@@ -42,7 +42,8 @@ export const config = {
 	rollupWrapper: rollup => {
 		rollup.plugins = [
 			aliases,
-			replace({__API__: `${TROCIO_FRONT_HOST}/api`}),
+			//replace({__API__: `${TROCIO_FRONT_HOST}/api`}),
+			replace({__API__: `/api`}),
 			...rollup.plugins,
 			postcss(postcssOptions())
 		]
