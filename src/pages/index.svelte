@@ -389,15 +389,6 @@
         margin: 0 3em 4em 2em;
     }
 
-    .warning {
-        display: inline-block;
-        font-size: .8em;
-        background: #ffa012;
-        color: #fff;
-        border-radius: 4px;
-        padding: 2px 10px;
-    }
-
     .rayons {
         position: relative;
         height: 400px;

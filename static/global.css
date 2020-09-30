@@ -220,3 +220,12 @@ textarea {
 .boolean { color: blue; }
 .null { color: magenta; }
 .key { color: red; }
+
+.warning {
+    display: inline-block;
+    font-size: .8em;
+    background: #ffa012;
+    color: #fff;
+    border-radius: 4px;
+    padding: 2px 10px;
+}

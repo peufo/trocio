@@ -20,8 +20,16 @@
 
     let tabs = ['fas fa-map-marker-alt', 'far fa-calendar-alt']
     let tabSelected = 0
+    let closeTime = 0
+    let isClosed = false
+    
+    $: closeTime = troc.schedule[0]
+        && troc.schedule[troc.schedule.length - 1].close
+        && new Date(troc.schedule[troc.schedule.length - 1].close).getTime()
+    $: isClosed = closeTime ? closeTime < new Date().getTime() : true
 
     if (!!troc.society) tabs = [...tabs, 'fas fa-user-tie']
+
 
 </script>
 
@@ -35,6 +43,9 @@
         <p>
             {troc.description}
         </p>
+
+        
+
     </div>
 
     <div class="w3-col m6 info">
@@ -113,6 +124,7 @@
     </div>
 
     {#if buttonsDisplay}
+
         <br>
         <!-- Button -->
         <div class="w3-right">
@@ -122,11 +134,13 @@
                 Fouiller les articles
             </Button>
 
-            <Button
-            on:click={() => dispatch('clickActivity')}
-            color="secondary" style="margin-top: 5px;">
-				{troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
-            </Button>
+            {#if !isClosed}
+                <Button
+                on:click={() => dispatch('clickActivity')}
+                color="secondary" style="margin-top: 5px;">
+                    {troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
+                </Button>
+            {/if}
 
             {#if !!$user && troc.isAdmin}
                 <Button href="{`/admin?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
@@ -143,6 +157,8 @@
         </div>
 
     {/if}
+
+    {#if isClosed}<span class="warning">Terminé</span>{/if}
 
 </div>
 

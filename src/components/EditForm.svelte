@@ -188,18 +188,17 @@
 	{:else}
 
 		<br>
-		<div class="w3-opactity w3-center w3-margin w3-text-red">
-			<span class="w3-opacity w3-center">
-				Attention,vous ne pourrez plus modifier ces informations une fois que l'évenement aurra débuté.
-			</span>
-		</div>
+		<span class="w3-opacity w3-center w3-margin w3-text-red">
+			L'horaire n'est plus modifiable une fois que l'évenement a débuté.
+		</span>
 
-		<AutoPatch 	source="editForm"
-				path="{`/trocs/${_id}`}"
-				invalid={invalid}
-				body="{{name, address, location, description, schedule, society, societyweb}}"
-				trocRefresh
-				bind:changeFlag={changeFlag}/>
+		<AutoPatch 	
+			source="editForm"
+			path={`/trocs/${_id}`}
+			invalid={invalid}
+			body={{name, address, location, description, schedule, society, societyweb}}
+			trocRefresh
+			bind:changeFlag={changeFlag}/>
 	{/if}
 	
 </div>
