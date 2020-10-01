@@ -1,6 +1,7 @@
-var Troc = require('../models/troc')
-var User = require('../models/user')
-var Subscribe = require('../models/subscribe')
+const { TROCIO_OPTION_FREE_TROC } = require('../../config.js')
+let Troc = require('../models/troc')
+let User = require('../models/user')
+let Subscribe = require('../models/subscribe')
 let { lookupIfAdmin, populateTrocUser, scheduleValidation } = require('../controllers/troc_utils')
 
 function createTroc(req, res, next) {
@@ -9,7 +10,7 @@ function createTroc(req, res, next) {
 	let err = scheduleValidation(req.body)
 	if (err) return next(err)
 
-	var troc = new Troc(req.body)
+	let troc = new Troc(req.body)
 	troc.creator = req.session.user._id
 	troc.admin = [req.session.user._id]
 	troc.tarif = [{
@@ -23,7 +24,7 @@ function createTroc(req, res, next) {
 
 	User.findOne({_id: req.session.user._id}, (err, user) => {
 		if (err || !user) return next(err || Error('User not found !'))
-		let freeTroc = Number(process.env.TROCIO_OPTION_FREE_TROC)
+		let freeTroc = Number(TROCIO_OPTION_FREE_TROC)
 		if (Number.isNaN(freeTroc)) freeTroc = 0
 		if (user.creditTroc < -freeTroc) return next(Error('No credit'))
 		user.creditTroc--
