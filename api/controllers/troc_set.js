@@ -26,7 +26,7 @@ function createTroc(req, res, next) {
 		if (err || !user) return next(err || Error('User not found !'))
 		let freeTroc = Number(TROCIO_OPTION_FREE_TROC)
 		if (Number.isNaN(freeTroc)) freeTroc = 0
-		if (user.creditTroc < -freeTroc) return next(Error('No credit'))
+		if (user.creditTroc || 0 <= -freeTroc) return next(Error('No credit'))
 		user.creditTroc--
 		Promise.all([troc.save(), user.save(), subscribe.save()]).then(() => {
 			populateTrocUser(troc._id, (err, troc) => {
