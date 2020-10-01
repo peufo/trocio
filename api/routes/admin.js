@@ -14,7 +14,7 @@ router
         let options = []
         for (const key in config) {
             if (key.indexOf('TROCIO_OPTION_') === 0) {
-                options.push({name: key.replace('TROCIO_OPTIONS_', ''), value: process.env[key]})
+                options.push({name: key.replace('TROCIO_OPTIONS_', ''), value: config[key]})
             }
         }
         res.json(options)
