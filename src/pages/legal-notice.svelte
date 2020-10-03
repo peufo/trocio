@@ -21,8 +21,18 @@
         </div>
     </div>
 
-    <br>
-    
+    <div class="w3-row">
+        <div class="w3-col s6">
+            <b class="w3-right">Domaines</b>
+        </div>
+        <div class="w3-col s6">
+            <span>troc.io</span><br>
+            <span>trocio.ch</span><br>
+            <span class="w3-opacity">trocio.fr</span><br>
+            <span class="w3-opacity">trocio.org</span>
+        </div>
+    </div>
+
     <div class="w3-row">
         <div class="w3-col s6">
             <b class="w3-right">Ebergement</b>
