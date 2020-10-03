@@ -1,5 +1,5 @@
 require('dotenv').config()
-let dev = process.env.NODE_ENV == 'development'
+const dev = process.env.NODE_ENV == 'development'
 
 //Edit your configuration on .env file
 

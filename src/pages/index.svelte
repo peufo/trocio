@@ -13,18 +13,9 @@
 
 </script>
 
-<img class="participeImg" class:w3-hide={!!$user} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
+<img class="hideIfSmall" class:w3-hide={!!$user} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
 
 <main>
-
-    <Button
-    href="/search"
-    variant="outlined"
-    color="secondary"
-    style="transform: translate(0px, 10px);"
-    class="w3-right w3-large w3-margin-left">
-        Trouver un troc
-    </Button>
 
     <span class="w3-jumbo">TROCIO</span>
     
@@ -45,6 +36,14 @@
         </div>
 
         <div class="w3-col l6">
+            <Button
+            href="/search"
+            variant="outlined"
+            color="secondary"
+            style="transform: translate(0px, 10px); background: #fff;"
+            class="w3-right w3-large w3-margin">
+                Trouver un troc
+            </Button>
             <div class="w3-card w3-round-large w3-padding" style="margin-top: 50px; background: #fff;">
                 
                 <p>
@@ -67,7 +66,7 @@
         </div>
     </div>
 
-    <br><br><br><br><br><br>
+    <br><br><br>
     
 
     <div class="w3-center w3-xlarge">
@@ -393,6 +392,12 @@
         position: relative;
         height: 400px;
         z-index: -10;
+    }
+
+    @media only screen and (max-width: 1200px) {
+        .hideIfSmall {
+            display: none;
+        }
     }
 
 </style>

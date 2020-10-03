@@ -15,7 +15,10 @@
         </div>
     </div>
 
-    <i class="far fa-copyright"></i> 2020 - Trocio
+    <span>
+        <i class="far fa-copyright"></i>
+        2020 - Jonas Voisard
+    </span>
 
 </footer>
 
