@@ -45,7 +45,6 @@
                 Trouver un troc
             </Button>
             <div class="w3-card w3-round-large w3-padding" style="margin-top: 50px; background: #fff;">
-                
                 <p>
                     Trocio est un outil simple et efficace pour échanger vos objets.
                 </p>
@@ -281,7 +280,26 @@
 
             </div>
         </div>
-           
+
+        <div class="feature center">
+            <div class="feature-title">
+                <i class="fas fa-dumbbell"></i>
+                <span>Zone d'entrainement</span>
+            </div>
+            <div class="feature-content">
+                <p>Testez l'application de manière libre et privée.</p>
+                <p>Formez vos caissiers afin qu'ils soient parés le jour J.</p>
+                <p>
+                    <span class="warning">
+                        <i class="fas fa-exclamation-triangle"></i>&nbsp;
+                        En développement
+                    </span>
+                </p>
+            </div>
+        </div>
+        
+        <br><br>
+
         <div class="w3-center">
             <div class="w3-card w3-round-large w3-padding" style="max-width: 500px; margin: auto;">
                 
@@ -386,6 +404,11 @@
 
     .feature {
         margin: 0 3em 4em 2em;
+    }
+    
+    .feature.center {
+        margin: auto;
+        max-width: 470px;
     }
 
     .rayons {
