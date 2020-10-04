@@ -44,7 +44,7 @@ export const config = {
 			aliases,
 			//replace({__API__: `${TROCIO_FRONT_HOST}/api`}),
 			replace({
-				__API__: `${TROCIO_FRONT_HOST}/api`,
+				__API__: `/api`,
 				__GOOGLE_CLIENT_ID__: TROCIO_GOOGLE_CLIENT_ID
 			}),
 			...rollup.plugins,

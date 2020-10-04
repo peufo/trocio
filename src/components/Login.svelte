@@ -30,7 +30,7 @@
         scope: 'email profile',
         access_type: 'online',
         response_type: 'code',
-        redirect_uri: '__API__/users/login-with-google',
+        redirect_uri: `${location.origin}__API__/users/login-with-google`,
         client_id: '__GOOGLE_CLIENT_ID__'
     })
     let googleAuthApi = `https://accounts.google.com/o/oauth2/v2/auth?${googleAuthApiParams.toString()}&state=${location.href}`
