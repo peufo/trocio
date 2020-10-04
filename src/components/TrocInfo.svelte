@@ -23,7 +23,7 @@
     let closeTime = 0
     let isClosed = false
     
-    $: closeTime = troc.schedule[0]
+    $: closeTime = troc.schedule && troc.schedule[0]
         && troc.schedule[troc.schedule.length - 1].close
         && new Date(troc.schedule[troc.schedule.length - 1].close).getTime()
     $: isClosed = closeTime ? closeTime < new Date().getTime() : true
