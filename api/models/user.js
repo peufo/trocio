@@ -17,7 +17,8 @@ var userModel = new Schema({
 	password: {type: String, required: true},
 	loginAttempts: {type: Number, required: true, default: 0},
 	lockUntil: Number,
-	creditTroc: {type: Number, default: 0}
+	creditTroc: {type: Number, default: 0},
+	acceptTerms: {type: Boolean, default: false}
 })
 
 userModel.set('timestamps', true)

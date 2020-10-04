@@ -53,11 +53,9 @@ function patchMe(req, res, next) {
         if (req.body.loginAttempts) delete req.body.loginAttempts
         for (var p in req.body){user[p] = req.body[p]}
 
-        console.log('prout A')
         user.save(err => {
             if (err) return next(err)
             res.json({success: true})
-            console.log('prout B')
         })
     })
 }
