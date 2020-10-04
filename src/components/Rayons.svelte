@@ -14,8 +14,6 @@
             angles = Array(number).fill().map((n, i) => {
                 return i * (360 / number)
             })
-
-            console.log({angles})
         }
     })
 

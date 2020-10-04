@@ -29,7 +29,6 @@ function createUser(req, res, next) {
         }
 
         mail.createUser(user, err => {
-            //if (err) return next(err)
             if (err) console.log(err)
         })
 

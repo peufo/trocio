@@ -67,8 +67,7 @@
 
     <br><br><br>
     
-
-    <div class="w3-center w3-xlarge">
+    <div class="w3-center w3-xlarge hideIfVerySmall">
         
         <i class="fas fa-arrow-down" style="margin-right: 40px;"></i>
 
@@ -84,11 +83,11 @@
             Organiser
         </Button>
         <i class="fas fa-arrow-down" style="margin-left: 40px;"></i>
-        <br>
-
+        
+        <br><br><br>
     </div>
 
-    <br><br><br>
+    
 
     <hr>
     <section id="discover">
@@ -405,10 +404,11 @@
     .feature {
         margin: 0 3em 4em 2em;
     }
-    
-    .feature.center {
-        margin: auto;
-        max-width: 470px;
+    @media only screen and (min-width: 992px) {
+        .feature.center {
+            margin: auto;
+            max-width: 470px;
+        }
     }
 
     .rayons {
@@ -421,6 +421,9 @@
         .hideIfSmall {
             display: none;
         }
+    }
+    @media only screen and (max-width: 600px) {
+        .hideIfVerySmall { display: none;}
     }
 
 </style>

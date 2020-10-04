@@ -19,6 +19,8 @@ const defaultConfig = {
 	TROCIO_BACKUP:					'../dump',
 	TROCIO_DEV: 					dev,
 	TROCIO_OPTION_FREE_TROC:		0,						//Nombre de troc autorisé avant bloquage. Il faut ensuite accordé des crédits.
+	TROCIO_GOOGLE_CLIENT_ID:		'',
+	TROCIO_GOOGLE_CLIENT_SECRET:	'',
 }
 
 module.exports = {...defaultConfig, ...process.env}

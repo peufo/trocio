@@ -33,7 +33,6 @@
 
     let segment = undefined
     $: segment = segments[$page.title]
-    $: console.log({trocSelected})
 
     //Juste pour ne pas attendre sur les détails
     async function updateTrocByQuery() {

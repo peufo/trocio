@@ -96,7 +96,6 @@
 	}
 
 	async function loadTrocs(skip = 0) {
-		console.log('get trocs')
 		let query = `__API__/trocs/search?search=${search}&skip=${skip}`
 
 		if (timeFilter) {

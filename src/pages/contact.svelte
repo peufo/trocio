@@ -21,7 +21,7 @@
         </span>
         <br><br>
         <span>
-            Nous tâcherons de vous répondre dans les plus brefs délai.
+            Nous tâcherons de vous répondre dans les plus brefs délais.
         </span>
     </div>
     
