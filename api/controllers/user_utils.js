@@ -59,12 +59,16 @@ async function loginWithGoogle(req, res, next) {
     const { code, error, state } = req.query
     if (error) return next(error)
 
+    const host = state.match(/.*:\/\/.*\//)[0]
+
+    console.log({host})
+
     const data = qs.stringify({
         client_id: TROCIO_GOOGLE_CLIENT_ID,
         client_secret: TROCIO_GOOGLE_CLIENT_SECRET,
         code,
         grant_type: 'authorization_code',
-        redirect_uri: `${TROCIO_FRONT_HOST}/api/users${req.path}`
+        redirect_uri: `${host}api/users${req.path}`
     })
     const config = {
         method: 'post',

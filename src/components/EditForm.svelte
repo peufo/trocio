@@ -141,7 +141,7 @@
 						<Cell style="width: 20px;"></Cell>
 					</Row>
 				</Head>
-				<Body >
+				<Body>
 					{#each scheduleIn as {day, open, close}, i}
 						<Row>
 							<Cell><input bind:value={day} type="date" /></Cell>
@@ -180,8 +180,13 @@
 				<Button>Création en cours...</Button>
 			{:then}
 				<Button on:click={create} variant="raised" class="w3-right" title="Valider la création de mon troc">
-					<Label>Créer mon troc</Label>
+					<Label>Créer un troc public</Label>
 				</Button>
+
+				<Button on:click={create} variant="outlined" class="w3-right w3-margin-right" title="Valider la création de mon troc">
+					<Label>Créer un troc d'entrainement</Label>
+				</Button>
+
 			{/await}
 		</div>
 		<br><br>
