@@ -106,12 +106,12 @@
 
 	}
 
-	function createPublic() {
-		createPromise = create()
+	function createPublic(event) {
+		if (event.isTrusted) createPromise = create()
 	}
 
-	function createTry() {
-		createPromise = create(true)
+	function createTry(event) {
+		if (event.isTrusted) createPromise = create(true)
 	}
 
 	//For SearchLocation to Autopatch
@@ -187,7 +187,7 @@
 			{#await createPromise}
 				<Button>Création en cours...</Button>
 			{:then}
-				<Button on:click={create} variant="raised" class="w3-right" title="Valider la création de mon troc">
+				<Button on:click={createPublic} variant="raised" class="w3-right" title="Valider la création de mon troc">
 					<Label>Créer un troc public</Label>
 				</Button>
 

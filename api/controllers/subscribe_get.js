@@ -14,12 +14,13 @@ function getMySubscribedTrocs(req, res, next) {
 
         //Admin and cashier becomes booleans
         let trocs = subs.map(sub => {
-            let troc = sub.troc
+            let { troc } = sub
+            if (!troc) return null
             troc.isAdmin = troc.admin.map(a => a.toString()).indexOf(req.session.user._id) != -1
             troc.isCashier = troc.cashier.map(c => c.toString()).indexOf(req.session.user._id) != -1
             if (!troc.isAdmin && !troc.isCashier) troc.admin = troc.cashier = undefined
             return troc
-        })
+        }).filter(Boolean)
 
         res.json(trocs)
 
