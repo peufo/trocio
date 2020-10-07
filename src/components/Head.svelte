@@ -59,7 +59,7 @@
 					</Button>
 
 					<Button href='/activity' color="secondary" class="w3-right w3-padding w3-text-white">
-						<i class="fas fa-star w3-large"></i>
+						<i class="fas fa-bars w3-large"></i>
 						<span class="button-label">&nbsp;Mes trocs</span>
 					</Button>
 

@@ -201,7 +201,7 @@
 	{:else}
 
 		<br>
-		<span class="w3-opacity w3-center w3-margin w3-text-red">
+		<span class="w3-opacity w3-text-red">
 			L'horaire n'est plus modifiable une fois que l'évenement a débuté.
 		</span>
 

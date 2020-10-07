@@ -15,7 +15,6 @@
     const dispatch = createEventDispatcher()
     
     export let troc = {}
-    export let buttonsDisplay = false
 
     $: console.log({troc})
 
@@ -125,40 +124,38 @@
         </div>
     </div>
 
-    {#if buttonsDisplay}
+    <br>
+    <!-- Buttons -->
+    <div class="w3-right">
+        <Button
+        on:click={() => dispatch('clickArticles')}
+        color="secondary" style="margin-top: 5px;">
+            Fouiller les articles
+        </Button>
 
-        <br>
-        <!-- Buttons -->
-        <div class="w3-right">
+        {#if !isClosed || troc.isSubscribed}
             <Button
-            on:click={() => dispatch('clickArticles')}
+            on:click={() => dispatch('clickActivity')}
             color="secondary" style="margin-top: 5px;">
-                Fouiller les articles
+                {troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
             </Button>
+        {/if}
 
-            {#if !isClosed || troc.isSubscribed}
-                <Button
-                on:click={() => dispatch('clickActivity')}
-                color="secondary" style="margin-top: 5px;">
-                    {troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
-                </Button>
-            {/if}
+        {#if !!$user && troc.isAdmin}
+            <Button href="{`/admin?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
+                <i class="fa fa-cog w3-large"></i>&nbsp;
+                Page d'administration
+            </Button>
+        {:else if !!$user && troc.isCashier}
+            <Button href="{`/cashier?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
+                <i class="fa fa-cash-register w3-large"></i>&nbsp;
+                Caisse
+            </Button>
+        {/if}
 
-            {#if !!$user && troc.isAdmin}
-                <Button href="{`/admin?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
-                    <i class="fa fa-cog w3-large"></i>&nbsp;
-					Page d'administration
-                </Button>
-            {:else if !!$user && troc.isCashier}
-                <Button href="{`/cashier?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
-                    <i class="fa fa-cash-register w3-large"></i>&nbsp;
-					Caisse
-                </Button>
-            {/if}
+    </div>
 
-        </div>
-
-    {/if}
+    
 
     {#if isClosed}<span class="warning">Ce troc est terminé</span>{/if}
 

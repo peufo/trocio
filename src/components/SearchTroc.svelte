@@ -246,7 +246,6 @@
 			class="simple-card">
 			
 			<TrocInfo {troc}
-				buttonsDisplay
 				on:clickArticles={dialogArticles.open}
 				on:clickActivity={() => clickActivity(troc._id)}/>
 
