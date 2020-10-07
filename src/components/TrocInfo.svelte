@@ -15,8 +15,9 @@
     const dispatch = createEventDispatcher()
     
     export let troc = {}
-    export let nameDisplay = false
     export let buttonsDisplay = false
+
+    $: console.log({troc})
 
     let tabs = ['fas fa-map-marker-alt', 'far fa-calendar-alt']
     let tabSelected = 0
@@ -30,14 +31,15 @@
 
     if (!!troc.society) tabs = [...tabs, 'fas fa-user-tie']
 
-
 </script>
 
 <div class="w3-row">
 
     <div class="w3-col m6 describe">
-        {#if nameDisplay}
-            <h3>{troc.name}</h3>
+        
+        <h3>{troc.name}</h3>
+        {#if troc.is_try}
+            <span class="warning">Entrainement</span>
         {/if}
 
         <p>
@@ -126,7 +128,7 @@
     {#if buttonsDisplay}
 
         <br>
-        <!-- Button -->
+        <!-- Buttons -->
         <div class="w3-right">
             <Button
             on:click={() => dispatch('clickArticles')}
@@ -134,7 +136,7 @@
                 Fouiller les articles
             </Button>
 
-            {#if !isClosed}
+            {#if !isClosed || troc.isSubscribed}
                 <Button
                 on:click={() => dispatch('clickActivity')}
                 color="secondary" style="margin-top: 5px;">

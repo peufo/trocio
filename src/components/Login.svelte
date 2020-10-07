@@ -17,7 +17,6 @@
     let mail = ''
     let password = ''
     let password2 = ''
-    let close = false
 
     let submitPromise
 
@@ -84,27 +83,12 @@
 			console.trace(error)
 		}
     }   
-    /*
-    async function Login(){
-        let res = await fetch('__API__/users/login', getHeader({mail, password}))
-        let json = await res.json()
-        if (res.ok) {
-            $user = json
-            dispatch('close')
-            close = true
-            return
-        }else{
-            alert(json.message)
-        }
-    }
-    */
 
     async function Login() {
         return user.login(mail, password, err => {
             if (err) return alert(err.message)
             dispatch('close')
             dispatch('done')
-            close = true
             return
         })
     }
@@ -137,7 +121,7 @@
 
 </script>
 
-{#if !close} <!-- Belle rustine-->
+
 <div id="{`loginForm${id}`}" class="w3-padding" style="min-width: 330px;">
 
     {#if newUser}
@@ -251,7 +235,7 @@
 
 
 </div>
-{/if}
+
 
 <style>
 

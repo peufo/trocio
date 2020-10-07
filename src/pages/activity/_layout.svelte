@@ -137,7 +137,12 @@
                                 <a href={`/activity/detail?troc=${troc._id}`}>
                                     <Item selected={trocSelected && trocSelected._id === troc._id} title={troc.address}>
                                         <Text>
-                                            <PrimaryText>{troc.name}</PrimaryText>
+                                            <PrimaryText>
+                                                {troc.name}
+                                                {#if troc.is_try}
+                                                    <span class="warning">Entrainement</span>
+                                                {/if}
+                                            </PrimaryText>
                                             <SecondaryText>{troc.description}</SecondaryText>
                                         </Text>
                                         <Meta>

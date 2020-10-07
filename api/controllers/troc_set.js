@@ -24,10 +24,10 @@ function createTroc(req, res, next) {
 
 	User.findOne({_id: req.session.user._id}, (err, user) => {
 		if (err || !user) return next(err || Error('User not found !'))
-		let freeTroc = Number(TROCIO_OPTION_FREE_TROC)
-		if (Number.isNaN(freeTroc)) freeTroc = 0
-		if (user.creditTroc || 0 <= -freeTroc) return next(Error('No credit'))
-		user.creditTroc--
+		if (!troc.is_try) {
+			if (user.creditTroc || 0 <= -TROCIO_OPTION_FREE_TROC) return next(Error('No credit'))
+			user.creditTroc--
+		}
 		Promise.all([troc.save(), user.save(), subscribe.save()]).then(() => {
 			populateTrocUser(troc._id, (err, troc) => {
 				if(err) return next(err)

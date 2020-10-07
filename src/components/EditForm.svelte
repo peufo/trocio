@@ -91,10 +91,10 @@
 		else if (schedule.indexOf(undefined) != -1) invalid = 'Plage horaire incomplette'
 	}
 
-	async function create() {
+	async function create(is_try = false) {
 		if (invalid) return notify.warning(invalid)
 		try {
-			let res = await fetch(`__API__/trocs`, getHeader({name, address, location, description, schedule, society, societyweb}))
+			let res = await fetch(`__API__/trocs`, getHeader({name, address, location, description, schedule, society, societyweb, is_try}))
 			let json = await res.json()
 			if (json.error) return notify.error(json.message)
 			notify.success('Nouveau troc créer !')
@@ -104,6 +104,14 @@
 			console.trace(error)
 		}
 
+	}
+
+	function createPublic() {
+		createPromise = create()
+	}
+
+	function createTry() {
+		createPromise = create(true)
 	}
 
 	//For SearchLocation to Autopatch
@@ -183,7 +191,7 @@
 					<Label>Créer un troc public</Label>
 				</Button>
 
-				<Button on:click={create} variant="outlined" class="w3-right w3-margin-right" title="Valider la création de mon troc">
+				<Button on:click={createTry} variant="outlined" class="w3-right w3-margin-right" title="Valider la création de mon troc">
 					<Label>Créer un troc d'entrainement</Label>
 				</Button>
 

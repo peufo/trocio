@@ -35,7 +35,8 @@ let trocModel = new Schema({
 		height: {type: Number, default: 29},
 		padding: {type: Number, default: 2},
 		border: {type: Boolean, default: true}
-	}
+	},
+	is_try: {type: Boolean, default: false}
 })
 
 trocModel.set('timestamps', true)

@@ -1,5 +1,5 @@
 //import printJS from 'print-js'
-import { troc } from './stores'
+import { troc } from './stores.js'
 import { quintOut, cubicOut } from 'svelte/easing'
 
 export function getHeader(body, verb = 'POST') {
@@ -162,25 +162,6 @@ export function convertDMS(lat, lng) {
     let longitudeCardinal = lng >= 0 ? "E" : "W"
 
     return latitude + latitudeCardinal + " " + longitude + longitudeCardinal
-}
-
-export async function getDetail(troc, user) {
-	try {
-		let details = await fetch(`__API__/trocs/details?user=${user}&troc=${troc}`).then(res => res.json())
-		if (details.provided) details.provided = addStatutField(details.provided, '')
-		//select last giveback
-		console.log({givebacks: details.givebacks})
-		details.givebacks = details.givebacks.map(art => {
-			art.giveback = art.giveback.filter(back => user === 'undefined' ? !back.user : back.user == user).reverse()[0]
-			if (art.giveback) art.giveback.back = new Date(art.giveback.back).getTime()
-			return art
-		})
-		console.log({givebacks: details.givebacks})
-
-		return details
-	} catch (error) {
-		return error
-	}
 }
 
 //Options for SearchTable

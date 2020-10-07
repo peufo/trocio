@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store'
-import { getHeader, getDetail } from './utils'
+import { getHeader, addStatutField } from './utils'
 import notify from 'notify.js'
 import qs from 'qs'
 
@@ -138,7 +138,8 @@ async function loadTroc(set, { troc }) {
 			}
 		}
 	} catch(error) {
-		console.trace(error)
+		notify.error(error)
+		return error
 	}
 }
 
@@ -168,4 +169,26 @@ async function loadTrocDetails(set, {troc, client}) {
 	set(details)
 
 	return 
+}
+
+async function getDetail(troc, user) {
+	try {
+		const res = await fetch(`__API__/trocs/details?user=${user}&troc=${troc}`)
+		let details = await res.json()
+		if (details.error) throw details.message
+		if (details.provided) details.provided = addStatutField(details.provided, '')
+		//select last giveback
+		console.log({givebacks: details.givebacks})
+		details.givebacks = details.givebacks.map(art => {
+			art.giveback = art.giveback.filter(back => user === 'undefined' ? !back.user : back.user == user).reverse()[0]
+			if (art.giveback) art.giveback.back = new Date(art.giveback.back).getTime()
+			return art
+		})
+		console.log({givebacks: details.givebacks})
+
+		return details
+	} catch (error) {
+		notify.error(error)
+		return error
+	}
 }

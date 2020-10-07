@@ -61,8 +61,6 @@ async function loginWithGoogle(req, res, next) {
 
     const host = state.match(/.*:\/\/.*\//)[0]
 
-    console.log({host})
-
     const data = qs.stringify({
         client_id: TROCIO_GOOGLE_CLIENT_ID,
         client_secret: TROCIO_GOOGLE_CLIENT_SECRET,
