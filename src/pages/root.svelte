@@ -86,13 +86,17 @@
     }
 
     async function removeTroc(troc) {
-        try {
-            let res = await fetch('__API__/superadmin/remove-troc', getHeader({troc}))
-            let json = await res.json()
-            if (json.error) throw json.message
-            notify.success(json.message)
-        } catch (error) {
-            notify.error(error)
+        if (prompt(`Tapez "${troc.name}" pour le supprimer`) === troc.name) {
+            try {
+                let res = await fetch('__API__/superadmin/remove-troc', getHeader({troc: troc._id}))
+                let json = await res.json()
+                if (json.error) throw json.message
+                notify.success(json.message)
+            } catch (error) {
+                notify.error(error)
+            }
+        } else {
+            notify.warning('Nom incorrect')
         }
     }
 
@@ -158,7 +162,7 @@
                 <br>
                 {#each trocs as troc}
                     <div class="simple-card">
-                        <Button class="w3-right w3-red"  on:click={() => removeTroc(troc._id)}>
+                        <Button class="w3-right w3-red"  on:click={() => removeTroc(troc)}>
                             Supprimer
                         </Button>
                         <Button class="w3-right w3-margin-right" on:click={() => subcribeAllUsers(troc._id)}>
