@@ -1,5 +1,6 @@
 <script>
     import { onMount } from 'svelte'
+    import { slide } from 'svelte/transition'
     import Button from '@smui/button'
     import DataTable, { Head, Body, Row, Cell } from '@smui/data-table'
 
@@ -27,6 +28,9 @@
     let addCreditPromise
 
     let options = []
+
+    let searchTroc = ''
+    let trocs = []
 
     async function selectUser(event){
         try {
@@ -59,6 +63,37 @@
         } catch(error) {
 			console.trace(error)
 		}
+    }
+
+    async function fetchTrocs() {
+        try {
+            let res = await fetch(`__API__/superadmin/trocs?${searchTroc}`)
+            trocs = await res.json()
+        } catch (error) {
+            notify.error(error)
+        }
+    }
+
+    async function subcribeAllUsers(troc) {
+        try {
+            let res = await fetch('__API__/superadmin/subscribe-all-users', getHeader({troc}))
+            let json = await res.json()
+            if (json.error) throw json.message
+            notify.success(json.message)
+        } catch (error) {
+            notify.error(error)
+        }
+    }
+
+    async function removeTroc(troc) {
+        try {
+            let res = await fetch('__API__/superadmin/remove-troc', getHeader({troc}))
+            let json = await res.json()
+            if (json.error) throw json.message
+            notify.success(json.message)
+        } catch (error) {
+            notify.error(error)
+        }
     }
 
 </script>
@@ -113,8 +148,39 @@
                     {/await}
                 </div>
             </div>
-        
         </div>
+
+        <div class="simple-card">
+            <h3>Trocs</h3>
+            <div class="w3-row">
+                
+                <input bind:value={searchTroc} on:input={fetchTrocs} class="w3-input">
+                <br>
+                {#each trocs as troc}
+                    <div class="simple-card">
+                        <Button class="w3-right w3-red"  on:click={() => removeTroc(troc._id)}>
+                            Supprimer
+                        </Button>
+                        <Button class="w3-right w3-margin-right" on:click={() => subcribeAllUsers(troc._id)}>
+                            Abonner tous les utilisateurs
+                        </Button>
+
+                        <h3 on:click={() => troc.show = !troc.show}>
+                            {troc.name}
+                        </h3>
+                        <span>{troc._id}</span>
+                        {#if troc.show}
+                            <pre transition:slide>
+                                {@html syntaxHighlight(JSON.stringify(troc, null, 2))}
+                            </pre>
+                        {/if}
+
+                    </div>
+                    
+                {/each}
+            </div>
+        </div>
+
     </div>
 
 {/if}

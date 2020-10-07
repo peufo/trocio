@@ -4,6 +4,7 @@ let User = require('../models/user')
 let Troc = require('../models/troc')
 let Article = require('../models/article')
 let Payment = require('../models/payment')
+let Subscribe = require('../models/subscribe')
 
 
 router
@@ -61,6 +62,55 @@ router
             let str = users.map(user => user.mail).join('<br>')
             res.send(str)
         })
+    })
+    .post('/subscribe-all-users', async (req, res, next) => {
+        let { troc } = req.body
+        if (!troc) return next(Error('troc query is required'))
+        try {
+            troc = await Troc.findById(troc).exec()
+            if (!troc) throw 'Troc not found'
+            let users = await User.find().exec()
+            let nbNewSubscribe = 0
+            let subscribes = await Promise.all(users.map(async user => {
+                let sub = await Subscribe.findOne({troc: troc._id, user: user._id}).exec()
+                if (sub) return Promise.resolve()
+                nbNewSubscribe++
+                return new Subscribe({
+                    troc: troc._id,
+                    user: user._id
+                }).save()
+            }))
+
+            res.json({success: true, message: `${nbNewSubscribe} new users are subscribed to ${troc.name}`})
+
+        } catch (error) {
+            next(error)
+        }
+    })
+    .post('/remove-troc', async (req, res, next) => {
+        let { troc } = req.body
+        if (!troc) return next(Error('troc query is required'))
+        try {
+            troc = await Troc.findById(troc).exec()
+            if (!troc) throw 'Troc not found'
+            
+            let { deletedCount: deletedSubscribes } = await Subscribe.deleteMany({troc: troc._id}).exec()
+            
+            let { deletedCount: deletedArticles }  = await Article.deleteMany({troc: troc._id}).remove().exec()
+
+            await Troc.deleteOne({_id: troc._id}).exec()
+
+            res.json({
+                success: true, 
+                message: `
+                    ${troc.name} is removed,
+                    ${deletedSubscribes} subscribes and ${deletedArticles} articles
+                `
+            })
+
+        } catch (error) {
+            next(error)
+        }
     })
     
 
