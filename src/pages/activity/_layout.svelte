@@ -6,6 +6,12 @@
     import Card, { Content as CardContent, Actions } from '@smui/card'
     import List, {Item, Text, PrimaryText, SecondaryText, Meta} from '@smui/list'
     import Button, { Label } from '@smui/button'
+
+	import dayjs from 'dayjs'
+	import relativeTime from 'dayjs/plugin/relativeTime'
+    import 'dayjs/locale/fr'
+    dayjs.locale('fr')
+    dayjs.extend(relativeTime)
     
     import qs from 'qs'
     import { user, userPromise, subscribedTrocs } from 'stores.js'
@@ -132,7 +138,7 @@
                             <RowsPromise listMode twoLine meta/>
                         </List>
                     {:then}
-                        <List twoLine avatarList singleSelection>
+                        <List threeLine avatarList singleSelection>
                             {#each $subscribedTrocs as troc, i}
                                 <a href={`/activity/detail?troc=${troc._id}`}>
                                     <Item selected={trocSelected && trocSelected._id === troc._id} title={troc.address}>
@@ -143,6 +149,7 @@
                                                     <span class="warning">Entrainement</span>
                                                 {/if}
                                             </PrimaryText>
+                                            <SecondaryText>{dayjs(troc.schedule && troc.schedule[0] && troc.schedule[0].open).fromNow()}</SecondaryText>
                                             <SecondaryText>{troc.description}</SecondaryText>
                                         </Text>
                                         <Meta>

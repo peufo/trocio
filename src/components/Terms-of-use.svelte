@@ -86,7 +86,7 @@
         L'organisateur s'expose à des frais dès qu'il détermine un tarif payant pour ses participants.
         Le montant des frais représente 2% du benefice effectué par l'organisateur. 
         Le benefice est la somme des frais de traitement et des marges prélevées par l'organisateur sur ses participants.
-        Le facture ne peut donc être établie qu'une fois le troc clôturé.
+        La facture ne peut donc être établie qu'une fois le troc clôturé.
         La clôture a lieu au maximum deux semaines après la fin de l'évènement.
         Cela laisse le temps nécéssaire à l'organisateur pour régler les litiges et rendre tous les invendus.
     </p>

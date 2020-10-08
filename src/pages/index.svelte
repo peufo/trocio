@@ -223,7 +223,7 @@
                     </div>
                     <div class="feature-content">
                         <p>Ayez une vue d'ensemble sur l'activité de votre troc.</p>
-                        <p>Fournissez de précieux rapport à votre équipe pour vous amélioré.</p>
+                        <p>Fournissez de précieux rapport à votre équipe pour vous améliorer.</p>
                     </div>
                 </div>
             </div>
@@ -303,7 +303,7 @@
             <div class="w3-card w3-round-large w3-padding" style="max-width: 500px; margin: auto;">
                 
                 <p>L'organisation d'un troc est <b class="w3-text-green">gratuite</b>.</p>
-                <p>Seul les benefices réalisés sont prélevés à hauteur de <b class="w3-text-orange">2%</b>.</p>
+                <p>Seul les bénéfices réalisés sont prélevés à hauteur de <b class="w3-text-orange">2%</b>.</p>
                 <p>Nous souhaitons ainsi soutenir les trocs à but non lucratif.</p>
             </div>
 

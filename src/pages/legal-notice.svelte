@@ -5,7 +5,7 @@
 <main>
     <br>
     <br>
-    <h1 class="w3-center">Mentions légals</h1>
+    <h1 class="w3-center">Mentions légales</h1>
     <br>
     <br>
 
@@ -35,7 +35,7 @@
 
     <div class="w3-row">
         <div class="w3-col s6">
-            <b class="w3-right">Ebergement</b>
+            <b class="w3-right">Hébergement</b>
         </div>
         <div class="w3-col s6">
             <span>Infomaniak</span><br>
@@ -44,7 +44,7 @@
 
     <div class="w3-row">
         <div class="w3-col s6">
-            <b class="w3-right">License</b>
+            <b class="w3-right">Licence</b>
         </div>
         <div class="w3-col s6">
             <span>GPL-3.0</span><br>
