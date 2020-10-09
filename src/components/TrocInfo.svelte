@@ -24,7 +24,6 @@
     let closeTime = 0
     let isClosed = false
     let sliceDescription = 228
-    $: if (troc) sliceDescription = 228
     
     $: closeTime = troc.schedule && troc.schedule[0]
         && troc.schedule[troc.schedule.length - 1].close
@@ -60,6 +59,10 @@
                 ...
                 <span class="showDescription" on:click={() => sliceDescription = Infinity}>
                     Tout afficher
+                </span>
+            {:else if troc.description.length > 228 && sliceDescription == Infinity}
+                <span class="showDescription" on:click={() => sliceDescription = 228}>
+                    Réduire
                 </span>
             {/if}
 

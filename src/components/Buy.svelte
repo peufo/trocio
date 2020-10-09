@@ -33,7 +33,7 @@
 
     async function getArticles() {
 
-        let req = `/articles?troc=${$details.troc}&limit=${LIMIT_LIST_A}&skip=${skip}`
+        let req = `__API__/articles?troc=${$details.troc}&limit=${LIMIT_LIST_A}&skip=${skip}`
         req += `&filter_statut=valided`
         req += `&or_search_name=${search}`
         req += `&or_search_ref=${search}`
