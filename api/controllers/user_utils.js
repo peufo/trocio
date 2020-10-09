@@ -59,7 +59,7 @@ async function loginWithGoogle(req, res, next) {
     const { code, error, state } = req.query
     if (error) return next(error)
 
-    const host = state.match(/^http:\/\/[^\/]+/)[0]
+    const host = state.match(/^(http|https):\/\/[^\/]+/)[0]
 
     const data = qs.stringify({
         client_id: TROCIO_GOOGLE_CLIENT_ID,

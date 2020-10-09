@@ -23,7 +23,7 @@
     let tabSelected = 0
     let closeTime = 0
     let isClosed = false
-    let sliceDescription = 228
+    let sliceDescription = 300
     
     $: closeTime = troc.schedule && troc.schedule[0]
         && troc.schedule[troc.schedule.length - 1].close
@@ -60,8 +60,8 @@
                 <span class="showDescription" on:click={() => sliceDescription = Infinity}>
                     Tout afficher
                 </span>
-            {:else if troc.description.length > 228 && sliceDescription == Infinity}
-                <span class="showDescription" on:click={() => sliceDescription = 228}>
+            {:else if troc.description.length > 300 && sliceDescription == Infinity}
+                <span class="showDescription" on:click={() => sliceDescription = 300}>
                     Réduire
                 </span>
             {/if}
