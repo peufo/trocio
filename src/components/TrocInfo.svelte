@@ -23,6 +23,8 @@
     let tabSelected = 0
     let closeTime = 0
     let isClosed = false
+    let sliceDescription = 228
+    $: if (troc) sliceDescription = 228
     
     $: closeTime = troc.schedule && troc.schedule[0]
         && troc.schedule[troc.schedule.length - 1].close
@@ -48,16 +50,20 @@
         {#if troc.isClosed}<span class="warning">Ce troc est terminé</span>{/if}
 
         {#if troc.is_try}<span class="warning">Entrainement</span>{/if}
-    
-
 
         <br>
 
         <p>
-            {troc.description}
-        </p>
+            {troc.description.slice(0, sliceDescription)}
 
-        
+            {#if troc.description.length > sliceDescription}
+                ...
+                <span class="showDescription" on:click={() => sliceDescription = Infinity}>
+                    Tout afficher
+                </span>
+            {/if}
+
+        </p>
 
     </div>
 
@@ -167,22 +173,21 @@
 
 </div>
 
-
 <style>
 
     .describe  {
         text-align: justify;
+        word-wrap: break-word;
     }
 
     .info {
-        min-height: 180px;
+        height: 220px;
         display: flex;
     }
 
     .content-info {
         width: 100%;
         padding: 20px;
-
     }
 
     .bar {
@@ -271,6 +276,19 @@
 
     .tab:not(.selected):not(.before-selected):not(.after-selected) {
         border-left: var(--border-width)  solid var(--border-color);
+    }
+
+    .showDescription {
+        font-size: .6em;
+        text-transform: uppercase;
+        padding: .6em 1em;
+        background: #f6f6f6;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .showDescription:hover {
+        background: #eee;
     }
 
 </style>

@@ -150,7 +150,7 @@
                                                 {/if}
                                             </PrimaryText>
                                             <SecondaryText>{dayjs(troc.schedule && troc.schedule[0] && troc.schedule[0].open).fromNow()}</SecondaryText>
-                                            <SecondaryText>{troc.description}</SecondaryText>
+                                            <SecondaryText>{troc.description.slice(0, 124)}</SecondaryText>
                                         </Text>
                                         <Meta>
                                             {#if troc.isAdmin}

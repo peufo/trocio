@@ -12,7 +12,7 @@
     "cy:run": "cypress run",
     "cy:open": "cypress open",
     "db:exemple": "cross-env NODE_ENV=development node ./scripts/dbExemple.js",
-    "deploy": "npm run build && pm2 kill && pm2 start ./api/server.js --name trocio-api && pm2 start server.js --name trocio",
+    "deploy": "npm i && npm run build && pm2 kill && pm2 start ./api/server.js --name trocio-api && pm2 start server.js --name trocio",
     "rollup": "rollup -cw",
     "nollup": "nollup -c",
     "routify": "routify"

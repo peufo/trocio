@@ -172,7 +172,8 @@
 		<input  id="searchInput"
 				on:keyup={keyup}
 				bind:value={address}
-				class="w3-input w3-large"
+				class="w3-input"
+				style="line-height: 1.8;"
 				type="text"
 				autocomplete="off" 
 				placeholder="Adresse, Ville, Pays">	
