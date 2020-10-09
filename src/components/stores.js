@@ -14,8 +14,7 @@ export let trocPromise = writable()
 export let trocDetails = trocDetailsBuilder()
 export let trocDetailsPromise = writable()
 
-export let subscribedTrocs = writable([])
-
+export let subscribedTrocs = writable([]) //Managed with /activity/layout
 
 let userPromiseSubscribed
 userPromise.subscribe(v => {
@@ -178,13 +177,11 @@ async function getDetail(troc, user) {
 		if (details.error) throw details.message
 		if (details.provided) details.provided = addStatutField(details.provided, '')
 		//select last giveback
-		console.log({givebacks: details.givebacks})
 		details.givebacks = details.givebacks.map(art => {
 			art.giveback = art.giveback.filter(back => user === 'undefined' ? !back.user : back.user == user).reverse()[0]
 			if (art.giveback) art.giveback.back = new Date(art.giveback.back).getTime()
 			return art
 		})
-		console.log({givebacks: details.givebacks})
 
 		return details
 	} catch (error) {

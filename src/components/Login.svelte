@@ -3,14 +3,13 @@
     import { slide, fade } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
-    import { afterPageLoad } from '@sveltech/routify'
+    import { afterPageLoad, goto } from '@sveltech/routify'
     import Button from '@smui/button'
 
     import { getHeader } from './utils'
     import { user } from './stores'
     
     export let newUser = !!$user
-    export let id = 'login' //For focus()
 
     let reset = false
     let name = ''
@@ -23,8 +22,6 @@
     let loginError = ''
     let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-    let timeout
-
     const googleAuthApiParams = new URLSearchParams({
         scope: 'email profile',
         access_type: 'online',
@@ -36,21 +33,6 @@
     $afterPageLoad(() => {
         googleAuthApi = `https://accounts.google.com/o/oauth2/v2/auth?${googleAuthApiParams.toString()}&state=${location.href}`
     })
-
-    onMount(() => {
-       focus()
-    })
-
-    onDestroy(() => {
-        clearTimeout(timeout)
-    })
-
-    function focus() {
-        timeout = setTimeout(() => {
-            let loginForm = document.getElementById(`loginForm${id}`)
-            loginForm.getElementsByTagName('input')[0].focus()
-        }, 450)
-    }
 
     function submit() {
         if (!loginError) {
@@ -122,7 +104,7 @@
 </script>
 
 
-<div id="{`loginForm${id}`}" class="w3-padding" style="min-width: 330px;">
+<div class="w3-padding" style="min-width: 330px;">
 
     {#if newUser}
         <h3 class="w3-center" in:fade>Nouveau compte</h3>
@@ -191,14 +173,14 @@
         <div class="w3-margin-top w3-small w3-center">
 
             {#if !$user}
-                <div on:click="{() => {newUser = !newUser; reset = false; focus()}}" class="underline-div w3-padding">
+                <div on:click={() => {newUser = !newUser; reset = false}} class="underline-div w3-padding">
                     <span class="underline-span">
                         {newUser ? `Déjà un compte` : `Nouveau compte`} 
                     </span>
                 </div>
                 
                 {#if !newUser}
-                    <div on:click="{() => {reset = !reset; focus()}}" class="underline-div w3-padding">
+                    <div on:click={() => {reset = !reset}} class="underline-div w3-padding">
                         <span class="underline-span">
                             {reset ? 'Login' : 'Oubli'} 
                         </span>

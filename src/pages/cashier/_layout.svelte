@@ -8,9 +8,9 @@
 	import FormField from '@smui/form-field'
 	import Button from '@smui/button'
 	import Dialog from '@smui/dialog'
-	import Card, {Content} from '@smui/card'
+	import Card, { Content } from '@smui/card'
 	import TabBar from '@smui/tab-bar'
-	import Tab, {Icon, Label} from '@smui/tab'
+	import Tab, { Icon, Label } from '@smui/tab'
 
 	import { user, trocDetails as details } from 'stores.js'
 	import { getHeader } from 'utils.js'
@@ -194,14 +194,14 @@
 					
 					<!-- TODO: open LOGIN blocked for create account-->
 					<Button
-					on:click="{() =>  dialogLogin.open()}"
+					on:click={dialogLogin.open}
 					color="secondary"
 					variant="outlined"
 					class="w3-margin-left">
 					<i class="fas fa-user-plus w3-large"></i>&nbsp;Nouveau
 					</Button>
 					<Dialog bind:this={dialogLogin}>
-						<Login id="NewClient" on:newClient={clientSelected} newUser/>
+						<Login on:newClient={clientSelected} newUser/>
 					</Dialog>
 
 					<Button

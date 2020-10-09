@@ -37,7 +37,7 @@
 		trocSelectedName = '',
 		markers = [],
 		mapFilter = true,
-		timeFilter = false,
+		timeFilter = true,
 		search = '',
 		start = dayjs().format('YYYY-MM-DD'), 
 		end = '',
@@ -151,32 +151,10 @@
 		if (index > -1) trocs[index].up = new Date().getTime()
 	}
 
-	async function clickActivity(trocId) {
-		if ($user) {
-			let troc = trocs[trocs.map(t => t._id).indexOf(trocId)]
-			if (!troc.isSubscribed) {
-				let res = await fetch('__API__/subscribes', getHeader({troc: trocId}))
-				let json = await res.json()
-				if (json.error) return notify.error(json.message)
-				notify.success('Vous participez à un nouveau troc')
-				$subscribedTrocs.push(troc)
-			}
-			$goto(`/activity/detail?troc=${trocId}`)
-		}else{
-			dialogLogin.open()
-		}
-	}
-
-	function loginClose() {
-		dialogLogin.close()
-		setTimeout(() => clickActivity(trocSelected), 100)
-	}
-
 	function clickTroc(troc) {
 		trocSelected = troc._id
 		trocSelectedName = troc.name
 	}
-
 
 </script>
 
@@ -191,12 +169,12 @@
 
         <!-- Search -->
         <Textfield
-        class="w3-large"
-		style="width: 100%;"
-        bind:value={search}
-        on:input={newSearch}
-        type="search"
-        label="Recherche"
+			class="w3-large"
+			style="width: 100%;"
+			bind:value={search}
+			on:input={newSearch}
+			type="search"
+			label="Recherche"
         ></Textfield>
         <br><br>
 
@@ -245,9 +223,7 @@
 			on:click={() => clickTroc(troc)}
 			class="simple-card">
 			
-			<TrocInfo {troc}
-				on:clickArticles={dialogArticles.open}
-				on:clickActivity={() => clickActivity(troc._id)}/>
+			<TrocInfo {troc} on:clickArticles={dialogArticles.open}/>
 
 		</div>
 
@@ -265,7 +241,7 @@
 
 <Dialog bind:this={dialogLogin}>
 	<Content>
-		<Login on:close={loginClose}/>
+		<Login on:close={dialogLogin.close} redirectUrl={`/activity/detail?troc=${trocSelected}`}/>
 	</Content>
 </Dialog>
 

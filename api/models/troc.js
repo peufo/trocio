@@ -1,6 +1,8 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
+const mongooseLeanVirtuals = require('mongoose-lean-virtuals')
+const Subscribe = require('./subscribe')
 
 let trocModel = new Schema({
 	name: {type: String, required: true},
@@ -36,13 +38,18 @@ let trocModel = new Schema({
 		padding: {type: Number, default: 2},
 		border: {type: Boolean, default: true}
 	},
-	is_try: {type: Boolean, default: false}
+	is_try: {type: Boolean, default: false},
+	subscriber: {type: Number, default: 0}
+}, {
+	toJSON: { virtuals: true}
 })
 
 trocModel.set('timestamps', true)
 
 trocModel.virtual('isClosed').get(function() {
-	return this.schedule[this.schedule.length - 1].close.getTime() < new Date().getTime()
+	return !!this.schedule[0] && this.schedule[this.schedule.length - 1].close.getTime() < new Date().getTime()
 })
+
+trocModel.plugin(mongooseLeanVirtuals)
 
 module.exports = mongoose.model('troc', trocModel)

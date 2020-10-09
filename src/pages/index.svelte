@@ -59,7 +59,7 @@
 
                 <span class="warning">
                     <i class="fas fa-exclamation-triangle"></i>&nbsp;
-                    La plateforme est en phase de test et n'est pas encore ouverte aux public.
+                    La plateforme est en phase beta.
                 </span>   
             </div>
         </div>

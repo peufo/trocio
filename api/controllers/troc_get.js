@@ -137,7 +137,7 @@ function getStats(req, res, next) {
 
 function search(req, res, next) {
     let {search, skip = 0, start, end, north, east, sud, west} = req.query
-    let query= {}
+    let query= {is_try: false}
 
     if (search && search.length) {
         let regexp = new RegExp(search, 'i')
@@ -157,7 +157,7 @@ function search(req, res, next) {
     if (!isNaN(sud))   	query.$and.push({'location.lat': {$gt: sud}})
     if (!isNaN(west))  	query.$and.push({'location.lng': {$gt: west}})
 
-    Troc.find(query).skip(Number(skip)).limit(20).lean().exec((err, trocs) => {
+    Troc.find(query).skip(Number(skip)).limit(20).lean({virtuals: true}).exec((err, trocs) => {
         if (err) return next(err)
 
         //Admin and cashier becomes booleans + add subscribed boolean
@@ -185,15 +185,19 @@ function search(req, res, next) {
 
 function getTroc(req, res, next) {
     if (req.session.user) {
-        Troc.findOne({_id: req.params.id}).lean().exec((err, troc) => {
+        Troc.findOne({_id: req.params.id}).lean({virtuals: true}).exec((err, troc) => {
             if (err || !troc) return next(err || Error('Not found'))
             lookupIfAdmin(troc, req.session.user._id.toString(), (err, troc) => {
                 if (err || !troc) return next(err || Error('Not found'))
-                res.json(troc)
+                Subscribe.findOne({user: req.session.user._id, troc: troc._id}, (err, subscribe) => {
+                    if (err) return next(err)
+                    troc.isSubscribed = !!subscribe
+                    res.json(troc)
+                })
             })
         })
     }else{
-        Troc.findOne({_id: req.params.id}).lean().exec((err, troc) => {
+        Troc.findOne({_id: req.params.id}).lean({virtuals: true}).exec((err, troc) => {
             if (err || !troc) return next(err || Error('Not found'))
             delete troc.admin
             delete troc.cashier

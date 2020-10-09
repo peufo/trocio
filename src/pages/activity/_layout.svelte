@@ -14,7 +14,7 @@
     dayjs.extend(relativeTime)
     
     import qs from 'qs'
-    import { user, userPromise, subscribedTrocs } from 'stores.js'
+    import { user, userPromise, subscribedTrocs} from 'stores.js'
     import RowsPromise from 'RowsPromise.svelte'
     import Login from 'Login.svelte'
     
@@ -105,7 +105,7 @@
                             <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
                         </a>
                     -->
-                    <slot scoped={{trocSelected}}/>
+                    <slot/>
 
                 </div>
             {/if}

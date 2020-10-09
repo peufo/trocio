@@ -15,6 +15,7 @@
     const dispatch = createEventDispatcher()
     
     export let troc = {}
+    export let displayGetActivity = true
 
     $: console.log({troc})
 
@@ -36,10 +37,21 @@
 
     <div class="w3-col m6 describe">
         
-        <h3>{troc.name}</h3>
-        {#if troc.is_try}
-            <span class="warning">Entrainement</span>
-        {/if}
+        <span class="w3-large">{troc.name}</span>
+        
+        <!-- Infos -->
+        <span style="margin-left: 1em;">
+            <i class="fas fa-child w3-opacity"></i>
+            {troc.subscriber}
+        </span>
+
+        {#if troc.isClosed}<span class="warning">Ce troc est terminé</span>{/if}
+
+        {#if troc.is_try}<span class="warning">Entrainement</span>{/if}
+    
+
+
+        <br>
 
         <p>
             {troc.description}
@@ -124,40 +136,34 @@
         </div>
     </div>
 
-    <br>
-    <!-- Buttons -->
-    <div class="w3-right">
-        <Button
-        on:click={() => dispatch('clickArticles')}
-        color="secondary" style="margin-top: 5px;">
-            Fouiller les articles
+</div>
+
+<!-- Bar du fond -->
+<div class="bar">
+   
+    <Button
+    on:click={() => dispatch('clickArticles')}
+    color="secondary">
+        Fouiller les articles
+    </Button>
+
+    {#if displayGetActivity && (!troc.isClosed || troc.isSubscribed)}
+        <Button href={`/activity/detail?troc=${troc._id}`}>
+            {troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
         </Button>
+    {/if}
 
-        {#if !isClosed || troc.isSubscribed}
-            <Button
-            on:click={() => dispatch('clickActivity')}
-            color="secondary" style="margin-top: 5px;">
-                {troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
-            </Button>
-        {/if}
-
-        {#if !!$user && troc.isAdmin}
-            <Button href="{`/admin?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
-                <i class="fa fa-cog w3-large"></i>&nbsp;
-                Page d'administration
-            </Button>
-        {:else if !!$user && troc.isCashier}
-            <Button href="{`/cashier?troc=${troc._id}`}" color="secondary" style="margin-top: 5px;">
-                <i class="fa fa-cash-register w3-large"></i>&nbsp;
-                Caisse
-            </Button>
-        {/if}
-
-    </div>
-
-    
-
-    {#if isClosed}<span class="warning">Ce troc est terminé</span>{/if}
+    {#if !!$user && troc.isAdmin}
+        <Button href={`/admin?troc=${troc._id}`} color="secondary">
+            <i class="fa fa-cog w3-large"></i>&nbsp;
+            Page d'administration
+        </Button>
+    {:else if !!$user && troc.isCashier}
+        <Button href={`/cashier?troc=${troc._id}`} color="secondary">
+            <i class="fa fa-cash-register w3-large"></i>&nbsp;
+            Caisse
+        </Button>
+    {/if}
 
 </div>
 
@@ -177,6 +183,13 @@
         width: 100%;
         padding: 20px;
 
+    }
+
+    .bar {
+        min-height: 3em;
+        margin-right: 10px;
+        border-top: 1px solid #ddd;
+        padding-top: 10px;
     }
 
     .tabs {
@@ -227,10 +240,10 @@
         border-top-right-radius: 0px;
     }
 
-    .tab:last-child.selected:after  {
+    /*.tab:last-child.selected:after  {
         border-bottom: var(--border-width)  solid #fff;
         border-bottom-right-radius: 0px;
-    }
+    }*/
 
     .tab.before-selected:after {
         content: '';

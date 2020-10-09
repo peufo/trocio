@@ -7,7 +7,7 @@ function getMySubscribedTrocs(req, res, next) {
     if (!req.session.user) return res.json({error: true, message: 'Login required'})
     Subscribe.find({user: req.session.user._id})
     .sort({updatedAt: -1}).limit(limit).skip(skip)
-    .populate('troc', 'name description address location admin cashier schedule society societyweb is_try')
+    .populate('troc', 'name description address location admin cashier schedule society societyweb is_try subscriber')
     .lean()
     .exec((err, subs) => {
         if (err) return next(err)
@@ -26,5 +26,6 @@ function getMySubscribedTrocs(req, res, next) {
 
     })
 }
+
 
 module.exports = { getMySubscribedTrocs }

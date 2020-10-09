@@ -97,7 +97,7 @@
 
 <Dialog bind:this={dialogLogin}>
 	<Content>
-		<Login on:close="{() => dialogLogin.close()}"/>
+		<Login on:close={dialogLogin.close}/>
 	</Content>
 </Dialog>
 
