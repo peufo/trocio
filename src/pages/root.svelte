@@ -75,20 +75,22 @@
     }
 
     async function subcribeAllUsers(troc) {
-        try {
-            let res = await fetch('__API__/superadmin/subscribe-all-users', getHeader({troc}))
-            let json = await res.json()
-            if (json.error) throw json.message
-            notify.success(json.message)
-        } catch (error) {
-            notify.error(error)
+        if (confirm('Sur ?')) {
+            try {
+                let res = await fetch('__API__/superadmin/subscribe-all-users', getHeader({troc}))
+                let json = await res.json()
+                if (json.error) throw json.message
+                notify.success(json.message)
+            } catch (error) {
+                notify.error(error)
+            }
         }
     }
 
     async function removeTroc(troc) {
         if (prompt(`Tapez "${troc.name}" pour le supprimer`) === troc.name) {
             try {
-                let res = await fetch('__API__/superadmin/remove-troc', getHeader({troc: troc._id}))
+                let res = await fetch('__API__/superadmin/remove-troc', getHeader({troc}))
                 let json = await res.json()
                 if (json.error) throw json.message
                 notify.success(json.message)
@@ -97,6 +99,17 @@
             }
         } else {
             notify.warning('Nom incorrect')
+        }
+    }
+
+    async function computeSubscriber(troc) {
+        try {
+            let res = await fetch('__API__/superadmin/compute-subscriber', getHeader({troc}))
+            let json = await res.json()
+            if (json.error) throw json.message
+            notify.success(json.message)
+        } catch(error) {
+            notify.error(error)
         }
     }
 
@@ -162,17 +175,20 @@
                 <br>
                 {#each trocs as troc}
                     <div class="simple-card">
-                        <Button class="w3-right w3-red"  on:click={() => removeTroc(troc)}>
-                            Supprimer
-                        </Button>
-                        <Button class="w3-right w3-margin-right" on:click={() => subcribeAllUsers(troc._id)}>
+
+                        <Button class="w3-margin-right" on:click={() => subcribeAllUsers(troc._id)}>
                             Abonner tous les utilisateurs
+                        </Button>
+                        <Button class="w3-margin-right" on:click={() => computeSubscriber(troc._id)}>
+                            Compter le nombre d'abonnement
+                        </Button>
+                        <Button class="w3-red"  on:click={() => removeTroc(troc._id)}>
+                            Supprimer
                         </Button>
 
                         <h3 on:click={() => troc.show = !troc.show}>
                             {troc.name}
                         </h3>
-                        <span>{troc._id}</span>
                         {#if troc.show}
                             <pre transition:slide>
                                 {@html syntaxHighlight(JSON.stringify(troc, null, 2))}

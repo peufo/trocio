@@ -41,11 +41,9 @@
 
 <div style="max-width: 800px; margin: auto;">
 
-    {#await $trocPromise}
-        <Logo/>
-    {:then}
+    {#if !!$troc}
         <TrocInfo troc={$troc} displayGetActivity={false} on:clickArticles={dialogArticles.open}/>
-    {/await}
+    {/if}
 
     <br>
     
@@ -62,9 +60,11 @@
 
 </div>
 
-<Dialog bind:this={dialogArticles} style="min-height: 430px;">
-	<Title>Fouiller les articles dans <i>{$troc.name}</i></Title>
-	<Content>
-		<Articles troc={$troc._id}/>
-	</Content>
-</Dialog>
+{#if !!$troc}
+    <Dialog bind:this={dialogArticles} style="min-height: 430px;">
+        <Title>Fouiller les articles dans <i>{$troc.name}</i></Title>
+        <Content>
+            <Articles troc={$troc._id}/>
+        </Content>
+    </Dialog>
+{/if}
