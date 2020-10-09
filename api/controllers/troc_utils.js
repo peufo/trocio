@@ -44,8 +44,8 @@ async function findSpec(troc, user, cb = noop) {
     troc = await Troc.findById(troc, {tarif: 1, trader: 1}).exec()
 	if (!troc) return cb(Error('Troc not found !'))
 	let tarif = troc.tarif.filter(t => t.apply.map(a => a._id).indexOf(user) != -1)[0] || troc.tarif[0]
-	let prefix = troc.trader.filter(t => t._id == user)[0]
-
+	let prefix = troc.trader.filter(t => t.user == user)[0]
+	if (prefix) ({ prefix } = prefix)
 	cb(null, {tarif, prefix})
 	return {tarif, prefix}
 }

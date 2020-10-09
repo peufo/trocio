@@ -21,7 +21,6 @@
 	import TrocInfo from 'TrocInfo.svelte'
 	import Resume 	from 'Resume.svelte'
 	import Articles from 'Articles.svelte'
-	import Login 	from 'Login.svelte'
 	
 	export let mapDelay = 0 // Pour attendre la fin de l'animation
 
@@ -46,7 +45,7 @@
 		innerHeight
 
 	//Dialogs
-	let dialogLogin, dialogArticles
+	let dialogArticles
 
 	$: if(scrollY && scrollY + innerHeight > document.body.offsetHeight - 50 ) {
 		limitTrocsDisplay++
@@ -238,12 +237,6 @@
 
 
 <!-- Dialogs -->
-
-<Dialog bind:this={dialogLogin}>
-	<Content>
-		<Login on:close={dialogLogin.close} redirectUrl={`/activity/detail?troc=${trocSelected}`}/>
-	</Content>
-</Dialog>
 
 <Dialog bind:this={dialogArticles} style="min-height: 430px;">
 	<Title>Fouiller les articles dans <i>{trocSelectedName}</i></Title>

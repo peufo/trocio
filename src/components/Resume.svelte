@@ -30,6 +30,8 @@
 
 	let onPrint = false
 
+	$: console.log({details: $details})
+
 	//Création d'article (buttons)
 	let createImportArticlesPromise
 	let importArticlesListOpen = false 	//Modal popup for import list of articles

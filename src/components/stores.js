@@ -21,8 +21,6 @@ userPromise.subscribe(v => {
 	userPromiseSubscribed = v
 })
 
-
-
 // ------------------------------------------------------
 // 							UTIL
 // ------------------------------------------------------
@@ -154,7 +152,6 @@ function trocDetailsBuilder() {
 
 async function loadTrocDetails(set, {troc, client}) {
 	if(!troc) return set(null)
-	console.log('Load detail')
 	
 	let details = {}
 	//load client's details if he exist
