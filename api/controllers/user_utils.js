@@ -86,7 +86,6 @@ async function loginWithGoogle(req, res, next) {
         .then(async function (response) {
             const {email, picture, email_verified, name} = response.data
 
-            
             try{//Trouve l'utilisateur 
                 let user = await User.findOne({mail: email}).exec()
 

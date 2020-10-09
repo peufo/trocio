@@ -1,5 +1,7 @@
 <script>
     import { onMount } from 'svelte'
+    import Dialog, { Content, Title } from '@smui/dialog'
+
     import { user, subscribedTrocs, trocDetailsPromise, troc, trocPromise } from 'stores.js'
     import { getHeader } from 'utils.js'
     import notify from 'notify.js'
@@ -8,9 +10,11 @@
     import Resume from 'Resume.svelte'
     import ArticleCreateDialog from 'ArticleCreateDialog.svelte'
     import TarifInfoDialog from 'TarifInfoDialog.svelte'
+    import Articles from 'Articles.svelte'
 
     let articleCreateDialog
     let tarifInfoDialog
+    let dialogArticles
 
     onMount(() => {
         $trocPromise.then(() => {
@@ -40,7 +44,7 @@
     {#await $trocPromise}
         <Logo/>
     {:then}
-        <TrocInfo troc={$troc} displayGetActivity={false}/>
+        <TrocInfo troc={$troc} displayGetActivity={false} on:clickArticles={dialogArticles.open}/>
     {/await}
 
     <br>
@@ -57,3 +61,10 @@
     <TarifInfoDialog bind:dialog={tarifInfoDialog}/>
 
 </div>
+
+<Dialog bind:this={dialogArticles} style="min-height: 430px;">
+	<Title>Fouiller les articles dans <i>{$troc.name}</i></Title>
+	<Content>
+		<Articles troc={$troc._id}/>
+	</Content>
+</Dialog>
