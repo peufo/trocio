@@ -124,7 +124,7 @@
     }
 
     async function getStats() {
-        let req = `__API__/trocs/${$troc._id}/stats?`
+        let req = `/trocs/${$troc._id}/stats?`
         if (selectedView == 'user') {
             req += `user=${selectedUser}`
         }else{

@@ -101,7 +101,7 @@
     
     async function getData() {
         
-        let req = `__API__${baseURL}troc=${$troc._id}&limit=${limitData}&skip=${skipData}`
+        let req = `${baseURL}troc=${$troc._id}&limit=${limitData}&skip=${skipData}`
         
         fields.filter(f => f.queryValue.length).forEach(f => {
             req += `&${f.typeMenu}_${f.dataName.split('.')[0]}=${f.queryValue}`

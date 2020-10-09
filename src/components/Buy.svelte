@@ -33,14 +33,14 @@
 
     async function getArticles() {
 
-        let req = `__API__/articles?troc=${$details.troc}&limit=${LIMIT_LIST_A}&skip=${skip}`
+        let req = `/articles?troc=${$details.troc}&limit=${LIMIT_LIST_A}&skip=${skip}`
         req += `&filter_statut=valided`
         req += `&or_search_name=${search}`
         req += `&or_search_ref=${search}`
         req += `${$params.client && $params.client !== 'undefined' ? `&providernot=${$params.client}` :''}`
 
         try {
-            let res = await fetch(req)
+            let res = await fetch(`__API__${req}`)
             let json = await res.json()
     
             if(res.ok) {
