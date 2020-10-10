@@ -21,7 +21,7 @@ function getMySubscribedTrocs(req, res, next) {
         await Promise.all(subs.map(sub => {
             if (!!sub.troc) return Promise.resolve()
             nbUnknownTrocs++
-            return Subscribe.findByIdAndRemovesub(sub._id).exec()
+            return Subscribe.findByIdAndRemove(sub._id).exec()
         }))
         if (nbUnknownTrocs) console.log(`${nbUnknownTrocs} subscribe to unknow trocs removed`)
 
