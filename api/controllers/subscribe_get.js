@@ -11,6 +11,7 @@ function getMySubscribedTrocs(req, res, next) {
     Subscribe.find({user: req.session.user._id})
     .sort({updatedAt: -1}).skip(skip).limit(limit)
     .populate('troc', 'name description address location admin cashier schedule society societyweb is_try subscriber')
+    .lean()
     .exec(async (err, subs) => {
         if (err) return next(err)
 
