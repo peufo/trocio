@@ -63,6 +63,13 @@ router
             res.send(str)
         })
     })
+    .get('/subscribes', (req, res, next) => {
+        Subscribe.find(req.query, (err, users) => {
+            if (err) return next(err)
+            let str = users.map(user => user.mail).join('<br>')
+            res.send(str)
+        })
+    })
     .post('/subscribe-all-users', async (req, res, next) => {
         let { troc } = req.body
         if (!troc) return next(Error('troc query is required'))

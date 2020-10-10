@@ -4,9 +4,12 @@ function getMySubscribedTrocs(req, res, next) {
     let { limit = 10, skip = 0 } = req.query
     limit = Number(limit)
     skip = Number(skip)
+
+    console.log({skip, limit})
+
     if (!req.session.user) return res.json({error: true, message: 'Login required'})
     Subscribe.find({user: req.session.user._id})
-    .sort({updatedAt: -1}).limit(limit).skip(skip)
+    .sort({updatedAt: -1}).skip(skip).limit(limit)
     .populate('troc', 'name description address location admin cashier schedule society societyweb is_try subscriber')
     .lean()
     .exec((err, subs) => {

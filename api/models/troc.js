@@ -39,7 +39,7 @@ let trocModel = new Schema({
 		border: {type: Boolean, default: true}
 	},
 	is_try: {type: Boolean, default: false},
-	subscriber: {type: Number, default: 0}
+	subscriber: {type: Number, default: 1}
 }, {
 	toJSON: { virtuals: true}
 })
