@@ -26,7 +26,6 @@
 				slideChange: swiper => {
 					index = swiper.activeIndex
 					tabActived = tabs[index]
-					console.log('Swip onMount slideChange redirect', $params)
 					$redirect(location.pathname, {...$params, tab: tabActived.ref})
 				}
 			},
@@ -41,7 +40,6 @@
 		index = newIndex
 		tabActived = tabs[index]
 		swiper.slideTo(index)
-		console.log('Active Tab redirect')
 		$redirect(location.pathname, {...$params, tab: tabActived.ref})
 		desableFocus()
 	}

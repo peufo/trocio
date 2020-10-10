@@ -1,5 +1,5 @@
 <script>
-    import { goto } from '@sveltech/routify'
+    import { redirect, params } from '@sveltech/routify'
 	import { onMount } from 'svelte'
 	import { troc, trocPromise } from 'stores.js'
     import { fade } from 'svelte/transition'
@@ -33,8 +33,7 @@
 		{ref: 'managment',	label: 'Gestion', 		    icon: 'fas fa-eraser'},
 		{ref: 'cashier',	label: 'Caisse', 		    icon: 'fas fa-cash-register'},
     ]
-    let index = 0
-    let tabActived = tabs[index]
+    let tabActived = tabs[tabs.map(t => t.ref).indexOf($params.tab_admin || 'info')]
 
 	onMount(() => {
 		//let query = queryString.parse(location.search)
@@ -56,13 +55,11 @@
 	let changeFlag = false //For SearchUser to AutoPatch 
     let tag = {} // For tag edit
     
-
-	function activeTab(newIndex) {
-		index = newIndex
+	function activeTab(index) {
 		tabActived = tabs[index]
 		console.log('Active Tab redirect')
-		//$redirect(location.pathname, {...$params, tab: tabActived.ref})
-	}
+		$redirect(location.pathname, {...$params, tab_admin: tabActived.ref})
+    }
 
 </script>
 
@@ -71,9 +68,9 @@
     <Logo/>
 {:then}
     {#if $troc === null && $user === null}
-        {$goto('/')}
+        {$redirect('/')}
     {:else if $troc === null}
-        {$goto('/activity')}
+        {$redirect('/activity')}
     {:else if $troc.failed}
         <div class="w3-display-container">
             <div class="w3-display-middle w3-red w3-padding w3-round w3-large w3-center">
