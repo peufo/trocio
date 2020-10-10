@@ -52,7 +52,7 @@
             
             document.querySelector(`#search${field.dataName}Input`).focus()
         }else if (field.typeMenu == 'user') {
-            if (field.queryValue.length){//Reset selection
+            if (field.queryValue.length){//Reset election
                 field.queryValue = ''
                 fields = fields
                 reloadData()
@@ -83,7 +83,7 @@
     function selectUser(field, event) {
         field.queryValue = event.detail._id
         field.queryLabel = event.detail.name
-        field.menu.setOpen(false)
+        menus[field.dataName].setOpen(false)
         fields = fields //Compute for display
         reloadData()
     }
