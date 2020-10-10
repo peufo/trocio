@@ -64,10 +64,9 @@ router
         })
     })
     .get('/subscribes', (req, res, next) => {
-        Subscribe.find(req.query, (err, users) => {
+        Subscribe.find(req.query, (err, subscribes) => {
             if (err) return next(err)
-            let str = users.map(user => user.mail).join('<br>')
-            res.send(str)
+            res.json(subscribes)
         })
     })
     .post('/subscribe-all-users', async (req, res, next) => {
