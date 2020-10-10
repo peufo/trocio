@@ -57,7 +57,6 @@
     
 	function activeTab(index) {
 		tabActived = tabs[index]
-		console.log('Active Tab redirect')
 		$redirect(location.pathname, {...$params, tab_admin: tabActived.ref})
     }
 

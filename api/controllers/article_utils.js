@@ -32,7 +32,7 @@ function getRoles(userId, art, cb) {
 		if (isCashier || isAdmin) roles.push('cashier')
 		if (isProvider) roles.push('provider')
 
-		return cb(roles)
+		return cb(null, roles)
 	})
 }
 

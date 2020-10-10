@@ -9,8 +9,8 @@
     import List, { Item, Graphic, Meta, Text, PrimaryText, SecondaryText} from '@smui/list'
 
     import { troc, user } from './stores'
-    //import { formatPrice, getFee, getMargin, getHeader } from './utils'
-    import { formatPrice, getHeader } from './utils'
+    import notify from 'notify.js'
+    import { formatPrice, getHeader, getFee, getMargin } from './utils'
     import SearchUser from './SearchUser.svelte'
 
     export let dialog
@@ -94,7 +94,20 @@
     }
 
     function testIsModifed() {
-        return isModified = JSON.stringify(articleEdited) != JSON.stringify(article)
+
+        let edit = []
+        Object.keys({...article, ...articleEdited}).forEach(key => {
+            if (JSON.stringify(article[key]) !== JSON.stringify(articleEdited[key])) {
+                edit.push({
+                    key,
+                    type: articleEdited[key] ? 'write' : 'erase',
+                    value: articleEdited[key] && !!articleEdited[key]._id ? articleEdited[key]._id : articleEdited[key]
+                })
+            }
+        })
+
+        isModified = !!edit.length
+        return edit
     }
 
     async function editPrice(e) {
@@ -108,63 +121,37 @@
     }
 
     function updateFeeAndMargin() {
-        /* TODO: Review
-        articleEdited.fee = getFee(articleEdited, tarif)
-        articleEdited.margin = getMargin(articleEdited, tarif)
-        */
+        if (!!tarif) {
+            articleEdited.fee = getFee(articleEdited, tarif)
+            articleEdited.margin = getMargin(articleEdited, tarif)
+        }
     }
 
     async function getTarif(trocId, userId) {
         try {
-            let res = await fetch(`__API__/trocs/${trocId}/tarif/${userId}`)
+            let res = await fetch(`__API__/trocs/spec?troc=${trocId}&user=${userId}`)
             let json = await res.json()
-            tarif = json
+            tarif = json.tarif
         } catch(error) {
-            console.trace(error)
+            notify.error(error)
         }
     }
     
     async function valid() {
 
-        //Une demande de changement de prix est émise si le fournisseur n'est pas connecté
-        if (articleEdited.price != article.price && article.provider._id != $user._id) {
+        let edits = testIsModifed()
 
-            let message = `Le changement du prix nécéssite l'accord du fourniseur (${article.provider.name}).\n`
-            message += `Une demande lui sera transmise et le nouveau prix de ${articleEdited.price.toFixed(2)} sera appliqué dés qu'il l'aura accepté.`
+        console.log({createEventDispatcher})
 
-            if (confirm(message)) {
-                try {
-                    let res = await fetch(`__API__/articles/newprice`, getHeader({_id: article._id, price: articleEdited.price}, 'POST'))
-                    let json = await res.json()
-                    if (res.ok) {
-                        articleEdited.newPriceRequest = json.data.newPriceRequest
-                        articleEdited.price = article.price
-                        dispatch('patched', articleEdited)
-                    }else{
-                        console.log(res)
-                    }
-                } catch(error) {
-                    console.trace(error)
-                }
-            }else{
-                //Rétablissement du prix
-                articleEdited.price = article.price                
-            }
-        }
-
-        //Patch request
-        if (testIsModifed()) {
-            try {
-                let res = await fetch(`__API__/articles`, getHeader(articleEdited, 'PATCH'))
-                let json = await res.json()
-                if (res.ok) {
-                    dispatch('patched', articleEdited)
-                }else {
-                    console.log(res)
-                }            
-            } catch (error) {
-                console.trace(error)
-            }
+        try {
+            let res = await fetch('__API__/articles/edit', getHeader({edits, article: article._id}))
+            let json = await res.json()
+            if (json.error) throw json.message
+            notify.success('Modification enregistré')
+            //article = articleEdited
+            dispatch('edited', articleEdited)
+        } catch(error) {
+            notify.error(error)
         }
 
     }
@@ -285,7 +272,11 @@
             <br>
             <span>
                 Prix: 
-                <input value={articleEdited.price && articleEdited.price.toFixed(2)} use:formatPrice on:input={editPrice} style="width: 80px;">
+                <input
+                    value={articleEdited.price}
+                    use:formatPrice
+                    on:input={editPrice}
+                    style="width: 80px;">
             </span><br>
 
             {#await tarifPromise}

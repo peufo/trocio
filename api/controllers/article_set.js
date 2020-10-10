@@ -78,7 +78,8 @@ function createNewPriceRequest(req, res, next) {
 	Article.findOne({_id: _id}).exec((err, article) => {
 		if (err || !article) return next(err || Error('Article not found'))
 
-		getRoles(req.session.user._id, article, roles => {
+		getRoles(req.session.user._id, article, (err, roles) => {
+			if (err) return next(err)
 			if (roles.indexOf('cashier') == -1) return next(Error('You need to be a cashier for this operation'))
 
 			article.newPriceRequest = {
@@ -103,7 +104,8 @@ function acceptNewPriceRequest(req, res, next) {
 	Article.findOne({_id: _id}).exec((err, article) => {
 		if (err) return next(err)
 
-		getRoles(req.session.user._id, article, roles => {
+		getRoles(req.session.user._id, article, (err, roles) => {
+			if (err) return next(err)
 			if (roles.indexOf('provider') == -1) return next(Error('You need to be a provider for this operation'))
 
 			article.price = article.newPriceRequest.newPrice
@@ -136,8 +138,8 @@ function patchArticle(req, res, next) {
 		uniqueTroc = articles.map(a => a.troc.toString()).filter((v, i, self) => self.indexOf(v) === i).length == 1
 		if (!uniqueTroc) return next(Error('All articles not becomes from the same troc'))
 
-		getRoles(req.session.user._id, articles[0], async roles => {
-
+		getRoles(req.session.user._id, articles[0], async (err, roles) => {
+			if (err) return next(err)
 			if (!roles.length) return next(Error('Not authorized'))
 			
 			//Find tarif to apply it if price change
@@ -237,14 +239,58 @@ function patchArticle(req, res, next) {
 					res.json({success: true, message: articles[0]})
 				}
 			}).catch(next)
+		})
+	})
+}
 
+//TODO: for replace patch article ?
+async function editArticle(req, res, next) {
+	try {
+		let { edits, article }  = req.body
+		if (!edits || !article) throw 'edit and article is required on the body'
+
+		article = await Article.findById(article).exec()
+		if (!article) throw 'Article not found'
+		getRoles(req.session.user._id, article, async (err, roles) => {
+			if (err) return next(err)
+			if (roles.indexOf('admin') === -1) throw 'You have not admin right on this article'
+
+			edits.forEach(({key, type, value}) => {
+				if (type === 'write') {
+					article[key] = value
+				}else if (type === 'erase') {
+					article[key] = undefined
+				}
+			})
+
+			//Mise a jour du prix dans le cas d'un changement de prix
+			if (edits.map(edit => edit.key).indexOf('price') > -1) {
+				let { tarif } = await findSpec(article.troc, article.provider)
+				article.fee 	= getFee(article, tarif)
+				article.margin 	= getMargin(article, tarif)
+			}
+
+			//Validation de l'article
+			if (article.valided && article.refused) err = Error(`Un article ne peut pas être validé et refusé`)
+			if (article.sold && article.recover) err = Error(`Un article ne peut pas être vendu et récupéré`)
+			if (!article.valided && (article.sold || article.recover)) err = Error(`Un article doit être validé pour être vendu ou récupéré`)
+			if (err) return next(err)
+
+			article.save(err => {
+				if (err) return next(err)
+				res.json({success: true, message: article})
+			})
+			
 		})
 
-	})
+	} catch(error) {
+		return next(error)
+	}
 }
 
 module.exports = {
 	createArticle,
+	editArticle,
     deleteArticle,
 	goBackArticle,
 	createNewPriceRequest,

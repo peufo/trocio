@@ -9,8 +9,7 @@
     let articles = []
     let article = {}
 
-    //TODO: replace with getFields
-
+    //TODO: replace with getFields for same use on resume
     let fields = [
         {label: '#',            checked: true,  typeMenu: 'search', dataName: 'ref',        dataType: 'string', cellWidth: 50,  disabled: true},
         {label: 'Désignation',  checked: true,  typeMenu: 'search', dataName: 'name',       dataType: 'string', cellWidth: 300, disabled: true},
@@ -50,4 +49,4 @@
 
 <SearchTable title="Articles" {fields} on:select={selectArticle} bind:items={articles}/>
 
-<ArticleDialog {article} bind:dialog={articleDialog} on:patched={articlePatched}/>
+<ArticleDialog {article} bind:dialog={articleDialog} on:edited={articlePatched}/>

@@ -23,7 +23,6 @@
     export let items = []
     export let preloaded = false
     export let selectedIndex = -1
-    $: console.log({fields})
 
     let fieldsMenu
     let menus = {}

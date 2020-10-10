@@ -2,6 +2,7 @@ let express = require('express')
 let router = express.Router()
 
 let { 	createArticle,
+		editArticle,
 		deleteArticle,
 		goBackArticle,
 		patchArticle,
@@ -12,6 +13,7 @@ let { checkLogin } = require('../controllers/user_utils')
 
 router
 	.post('/', 			checkLogin, 		createArticle)
+	.post('/edit', 		checkLogin, 		editArticle)
 	.post('/giveback', 	checkLogin,			goBackArticle)
 	.post('/newprice', 	checkLogin,			createNewPriceRequest)
 	.post('/acceptnewprice', 	checkLogin,	acceptNewPriceRequest)

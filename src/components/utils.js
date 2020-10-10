@@ -100,6 +100,24 @@ export function addStatutField(articles, context = 'organisator') {
 
 }
 
+//TODO: This is a copy from ../api/controllers/troc_utils
+export function getFee(art, tarif) {
+	if (tarif && tarif.fee.length && art.price > 0) {
+		return art.fee = tarif.fee.sort((a, b) => b.price - a.price).filter(f => f.price <= art.price)[0].value 
+	}else if (art.price == 0) {
+		return art.fee = 0
+	}else return art.fee || 0
+}
+
+//TODO: This is a copy from ../api/controllers/troc_utils
+export function getMargin(art, tarif) {
+	if (tarif && art.price) {
+		return art.margin = tarif.margin * art.price
+	}else{
+		return art.margin = 0
+	}
+}
+
 // SVELTE Transition
 export const crossfadeConfig = {
 	duration: d => Math.sqrt(d * 200),
