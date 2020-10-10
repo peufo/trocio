@@ -11,9 +11,18 @@ function getMySubscribedTrocs(req, res, next) {
     Subscribe.find({user: req.session.user._id})
     .sort({updatedAt: -1}).skip(skip).limit(limit)
     .populate('troc', 'name description address location admin cashier schedule society societyweb is_try subscriber')
-    .lean()
-    .exec((err, subs) => {
+    .exec(async (err, subs) => {
         if (err) return next(err)
+
+        //TODO: comprendre d'ou viennent les subscribes de troc inéxistant.
+        //Remove subscribe inconnu
+        let nbUnknownTrocs = 0
+        await Promise.all(subs.map(sub => {
+            if (!!sub.troc) return Promise.resolve()
+            nbUnknownTrocs++
+            return sub.remove().exec()
+        }))
+        if (nbUnknownTrocs) console.log(`${nbUnknownTrocs} subscribe to unknow trocs removed`)
 
         //Admin and cashier becomes booleans
         let trocs = subs.map(sub => {
