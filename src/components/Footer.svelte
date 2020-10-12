@@ -8,7 +8,7 @@
             <a class="underline-span" href="/contact">Contact</a>
         </div>
         <div class="underline-div">
-            <a class="underline-span" href="/terms-of-use">Condition d'utilisation</a>
+            <a class="underline-span" href="/terms-of-use">Conditions d'utilisation</a>
         </div>
         <div class="underline-div">
             <a class="underline-span" href="/legal-notice">Mentions légales</a>
