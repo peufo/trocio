@@ -100,6 +100,20 @@ export function addStatutField(articles, context = 'organisator') {
 
 }
 
+//TODO: This is a copy from ../api/models/troc (virtual)
+export function addIsClosed(trocs) {
+	let isArray = Array.isArray(trocs)
+	trocs = isArray ? trocs : [trocs]
+	trocs = trocs.map(troc => {
+		troc.isClosed = troc.schedule 
+			&& !!troc.schedule[0]
+			&& new Date(troc.schedule[troc.schedule.length - 1].close).getTime() < new Date().getTime()
+		return troc
+	})
+	console.log({trocs})
+	return isArray ? trocs : trocs[0]
+}
+
 //TODO: This is a copy from ../api/controllers/troc_utils
 export function getFee(art, tarif) {
 	if (tarif && tarif.fee.length && art.price > 0) {

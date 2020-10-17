@@ -12,8 +12,10 @@
     import 'dayjs/locale/fr'
     dayjs.locale('fr')
     dayjs.extend(relativeTime)
-    
+
     import qs from 'qs'
+    import notify from 'notify.js'
+    import { addIsClosed } from 'utils.js'
     import { user, userPromise, subscribedTrocs} from 'stores.js'
     import RowsPromise from 'RowsPromise.svelte'
     import Login from 'Login.svelte'
@@ -71,12 +73,12 @@
         try {
             let res = await fetch(`__API__/subscribes/me?skip=${subscribedSkip}&limit=${subscribedLimit}`)
             let json = await res.json()
-            if (json.error) return notify.error(json.message)
-            if (subscribedSkip == 0) $subscribedTrocs = json
-            else $subscribedTrocs = [...$subscribedTrocs, ...json]
+            if (json.error) throw json.message
+            if (subscribedSkip == 0) $subscribedTrocs = addIsClosed(json)
+            else $subscribedTrocs = [...$subscribedTrocs, ...addIsClosed(json)]
             return
         } catch(error) {
-            console.trace(error)
+            notify.error(error)
         }
     }
 
@@ -145,9 +147,8 @@
                                         <Text>
                                             <PrimaryText>
                                                 {troc.name}
-                                                {#if troc.is_try}
-                                                    <span class="warning">Entrainement</span>
-                                                {/if}
+                                                {#if troc.is_try}<span class="warning">Entrainement</span>{/if}
+                                                {#if troc.isClosed}<span class="warning">Ce troc est terminé</span>{/if}
                                             </PrimaryText>
                                             <SecondaryText>{dayjs(troc.schedule && troc.schedule[0] && troc.schedule[0].open).fromNow()}</SecondaryText>
                                             <SecondaryText>{troc.description.slice(0, 124)}</SecondaryText>

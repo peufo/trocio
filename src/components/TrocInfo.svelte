@@ -17,18 +17,10 @@
     export let troc = {}
     export let displayGetActivity = true
 
-    $: console.log({troc})
-
     let tabs = ['fas fa-map-marker-alt', 'far fa-calendar-alt']
     let tabSelected = 0
-    let closeTime = 0
-    let isClosed = false
-    let sliceDescription = 300
-    
-    $: closeTime = troc.schedule && troc.schedule[0]
-        && troc.schedule[troc.schedule.length - 1].close
-        && new Date(troc.schedule[troc.schedule.length - 1].close).getTime()
-    $: isClosed = closeTime ? closeTime < new Date().getTime() : true
+    const DESCRIPTION_SIZE = 250
+    let sliceDescription = DESCRIPTION_SIZE
 
     if (!!troc.society) tabs = [...tabs, 'fas fa-user-tie']
 
@@ -56,12 +48,11 @@
             {troc.description.slice(0, sliceDescription)}
 
             {#if troc.description.length > sliceDescription}
-                ...
                 <span class="showDescription" on:click={() => sliceDescription = Infinity}>
-                    Tout afficher
+                    ...Afficher
                 </span>
-            {:else if troc.description.length > 300 && sliceDescription == Infinity}
-                <span class="showDescription" on:click={() => sliceDescription = 300}>
+            {:else if troc.description.length > DESCRIPTION_SIZE && sliceDescription == Infinity}
+                <span class="showDescription" on:click={() => sliceDescription = DESCRIPTION_SIZE}>
                     Réduire
                 </span>
             {/if}

@@ -35,7 +35,7 @@ function populateTrocUser(id, cb){
 		.populate('trader.user', 'name mail')
 		.populate('cashier', 'name mail')
 		.populate('tarif.apply', 'name mail')
-		.lean()
+		.lean({virtuals: true})
 		.exec(cb)
 }
 
