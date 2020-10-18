@@ -10,7 +10,6 @@ function createArticle(req, res, next) {
 	var articles = req.body
 	if (!Array.isArray(articles)) articles = [articles]
 
-	//TODO: verifier si le troc n'est pas dépasser
 	//TODO: Checker la limite du nombre d'article
 
 	createArticleContext(articles, async (err, newRef) => {

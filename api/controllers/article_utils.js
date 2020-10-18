@@ -13,6 +13,7 @@ function createArticleContext(articles, cb) {
 			 //Attribution d'une ref
 			let newRef = troc.articlelastref + 1
 			troc.articlelastref += articles.filter(art => !art.ref).length
+			troc.articles += articles.length
 			troc.save(err => cb(err, newRef, troc, user))
 		})
 	})

@@ -37,6 +37,11 @@
             <i class="fas fa-child w3-opacity"></i>
             {troc.subscriber}
         </span>
+        <span style="margin-left: 1em;">
+            <i class="fas fa-cubes w3-opacity"></i>
+            {troc.articles}
+        </span>
+
 
         {#if troc.isClosed}<span class="warning">Ce troc est terminé</span>{/if}
 

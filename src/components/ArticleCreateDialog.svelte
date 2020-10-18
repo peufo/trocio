@@ -1,4 +1,5 @@
 <script>
+	import { createEventDispatcher } from 'svelte'
     import Dialog, { Title, Content } from '@smui/dialog'
     import Button from '@smui/button'
 
@@ -8,6 +9,7 @@
 
     export let dialog = {}
 	export let createPromise = {}
+	const dispatch = createEventDispatcher()
 	let newName = ''
     let newPrice = ''
     
@@ -36,7 +38,7 @@
 				//preserve dialog
 				//document.getElementById(`newArticleName`).focus()
 				dialog.close()
-
+				dispatch('articleCreated')
 				notify.success('Article ajouté')
 				return
 				

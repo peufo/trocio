@@ -137,7 +137,26 @@ router
         } catch (error) {
             next(error)
         }
+    })
+    .post('/compute-articles', async (req, res, next) => {
+        let { troc } = req.body
+        if (!troc) return next(Error('troc query is required'))
+        try {
+            troc = await Troc.findById(troc).exec()
+            if (!troc) throw 'Troc not found'
 
+            troc.articles = await Article.countDocuments({troc: troc._id}).exec()
+
+            await troc.save()
+
+            res.json({
+                success: true,
+                message: `This troc have ${troc.articles} articles`
+            })
+
+        } catch (error) {
+            next(error)
+        }
     })
 
 module.exports = router

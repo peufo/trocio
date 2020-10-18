@@ -51,10 +51,13 @@
         {#await $trocDetailsPromise}
             <Logo/>
         {:then}
-            <Resume on:openCreateDialog={articleCreateDialog.open} on:openTarifDialog={tarifInfoDialog.open}/>
+            <Resume
+                on:articlesImported={e => $troc.articles += e.detail.nbArticles}
+                on:openCreateDialog={articleCreateDialog.open}
+                on:openTarifDialog={tarifInfoDialog.open}/>
         {/await}
     </div>
-    <ArticleCreateDialog bind:dialog={articleCreateDialog}/>
+    <ArticleCreateDialog bind:dialog={articleCreateDialog} on:articleCreated={() => $troc.articles++}/>
 
     <TarifInfoDialog bind:dialog={tarifInfoDialog}/>
 

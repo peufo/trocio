@@ -113,6 +113,17 @@
         }
     }
 
+    async function computeArticles(troc) {
+        try {
+            let res = await fetch('__API__/superadmin/compute-articles', getHeader({troc}))
+            let json = await res.json()
+            if (json.error) throw json.message
+            notify.success(json.message)
+        } catch(error) {
+            notify.error(error)
+        }
+    }
+
 </script>
 
 {#if !isRootUser}
@@ -181,6 +192,9 @@
                         </Button>
                         <Button class="w3-margin-right" on:click={() => computeSubscriber(troc._id)}>
                             Compter le nombre d'abonnement
+                        </Button>
+                        <Button class="w3-margin-right" on:click={() => computeArticles(troc._id)}>
+                            Compter le nombre d'articles
                         </Button>
                         <Button class="w3-red"  on:click={() => removeTroc(troc._id)}>
                             Supprimer

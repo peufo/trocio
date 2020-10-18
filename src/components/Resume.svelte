@@ -30,8 +30,6 @@
 
 	let onPrint = false
 
-	$: console.log({details: $details})
-
 	//Création d'article (buttons)
 	let createImportArticlesPromise
 	let importArticlesListOpen = false 	//Modal popup for import list of articles
@@ -87,7 +85,8 @@
 				importArticlesListOpen = false
 				importArticlesValue = ''
 				importArticles = []
-
+				
+				dispatch('articlesImported', {nbArticles: articlesImported.length})
 				notify.success(`${articlesImported.length} articles ajoutés`)
 
 				return
