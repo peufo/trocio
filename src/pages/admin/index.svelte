@@ -139,7 +139,12 @@
             {:else if tabActived.ref === 'tag'}
                 <AutoPatch source="tagEdit" body="{{tag: $troc.tag}}" path="{`/trocs/${$troc._id}`}" trocRefresh/>
                 <div id="tagEdit" in:fade>
-                    <TagEdit bind:width={$troc.tag.width} bind:height={$troc.tag.height} bind:padding={$troc.tag.padding} bind:border={$troc.tag.border}/>
+                    <TagEdit
+                        bind:width={$troc.tag.width}
+                        bind:height={$troc.tag.height}
+                        bind:padding={$troc.tag.padding}
+                        bind:border={$troc.tag.border}
+                        bind:fontSize={$troc.tag.fontSize}/>
                 </div>
 
             {:else if tabActived.ref === 'statistic'}

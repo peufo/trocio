@@ -36,6 +36,7 @@ let trocModel = new Schema({
 		width: {type: Number, default: 90},
 		height: {type: Number, default: 29},
 		padding: {type: Number, default: 2},
+		fontSize: {type: Number, default: 16},
 		border: {type: Boolean, default: true}
 	},
 	is_try: {type: Boolean, default: false},

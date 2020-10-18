@@ -1,14 +1,19 @@
 <script>
-    import Toggle from './Toggle.svelte'
+    import Button from '@smui/button'
+    import Switch from '@smui/switch'
+    import FormField from '@smui/form-field'
+    import Textfield from '@smui/textfield'
+    import Icon from '@smui/textfield/icon/index'
+
     import TagsPrint from './TagsPrint.svelte'
     import { goPrint } from './utils'
     import Tag from './Tag.svelte'
-    import Button from '@smui/button'
     import AutoPatch from './AutoPatch.svelte'
 
     export let width = 90
     export let height = 29
     export let padding = 2
+    export let fontSize = 16
     export let border = true
 
     let articles = [
@@ -17,6 +22,9 @@
         {name: 'Art C', ref: '321', price: 900}
     ]
 
+    $: if (!width) width = 1
+    $: if (!height) height = 1
+    $: if (!padding) padding = 0
 
 </script>
 
@@ -24,65 +32,105 @@
 
     <br>
 
-    <div class="flex">
-        <div class="dimInput">
-            <i class="fas fa-arrows-alt-v w3-large"></i>
-            <input type="number" class="w3-input w3-right" bind:value={height} min="1">
-        </div>
-
-        <div class="dimInput">
-            <i class="fas fa-arrows-alt-h w3-large"></i>
-            <input type="number" class="w3-input w3-right" bind:value={width} min="1">
-        </div>
-
-        <div class="dimInput">
-            <i class="fas fa-compress-arrows-alt"></i>
-            <input type="number" class="w3-input w3-right" bind:value={padding} min="0">
-        </div>
-
-        <div class="dimInput">
-            <Toggle patchButton bind:value={border} icon={`<i class="far fa-square w3-large"></i>`}/>
-        </div>
-    </div>
-
-    <br><br>
-    <div style="{`width: ${width}mm`}; margin: auto;">
-        <TagsPrint id="testPrint" visible articles={articles} width={width} height={height} padding={padding} border={border}/>
-    </div>
+    <div class="w3-row">
     
-    <br>
+        <div class="w3-col m4 w3-center">
+            
+            <br>
 
-    <div style="{`width: ${width}mm`}; margin: auto;">
-        <Button
-        on:click="{() => goPrint('testPrint')}"
-        class="w3-right"
-        variant="outlined">
-            tester
-        </Button>
+            <div class="w3-row">
+
+                <div class="w3-col s6">
+                    <Textfield
+                        withLeadingIcon
+                        bind:value={width}
+                        label="Largeur"
+                        dense
+                        input$min="10"
+                        input$max="200"
+                        type="number">
+                        <Icon class="material-icons" style="transform: rotate(90deg);">height</Icon>
+                    </Textfield>
+
+                    <br><br>
+
+                    <Textfield
+                        withLeadingIcon
+                        bind:value={height}
+                        label="Hauteur"
+                        dense
+                        input$min="10"
+                        input$max="200"
+                        type="number">
+                        <Icon class="material-icons">height</Icon>
+                    </Textfield>
+                </div>
+
+                <div class="w3-col s6">
+                    <Textfield
+                        withLeadingIcon
+                        bind:value={padding}
+                        label="Marge"
+                        dense
+                        input$min="0"
+                        input$max="20"
+                        type="number">
+                        <Icon class="material-icons">settings_overscan</Icon>
+                    </Textfield>
+
+                    <br><br>
+
+                    <Textfield
+                        withLeadingIcon
+                        bind:value={fontSize}
+                        label="Taille text"
+                        dense
+                        input$min="6"
+                        input$max="50"
+                        type="number">
+                        <Icon class="material-icons">format_size</Icon>
+                    </Textfield>            
+                </div>
+            
+            </div>
+
+
+
+            <br><br>
+
+            <FormField align="end">
+                <Switch bind:checked={border}/>
+                <span slot="label">Afficher les bords</span>
+            </FormField>
+
+            <br><br>
+
+            <FormField align="end">
+                <Switch checked={false} disabled/>
+                <span slot="label">Utiliser les codes barres</span>
+            </FormField>
+
+            <br><br>
+
+            <div>
+                <Button
+                on:click="{() => goPrint('testPrint')}"
+                variant="outlined">
+                    tester
+                </Button>
+            </div> 
+
+        </div>
+
+        <div class="w3-col m8">
+            <div style="{`width: ${width}mm`}; margin: auto;">
+                <TagsPrint id="testPrint" visible {articles} {width} {height} {padding} {border} {fontSize}/>
+            </div>      
+        </div>
+    
     </div>
 
-    <br><br><br>
+    <br>
 
 </div>
 
-<style>
-
-
-    .flex {
-        display: flex;
-    }
-
-    .dimInput {
-        margin: auto;
-        width: 100px;
-    }
-
-    .dimInput input {
-        width: 80px;
-    }
-
-    .dimInput i {
-        transform: translate(0px, 9px);
-    }
-
-</style>

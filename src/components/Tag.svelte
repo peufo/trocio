@@ -7,25 +7,19 @@
     export let width = 80
     export let height = 22
     export let padding = 2
+    export let fontSize = 16
     export let border = false
 
 </script>
 
-<div class="tag" class:border style="{`width: ${width}mm; height: ${height}mm; padding: ${padding}mm;`}">
-    <!-- Not work correctly
+<div class="tag" class:border style={`width: ${width}mm; height: ${height}mm; padding: ${padding}mm; font-size: ${fontSize}px;`}>
 
-        <span style="float: right;">
-            <b style="margin-top: 4px;">#</b>{ref}
-        </span>
-        {name}
-
-    -->
-
-    <b>#{ref}</b>&nbsp;&nbsp;{name}
+    <b>#{ref}</b>&nbsp;&nbsp;
+    <span>{name}</span>
 
     <br><br>
-    <img src="/favicon.ico" alt="Logo trocio" height="30" width="30" style="{`bottom: ${padding}mm; left: ${padding}mm;`}">
-    <div class="price" style="{`bottom: ${padding}mm; right: ${padding}mm;`}">
+    <img src="/favicon.ico" alt="Logo trocio" height="30" width="30" style={`bottom: ${padding}mm; left: ${padding}mm;`}>
+    <div class="price" style={`bottom: ${padding}mm; right: ${padding}mm;`}>
         {price.toFixed(2)}
     </div>
 </div>
@@ -34,6 +28,7 @@
     .tag {
         page-break-before: always;
         position: relative;
+        overflow: hidden;
     }
 
     .tag.border {

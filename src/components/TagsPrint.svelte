@@ -9,13 +9,14 @@
     export let height = 22
     export let padding = 2
     export let border = false
+    export let fontSize = 16
 
 </script>
 
 <div class:hide={!visible}>
     <div id={id}>
         {#each articles as art}
-            <Tag {...art} width={width} height={height} padding={padding} border={border}/>
+            <Tag {...art} {width} {height} {padding} {border} {fontSize}/>
         {/each}
     </div>
 </div>
