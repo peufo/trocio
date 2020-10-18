@@ -16,6 +16,9 @@ export let trocDetailsPromise = writable()
 
 export let subscribedTrocs = writable([]) //Managed with /activity/layout
 
+export let cashierOptions = writable({autoPrintTag: true}) //Managed with cashier
+
+
 let userPromiseSubscribed
 userPromise.subscribe(v => {
 	userPromiseSubscribed = v

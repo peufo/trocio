@@ -15,13 +15,11 @@
 	dayjs.locale('fr')
     dayjs.extend(relativeTime)
 
-    import { user, troc, trocDetails as details} from './stores'
+    import { user, troc, trocDetails as details, cashierOptions} from './stores'
     import { getHeader, crossfadeConfig, sortByUpdatedAt, goPrint, formatPrice, addStatutField} from './utils.js'
     import notify from './notify.js'
     import TagsPrint from './TagsPrint.svelte'
     import Article from './Article.svelte'
-
-    export let optionAutoPrintTag = true
 
     let proposed = []
     $: proposed = $details ? $details.provided.filter(art => !art.valided) : []
@@ -39,7 +37,7 @@
 
     const proposedFilter = art => !art.recover && !art.sold && art.isRemovable
 
-    let articlesToPrint = []
+    let articlesValided = []
 
     function removeArticle(artId) {
         let index = $details.provided.map(a => a._id).indexOf(artId)
@@ -67,8 +65,8 @@
 
     async function validProvided() {
 
-        let articlesValided = $details.provided.filter(art => !art.recover && !art.sold && art.isRemovable)
         let date = new Date()
+        articlesValided = $details.provided.filter(art => !art.recover && !art.sold && art.isRemovable)
         articlesValided.forEach(art => art.valided = date)
         
         try {
@@ -100,19 +98,13 @@
                 notify.success(articlespatched.length > 1 ? `${articlespatched.length} articles validés`: `Article validé`)
     
                 //Impression des étiquettes
-                if (optionAutoPrintTag) printArticles(articlesValided)
+                if ($cashierOptions.autoPrintTag) setTimeout(() => goPrint('providedTags'), 100)
                 
                 return
             }
         } catch(error) {
 			console.trace(error)
 		}
-    }
-
-
-    function printArticles(arts) {
-        if (arts && arts.length) articlesToPrint = arts
-        setTimeout(() => goPrint('providedTags'), 100)
     }
 
     function openCreateDialog() {
@@ -122,7 +114,7 @@
 </script>
 
 {#if $troc && $troc.tag}
-    <TagsPrint id="providedTags" articles={articlesToPrint} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
+    <TagsPrint id="providedTags" articles={articlesValided} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
 {/if}
 
 <div class="w3-row">

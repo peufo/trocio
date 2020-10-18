@@ -12,12 +12,11 @@
 	import TabBar from '@smui/tab-bar'
 	import Tab, { Icon, Label } from '@smui/tab'
 
-	import { user, trocDetails as details } from 'stores.js'
+	import { user, trocDetails as details, cashierOptions } from 'stores.js'
 	import { getHeader } from 'utils.js'
 	import notify from 'notify.js'
 	import SearchUser from 'SearchUser.svelte'
 	import Login from 'Login.svelte'
-	import Provide from 'Provide.svelte'
 
 	export let client = {}
 
@@ -35,9 +34,6 @@
 	let validPaymentPromise
 
 	let offsetWidth
-
-	//Options
-	let optionAutoPrintTag = true
 
     onMount(async () => {
 
@@ -227,7 +223,7 @@
 			<!-- Cash register options-->
 			<div style="position: fixed; bottom: 1em;">
 				<FormField class="w3-large">
-					<Switch bind:checked={optionAutoPrintTag}></Switch>
+					<Switch bind:checked={$cashierOptions.autoPrintTag}></Switch>
 					<span slot="label">
 						<i class="fas fa-print"></i>
 						Lancer l'impression d'étiquettes lors de la validation d'article fournis
