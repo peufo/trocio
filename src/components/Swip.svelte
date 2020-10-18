@@ -1,4 +1,6 @@
 <script>
+	import { Swiper, SwiperSlide } from 'swiper'
+	import 'swiper/swiper.scss';
 	import { redirect, params } from '@sveltech/routify'
 	import { onMount, onDestroy } from 'svelte'
 	import { spring } from 'svelte/motion'
@@ -30,9 +32,10 @@
 				}
 			},
 			initialSlide: index,
-			autoHeight: true
+			autoHeight: true,
+			simulateTouch: false
 		})
-
+		
 	})
 
 
@@ -76,7 +79,7 @@
 			{/each}
 		</div>
 	</div>
-
+	
 </div>
 
 
