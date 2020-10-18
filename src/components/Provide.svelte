@@ -38,6 +38,7 @@
     const proposedFilter = art => !art.recover && !art.sold && art.isRemovable
 
     let articlesValided = []
+    let articlesPrinted = []
 
     function removeArticle(artId) {
         let index = $details.provided.map(a => a._id).indexOf(artId)
@@ -68,6 +69,7 @@
         let date = new Date()
         articlesValided = $details.provided.filter(art => !art.recover && !art.sold && art.isRemovable)
         articlesValided.forEach(art => art.valided = date)
+        articlesPrinted = articlesValided
         
         try {
             let res = await fetch('__API__/articles', getHeader(articlesValided, 'PATCH'))
@@ -107,6 +109,11 @@
 		}
     }
 
+    function printArticles(articles) {
+        articlesPrinted = articles
+        setTimeout(() => goPrint('providedTags'), 100)
+    }
+
     function openCreateDialog() {
         dispatch('openCreateDialog')
     }
@@ -114,7 +121,7 @@
 </script>
 
 {#if $troc && $troc.tag}
-    <TagsPrint id="providedTags" articles={articlesValided} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
+    <TagsPrint id="providedTags" articles={articlesPrinted} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
 {/if}
 
 <div class="w3-row">
@@ -182,8 +189,8 @@
                     <Article
                     article={article}
                     timeKey={'validTime'}
-                    on:remove="{() => removeArticle(article._id)}"
-                    printable on:print="{() => printArticles([article])}"/>
+                    on:remove={() => removeArticle(article._id)}
+                    printable on:print={() => printArticles([article])}/>
 
                 </div>
             {:else}
