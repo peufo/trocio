@@ -1,4 +1,4 @@
-//import printJS from 'print-js'
+import printJS from 'print-js'
 import { troc } from './stores.js'
 import { quintOut, cubicOut } from 'svelte/easing'
 
@@ -27,14 +27,11 @@ export function sortByRecover(a, b) {
 }
 
 export function goPrint(id) {
-	console.log('TODO: printJS(id)')
-	/* TODO: WINDOW is not defined !!!!
 	printJS({
 		printable: id,
 		type: 'html',
 		targetStyles: ['*']
 	})
-	*/
 }
 
 /*

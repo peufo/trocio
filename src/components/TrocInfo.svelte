@@ -28,7 +28,7 @@
 
 <div class="w3-row">
 
-    <div class="w3-col m6 describe">
+    <div class="w3-col m6">
         
         <span class="w3-large">{troc.name}</span>
         
@@ -49,7 +49,7 @@
 
         <br>
 
-        <p>
+        <p class="describe">
             {troc.description.slice(0, sliceDescription)}
 
             {#if troc.description.length > sliceDescription}
