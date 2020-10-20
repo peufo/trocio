@@ -15,9 +15,10 @@ module.exports = {
       ref  : 'origin/master',
       repo : 'https://github.com/peufone/trocio',
       path : '/home/clients/b0520325983e21320206249b092ee8d1/trocio',
-      'pre-deploy-local': '',
-      'post-deploy' : 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
-      'pre-setup': ''
+      'ssh_options': ["ForwardAgent=yes","StrictHostKeyChecking=no"],
+      'pre-deploy-local': 'npm install && npm run build',
+      'post-deploy' : 'pm2 reload ecosystem.config.js --env production',
+      'pre-setup': 'npm install -g pm2'
     }
   }
 };
