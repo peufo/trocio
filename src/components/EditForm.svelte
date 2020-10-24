@@ -128,22 +128,23 @@
 			<TextField bind:value={description} label="Déscription" fullwidth textarea style="min-height: 168px;"/>
 		</div>
 
-		{#if $troc && $troc.is_try}
-
-			Les trocs d'entrainement n'ont pas lieu réelement
-
-		{:else}
-			<div class="item location">
-				<h4>Lieu</h4><br>
+		<div class="item location">
+			<h4>Lieu</h4><br>
+			{#if $troc && $troc.is_try}
+				<span class="w3-opactiy w3-text-orange">Les trocs d'entrainements n'ont pas de lieu.</span>
+			{:else}
 				<SearchAddress 	{mapDelay}
 								bind:address={address}
 								bind:location={location}
 								bind:changeFlag={changeFlag}/>
-			</div>
+			{/if}
+		</div>
 
-
-			<div class="item schedule">
-				<h4>Horaire</h4><br>
+		<div class="item schedule">
+			<h4>Horaire</h4><br>
+			{#if $troc && $troc.is_try}
+				<span class="w3-opactiy w3-text-orange">Les trocs d'entrainements n'ont pas d'horaire.</span>
+			{:else}
 				<DataTable class="w3-margin-bottom" style="min-width: 100%;">
 					<Head>
 						<Row>
@@ -177,19 +178,20 @@
 				</Button>
 
 				<br>
-				<span class="w3-opacity w3-text-red">
+				<span class="w3-opacity w3-text-orange">
 					L'horaire n'est plus modifiable une fois que l'évenement a débuté.
 				</span>
+			{/if}
 
-			</div>
+		</div>
+	
+		<div class="item society">
+			<h4>Mon organisation <span class="w3-small w3-opacity">Pas obligatoire</span></h4><br>
+			<TextField bind:value={society} label="Nom de l'organisation" variant="outlined" style="width: 100%;"/><br><br>
+			<TextField bind:value={societyweb} label="Site internet de l'organisation" variant="outlined" style="width: 100%;"/>
+		</div>
+
 		
-			<div class="item society">
-				<h4>Mon organisation <span class="w3-small w3-opacity">Pas obligatoire</span></h4><br>
-				<TextField bind:value={society} label="Nom de l'organisation" variant="outlined" style="width: 100%;"/><br><br>
-				<TextField bind:value={societyweb} label="Site internet de l'organisation" variant="outlined" style="width: 100%;"/>
-			</div>
-
-		{/if}
 
 	</div>
 	
