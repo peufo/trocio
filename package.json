@@ -2,6 +2,9 @@
   "name": "trocio",
   "version": "0.0.2",
   "private": true,
+  "author": "Jonas Voisard <jonas.voisard@gmail.com>",
+  "homepage": "https://www.troc.io/",
+  "repository": "github:peufone/trocio",
   "scripts": {
     "dev": "cross-env NODE_ENV=development run-p serve:api routify nollup",
     "build": "routify --single-build --dynamic-imports && rollup -c && routify export",
