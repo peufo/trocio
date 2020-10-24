@@ -97,9 +97,9 @@
     
     <span style="display: none;">{initTrocsSubscribedList()}</span>
     
-    <div class="main-container" bind:offsetWidth>
+    <div class="window" class:main-open={segment} bind:offsetWidth>
 
-        <div id="window" class:open={segment} class:smallDisplay>
+        <div class="main-container" class:open={segment} class:smallDisplay>
             {#if segment }
                 <div class="item no-margin-right simple-card" class:no-margin={smallDisplay} in:fade|local={{delay: 200}}>
                     <!--
@@ -147,7 +147,7 @@
                                         <Text>
                                             <PrimaryText>
                                                 {troc.name}
-                                                {#if troc.is_try}<span class="warning">Entrainement</span>{/if}
+                                                {#if troc.is_try}<span class="warning">Troc d'entrainement</span>{/if}
                                                 {#if troc.isClosed}<span class="warning">Ce troc est terminé</span>{/if}
                                             </PrimaryText>
                                             <SecondaryText>{dayjs(troc.schedule && troc.schedule[0] && troc.schedule[0].open).fromNow()}</SecondaryText>
@@ -204,7 +204,7 @@
 <svelte:head><style>body {background: #fafafa;}</style></svelte:head>
 <style>
 
-    .main-container {
+    .window {
         /*
         display: grid;
         grid-template-columns: auto minmax(360px, 500px);
@@ -223,7 +223,16 @@
         width: 100%;*/
         max-width: 700px;
         min-width: 400px;
-        flex-grow: 1;
+    }
+    .window.main-open .right-container {
+        max-width: 500px;
+    }
+    .window.main-open .main-container {
+        width: 100%;
+    }
+    .main-container:not(.smallDisplay) {
+        width: 0%;
+        transition: all .3s ease;
     }
 
     .item {
@@ -233,17 +242,6 @@
     .simple-card {
         padding: 16px;
     }
-
-    #window:not(.smallDisplay) {
-        width: 0%;
-        transition: all .3s ease;
-    }
-
-    #window.open{
-        width: 100%;
-        flex-grow: 3;
-    }
-        
     .no-margin-top {
         margin-top: 0px;
     }

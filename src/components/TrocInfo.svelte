@@ -45,7 +45,7 @@
 
         {#if troc.isClosed}<span class="warning">Ce troc est terminé</span>{/if}
 
-        {#if troc.is_try}<span class="warning">Entrainement</span>{/if}
+        {#if troc.is_try}<span class="warning">Troc d'entrainement</span>{/if}
 
         <br>
 
