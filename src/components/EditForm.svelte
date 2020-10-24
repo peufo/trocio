@@ -131,7 +131,10 @@
 		<div class="item location">
 			<h4>Lieu</h4><br>
 			{#if $troc && $troc.is_try}
-				<span class="w3-opactiy w3-text-orange">Les trocs d'entrainements n'ont pas de lieu.</span>
+				<div class="icon-container">
+					<br><span class="w3-text-orange">Les trocs d'entrainements n'ont pas de lieu</span>
+					<i class="fas fa-map-marked-alt"></i>
+				</div>
 			{:else}
 				<SearchAddress 	{mapDelay}
 								bind:address={address}
@@ -143,7 +146,10 @@
 		<div class="item schedule">
 			<h4>Horaire</h4><br>
 			{#if $troc && $troc.is_try}
-				<span class="w3-opactiy w3-text-orange">Les trocs d'entrainements n'ont pas d'horaire.</span>
+				<div class="icon-container">
+					<br><span class="w3-text-orange">Les trocs d'entrainements n'ont pas d'horaire</span>
+					<i class="far fa-calendar-alt"></i>
+				</div>
 			{:else}
 				<DataTable class="w3-margin-bottom" style="min-width: 100%;">
 					<Head>
@@ -231,6 +237,7 @@
 		width: 100%;
 		grid-template-columns: minmax(50%, 500px)  minmax(25%, 50%);
 		gap: 2rem;
+		padding-bottom: 2em;
 	}
 
 	.container.smallDisplay {
@@ -253,5 +260,24 @@
 	.schedule tr:hover i {
 		transform: scale(1);
 	}
+
+	.icon-container {
+		background: #f7f7f7;
+		border: solid 1px #eee;
+		width: 100%;
+		height: 135px;
+		position: relative;
+		border-radius: 5px;
+		text-align: center;
+	}
+
+	.icon-container i {
+		left: 50%;
+		top: 64%;
+		position: absolute;
+		transform: translate(-50%, -50%) scale(3);
+		color: #fff;
+	}
+
 
 </style>
