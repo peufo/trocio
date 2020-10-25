@@ -9,6 +9,7 @@
     import { goPrint } from './utils'
     import Tag from './Tag.svelte'
     import AutoPatch from './AutoPatch.svelte'
+    import notify from './notify.js'
 
     export let width = 90
     export let height = 29
@@ -105,7 +106,7 @@
 
             <br><br>
 
-            <FormField align="end">
+            <FormField align="end" on:click={() => notify.info({title: 'En développement', text: `L'utilisation des codes barres est en cours de développement.`})}>
                 <Switch checked={false} disabled/>
                 <span slot="label">Utiliser les codes barres</span>
             </FormField>

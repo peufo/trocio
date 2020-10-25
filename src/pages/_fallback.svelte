@@ -1,31 +1,32 @@
 <script>
 	import Footer from 'Footer.svelte'
 
+	let footerHeight
+
 </script>
 
-<main class="w3-center">
+<div class="image" style={`height: calc(100% - ${footerHeight}px);`}>
 	<br><br><br><br>
 	<h1>Nous ne trouvons pas ce que vous cherchez</h1>
-</main>
+</div>
 
-<Footer/>
+<Footer bind:offsetHeight={footerHeight}/>
+
 
 <svelte:head>
 	<style>
-		html, body, #routify-app {
+		html, body, #routify-app, main {
 			height: 100%;
 		}
-		#main-content, #main-content>div {
-			height: calc(100% - 100px);
-		}
 	</style>
+
 </svelte:head>
 
 <style>
 
-	main {
-		height: 100%;
+	.image {
 		text-transform: uppercase;
+		text-align: center;
 		color: #fff;
 		background: url('/images/forest-720.png');
 		background-position-x: center;

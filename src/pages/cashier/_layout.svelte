@@ -221,7 +221,7 @@
 			<i class="fas fa-cash-register noUserLogo"></i>
 
 			<!-- Cash register options-->
-			<div style="position: fixed; bottom: 1em;">
+			<div style="position: fixed; bottom: 3em;">
 				<FormField class="w3-large">
 					<Switch bind:checked={$cashierOptions.autoPrintTag}></Switch>
 					<span slot="label">

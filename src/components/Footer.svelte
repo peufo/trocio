@@ -1,4 +1,8 @@
-<footer class="w3-center">
+<script>
+    export let offsetHeight
+</script>
+
+<footer class="w3-center" bind:offsetHeight>
    
     <div>
         <div class="underline-div">

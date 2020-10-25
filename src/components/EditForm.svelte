@@ -197,8 +197,6 @@
 			<TextField bind:value={societyweb} label="Site internet de l'organisation" variant="outlined" style="width: 100%;"/>
 		</div>
 
-		
-
 	</div>
 	
 	{#if !$troc}
