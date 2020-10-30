@@ -16,7 +16,7 @@ module.exports = {
       repo : 'https://github.com/peufone/trocio',
       path : '/home/clients/1f05c1e3c7f01925bd64b68ab5108107/trocio',
       'pre-deploy-local': 'npm install && npm run build',
-      'post-deploy' : '. .profile && pm2 reload ecosystem.config.js --env production',
+      'post-deploy' : '. /home/clients/1f05c1e3c7f01925bd64b68ab5108107/.profile && pm2 reload ecosystem.config.js --env production',
       'pre-setup': '. .profile && npm install -g pm2'
     },
     production : {
