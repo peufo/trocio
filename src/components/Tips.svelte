@@ -17,11 +17,9 @@
 <div class="tips" class:open style={`height: calc(100% - ${delta}px); top: ${delta}px;`}>
 
     <div class="tipsHeader">
-        <span class="title">Astuces</span>
+        <span class="title" style="color: #fff;">Astuces</span>
         <i class="fa fa-times w3-right tipsCloseButton" on:click={() => open = false}></i>
     </div>
-
-    <hr>
 
     {#if open}
         <div transition:fade|local>
@@ -29,7 +27,7 @@
             <Tip title="Information" query="tab_admin" value="info">
                 <p>
                     C'est ici que vous pouvez mettre à jour les informations publique relatives à votre troc.
-                    Attention à l'horaire. Il ne peut plus être modifé une fois le troc démaré.
+                    Attention à l'horaire. Il ne peut plus être modifé une fois le troc démarré.
                 </p>
             </Tip>
 
@@ -51,8 +49,8 @@
 
             <Tip title="Tarification" query="tab_admin" value="tarif">
                 <p>
-                    Vous pouvez créer ou supprimer des tarifs en plus du tarif standard.
-                    Par défaut, les utilisateurs sont soumis au tarif standard. 
+                    Vous pouvez créer ou supprimer des tarifs en plus du tarif standard
+                    auxquels les utilisateurs sont soumis par défaut. 
                 </p>
                 <p>
                     Votre part sur les articles vendus définit le pourcentage que vous persevez à la vente d'un article.
@@ -98,6 +96,7 @@
         color: rgba(0,0,0,.87);
         transition: left .4s ease;
         text-align: justify;
+        background:#bbb;
     }
 
     .tipsButton {
@@ -124,6 +123,8 @@
 
     .tipsHeader {
         padding-top: .4em;
+        padding-bottom: 1em;
+        color: #fff;
     }
     .tipsHeader .title {
         font-size: 1.5em;

@@ -7,7 +7,6 @@
     export let value = null
 
     $: open = $params[query] === value
-    $: console.log({open})
 
 </script>
 
@@ -15,10 +14,8 @@
     <span class="title">{title}</span>
    
     {#if open}
-        <div transition:slide>
-            
+        <div transition:slide|local>
             <slot></slot>
-            
         </div>
     {/if}
     
@@ -26,10 +23,9 @@
 
 <style>
 
-    
-    
     section {
         padding: .5em;
         margin-bottom: .5em;
+        background: #fff;
     }
 </style>
