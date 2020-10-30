@@ -121,7 +121,7 @@
 </script>
 
 {#if $troc && $troc.tag}
-    <TagsPrint id="providedTags" articles={articlesPrinted} width={$troc.tag.width} height={$troc.tag.height} padding={$troc.tag.padding} border={$troc.tag.border}/>
+    <TagsPrint id="providedTags" articles={articlesPrinted} {...$troc.tag}/>
 {/if}
 
 <div class="w3-row">
