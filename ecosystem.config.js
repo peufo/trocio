@@ -15,7 +15,7 @@ module.exports = {
     test: {
       user : 'vt0qn_peuf',
       host : '83.166.136.114',
-      ssh_options: ['StrictHostKeyChecking=no', 'PasswordAuthentication=no'],
+      ssh_options: ['StrictHostKeyChecking=no'],
       ref  : 'origin/master',
       repo : 'https://github.com/peufone/trocio',
       path : '~/trocio',
