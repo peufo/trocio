@@ -19,7 +19,8 @@ module.exports = {
       repo : 'https://github.com/peufone/trocio',
       path : PATH_TEST,
       'post-deploy' : `. ${CLIENT_HOME_TEST}/.profile; . ${CLIENT_HOME_TEST}/.nvm/.profile; npm i; npm run build; pm2 startOrRestart ecosystem.config.js --env production`,
-      'pre-setup': `cat ${CLIENT_HOME_TEST}/.htaccess > ${PATH_TEST}/.htaccess;. .profile; npm i -g pm2`
+      'pre-setup': `. .profile; npm i -g pm2`,
+      'post-setup': `cat ${CLIENT_HOME_TEST}/.htaccess > ${PATH_TEST}/.htaccess`
     },
     production : {
       user : '914ed_peuf',
