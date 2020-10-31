@@ -17,7 +17,7 @@ module.exports = {
       ref  : 'origin/master',
       repo : 'https://github.com/peufone/trocio',
       path : `${CLIENT_HOME_TEST}/trocio`,
-      'post-deploy' : `. ${CLIENT_HOME_TEST}/.nvm/.profile; npm i; npm run build; pm2 startOrRestart ecosystem.config.js --env production`,
+      'post-deploy' : `. ${CLIENT_HOME_TEST}/.profile; npm i; npm run build; pm2 startOrRestart ecosystem.config.js --env production`,
       'pre-setup': '. .profile; npm install -g pm2'
     },
     production : {
