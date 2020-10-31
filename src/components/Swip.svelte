@@ -1,5 +1,5 @@
 <script>
-	import { Swiper, SwiperSlide } from 'swiper'
+	import { Swiper } from 'swiper'
 	import 'swiper/swiper.scss';
 	import { redirect, params } from '@sveltech/routify'
 	import { onMount, onDestroy } from 'svelte'
