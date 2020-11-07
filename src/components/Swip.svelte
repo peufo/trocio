@@ -8,6 +8,7 @@
 	import TabBar from '@smui/tab-bar'
 
 	export let tabId = 'no-id'
+	export let query = 'tab'
 	export let tabs = []
 	export let tabActived
 	export let index = tabs.indexOf(tabActived)
@@ -16,7 +17,7 @@
 	let offsetWidth
 
 	let swiperElem
-	let swiper
+	export let swiper
 
 	let offsetHeight = []
 	$: offsetHeight && swiper && swiper.update()
@@ -28,7 +29,8 @@
 				slideChange: swiper => {
 					index = swiper.activeIndex
 					tabActived = tabs[index]
-					$redirect(location.pathname, {...$params, tab: tabActived.ref})
+					$redirect(location.pathname, {...$params, [query]: tabActived.ref})
+					desableFocus()
 				}
 			},
 			initialSlide: index,
@@ -37,15 +39,6 @@
 		})
 		
 	})
-
-
-	function activeTab(newIndex) {
-		index = newIndex
-		tabActived = tabs[index]
-		swiper.slideTo(index)
-		$redirect(location.pathname, {...$params, tab: tabActived.ref})
-		desableFocus()
-	}
 
 	function desableFocus() {
 		swiperElem.querySelectorAll('.swiper-slide').forEach((slide, i) => {
@@ -60,7 +53,7 @@
 
 	<TabBar {tabs} let:tab id={tabId}
 		active={tabActived}
-		on:MDCTabBar:activated={e => activeTab(e.detail.index)}
+		on:MDCTabBar:activated={e => swiper.slideTo(e.detail.index)}
 		style="border-bottom: 1px #eee solid">
 		<Tab {tab} >
 			<Icon class={tab.icon}></Icon>

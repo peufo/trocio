@@ -4,6 +4,7 @@
 
     export let open = false
     export let headHeight = 0
+    export let isCashier = false
 
     let scrollY
     let delta
@@ -23,56 +24,170 @@
 
     {#if open}
         <div transition:fade|local>
-    
-            <Tip title="Information" query="tab_admin" value="info">
+            {#if !isCashier}
+                <Tip title="Information" query="tab_admin" value="info">
+                    <p>
+                        C'est ici que vous pouvez mettre à jour les informations publique relatives à votre troc.
+                        Attention à l'horaire. Il ne peut plus être modifé une fois le troc démarré.
+                    </p>
+                </Tip>
+
+                <Tip title="Collaborateurs" query="tab_admin" value="collab">
+                    <p>
+                        Vous pouvez ajouter et supprimer des collaborateurs suivant leur rôle.
+                        Veillez à ajouter uniquement des collaborateurs de confiances.
+                    </p>
+                    <p>
+                        Les administrateurs ont accès à la page actuel tandis que les cassier ont uniquement accès à la caisse.
+                    </p>
+                    <p>
+                        En ajoutant un utilisateur à la liste des commercants, vous lui permetez d'utiliser le préfix 
+                        que vous avez définit dans ses références d'articles.
+                        C'est très pratique si il a des centaines d'article et qu'il souhaite gérer lui
+                        même ses étiquettes.
+                    </p>
+                </Tip>
+
+                <Tip title="Tarification" query="tab_admin" value="tarif">
+                    <p>
+                        Vous pouvez créer ou supprimer des tarifs en plus du tarif standard
+                        auxquels les utilisateurs sont soumis par défaut. 
+                    </p>
+                    <p>
+                        Votre part sur les articles vendus définit le pourcentage que vous persevez à la vente d'un article.
+                        Par exemple, si cette valeur est définit à <b>10%</b> . Un article vendu <b>50.-</b>
+                        vous rapportera <b>5.-</b> et le solde du fournisseur augmentera de <b>45.-</b>.
+                    </p>
+                    <p>
+                        Les frais de traitement vous permette de touché un montant définit pour chaque article que vous accepter de traiter.
+                        Le montant est définit en fonction du prix de l'article.
+                        Au moment de sa validation, le solde du fournisseur diminura du montant correspondant.
+                    </p>
+                    <p>
+                        Pour qu'un utilisateur soit soumis à un tarif, il faut l'ajouter dans la liste "Valable pour:".
+                    </p>
+                    <p>
+                        Attention, vous vous exposé à des frais dés que vous définisez une marge ou des frais de traitement.
+                    </p>
+                </Tip>
+
+                <Tip title="Etiquetage" query="tab_admin" value="tag">
+                    <p>
+                        Ajustez et testez le format de vos étiquettes.
+                        Définissez correctement le type d'impression que vous souhaitez mettre en place.
+                    </p>
+                    <p>
+                        L'utilisation de codes barres vous évitera beaucoup d'erreur lors des passages en caisse.
+                        N'importe quel smartphone pourra être utilisé comme scanner par vos caissiers.
+                    </p>
+                </Tip>
+
+                <Tip title="Statistique" query="tab_admin" value="statistic">
+                    <p>
+                        Commencez par séléctioner le groupe d'utilisateur dont vous souhaitez connaître les statistiques.
+                    </p>
+                    <p>
+                        Votre bénéfice théorique est la somme des marges et des frais que vous avez perçu sur les
+                        <b>approvisionement</b>.
+                        Ce chiffre peut également être consulté dans le solde de la <b>caisse</b>.
+                        Attention, un écart entre le solde et les paiments signifit que des clients ont un solde non nul.
+                    </p>
+                </Tip>
+
+                <Tip title="Gestion" query="tab_admin" value="managment">
+                    <p>
+                        Ici, vous avez un contrôle complet sur ce qu'il ce passe dans votre troc.
+                    </p>
+                    <p>
+                        Cliquez sur les entêtes pour appliquer des filtres ou des tri et trouvez rapidement ce que vous cherchez.
+                        Le bouton <span class="button">champs</span> vous permet de choisir les colonnes à afficher.
+                    </p>
+                    <p>
+                        Cliquez sur un article pour ouvrir sa carte afin de le mettre à jour.
+                        Vous pouvez changer le prix, annuler une vente ou une validation, changer le client, etc...
+                    </p>
+                    <p>
+                        Attention, il va de soit que votre fournisseur doit être en accord avec un changement de prix.
+                        Il est de votre devoir de préserver l'integrité de vos données.
+                    </p>
+                </Tip>
+            {/if}
+
+            <Tip title="Caisse" query="tab_admin" value="cashier">
                 <p>
-                    C'est ici que vous pouvez mettre à jour les informations publique relatives à votre troc.
-                    Attention à l'horaire. Il ne peut plus être modifé une fois le troc démarré.
+                    Trouvez et séléctionnez votre client grâce au champ de recherche.
+                    Pensez à utiliser les raccourcis clavier : 
                 </p>
+                <div class="w3-row">
+                    <span class="w3-col s7">
+                        Champ de recherche client
+                    </span>
+                    <span class="w3-col s5 shortcut">
+                        Ctrl + <i class="fas fa-backspace"></i>
+                    </span>
+                </div>
+                <div class="w3-row">
+                    <span class="w3-col s7">
+                        Choix du client
+                    </span>
+                    <span class="w3-col s5 shortcut">
+                        <i class="fas fa-arrow-up"></i>&nbsp;|&nbsp;<i class="fas fa-arrow-down"></i>
+                    </span>
+                </div>
+                <div class="w3-row">
+                    <span class="w3-col s7">
+                        Sélection d'un client
+                    </span>
+                    <span class="w3-col s5 shortcut">Enter</span>
+                </div>
+                <div class="w3-row">
+                    <span class="w3-col s7">
+                        Client anonyme
+                    </span>
+                    <span class="w3-col s5 shortcut">
+                        Ctrl + <i class="fas fa-backspace"></i>,<i class="fas fa-backspace"></i>
+                    </span>
+                </div>
+                <div class="w3-row">
+                    <span class="w3-col s7">
+                        Changer d'onglet
+                    </span>
+                    <span class="w3-col s5 shortcut">
+                        Ctrl + <i class="fas fa-arrow-left"></i>&nbsp;|&nbsp;<i class="fas fa-arrow-right"></i>
+                    </span>
+                </div>
+
+                <p>
+                    Si le solde du client sélectioné n'est pas nul, vous pouvez le regler en cliquant sur le bouton
+                    <span class="validButton">régler le solde de ...</span>
+                    et en validant le dialogue qui apparait. Vous pouvez également utiliser la raccourcis suivants :
+                </p>
+
+                <div class="w3-row">
+                    <span class="w3-col s6">Régler le solde</span>
+                    <span class="w3-col s6 shortcut">Ctrl + Maj + Enter</span>
+                </div>
+                <div class="w3-row">
+                    <span class="w3-col s6">Valider</span>
+                    <span class="w3-col s6 shortcut">Enter</span>
+                </div>
+                <div class="w3-row">
+                    <span class="w3-col s6">Abandonner</span>
+                    <span class="w3-col s6 shortcut">Esc</span>
+                </div>
+
+                <p>
+                    Attention, en fonction du solde, il peut vous être demandé, soit de rembourser le client, soit de l'encaisser.
+                </p>
+                <p>
+                    Le solde ne correspond pas forcément à la somme des achats qui viennent d'être
+                    effectué car il est possible que le client ait fournit des articles qui on été vendu.
+                    Rendez-vous sur l'onglet <span class="tab">aperçu</span> pour connaître la nature du solde.
+                </p>
+                
+
             </Tip>
 
-            <Tip title="Collaborateurs" query="tab_admin" value="collab">
-                <p>
-                    Vous pouvez ajouter et supprimer des collaborateurs suivant leur rôle.
-                    Veillez à ajouter uniquement des collaborateurs de confiances.
-                </p>
-                <p>
-                    Les administrateurs ont accès à la page actuel tandis que les cassier ont uniquement accès à la caisse.
-                </p>
-                <p>
-                    En ajoutant un utilisateur à la liste des commercants, vous lui permetez d'utiliser le préfix 
-                    que vous avez définit dans ses références d'articles.
-                    C'est très pratique si il a des centaines d'article et qu'il souhaite gérer lui
-                    même ses étiquettes.
-                </p>
-            </Tip>
-
-            <Tip title="Tarification" query="tab_admin" value="tarif">
-                <p>
-                    Vous pouvez créer ou supprimer des tarifs en plus du tarif standard
-                    auxquels les utilisateurs sont soumis par défaut. 
-                </p>
-                <p>
-                    Votre part sur les articles vendus définit le pourcentage que vous persevez à la vente d'un article.
-                    Par exemple, si cette valeur est définit à <b>10%</b> . Un article vendu <b>50.-</b>
-                    vous rapportera <b>5.-</b> et le solde du fournisseur augmentera de <b>45.-</b>.
-                </p>
-                <p>
-                    Les frais de traitement vous permette de touché un montant définit pour chaque article que vous accepter de traiter.
-                    Le montant est définit en fonction de prix de prix de l'article.
-                    Au moment de la validation d'un article, le solde du fournisseur diminura du montant correspondant.
-                </p>
-                <p>
-                    Pour qu'un utilisateur soit soumis à un tarif, il faut l'ajouter dans la liste "Valable pour:".
-                </p>
-                <p>
-                    Attention, vous vous exposé à des frais dés que vous définisez une marge ou des frais de traitement.
-                </p>
-            </Tip>
-
-            <Tip title="Etiquetage" query="tab_admin" value="tag">
-                <br><br>
-            </Tip>
         </div>
     {/if}
 </div>
@@ -141,6 +256,45 @@
         margin-block-end: 0px;
         padding-block-start: 1em;
         padding-block-end: 1em;
+    }
+
+    .shortcut .fas {
+        opacity: .7;
+    }
+    
+    .shortcut {
+        text-align: center;
+        background: #eee;
+        border-radius: 4px;
+        font-family: monospace;
+        margin-bottom: 1em;
+    }
+
+    .button, .validButton {
+        border-radius: 4px;
+        text-transform: uppercase;
+        font-size: .8em;
+        display: inline-block;
+    }
+
+    .button {
+        color: #444;
+        border: #444 solid 1px;
+        font-weight: 400;
+        padding: 2px 10px;
+    }
+
+    .validButton {
+        color: #fff;
+        background: rgba(76, 175, 80, 0.8);
+        padding: 4px 10px;
+    }
+
+    .tab {
+        border-bottom: 1px solid black;
+        text-transform: uppercase;
+        font-weight: 400;
+        opacity: .8;
     }
 
 </style>

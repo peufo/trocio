@@ -1,6 +1,5 @@
 <script>
     import { redirect, params } from '@sveltech/routify'
-	import { onMount } from 'svelte'
 	import { troc, trocPromise } from 'stores.js'
     import { fade } from 'svelte/transition'
 	import Tab, { Label, Icon } from '@smui/tab'
@@ -33,12 +32,11 @@
 		{ref: 'managment',	label: 'Gestion', 		    icon: 'fas fa-eraser'},
 		{ref: 'cashier',	label: 'Caisse', 		    icon: 'fas fa-cash-register'},
     ]
-    let tabActived = tabs[tabs.map(t => t.ref).indexOf($params.tab_admin || 'info')]
+    $: tabActived = tabs[tabs.map(t => t.ref).indexOf($params.tab_admin || 'info')]
 
-	onMount(() => {
-		//let query = queryString.parse(location.search)
-		//troc.find(query.troc)
-	})
+	function activeTab(index) {
+		$redirect(location.pathname, {...$params, tab_admin: tabs[index].ref})
+    }
 
 	function saveMeta(e) {
 		fetch(`__API__/trocs/${$troc._id}`, getHeader(e.detail, 'PATCH'))
@@ -55,11 +53,6 @@
 	let changeFlag = false //For SearchUser to AutoPatch 
     let tag = {} // For tag edit
     
-	function activeTab(index) {
-		tabActived = tabs[index]
-		$redirect(location.pathname, {...$params, tab_admin: tabActived.ref})
-    }
-
 </script>
 
 <!-- Check if all is OK ! -->

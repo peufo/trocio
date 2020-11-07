@@ -26,24 +26,11 @@
 
     main {
         transition: margin .4s ease;
+        height: 100%;
     }
 
     main.tipsOpen {
         margin-left: 400px;
-    }
-    
-    .try-bannear {
-        position: fixed;
-        bottom: 0px;
-        width: 100%;
-        background: orange;
-        color: #fff;
-        text-align: center;
-    }
-
-    .try-bannear b {
-        text-transform: uppercase;
-        font-size: 1.2em;
     }
 
 </style>
