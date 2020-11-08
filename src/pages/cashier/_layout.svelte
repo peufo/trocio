@@ -7,10 +7,7 @@
 	import Switch from '@smui/switch'
 	import FormField from '@smui/form-field'
 	import Button from '@smui/button'
-	import Dialog from '@smui/dialog'
-	import Card, { Content } from '@smui/card'
-	import TabBar from '@smui/tab-bar'
-	import Tab, { Icon, Label } from '@smui/tab'
+	import Dialog, { Title, Content, Actions } from '@smui/dialog'
 
 	import { user, troc, trocDetails as details, cashierOptions } from 'stores.js'
 	import { getHeader } from 'utils.js'
@@ -25,14 +22,15 @@
 
 	let tipsOpen = false
 	
+	//TODO: replace with search users
 	let dialogLogin // Create user
+	let dialogPayment
 
 	let searchClient = ''
 	let clientPlaceHodlerDefault = 'Trouver un client'
 	let clientPlaceHodler = clientPlaceHodlerDefault
 	let clientOk = false
 	let clientAnonym = false
-	let popupPaymentOpen = false
 
 	let validPaymentPromise
 
@@ -74,7 +72,12 @@
 				searchClient = ''
 				document.getElementById('searchUser1').focus()	
 			}
-		}		
+		} else if (e.ctrlKey && e.shiftKey && e.key === 'Enter') {
+			if (clientOk && $details && $details.balance != 0) dialogPayment.open()
+			else if (!clientOk) notify.info('Veuillez sélectionner un client.')
+			else if (clientAnonym) notify.info('Le solde des clients anonymes est nul.')
+			else notify.info(`Le solde de ${client.name} est nul.`)
+		}
 	}
 
 	async function updateClientQuery() {
@@ -136,7 +139,7 @@
 				$details.payments = [newPayment, ...$details.payments]
 				$details.paySum += newPayment.amount
 				$details.balance += newPayment.amount
-				popupPaymentOpen = false
+				dialogPayment.close()
 				notify.success({title: `Paiement validé`, text: `${newPayment.amount.toFixed(2)} ${newPayment.message}`})
 				return
 			}else{
@@ -149,7 +152,6 @@
 
 </script>
 
-	
 <!-- Check if all is OK ! -->
 <main class:tipsOpen >
 	{#if $user === null}
@@ -165,7 +167,7 @@
 						<Button 
 						variant="raised"
 						style="color: white;"
-						on:click="{() => popupPaymentOpen = true}">
+						on:click={dialogPayment.open()}>
 							Régler le solde de {$details.balance.toFixed(2)}
 						</Button>
 					</div>
@@ -240,36 +242,31 @@
 			{/if}
 		</div>
 
-		{#if popupPaymentOpen}
-			<div class="w3-modal" transition:fade|local={{duration: 150}}>
-				<div class="w3-modal-content w3-padding w3-round">
-					<div class="w3-right w3-padding close-icon" on:click="{() => popupPaymentOpen = false}">
-						<i class="fa fa-times w3-large"></i>
-					</div>
-					<br><br>
-					{#if clientAnonym}
-						<div class="w3-center w3-xlarge">
+		<Dialog bind:this={dialogPayment}>
+			<Title>Règlement du solde</Title>
+			{#if !!$details}
+				<Content>
+					<div class="w3-large" style="min-width: 400px;">
+						{#if clientAnonym}
 							{`Un client vous a versé ${(-$details.balance).toFixed(2)}`}
-						</div>
-					{:else}
-						<div class="w3-center w3-xlarge">
-							{$details.balance > 0 ? `Vous avez versé ${$details.balance.toFixed(2)} à ${client.name}`: `${client.name} vous a versé ${(-$details.balance).toFixed(2)}`}
-						</div>
-					{/if}
-					<br>
+						{:else}
+							{$details.balance > 0 ? 
+							`Vous avez versé ${$details.balance.toFixed(2)} à ${client.name}` :
+							`${client.name} vous a versé ${(-$details.balance).toFixed(2)}`}
+						{/if}
+					</div>
+				</Content>
+				<Actions>
 					{#await validPaymentPromise}
-						<Button class="w3-right">
-							Validation en cours...
-						</Button>
+						<Button>Validation en cours...</Button>
 					{:then}
-						<Button on:click={() => validPaymentPromise = validPayment()} variant="raised" class="w3-right">
+						<Button on:click={() => validPaymentPromise = validPayment()} variant="raised">
 							Valider la transaction
 						</Button>
 					{/await}
-					<br><br>
-				</div>
-			</div>
-		{/if}
+				</Actions>
+			{/if}
+		</Dialog>
 
 	{/if}
 
@@ -312,10 +309,6 @@
 		position: fixed;
 		left: calc(50% - 70px);
 		top: calc(50% - 70px);
-	}
-
-	.w3-modal {
-		display: block;
 	}
 
     main {

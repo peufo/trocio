@@ -24,12 +24,15 @@
 		{ref: 'resume',	    label: 'Aperçu', 		icon: 'far fa-eye', 			component: Resume,      clientAnonymAutorised: true},
     ]
 
-    let tabActived = tabs[tabs.map(t => t.ref).indexOf($params.tab || 'resume')]
+    let filter = tab => tab.clientAnonymAutorised || $params.client != 'undefined'
+
+    $: activeIndex = tabs.filter(filter).map(t => t.ref).indexOf($params.tab || 'resume')
+    $: if ($params.client === 'undefined' && tabs.filter(filter).map(t => t.ref).indexOf($params.tab) === -1) {
+        $redirect(document.pathname, {...$params, tab: 'buy'})
+    }
 
     let articleCreateDialog
     let tarifInfoDialog
-
-    let filter = tab => tab.clientAnonymAutorised || $params.client != 'undefined'
 
     onMount(() => document.addEventListener('keyup', shortcut))
     onDestroy(() => document.removeEventListener('keyup', shortcut))
@@ -43,11 +46,11 @@
             if (e.key === 'ArrowLeft') tabIndex--
             else tabIndex++
 
-            if (tabIndex < 0) tabIndex = tabs.length -1
-            else if (tabIndex >= tabs.length) tabIndex = 0
+            if (tabIndex < 0) tabIndex = tabs.filter(filter).length -1
+            else if (tabIndex >= tabs.filter(filter).length) tabIndex = 0
 
             swiper.slideTo(tabIndex)
-	
+            
         }        
     }
 
@@ -64,7 +67,7 @@
                 <Swip
                     bind:swiper
                     tabs={tabs.filter(filter)}
-                    {tabActived}
+                    {activeIndex}
                     let:tab
                     tabId="cashierTabs">
                     <div style="padding: 16px; min-height: 450px;">

@@ -10,8 +10,7 @@
 	export let tabId = 'no-id'
 	export let query = 'tab'
 	export let tabs = []
-	export let tabActived
-	export let index = tabs.indexOf(tabActived)
+	export let activeIndex = 0
 
 	export let maxWidthToShowLabel = 700
 	let offsetWidth
@@ -20,20 +19,19 @@
 	export let swiper
 
 	let offsetHeight = []
-	$: offsetHeight && swiper && swiper.update()
+	$: offsetWidth && offsetHeight && swiper && swiper.update()
 
 	onMount(() => {
 		swiper = new Swiper(swiperElem, {
 			on: {
 				init: desableFocus,
 				slideChange: swiper => {
-					index = swiper.activeIndex
-					tabActived = tabs[index]
-					$redirect(location.pathname, {...$params, [query]: tabActived.ref})
+					activeIndex = swiper.activeIndex
+					$redirect(location.pathname, {...$params, [query]: tabs[activeIndex].ref})
 					desableFocus()
 				}
 			},
-			initialSlide: index,
+			initialSlide: activeIndex,
 			autoHeight: true,
 			simulateTouch: false
 		})
@@ -42,7 +40,7 @@
 
 	function desableFocus() {
 		swiperElem.querySelectorAll('.swiper-slide').forEach((slide, i) => {
-			if (i !== index) slide.querySelectorAll('input, button').forEach(input => input.setAttribute('tabindex', '-1'))
+			if (i !== activeIndex) slide.querySelectorAll('input, button').forEach(input => input.setAttribute('tabindex', '-1'))
 			else slide.querySelectorAll('input, button').forEach(input => input.removeAttribute('tabindex'))
 		})
 	}
@@ -51,8 +49,11 @@
 
 <div bind:offsetWidth>
 
-	<TabBar {tabs} let:tab id={tabId}
-		active={tabActived}
+	<TabBar
+		{tabs}
+		{activeIndex}
+		let:tab
+		id={tabId}
 		on:MDCTabBar:activated={e => swiper.slideTo(e.detail.index)}
 		style="border-bottom: 1px #eee solid">
 		<Tab {tab} >
@@ -64,7 +65,7 @@
 	</TabBar>
 
 	<div class="swiper-container" bind:this={swiperElem}>
-		<div class="swiper-wrapper">
+		<div class="swiper-wrapper" >
 			{#each tabs as tab, i}
 				<div class="swiper-slide" bind:offsetHeight={offsetHeight[i]}>
 					<slot {tab}></slot>

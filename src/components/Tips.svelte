@@ -18,7 +18,7 @@
 <div class="tips" class:open style={`height: calc(100% - ${delta}px); top: ${delta}px;`}>
 
     <div class="tipsHeader">
-        <span class="title" style="color: #fff;">Astuces</span>
+        <span class="title" style="color: #fff;">Aides</span>
         <i class="fa fa-times w3-right tipsCloseButton" on:click={() => open = false}></i>
     </div>
 
@@ -113,7 +113,7 @@
                 </Tip>
             {/if}
 
-            <Tip title="Caisse" query="tab_admin" value="cashier">
+            <Tip title="Caisse" query="tab_admin" value="cashier" queryListen={!isCashier}>
                 <p>
                     Trouvez et séléctionnez votre client grâce au champ de recherche.
                     Pensez à utiliser les raccourcis clavier : 
@@ -165,7 +165,7 @@
 
                 <div class="w3-row">
                     <span class="w3-col s6">Régler le solde</span>
-                    <span class="w3-col s6 shortcut">Ctrl + Maj + Enter</span>
+                    <span class="w3-col s6 shortcut">Ctrl + Shift + Enter</span>
                 </div>
                 <div class="w3-row">
                     <span class="w3-col s6">Valider</span>
@@ -186,6 +186,58 @@
                 </p>
                 
 
+            </Tip>
+
+            <Tip title="Fourni" query="tab" value="provide">
+                <p>
+                    A gauche, les articles proposé par le client sont listés.
+                    Vous pouvez les accepter un par un en cliquant dessus ou tous en même temps en cliquant sur
+                    <span class="button">Tout accepter</span>
+                </p>
+                <p>
+                    Si un client n'a pas proposé ses articles à l'avance, vous avez la
+                    possibilité de les créer vous même en cliquant sur <span class="button">ajouter</span>
+                </p>
+                <p>
+                    Cliquez ensuite sur <span class="validButton">Valider les articles fournis</span> pour
+                    enregistrer les articles acceptés.
+                    Une références sera alors définit automatiquement et l'impression des étiquettes sera lancé
+                    si l'option est activé.
+                </p>
+                <p>
+                    Si vous percevez des frais de traitement, le solde du client sera négatif en conséquence.
+                    Il est donc conseillé de le regler avant de passer au client suivant.
+                </p>
+                <p>
+                    Les clients anonymes ne peuvent pas fournir d'article.
+                </p>
+            </Tip>
+
+            <Tip title="Récupère" query="tab" value="recover">
+                <p>
+                    Dans la liste de gauche, apparaissent les articles invendu d'un client.
+                    Vous pouvez les sélectionnr un par un en cliquant dessus ou tous en même temps en cliquant sur
+                    <span class="button">Tout récupérer</span>
+                </p>
+                <p>
+                    Cliquez ensuite sur <span class="validButton">Récupèrer les articles</span> pour
+                    enregistrer les articles rendu à leur propriétaire.
+                </p>
+                <p>
+                    Les clients anonymes ne peuvent pas récupérer d'article.
+                </p>
+            </Tip>
+
+            <Tip title="Achète" query="tab" value="buy">
+                A rédiger
+            </Tip>
+
+            <Tip title="Retourne" query="tab" value="giveback">
+                A rédiger
+            </Tip>
+
+            <Tip title="Aperçu" query="tab" value="resume">
+                A rédiger
             </Tip>
 
         </div>
