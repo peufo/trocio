@@ -1,21 +1,38 @@
 <script>
     import { fade } from 'svelte/transition'
+    import { params } from '@sveltech/routify'
+
     import Tip from './Tip.svelte'
 
-    export let open = false
+    export let open = true
     export let headHeight = 0
     export let isCashier = false
+
+    let content
 
     let scrollY
     let delta
     $: if (open) delta = scrollY > headHeight ? 0 : headHeight - scrollY
-    $: console.log({delta})
+    
+    $: if ($params) scrollToActiveSection()
+
+    function scrollToActiveSection() {
+        if (open) {
+            let section = Array.from(content.querySelectorAll('section')).find(s => $params[s.dataset.query] === s.dataset.value && !$params[s.dataset.queryavoid])
+            if (section) content.scrollTo({top: section.offsetTop - 63})
+        }
+    }
+
+    function setOpen() {
+        open = true
+        setTimeout(scrollToActiveSection, 600)
+    }
 
 </script>
 
 <svelte:window bind:scrollY></svelte:window>
 
-<div class="tips" class:open style={`height: calc(100% - ${delta}px); top: ${delta}px;`}>
+<div class="container" class:open style={`height: calc(100% - ${delta}px); top: ${delta}px;`}>
 
     <div class="tipsHeader">
         <span class="title" style="color: #fff;">Aides</span>
@@ -23,22 +40,24 @@
     </div>
 
     {#if open}
-        <div transition:fade|local>
+        <div transition:fade|local class="content" bind:this={content}>
             {#if !isCashier}
-                <Tip title="Information" query="tab_admin" value="info">
+                <section title="Information" data-query="tab_admin" data-value="info">
+                    <span class="title">Information</span>
                     <p>
                         C'est ici que vous pouvez mettre à jour les informations publique relatives à votre troc.
-                        Attention à l'horaire. Il ne peut plus être modifé une fois le troc démarré.
+                        Attention à l'horaire. Il ne peut plus être modifié une fois le troc démarré.
                     </p>
-                </Tip>
+                </section>
 
-                <Tip title="Collaborateurs" query="tab_admin" value="collab">
+                <section title="Collaborateurs" data-query="tab_admin" data-value="collab">
+                    <span class="title">Collaborateurs</span>
                     <p>
                         Vous pouvez ajouter et supprimer des collaborateurs suivant leur rôle.
                         Veillez à ajouter uniquement des collaborateurs de confiances.
                     </p>
                     <p>
-                        Les administrateurs ont accès à la page actuel tandis que les cassier ont uniquement accès à la caisse.
+                        Les administrateurs ont accès à la page actuel tandis que les caissiers ont uniquement accès à la caisse.
                     </p>
                     <p>
                         En ajoutant un utilisateur à la liste des commercants, vous lui permetez d'utiliser le préfix 
@@ -46,9 +65,10 @@
                         C'est très pratique si il a des centaines d'article et qu'il souhaite gérer lui
                         même ses étiquettes.
                     </p>
-                </Tip>
+                </section>
 
-                <Tip title="Tarification" query="tab_admin" value="tarif">
+                <section title="Tarification" data-query="tab_admin" data-value="tarif">
+                    <span class="title">Tarification</span>
                     <p>
                         Vous pouvez créer ou supprimer des tarifs en plus du tarif standard
                         auxquels les utilisateurs sont soumis par défaut. 
@@ -69,9 +89,10 @@
                     <p>
                         Attention, vous vous exposé à des frais dés que vous définisez une marge ou des frais de traitement.
                     </p>
-                </Tip>
+                </section>
 
-                <Tip title="Etiquetage" query="tab_admin" value="tag">
+                <section title="Etiquetage" data-query="tab_admin" data-value="tag">
+                    <span class="title">Etiquetage</span>
                     <p>
                         Ajustez et testez le format de vos étiquettes.
                         Définissez correctement le type d'impression que vous souhaitez mettre en place.
@@ -80,9 +101,10 @@
                         L'utilisation de codes barres vous évitera beaucoup d'erreur lors des passages en caisse.
                         N'importe quel smartphone pourra être utilisé comme scanner par vos caissiers.
                     </p>
-                </Tip>
+                </section>
 
-                <Tip title="Statistique" query="tab_admin" value="statistic">
+                <section title="Statistique" data-query="tab_admin" data-value="statistic">
+                    <span class="title">Statistique</span>
                     <p>
                         Commencez par séléctioner le groupe d'utilisateur dont vous souhaitez connaître les statistiques.
                     </p>
@@ -92,9 +114,10 @@
                         Ce chiffre peut également être consulté dans le solde de la <b>caisse</b>.
                         Attention, un écart entre le solde et les paiments signifit que des clients ont un solde non nul.
                     </p>
-                </Tip>
+                </section>
 
-                <Tip title="Gestion" query="tab_admin" value="managment">
+                <section title="Gestion" data-query="tab_admin" data-value="managment">
+                    <span class="title">Gestion</span>
                     <p>
                         Ici, vous avez un contrôle complet sur ce qu'il ce passe dans votre troc.
                     </p>
@@ -110,10 +133,11 @@
                         Attention, il va de soit que votre fournisseur doit être en accord avec un changement de prix.
                         Il est de votre devoir de préserver l'integrité de vos données.
                     </p>
-                </Tip>
+                </section>
             {/if}
 
-            <Tip title="Caisse" query="tab_admin" value="cashier" queryListen={!isCashier}>
+            <section title="Caisse" data-query="tab_admin" data-value="cashier" data-queryavoid="client">
+                <span class="title">Caisse</span>
                 <p>
                     Trouvez et séléctionnez votre client grâce au champ de recherche.
                     Pensez à utiliser les raccourcis clavier : 
@@ -186,9 +210,10 @@
                 </p>
                 
 
-            </Tip>
+            </section>
 
-            <Tip title="Fourni" query="tab" value="provide">
+            <section title="Fourni" data-query="tab" data-value="provide">
+                <span class="title">Fourni</span>
                 <p>
                     A gauche, les articles proposé par le client sont listés.
                     Vous pouvez les accepter un par un en cliquant dessus ou tous en même temps en cliquant sur
@@ -211,9 +236,10 @@
                 <p>
                     Les clients anonymes ne peuvent pas fournir d'article.
                 </p>
-            </Tip>
+            </section>
 
-            <Tip title="Récupère" query="tab" value="recover">
+            <section title="Récupère" data-query="tab" data-value="recover">
+                <span class="title">Récupère</span>
                 <p>
                     Dans la liste de gauche, apparaissent les articles invendu d'un client.
                     Vous pouvez les sélectionnr un par un en cliquant dessus ou tous en même temps en cliquant sur
@@ -226,44 +252,58 @@
                 <p>
                     Les clients anonymes ne peuvent pas récupérer d'article.
                 </p>
-            </Tip>
+            </section>
 
-            <Tip title="Achète" query="tab" value="buy">
-                A rédiger
-            </Tip>
+            <section title="Achète" data-query="tab" data-value="buy">
+                <span class="title">Achète</span>
+                <p>
+                    A rédiger
+                </p>
+            </section>
 
-            <Tip title="Retourne" query="tab" value="giveback">
-                A rédiger
-            </Tip>
+            <section title="Retourne" data-query="tab" data-value="giveback">
+                <span class="title">Retourne</span>
+                <p>
+                    A rédiger
+                </p>
+            </section>
 
-            <Tip title="Aperçu" query="tab" value="resume">
-                A rédiger
-            </Tip>
+            <section title="Aperçu" data-query="tab" data-value="resume">
+                <span class="title">Aperçu</span>
+                <p>
+                    A rédiger
+                </p>
+            </section>
 
         </div>
     {/if}
 </div>
 
-<div class="tipsButton" class:open on:click={() => open = true}>
+<div class="tipsButton" class:open on:click={setOpen}>
     <i class="far fa-question-circle"></i>
 </div>
 
 <style>
-    .tips.open {
+    .container.open {
         left: 0px;
     }
 
-    .tips {
+    .container {
+        position: fixed;
         width: 400px;
         left: -400px;
-        position: fixed;
-        overflow-y: scroll;
         border-right: solid 1px #ccc;
-        padding: 1em 1em 3em 1em;
         color: rgba(0,0,0,.87);
         transition: left .4s ease;
         text-align: justify;
-        background:#bbb;
+    }
+
+    .content {
+        padding: 1em;
+        height: calc(100% - 48px);
+        overflow-y: scroll;
+        scroll-behavior: smooth;
+        background: linear-gradient(#bbb, #fff);
     }
 
     .tipsButton {
@@ -289,9 +329,9 @@
     }
 
     .tipsHeader {
-        padding-top: .4em;
-        padding-bottom: 1em;
+        padding:.5em .5em .5em 1em;
         color: #fff;
+        background:#bbb;
     }
     .tipsHeader .title {
         font-size: 1.5em;
@@ -299,7 +339,7 @@
 
     .tipsCloseButton {
         font-size: 1.3em;
-        padding-top: .26em;
+        padding: .5em 1em;
         cursor: pointer;
     }
 
@@ -347,6 +387,18 @@
         text-transform: uppercase;
         font-weight: 400;
         opacity: .8;
+    }
+
+    section {
+        padding: .5em;
+        margin-bottom: 1em;
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 4px;
+    }
+
+    section:last-child {
+        margin-bottom: 3em;
     }
 
 </style>
