@@ -19,7 +19,7 @@
     function scrollToActiveSection() {
         if (open) {
             let section = Array.from(content.querySelectorAll('section')).find(s => $params[s.dataset.query] === s.dataset.value && !$params[s.dataset.queryavoid])
-            if (section) content.scrollTo({top: section.offsetTop - 63})
+            if (section) content.scrollTo({top: section.offsetTop - 50})
         }
     }
 
@@ -42,7 +42,7 @@
     {#if open}
         <div transition:fade|local class="content" bind:this={content}>
             {#if !isCashier}
-                <section title="Information" data-query="tab_admin" data-value="info">
+                <section data-query="tab_admin" data-value="info">
                     <span class="title">Information</span>
                     <p>
                         C'est ici que vous pouvez mettre à jour les informations publique relatives à votre troc.
@@ -112,7 +112,7 @@
                         Votre bénéfice théorique est la somme des marges et des frais que vous avez perçu sur les
                         <b>approvisionement</b>.
                         Ce chiffre peut également être consulté dans le solde de la <b>caisse</b>.
-                        Attention, un écart entre le solde et les paiments signifit que des clients ont un solde non nul.
+                        Attention, un écart entre le solde et les paiments signifi que des clients ont un solde non nul.
                     </p>
                 </section>
 
@@ -136,10 +136,12 @@
                 </section>
             {/if}
 
-            <section title="Caisse" data-query="tab_admin" data-value="cashier" data-queryavoid="client">
+            <section data-query="tab_admin" data-value="cashier" data-queryavoid="client">
                 <span class="title">Caisse</span>
                 <p>
                     Trouvez et séléctionnez votre client grâce au champ de recherche.
+                </p>
+                <p>
                     Pensez à utiliser les raccourcis clavier : 
                 </p>
                 <div class="w3-row">
@@ -212,7 +214,7 @@
 
             </section>
 
-            <section title="Fourni" data-query="tab" data-value="provide">
+            <section data-query="tab" data-value="provide">
                 <span class="title">Fourni</span>
                 <p>
                     A gauche, les articles proposé par le client sont listés.
@@ -238,7 +240,7 @@
                 </p>
             </section>
 
-            <section title="Récupère" data-query="tab" data-value="recover">
+            <section data-query="tab" data-value="recover">
                 <span class="title">Récupère</span>
                 <p>
                     Dans la liste de gauche, apparaissent les articles invendu d'un client.
@@ -254,21 +256,39 @@
                 </p>
             </section>
 
-            <section title="Achète" data-query="tab" data-value="buy">
+            <section data-query="tab" data-value="buy">
                 <span class="title">Achète</span>
                 <p>
-                    A rédiger
+                    Trouvez  et sélectionez les articles que votre client souhaite acheter
+                    pour les ajouter au panier.
+                    Pour ce faire, vous pouvez soit utiliser la bare de recherche, soit utilisé votre téléphone comme scanner.
+                    <span class="warning">En développement</span>
+                </p>
+                <p>
+                    Validez ensuite le panier pour achever la vente en cliquant sur
+                    <span class="validButton">Valider l'achat de l'article</span>.
+                    Les articles seront ajouté à la liste des achats du client et le solde de ce dernier diminura de la valeur du panier.
+                </p>
+                <p>
+                    Attention, le solde initial du client n'est pas forcément nulle.
+                    Celui-ci peut avoir fournit des articles qui ont été vendu.
+                    Par conséquent, le solde après la vente peut ne pas correspondre à la valeur du panier.
+                    Il est même envisagable qu'un client ai un solde positif après un achat.
+                    Soyez donc très attentif au sens du paiments.
+                </p>
+                <p>
+                    La nature du solde peut être consulté dans l'onglet <span class="tab">aperçu</span>.
                 </p>
             </section>
 
-            <section title="Retourne" data-query="tab" data-value="giveback">
+            <section data-query="tab" data-value="giveback">
                 <span class="title">Retourne</span>
                 <p>
                     A rédiger
                 </p>
             </section>
 
-            <section title="Aperçu" data-query="tab" data-value="resume">
+            <section data-query="tab" data-value="resume">
                 <span class="title">Aperçu</span>
                 <p>
                     A rédiger
@@ -299,7 +319,7 @@
     }
 
     .content {
-        padding: 1em;
+        padding: 0em calc(1em - 10px) 1em 1em;
         height: calc(100% - 48px);
         overflow-y: scroll;
         scroll-behavior: smooth;
@@ -400,5 +420,7 @@
     section:last-child {
         margin-bottom: 3em;
     }
+
+    ::-webkit-scrollbar-track { background: none }
 
 </style>

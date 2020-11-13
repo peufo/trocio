@@ -35,7 +35,7 @@
 
     <div class="w3-row">
     
-        <div class="w3-col m4 w3-center">
+        <div class="w3-col m4 command">
             
             <br>
 
@@ -95,20 +95,18 @@
             
             </div>
 
+            <br>
 
-
-            <br><br>
-
-            <FormField align="end">
-                <Switch bind:checked={border}/>
+            <FormField>
                 <span slot="label">Afficher les bords</span>
+                <Switch bind:checked={border}/>
             </FormField>
 
             <br><br>
 
-            <FormField align="end" on:click={() => notify.info({title: 'En développement', text: `L'utilisation des codes barres est en cours de développement.`})}>
-                <Switch checked={false} disabled/>
+            <FormField on:click={() => notify.info({title: 'En développement', text: `L'utilisation des codes barres est en cours de développement.`})}>
                 <span slot="label">Utiliser les codes barres</span>
+                <Switch checked={false} disabled/>
             </FormField>
 
             <br><br>
@@ -135,3 +133,8 @@
 
 </div>
 
+<style>
+    .command {
+        padding: 0em 2em;
+    }
+</style>
