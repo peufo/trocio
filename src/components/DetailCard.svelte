@@ -40,8 +40,17 @@
     {#if show}
         <div transition:slide|local>
             {#if free}
+
                 <slot></slot>
+
+            {:else if !items.length}
+
+                <div class="w3-center w3-padding w3-opacity">
+                    Aucun élément
+                </div>
+
             {:else if items.length}
+
                 <List style="padding: 7px;" {nonInteractive}>
                     {#each items as item}
                         <Item style="padding: 0 6px">
@@ -51,6 +60,7 @@
                         </Item>
                     {/each}
                 </List>
+
             {/if}
         </div>
     {/if}

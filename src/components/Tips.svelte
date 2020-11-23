@@ -211,7 +211,6 @@
                     Rendez-vous sur l'onglet <span class="tab">aperçu</span> pour connaître la nature du solde.
                 </p>
                 
-
             </section>
 
             <section data-query="tab" data-value="provide">
@@ -262,7 +261,7 @@
                     Trouvez  et sélectionez les articles que votre client souhaite acheter
                     pour les ajouter au panier.
                     Pour ce faire, vous pouvez soit utiliser la bare de recherche, soit utilisé votre téléphone comme scanner.
-                    <span class="warning">En développement</span>
+                    <span class="warning">Cette fonctionalité est en cours de développement</span>
                 </p>
                 <p>
                     Validez ensuite le panier pour achever la vente en cliquant sur
@@ -284,14 +283,40 @@
             <section data-query="tab" data-value="giveback">
                 <span class="title">Retourne</span>
                 <p>
-                    A rédiger
+                    Si vous accorder un droit de retour à vos clients, 
+                    vous avez ici la possibilité de les enregistrer.
                 </p>
+                <p>
+                    Sélectionez d'abord le l'article dans la liste des achats de votre client.
+                    Il est ensuite conseillé de renseigner la raison du retour.
+                    Vous pouvez maintenant valider le retour en cliquant sur
+                    <span class="validButton">Valider le retour de l'article</span>
+                </p>
+                <p>
+                    Une le retour validé, le solde du client va augmenter de la valeur de l'article.
+                    Vous pouvez donc procéder au remboursement pour régler le solde.
+                </p>
+                <p>
+                    Soyez attentif au fait que le solde du fournisseur de l'article sera également impacté.
+                </p>
+
             </section>
 
             <section data-query="tab" data-value="resume">
                 <span class="title">Aperçu</span>
                 <p>
-                    A rédiger
+                    Vous pouvez accédez au même apperçu que celui mis à disposition
+                    de vos participants.
+                </p>
+                <p>
+                    Le solde du client est calculé à partir
+                    de la somme ses paiements, ses achats et ses ventes.
+                </p>
+                <p>
+                    Proposer un article ici à exactement le même effet que de le 
+                    faire sur l'onglet <span class="tab">Fourni</span>.
+                    Hormis la possibilité que avez, comme le client,
+                    d'importer une liste d'article en cliquant sur l'icône <i class="fas fa-list"></i>.
                 </p>
             </section>
 
@@ -393,13 +418,13 @@
         color: #444;
         border: #444 solid 1px;
         font-weight: 400;
-        padding: 2px 10px;
+        padding: 1px 10px;
     }
 
     .validButton {
         color: #fff;
         background: rgba(76, 175, 80, 0.8);
-        padding: 4px 10px;
+        padding: 1px 10px;
     }
 
     .tab {
@@ -418,7 +443,7 @@
     }
 
     section:last-child {
-        margin-bottom: 3em;
+        margin-bottom: 30em;
     }
 
     ::-webkit-scrollbar-track { background: none }

@@ -224,40 +224,40 @@
 		<span id="balance" class="w3-col s3 w3-right-align">{$details.balance.toFixed(2)}</span>
 	</div><br><br>
 	
-	{#if $details.payments.length}
-		<DetailCard title="Paiements"
+	<DetailCard
+		title="Paiements"
 		count={$details.payments.length}
 		sum={$details.paySum}
 		nonInteractive
 		show={paymentShow}
 		items={$details.payments.sort(sortByUpdatedAt)}
 		let:item={payment}>
-			<span slot="col-1"></span>
-			<span slot="col-2">{payment.message} {dayjs(payment.createdAt).fromNow()}</span>
-			<span slot="col-3">{payment.amount.toFixed(2)}</span>						
-		</DetailCard><br>
-	{/if}
+		<span slot="col-1"></span>
+		<span slot="col-2">{payment.message} {dayjs(payment.createdAt).fromNow()}</span>
+		<span slot="col-3">{payment.amount.toFixed(2)}</span>						
+	</DetailCard><br>
 
-	{#if $details.purchases.length}
-		<DetailCard title="Achats"
+	<DetailCard
+		title="Achats"
 		count={$details.purchases.length}
 		sum={$details.buySum}
 		show={buyShow}
 		items={$details.purchases.sort(sortByUpdatedAt)}
 		let:item={article}>
-			<span slot="col-1">#{article.ref}</span>
-			<span slot="col-2">{article.name}</span>
-			<span slot="col-3">{article.price.toFixed(2)}</span>
-		</DetailCard><br>
-	{/if}
+		<span slot="col-1">#{article.ref}</span>
+		<span slot="col-2">{article.name}</span>
+		<span slot="col-3">{article.price.toFixed(2)}</span>
+	</DetailCard><br>
+	
 
 	{#if $details.provided}
-		<DetailCard title="Ventes"
-		free
-		bind:show={providedShow}
-		on:close={closeProvidedTable}
-		count={$details.provided.length}
-		sum={$details.soldSum + $details.feeSum}>
+		<DetailCard
+			title="Ventes"
+			free
+			bind:show={providedShow}
+			on:close={closeProvidedTable}
+			count={$details.provided.length}
+			sum={$details.soldSum + $details.feeSum}>
 			
 			<span slot="head">
 				<!-- Provide button -->

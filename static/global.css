@@ -213,12 +213,11 @@ textarea {
     position: fixed;
     bottom: 0px;
     width: 100%;
+    transition: width .4s ease;
     background: orange;
     color: #fff;
     text-align: center;
-}
-
-.try-bannear b {
+    z-index: 10;
     text-transform: uppercase;
     font-size: 1.2em;
 }

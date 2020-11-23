@@ -14,13 +14,19 @@
 
 <main class:tipsOpen>
     <slot></slot>
+
+    {#if $troc && $troc.is_try}
+        <div
+            transition:fly={{y: 40, delay: 500, duration: 800}}
+            style={`width: calc(100% - ${tipsOpen ? 400 : 0}px);`}
+            class="try-bannear">
+            <b>Troc d'entrainement</b>
+        </div>
+    {/if}
+
 </main>
 
-{#if $troc && $troc.is_try}
-    <div transition:fly={{y: 40, delay: 500, duration: 800}} class="try-bannear">
-        <b>Troc d'entrainement</b>
-    </div>
-{/if}
+
 
 <style>
 

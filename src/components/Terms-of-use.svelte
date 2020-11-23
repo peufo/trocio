@@ -13,7 +13,7 @@
         <li>Le terme "participant" désigne un utilsateur qui participe à un troc en tant que client ou en tant que fournisseur.</li>
     </ul>
 
-    <h3>Vie privée et données personelles</h3>
+    <h3>Vie privée et données personnelles</h3>
     <p>
         Trocio ne requiert que le strict minimum en termes de données utilisateurs.
         Les interactions effectuées sur la plateforme sont de nature publique.
