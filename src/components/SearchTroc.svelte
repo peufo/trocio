@@ -1,5 +1,5 @@
 <script>
-	import { goto } from '@sveltech/routify'
+	import { goto } from '@roxi/routify'
 	import { onMount } from 'svelte'
 	import { flip } from 'svelte/animate'
     import { crossfade, slide } from 'svelte/transition'
@@ -15,12 +15,12 @@
 
 	import L from 'leaflet'
 
-	import { user, subscribedTrocs } from 'stores.js'
-	import { getHeader, crossfadeConfig } from 'utils.js'
-	import notify from 'notify.js'
-	import TrocInfo from 'TrocInfo.svelte'
-	import Resume 	from 'Resume.svelte'
-	import Articles from 'Articles.svelte'
+	import { user, subscribedTrocs } from './stores.js'
+	import { getHeader, crossfadeConfig } from './utils.js'
+	import notify from './notify.js'
+	import TrocInfo from './TrocInfo.svelte'
+	import Resume 	from './Resume.svelte'
+	import Articles from './Articles.svelte'
 	
 	export let mapDelay = 0 // Pour attendre la fin de l'animation
 
@@ -95,7 +95,7 @@
 	}
 
 	async function loadTrocs(skip = 0) {
-		let query = `__API__/trocs/search?search=${search}&skip=${skip}`
+		let query = `/__API__/trocs/search?search=${search}&skip=${skip}`
 
 		if (timeFilter) {
 			if (start) query += `&start=${start}`
@@ -245,10 +245,10 @@
 	</Content>
 </Dialog>
 
-<svelt:head>
+<svelte:head>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css">
 	<style>#waitLoaded { display: none; }</style>
-</svelt:head>
+</svelte:head>
 
 <style>
 

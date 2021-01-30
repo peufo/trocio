@@ -1,14 +1,15 @@
 <script>
-    import DrawingSearch from 'DrawingSearch.svelte'
-    import DrawingSold from 'DrawingSold.svelte'
-    import Logo from 'LogoV2.svelte'
-    import Rayons from 'Rayons.svelte'
     import Button from '@smui/button'
-    import Footer from 'Footer.svelte'
-    import { user } from "stores.js"
+    
+    import DrawingSearch from '$/DrawingSearch.svelte'
+    import DrawingSold from '$/DrawingSold.svelte'
+    import Logo from '$/LogoV2.svelte'
+    import Rayons from '$/Rayons.svelte'
+    import Footer from '$/Footer.svelte'
+    import { user } from "$/stores.js"
     
     //Ralentie considerablement l'animation de départ
-    //import { prefetch } from '@sveltech/routify'
+    //import { prefetch } from '@roxi/routify'
     //prefetch('/search', { validFor: 60 * 1 })
 
 </script>
@@ -37,7 +38,7 @@
 
         <div class="w3-col l6">
             <Button
-            href="/search"
+            href="/searchasd"
             variant="outlined"
             color="secondary"
             style="transform: translate(0px, 10px); background: #fff;"
@@ -86,8 +87,6 @@
         
         <br><br><br>
     </div>
-
-    
 
     <hr>
     <section id="discover">

@@ -9,7 +9,7 @@
 	import Button, { Label } from '@smui/button'
 	import DataTable, {Head, Body, Row, Cell} from '@smui/data-table'
 
-	import notify from 'notify.js'
+	import notify from './notify.js'
 	import { troc, user } from './stores'
 	import { getHeader } from './utils'
 	import AutoPatch from './AutoPatch.svelte'
@@ -93,7 +93,7 @@
 	async function create(is_try = false) {
 		if (invalid) return notify.warning(invalid)
 		try {
-			let res = await fetch(`__API__/trocs`, getHeader({name, address, location, description, schedule, society, societyweb, is_try}))
+			let res = await fetch(`/__API__/trocs`, getHeader({name, address, location, description, schedule, society, societyweb, is_try}))
 			let json = await res.json()
 			if (json.error) return notify.error(json.message)
 			notify.success('Nouveau troc créer !')

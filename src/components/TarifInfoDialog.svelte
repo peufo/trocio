@@ -1,6 +1,7 @@
 <script>
+	import Dialog, { Title, Content } from '@smui/dialog'
+	
     import { trocDetails as details } from './stores.js'
-    import Dialog, { Title, Content } from '@smui/dialog'
 
     export let dialog
 

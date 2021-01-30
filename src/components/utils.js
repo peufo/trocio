@@ -1,6 +1,6 @@
+import { quintOut, cubicOut } from 'svelte/easing'
 import printJS from 'print-js'
 import { troc } from './stores.js'
-import { quintOut, cubicOut } from 'svelte/easing'
 
 export function getHeader(body, verb = 'POST') {
 	return {

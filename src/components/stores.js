@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store'
-import { getHeader, addStatutField } from './utils'
-import notify from 'notify.js'
 import qs from 'qs'
+
+import { getHeader, addStatutField } from './utils'
+import notify from './notify.js'
 
 export let user = userBuilder()
 export let userPromise = writable()
@@ -58,7 +59,7 @@ function userBuilder() {
 		subscribe, set,
 		login: async (mail, password, cb) => {
 			try {
-				let res = await fetch('__API__/users/login', getHeader({mail, password}))
+				let res = await fetch('/__API__/users/login', getHeader({mail, password}))
 				let json = await res.json()
 				if (res.ok && !json.error) {
 					loadUser(set)
@@ -73,7 +74,7 @@ function userBuilder() {
 		},
 		logout: async () => {
 			try {
-				let res = await fetch('__API__/users/logout')
+				let res = await fetch('/__API__/users/logout')
 				let json = await res.json()
 				//if (res.ok && json.success)
 				set(null)
@@ -92,7 +93,7 @@ function loadUser(set) {
 
 async function authenticate(set) {
 	try {
-		let res = await fetch('__API__/users/me')
+		let res = await fetch('/__API__/users/me')
 		let json = await res.json()
 		if (res.ok && !json.error) {
 			set(json)
@@ -123,7 +124,7 @@ function trocBuilder() {
 async function loadTroc(set, { troc }) {
 	if(!troc) return set(null)
 	try {
-		let res = await fetch(`__API__/trocs/${troc}`)
+		let res = await fetch(`/__API__/trocs/${troc}`)
 		let json = await res.json()	
 		if (res.ok) {
 			set(json)
@@ -172,7 +173,7 @@ async function loadTrocDetails(set, {troc, client}) {
 
 async function getDetail(troc, user) {
 	try {
-		const res = await fetch(`__API__/trocs/details?user=${user}&troc=${troc}`)
+		const res = await fetch(`/__API__/trocs/details?user=${user}&troc=${troc}`)
 		let details = await res.json()
 		if (details.error) throw details.message
 		if (details.provided) details.provided = addStatutField(details.provided, '')

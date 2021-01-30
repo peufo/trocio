@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher } from 'svelte'
     import { slide } from 'svelte/transition'
-    import { redirect, params } from '@sveltech/routify'
+    import { redirect, params } from '@roxi/routify'
 
     export let title = ''
     export let open = false

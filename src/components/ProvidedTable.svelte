@@ -1,5 +1,4 @@
 <script>
-    import { v4 as uuidv4 } from 'uuid'
     import { slide } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
@@ -11,10 +10,9 @@
     import AutoPatch from './AutoPatch.svelte'
     import notify from './notify.js'
 
-    import { getHeader, sortByUpdatedAt, formatPrice, STATUTS } from './utils'
+    import { getHeader, getFee, getMargin, sortByUpdatedAt, formatPrice, STATUTS } from './utils'
     import { trocDetails as details } from './stores.js'
-    import { getFee, getMargin } from '../../api/controllers/troc_utils'
-    const uuid = uuidv4()
+    const uuid = String(Math.random()).slice(2)
 
 	let modifiedArticles = []			//Array for minimize PATCH request on AutoPatch.svelte
     let clearModifiedArticles			//Timeout
@@ -24,7 +22,6 @@
 
     const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
     let limitList= LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste (Achat)
-
 
 	let statutFilterMenu
     let statutFilter = -1
@@ -79,7 +76,7 @@
 
     async function deleteArticle(artId) {
         try {
-            let res = await fetch(`__API__/articles/${artId}`, getHeader({}, 'DELETE'))
+            let res = await fetch(`/__API__/articles/${artId}`, getHeader({}, 'DELETE'))
             let json = await res.json()
             if (json.success) {
                 let index = $details.provided.map(art => art._id).indexOf(artId)

@@ -1,11 +1,13 @@
 <script>
+    import { flip } from 'svelte/animate'
+    import { crossfade, fade, slide } from 'svelte/transition'
+    import { params } from '@roxi/routify'
+    import Button from '@smui/button'
+
     import { getHeader, crossfadeConfig, sortByUpdatedAt } from './utils'
     import Article from './Article.svelte'
     import { trocDetails as details} from './stores.js'
-    import { params } from '@sveltech/routify'
-	import { crossfade, fade, slide } from 'svelte/transition'
-    import { flip } from 'svelte/animate'
-    import Button from '@smui/button'
+    
     import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
 	import 'dayjs/locale/fr'
@@ -40,7 +42,7 @@
         req += `${$params.client && $params.client !== 'undefined' ? `&providernot=${$params.client}` :''}`
 
         try {
-            let res = await fetch(`__API__${req}`)
+            let res = await fetch(`/__API__${req}`)
             let json = await res.json()
     
             if(res.ok) {
@@ -101,7 +103,7 @@
         })
 
         try {
-            let res = await fetch('__API__/articles', getHeader(patchedArticles, 'PATCH'))
+            let res = await fetch('/__API__/articles', getHeader(patchedArticles, 'PATCH'))
             let json = await res.json()
             if (res.ok && json.success) {
                 let newPurchases = json.message

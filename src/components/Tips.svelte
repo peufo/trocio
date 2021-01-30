@@ -1,6 +1,6 @@
 <script>
     import { fade } from 'svelte/transition'
-    import { params } from '@sveltech/routify'
+    import { params } from '@roxi/routify'
 
     import Tip from './Tip.svelte'
 

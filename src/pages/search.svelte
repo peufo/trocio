@@ -1,7 +1,8 @@
 <script>
-	import { user } from 'stores.js'
-	import { redirect } from '@sveltech/routify'
-	import SearchTroc from 'SearchTroc.svelte'
+	import { redirect } from '@roxi/routify'
+	
+	import { user } from '$/stores.js'
+	import SearchTroc from '$/SearchTroc.svelte'
 	
 </script>
 

@@ -69,7 +69,7 @@
 	async function getAddress(e) {
 		marker.setLatLng(e.latlng).addTo(map)
 		try {
-			let res = await fetch(`__API__/geocode/${e.latlng.lat}+${e.latlng.lng}`)
+			let res = await fetch(`/__API__/geocode/${e.latlng.lat}+${e.latlng.lng}`)
 			let json = await res.json()
 			setLocation({location: e.latlng, address: json[0].address})
 			return
@@ -86,7 +86,7 @@
 	async function getLocation() {
 		removeResults()
 		try {
-			let res = await fetch(`__API__/geocode/${address}`)
+			let res = await fetch(`/__API__/geocode/${address}`)
 			let json = await res.json()
 			if (json.length == 1) {
 				setLocation(json[0])
@@ -225,9 +225,9 @@
 </div>
 
 
-<svelt:head>
+<svelte:head>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css">
-</svelt:head>
+</svelte:head>
 <style>
 	#container {
 		position: relative;

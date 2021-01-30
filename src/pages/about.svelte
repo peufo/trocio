@@ -1,5 +1,5 @@
 <script>
-    import Footer from 'Footer.svelte'
+    import Footer from '$/Footer.svelte'
 </script>
 
 <main>

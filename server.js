@@ -3,21 +3,20 @@ const express = require('express')
 const app = express()
 const logger = require('morgan')
 const { createProxyMiddleware } = require('http-proxy-middleware')
-const ENTRYPOINT = 'dist/__app.html'
-//const APP = 'dist/build/bundle.js'
 
+// Activation des logs TODO: sorti dans le file system ?
 app.use(logger('dev'))
 
+// Création du proxy
 app.use('/api', createProxyMiddleware({ pathRewrite: {'^/api': '/'}, target: TROCIO_API_HOST, changeOrigin: true }))
 
-app.use(express.static('dist'))
+// Sert le build
+app.use(express.static('build'))
 
+// Par défault, sert la spa
 app.get('*', async (req, res) => {
-    /* const { ssr } = require('@sveltech/ssr')
-    const html = await ssr(ENTRYPOINT, APP, req.url)
-    res.send(html)
-    */
-    res.sendFile(ENTRYPOINT, { root: __dirname })
+    res.sendFile('build/index.html', { root: __dirname })
 })
 
+// Active le serveur
 app.listen(TROCIO_FRONT_PORT, () => console.log(`Server listen on port ${TROCIO_FRONT_PORT}`))

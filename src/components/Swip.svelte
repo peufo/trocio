@@ -1,11 +1,11 @@
 <script>
-	import { Swiper } from 'swiper'
-	import 'swiper/swiper.scss';
-	import { redirect, params } from '@sveltech/routify'
 	import { onMount, onDestroy } from 'svelte'
 	import { spring } from 'svelte/motion'
+	import { redirect, params } from '@roxi/routify'
 	import Tab, { Label, Icon } from '@smui/tab'
 	import TabBar from '@smui/tab-bar'
+	import { Swiper } from 'swiper'
+	import 'swiper/swiper.scss';
 
 	export let tabId = 'no-id'
 	export let query = 'tab'

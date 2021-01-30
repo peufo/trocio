@@ -1,9 +1,7 @@
 <script>
 	import { fade } from 'svelte/transition'
 
-
 </script>
-
 
 <div in:fade>
 	<div class="w3-padding">
