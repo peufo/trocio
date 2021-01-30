@@ -1,15 +1,20 @@
-const { TROCIO_FRONT_HOST, TROCIO_GOOGLE_CLIENT_ID } = require('./config.js') 
-import { createRollupConfigs } from './scripts/base.config.js'
+import path from 'path'
+import svelte from 'rollup-plugin-svelte';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import { terser } from 'rollup-plugin-terser';
+import { copySync, removeSync } from 'fs-extra'
 import autoPreprocess from 'svelte-preprocess'
 import postcssImport from 'postcss-import'
 import postcss from 'rollup-plugin-postcss'
 import alias from '@rollup/plugin-alias'
-import replace from '@rollup/plugin-replace'
-import fs from 'fs'
-import path from 'path'
+const { TROCIO_API_HOST } = require('./config.js') 
+//import { injectManifest } from 'rollup-plugin-workbox'
 
+const buildDir = 'build'
 const production = !process.env.ROLLUP_WATCH;
 
+// is for Svelte material UI
 const postcssOptions = () => ({
 	extensions: ['.scss', '.sass'],
 	extract: false,
@@ -27,57 +32,64 @@ const postcssOptions = () => ({
 	]
 })
 
-//Rend le dossier components plus accèssible
-const componentsFolder = `${__dirname}/src/components/`
-const arrComponents = fs.readdirSync(componentsFolder)
-let allEntries = arrComponents.map(component => ({find: component, replacement: `${componentsFolder}${component}`}))
-const aliases = alias({ resolve: ['.svelte', '.js'], entries: allEntries})
+// clear previous builds
+removeSync(buildDir)
 
-export const config = {
-	staticDir: 'static',
-	distDir: 'dist',
-	buildDir: `dist/build`,
-	serve: false,
-	production,
-	rollupWrapper: rollup => {
-		rollup.plugins = [
-			aliases,
-			//replace({__API__: `${TROCIO_FRONT_HOST}/api`}),
-			replace({
-				__API__: `/api`,
-				__GOOGLE_CLIENT_ID__: TROCIO_GOOGLE_CLIENT_ID
-			}),
-			...rollup.plugins,
-			postcss(postcssOptions())
-		]
-		return rollup
-	},
-	svelteWrapper: svelte => {
-		svelte.preprocess = [
-		autoPreprocess({
-			postcss: { plugins: [postcssImport()] },
-			defaults: { style: 'postcss' }
-		})]
-	},
-	swWrapper: worker => worker,
+export default {
+    preserveEntrySignatures: false,
+    input: [`src/index.js`],
+    output: {
+        sourcemap: true,
+        format: 'esm',
+        dir: `${buildDir}/dist`,
+        // for performance, disabling filename hashing in development
+        chunkFileNames:`[name]${production && '-[hash]' || ''}.js`
+    },
+    plugins: [
+        alias({
+            entries: [{find: /^\$\/(.*)/, replacement: `${__dirname}/src/components/$1`}]
+        }),
+        svelte({
+            dev: !production, // run-time checks      
+            // Extract component CSS — better performance
+            css: css => css.write(`bundle.css`),
+            preprocess: [
+                autoPreprocess({
+                    postcss: { plugins: [postcssImport()] },
+                    defaults: { style: 'postcss' }
+                })
+            ]
+        }),
+
+        // resolve matching modules from current working directory
+        resolve({
+            browser: true,
+            dedupe: importee => !!importee.match(/svelte(\/|$)/)
+        }),
+        commonjs(),
+
+        production && terser(),
+        {
+            // provide node environment on the client
+            transform: code => ({
+                code: code.replace('__API__', TROCIO_API_HOST)
+            })
+        },
+        postcss(postcssOptions()),
+        
+    //    injectManifest({
+    //        globDirectory: assetsDir,
+    //        globPatterns: ['**/*.{js,css,svg}', '__app.html'],
+    //        swSrc: `src/sw.js`,
+    //        swDest: `dist/serviceworker.js`,
+    //        maximumFileSizeToCacheInBytes: 10000000, // 10 MB,
+    //        mode: 'production'
+    //    }),
+        
+        production && copySync('static', 'build'),
+    ],
+    watch: {
+        clearScreen: false,
+        buildDelay: 100,
+    }
 }
-
-const configs = createRollupConfigs(config)
-
-export default configs
-
-/**
-  Wrappers can either mutate or return a config
-
-  wrapper example 1
-  svelteWrapper: (cfg, ctx) => {
-    cfg.preprocess: mdsvex({ extension: '.md' }),
-  }
-
-  wrapper example 2
-  rollupWrapper: cfg => {
-    cfg.plugins = [...cfg.plugins, myPlugin()]
-    return cfg
-  }
-*/
-

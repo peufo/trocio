@@ -5,7 +5,6 @@
 	import Dialog, {Title, Content} from '@smui/dialog'
 	import Button from '@smui/button'
 	
-
 	import SearchTable from './SearchTable.svelte'
 	//import ArticleDialog from './ArticleDialog.svelte'
 	import ProvidedTable from './ProvidedTable.svelte'
@@ -75,7 +74,7 @@
 
 		try {
 
-			let res = await fetch('__API__/articles', getHeader(importArticles))
+			let res = await fetch('/__API__/articles', getHeader(importArticles))
 			let json = await res.json()
 			if (json.success) {
 				let articlesImported = json.message

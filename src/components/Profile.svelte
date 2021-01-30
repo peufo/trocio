@@ -1,11 +1,12 @@
 <script>
-    import { user } from './stores'
-    import { getHeader } from './utils'
     import { slide, fade } from 'svelte/transition'
     import Textfield from '@smui/textfield'
     import HelperText from '@smui/textfield/helper-text/index'
     import Button from '@smui/button'
-
+    
+    import { user } from './stores'
+    import { getHeader } from './utils'
+    
     let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
     let changePassword = false
@@ -26,7 +27,7 @@
 
     async function patchName() {
         try {
-            let res = await fetch('__API__/users/me', getHeader({name: $user.name}, 'PATCH'))
+            let res = await fetch('/__API__/users/me', getHeader({name: $user.name}, 'PATCH'))
             let json = await res.json()
             if (json.success) {
                 changeName = false
@@ -41,7 +42,7 @@
     
     async function patchMail() {
         try {
-            let res = await fetch('__API__/users/me', getHeader({mail: $user.mail}, 'PATCH'))
+            let res = await fetch('/__API__/users/me', getHeader({mail: $user.mail}, 'PATCH'))
             let json = await res.json()
             if (json.success) {
                 changeMail = false
@@ -58,7 +59,7 @@
 
     async function sendMailValidator() {
         try {
-            let res = await fetch('__API__/users/sendvalidmail', getHeader({}))
+            let res = await fetch('/__API__/users/sendvalidmail', getHeader({}))
             let json = await res.json()
             if (json.success) {
                 mailValidatorSent = true
@@ -73,7 +74,7 @@
 
     async function validChangePassword() {
         try {
-            let res = await fetch('__API__/users/changepwd', getHeader({oldPassword, newPassword}))
+            let res = await fetch('/__API__/users/changepwd', getHeader({oldPassword, newPassword}))
             let json = await res.json()
             if (json.success) {
                 changePassword = false
@@ -273,6 +274,6 @@
     <br>
 {/if}
 
-<svelt:head>
+<svelte:head>
 	<style>#waitLoaded { display: none; }</style>
-</svelt:head>
+</svelte:head>

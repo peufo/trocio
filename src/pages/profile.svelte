@@ -1,7 +1,8 @@
 <script>
-    import { goto } from '@sveltech/routify'
-    import Profile from 'Profile.svelte'
-    import { user } from 'stores.js'
+    import { goto } from '@roxi/routify'
+    
+    import Profile from '$/Profile.svelte'
+    import { user } from '$/stores.js'
 
 </script>
 

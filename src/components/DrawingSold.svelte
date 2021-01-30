@@ -1,5 +1,3 @@
-
-
 <div class="container">
 
     <svg>
@@ -13,7 +11,6 @@
             </marker>
 
         </defs>
-
 
         <!-- Provider - Proposé -->
         <line x1="50" y1="23" x2="170" y2="23" marker-end="url(#arrow)"/>

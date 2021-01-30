@@ -9,7 +9,7 @@
     import List, { Item, Graphic, Meta, Text, PrimaryText, SecondaryText} from '@smui/list'
 
     import { troc, user } from './stores'
-    import notify from 'notify.js'
+    import notify from './notify.js'
     import { formatPrice, getHeader, getFee, getMargin } from './utils'
     import SearchUser from './SearchUser.svelte'
 
@@ -129,7 +129,7 @@
 
     async function getTarif(trocId, userId) {
         try {
-            let res = await fetch(`__API__/trocs/spec?troc=${trocId}&user=${userId}`)
+            let res = await fetch(`/__API__/trocs/spec?troc=${trocId}&user=${userId}`)
             let json = await res.json()
             tarif = json.tarif
         } catch(error) {
@@ -144,7 +144,7 @@
         console.log({createEventDispatcher})
 
         try {
-            let res = await fetch('__API__/articles/edit', getHeader({edits, article: article._id}))
+            let res = await fetch('/__API__/articles/edit', getHeader({edits, article: article._id}))
             let json = await res.json()
             if (json.error) throw json.message
             notify.success('Modification enregistré')

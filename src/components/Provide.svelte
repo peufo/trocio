@@ -3,8 +3,7 @@
     import { flip } from 'svelte/animate'
     import { crossfade } from 'svelte/transition'
     const dispatch = createEventDispatcher()
-
-    import { params } from '@sveltech/routify'
+    import { params } from '@roxi/routify'
     import Button from '@smui/button'
     import Textfield from '@smui/textfield'
     import Dialog , { Title, Content } from '@smui/dialog'
@@ -72,7 +71,7 @@
         articlesPrinted = articlesValided
         
         try {
-            let res = await fetch('__API__/articles', getHeader(articlesValided, 'PATCH'))
+            let res = await fetch('/__API__/articles', getHeader(articlesValided, 'PATCH'))
             let json = await res.json()
             if (res.ok && json.success) {
     

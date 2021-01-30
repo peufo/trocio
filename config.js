@@ -6,7 +6,7 @@ const dev = process.env.NODE_ENV == 'development'
 const defaultConfig = {
 	TROCIO_OCD_API_KEY: 			'', 					//API key provide by https://opencagedata.com/
 	TROCIO_ADMIN: 					'',						//Root user mail address
-	TROCIO_SECRET_STRING_COOKIE:	'',						//A secret string for secure cookies
+	TROCIO_SECRET_STRING_COOKIE:	'TA MERE',						//A secret string for secure cookies
 	TROCIO_SMTP_PASS:				'',						//password of your SMTP server
 	TROCIO_SMTP_USER:				'postmaster@trocio.ch',	
 	TROCIO_SMTP_HOST:				'mail.infomaniak.com',	

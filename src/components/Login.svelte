@@ -3,7 +3,7 @@
     import { slide, fade } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
-    import { afterPageLoad, goto } from '@sveltech/routify'
+    import { afterPageLoad, goto } from '@roxi/routify'
     import Button from '@smui/button'
 
     import { getHeader } from './utils'
@@ -26,7 +26,7 @@
         scope: 'email profile',
         access_type: 'online',
         response_type: 'code',
-        redirect_uri: `${location.origin}__API__/users/login-with-google`,
+        redirect_uri: `${location.origin}/__API__/users/login-with-google`,
         client_id: '__GOOGLE_CLIENT_ID__'
     })
     let googleAuthApi = `https://accounts.google.com/o/oauth2/v2/auth?${googleAuthApiParams.toString()}&state=${location.href}`
@@ -48,7 +48,7 @@
 
     async function Register() {
         try {
-            let res = await fetch('__API__/users', getHeader({name, mail, password}))
+            let res = await fetch('/__API__/users', getHeader({name, mail, password}))
             let json = await res.json()
             if (json.success) {
                 if ($user) {//Un Cassier à créer un utilisateur
@@ -77,7 +77,7 @@
 
     async function Reset() {
         try {
-            let res = await fetch('__API__/users/resetpwd', getHeader({mail}))
+            let res = await fetch('/__API__/users/resetpwd', getHeader({mail}))
             let json = await res.json()
             if (res.ok) {
                 alert('Votre nouveau mot de passe vous à été envoyé par mail')

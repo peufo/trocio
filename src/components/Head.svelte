@@ -1,15 +1,15 @@
 <script>
 	import Menu from '@smui/menu'
-	import List, { Item, Graphic } from '@smui/list'
+	//import List, { Item, Graphic } from '@smui/list'
 	import Button from '@smui/button'
 	import Dialog, { Content, Title as TitleDialog, Actions } from '@smui/dialog'
 	import TopAppBar, {Row, Section, Title} from '@smui/top-app-bar'
 
 	import { user, userPromise, troc } from './stores'
 	import Login from './Login.svelte'
-	import TermsOfUse from 'Terms-of-use.svelte'
-	import notify from 'notify.js'
-	import { getHeader } from 'utils.js'
+	import TermsOfUse from './Terms-of-use.svelte'
+	import notify from './notify.js'
+	import { getHeader } from './utils.js'
 	
 	export let offsetHeight
 	let dialogLogin
@@ -20,7 +20,7 @@
 
 	async function acceptTerms() {
 		try {
-			let res = await fetch('__API__/users/me', getHeader({acceptTerms: true}, 'PATCH'))
+			let res = await fetch('/__API__/users/me', getHeader({acceptTerms: true}, 'PATCH'))
 			let json = await res.json()
 			if (json.error) return notify.error(json.message)
 			$user.acceptTerms = true

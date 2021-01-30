@@ -1,10 +1,10 @@
 <script>
     import { flip } from 'svelte/animate'
     import Button from '@smui/button'
-    import { getHeader, crossfadeConfig, sortByUpdatedAt, sortByRecover, addStatutField } from './utils.js'
     import { crossfade } from 'svelte/transition'
+    
+    import { getHeader, crossfadeConfig, sortByUpdatedAt, sortByRecover, addStatutField } from './utils.js'
     import Article from './Article.svelte'
-
     import { user, troc, trocDetails as details } from './stores.js'
     import notify from './notify.js'
     
@@ -50,7 +50,7 @@
     async function valid() {
         let articlesRecover = $details.provided.filter(recoverFilter)
         try {
-            let res = await fetch('__API__/articles', getHeader(articlesRecover, 'PATCH'))
+            let res = await fetch('/__API__/articles', getHeader(articlesRecover, 'PATCH'))
             let json = await res.json()
             if (res.ok && json.success) {
                 let articlesPatched = json.message

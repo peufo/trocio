@@ -75,7 +75,7 @@
 		patchCount++
 
 		try {
-			const res = await fetch(`__API__${path}`, getHeader(body, 'PATCH'))
+			const res = await fetch(`/__API__${path}`, getHeader(body, 'PATCH'))
 			const json = await res.json()
 			patchCount--
 			if (json.success) {
