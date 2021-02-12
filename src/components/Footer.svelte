@@ -1,8 +1,10 @@
 <script>
+    import { isDarkTheme } from '$/stores.js'
+
     export let offsetHeight
 </script>
 
-<footer class="w3-center" bind:offsetHeight>
+<footer class="w3-center grey {$isDarkTheme ? 'darken-3' : 'lighten-3'}" bind:offsetHeight>
    
     <div>
         <div class="underline-div">

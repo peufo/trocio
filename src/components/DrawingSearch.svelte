@@ -1,6 +1,7 @@
 <script>
 
     import { onMount, onDestroy } from 'svelte'
+    import { isDarkTheme } from '$/stores.js'
 
     const WRITE_WAIT = 200
     const ERASE_WAIT = 100
@@ -73,7 +74,8 @@
 
     <div class="w3-large search">
         <i class="fas fa-search"></i>
-        <input type="text" readonly value={text}>
+        <input type="text" readonly value={text}
+        class="{$isDarkTheme && 'grey darken-3 white-text'}">
     </div>
     
 </div>
@@ -97,6 +99,7 @@
         padding: 8px; 
         padding-left: 40px;
         width: 200px;
+        background: white;
     }
 
     .fa-search {

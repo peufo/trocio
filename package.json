@@ -4,33 +4,23 @@
     "dev:snowpack": "snowpack dev",
     "build": "run-s routify:build build:snowpack",
     "build:snowpack": "snowpack build",
-    "build:rollup": "run-s routify:build rollup",
     "serve": "run-p serve:api serve:web",
     "serve:api": "nodemon ./api/server.js -w ./api",
     "serve:web": "nodemon server.js -w",
     "routify": "routify",
-    "routify:build": "routify --single-build",
-    "rollup": "rollup -c"
+    "routify:build": "routify --single-build"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^17.1.0",
-    "@rollup/plugin-node-resolve": "^11.1.1",
-    "@roxi/routify": "^2.10.7",
-    "@snowpack/plugin-sass": "^1.2.0",
+    "@roxi/routify": "^2.12.3",
     "@snowpack/plugin-svelte": "^3.5.2",
-    "fs-extra": "^9.1.0",
-    "postcss-import": "^14.0.0",
-    "rollup-plugin-postcss": "^4.0.0",
-    "rollup-plugin-terser": "^7.0.2",
-    "snowpack": "^3.0.3",
-    "svelte-preprocess": "^4.6.5"
+    "@snowpack/plugin-webpack": "^2.3.0",
+    "npm-run-all": "^4.1.5",
+    "snowpack": "^3.0.3"
   },
   "dependencies": {
     "@pnotify/animate": "^5.2.0",
     "@pnotify/font-awesome5": "^5.2.0",
     "@pnotify/mobile": "^5.2.0",
-    "@rollup/plugin-alias": "^3.1.2",
-    "@snowpack/plugin-webpack": "^2.2.0",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "bwip-js": "^2.0.11",
@@ -45,15 +35,13 @@
     "mongoose": "^5.11.12",
     "mongoose-lean-virtuals": "^0.7.6",
     "morgan": "^1.10.0",
+    "node-sass": "^5.0.0",
     "nodemailer": "^6.4.17",
-    "npm-run-all": "^4.1.5",
     "print-js": "^1.5.0",
     "qr-scanner": "^1.2.0",
     "randomatic": "^3.1.1",
-    "rollup-plugin-svelte": "^7.0.0",
-    "snowpack-plugin-rollup-bundle": "^0.3.3",
     "svelte": "^3.31.1",
-    "svelte-material-ui": "^2.0.0-beta.0",
+    "svelte-materialify": "^0.3.4",
     "swiper": "^6.4.5"
   }
 }

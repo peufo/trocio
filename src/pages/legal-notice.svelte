@@ -5,7 +5,7 @@
 <main>
     <br>
     <br>
-    <h1 class="w3-center">Mentions légales</h1>
+    <h4 class="w3-center">Mentions légales</h4>
     <br>
     <br>
 

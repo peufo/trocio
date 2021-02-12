@@ -1,11 +1,14 @@
 :root {
     overflow-y: scroll;
-    
 }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
 ::-webkit-scrollbar-thumb { background: #888; }
 ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+.s-app {
+    position: relative;
+}
 
 body {
     font-family: Roboto,sans-serif!important;
@@ -106,41 +109,6 @@ textarea {
     transform: scale(1) !important;
     opacity: 1 !important;
 }
-
-/*
-.tabs{
-    position: relative;
-    width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.tab {
-    transition: all .25s;
-    position: absolute;
-    top: 0px;
-    width: 100%;
-    height: 100%;
-
-}
-
-.tab.center {
-    transform: translate(0px, 0px);
-    opacity: 1;
-}
-
-.tab.left {
-    transform: translate(-100%, 0px);
-    opacity: 0;
-    overflow: hidden;
-}
-
-.tab.right {
-    transform: translate(100%, 0px);
-    opacity: 0;
-    overflow: hidden;
-}
-*/
 
 .close-icon {
     transition: all .15s;

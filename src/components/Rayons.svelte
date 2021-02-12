@@ -1,11 +1,12 @@
 <script>
     import { onMount } from 'svelte'
+    import { isDarkTheme } from '$/stores.js'
 
     export let number = 40
 
-    const WIDTH = 200
-    const HEIGHT = 200
-    const LINE_WIDTH = 4
+    const WIDTH = 540
+    const HEIGHT = 540
+    const LINE_WIDTH = 5
 
     let angles = []
     onMount(() => {
@@ -17,7 +18,6 @@
         }
     })
 
-
 </script>
 
 
@@ -26,8 +26,17 @@
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
         <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#eee"/>
-                <stop offset="100%" stop-color="#fff"/>
+
+                <stop
+                offset="0%"
+                stop-color="{$isDarkTheme ? '#eee' : '#ccc'}"
+                stop-opacity="1"/>
+
+                <stop
+                offset="100%"
+                stop-color="{$isDarkTheme ? '#eee' : '#ccc'}"
+                stop-opacity="0"/>
+
             </linearGradient>
 
         </defs>

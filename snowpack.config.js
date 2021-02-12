@@ -11,28 +11,13 @@ module.exports = {
   },
   plugins: [
     '@snowpack/plugin-svelte',
-    ['@snowpack/plugin-webpack', {
-      sourceMap: true
-    }]
+    '@snowpack/plugin-webpack'
   ],
   packageOptions: {
-    //For use sveltematerialui
-    rollup: {
-      plugins: [
-        require('rollup-plugin-svelte')({
-          include: ['./node_modules'],
-        }),
-        require('rollup-plugin-postcss')({
-          use: [['sass', {includePaths: ['./src/theme', './node_modules']}]],
-        }),
-      ],
-    },
-    knownEntrypoints: [
-      /* ... */
-    ]
+    /* ... */
   },
   devOptions: {
-    secure: false,
+    secure: true,
     fallback: './build/index.html',
     output: 'stream'
   },
