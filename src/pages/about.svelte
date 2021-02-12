@@ -5,7 +5,7 @@
 <main>
     <br>
     <br>
-    <h1 class="w3-center">À propos</h1>
+    <h4 class="w3-center">À propos</h4>
     <br>
     <br>
     <div class="w3-row">

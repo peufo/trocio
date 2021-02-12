@@ -1,6 +1,6 @@
 <div class="container">
 
-    <h3>Définitions</h3>
+    <h5>Définitions</h5>
     <p>
         Tous les termes décrits ci-dessous ont la même définition indiféremment du genre ou du nombre.
     </p>
@@ -13,7 +13,7 @@
         <li>Le terme "participant" désigne un utilsateur qui participe à un troc en tant que client ou en tant que fournisseur.</li>
     </ul>
 
-    <h3>Vie privée et données personnelles</h3>
+    <h5>Vie privée et données personnelles</h5>
     <p>
         Trocio ne requiert que le strict minimum en termes de données utilisateurs.
         Les interactions effectuées sur la plateforme sont de nature publique.
@@ -36,7 +36,7 @@
         Cette partie sensible du traitement est assurée par l'entreprise Stripe.
     </p>
 
-    <h3>Liens externes</h3>
+    <h5>Liens externes</h5>
     <p>
         Les organisateurs peuvent mettre à disposition un lien vers leur site internet.
         Par conséquent, Trocio ne peut être tenu pour responsable de la nature, de la qualité et du contenu de ces sites.
@@ -47,14 +47,14 @@
     </p>
 
 
-    <h3>Modération</h3>
+    <h5>Modération</h5>
     <p>
         Trocio se réserve le droit de modifier ou de supprimer
         tout contenu mis en ligne sur la plateforme qu'il juge inaproprié.
         Une limitation voire une interdiction d'accès peut également être mise en place.
     </p>
 
-    <h3>Responsabilité de l'organisateur</h3>
+    <h5>Responsabilité de l'organisateur</h5>
     <p>
         Lors de la création d'un troc, l'organisateur s'engage à organiser l'évènement 
         de la manière la plus morale et responsable que possible.
@@ -71,7 +71,7 @@
         il est tenu d'en avertir le plus rapidement possible Trocio.
     </p>
 
-    <h3>Non responsabilité</h3>
+    <h5>Non responsabilité</h5>
     <p>
         L'application est fournie en l'état.
         Trocio s'engage à faire tout son possible pour garantir la sécurité et la disponibilité
@@ -81,7 +81,7 @@
         Toute responsabilité de Trocio résultant d'un accès à l'application est exclue.
     </p>
 
-    <h3>Conditions générales de vente (CGV)</h3>
+    <h5>Conditions générales de vente (CGV)</h5>
     <p>
         L'organisateur s'expose à des frais dès qu'il détermine un tarif payant pour ses participants.
         Le montant des frais représente 2% du bénéfice effectué par l'organisateur. 
@@ -97,7 +97,7 @@
         L'organisateur sera également banni de l'application.
     </p>
 
-    <h3>Droit de révocation</h3>
+    <h5>Droit de révocation</h5>
     <p>
         Le droit de révocation est possible jusqu'à ce que l'organisateur
         enregistre son premier bénéfice :
@@ -118,7 +118,7 @@
 </div>
 
 <style>
-    h3 {
+    h5 {
         margin-top: 2em;
     }
     .container {

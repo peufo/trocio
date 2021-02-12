@@ -7,6 +7,9 @@ import notify from './notify.js'
 export let user = userBuilder()
 export let userPromise = writable()
 
+//Theme
+export let isDarkTheme = writable(false)
+
 //Troc's meta
 export let troc = trocBuilder()			 
 export let trocPromise = writable()

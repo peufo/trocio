@@ -11,12 +11,14 @@ app.use(logger('dev'))
 app.use('/api', createProxyMiddleware({ pathRewrite: {'^/api': '/'}, target: TROCIO_API_HOST, changeOrigin: true }))
 
 // Sert le build
-app.use(express.static('build'))
+app.use(express.static('./build'))
 
 // Par défault, sert la spa
-app.get('*', async (req, res) => {
-    res.sendFile('build/index.html', { root: __dirname })
+app.get('*', (req, res) => {
+    res.sendFile(`${__dirname}/build/index.html`)
 })
 
-// Active le serveur
-app.listen(TROCIO_FRONT_PORT, () => console.log(`Server listen on port ${TROCIO_FRONT_PORT}`))
+app.listen(TROCIO_FRONT_PORT, err => {
+    if (err) return console.log(err)
+    console.log(`Server listen on port ${TROCIO_FRONT_PORT}`)
+})

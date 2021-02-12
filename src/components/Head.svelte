@@ -1,22 +1,19 @@
 <script>
-	import Menu from '@smui/menu'
-	//import List, { Item, Graphic } from '@smui/list'
-	import Button from '@smui/button'
-	import Dialog, { Content, Title as TitleDialog, Actions } from '@smui/dialog'
-	import TopAppBar, {Row, Section, Title} from '@smui/top-app-bar'
+
+	import { AppBar, Button } from 'svelte-materialify'
+	//import Dialog, { Content, Title as TitleDialog, Actions } from '@smui/dialog'
 
 	import { user, userPromise, troc } from './stores'
-	import Login from './Login.svelte'
+	//import Login from './Login.svelte'
 	import TermsOfUse from './Terms-of-use.svelte'
 	import notify from './notify.js'
 	import { getHeader } from './utils.js'
 	
 	export let offsetHeight
-	let dialogLogin
-	let dialogAcceptTerms
-	//let userMenu
+	let dialogLoginIsActive
+	//let dialogAcceptTerms
 
-	$: if (!!$user && !$user.acceptTerms && !!dialogAcceptTerms.open) dialogAcceptTerms.open()
+	//$: if (!!$user && !$user.acceptTerms && !!dialogAcceptTerms.open) dialogAcceptTerms.open()
 
 	async function acceptTerms() {
 		try {
@@ -39,64 +36,42 @@
 </svelte:head>
 
 <div bind:offsetHeight>
-	<TopAppBar variant="static" color="secondary" dense>
-		<Row>
-			<Section>
-				<a href="/">
-					<Title>
-						<img src="/favicon.ico" alt="logo Trocio" height="35">
-						TROCIO {$troc ? ` - ${$troc.name}` : ''}
-					</Title>
-				</a>
-			</Section>
+	<AppBar dense flat class="grey darken-2 white-text">
+		
+		<div slot="title">
+			<img src="/favicon.ico" alt="logo Trocio" height="35">
+			<a href="/" class="white-text">
+				TROCIO {$troc ? ` - ${$troc.name}` : ''}
+			</a>
+		</div>
 
-			<Section align="end" toolbar>
-				{#if $user}
-					<div>
+		<div style="flex-grow: 1;"/>
 
-						<Button href='/profile' color="secondary" class="w3-right w3-padding w3-text-white">
-							<i class="fas fa-user w3-large"></i>
-							<span class="button-label">&nbsp;{$user.name}</span>
-						</Button>
+		{#if $user}
+			<div>
 
-						<Button href='/activity' color="secondary" class="w3-right w3-padding w3-text-white">
-							<i class="fas fa-bars w3-large"></i>
-							<span class="button-label">&nbsp;Mes trocs</span>
-						</Button>
+				<Button href='/profile' text>
+					<i class="fas fa-user w3-large"></i>
+					<span class="button-label">&nbsp;{$user.name}</span>
+				</Button>
 
-						<!--
-						<Menu bind:this={userMenu} style="min-width: 200px;" anchorCorner="BOTTOM_LEFT">
-							<List>
-								<a href="/activity">
-									<Item>
-										<Graphic><i class="far fa-star"></i></Graphic>
-										Vos activités
-									</Item>
-								</a>
-								<a href="/profile">
-									<Item>
-										<Graphic><i class="fas fa-info-circle"></i></Graphic>
-										Votre profil
-									</Item>
-								</a>
-							</List>
-						</Menu>
-						-->
+				<Button href='/activity' text>
+					<i class="fas fa-bars w3-large"></i>
+					<span class="button-label">&nbsp;Mes trocs</span>
+				</Button>
 
-					</div>
-					
-				{:else}
-					<Button color="secondary" class="w3-right w3-padding w3-text-white" on:click="{() => dialogLogin.open()}">
-						<i class="far fa-user w3-large"></i>
-						<span class="button-label">&nbsp;Connexion</span>
-					</Button>
-				{/if}
-			</Section>
-
-		</Row>
-	</TopAppBar>
+			</div>
+			
+		{:else}
+			<Button on:click="{() => dialogLoginIsActive = true}" text>
+				<i class="far fa-user w3-large"></i>
+				<span class="button-label">&nbsp;Connexion</span>
+			</Button>
+		{/if}
+		
+	</AppBar>
 </div>
-
+<!--
 <Dialog bind:this={dialogLogin}>
 	<Content>
 		<Login on:close={dialogLogin.close}/>
@@ -117,6 +92,8 @@
 		</Button>
 	</Actions>
 </Dialog>
+-->
+
 
 <style>
 

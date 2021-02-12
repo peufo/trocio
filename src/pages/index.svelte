@@ -1,6 +1,5 @@
 <script>
-    import Button from '@smui/button'
-    
+    import { Button, Card, CardText } from 'svelte-materialify'
     import DrawingSearch from '$/DrawingSearch.svelte'
     import DrawingSold from '$/DrawingSold.svelte'
     import Logo from '$/LogoV2.svelte'
@@ -27,7 +26,7 @@
     <div class="w3-row">
 
         <div class="w3-col l6">
-            <div class="rayons">
+            <div class="logo">
                 
                 <Rayons/>
 
@@ -37,32 +36,35 @@
         </div>
 
         <div class="w3-col l6">
-            <Button
-            href="/searchasd"
-            variant="outlined"
-            color="secondary"
-            style="transform: translate(0px, 10px); background: #fff;"
-            class="w3-right w3-large w3-margin">
-                Trouver un troc
-            </Button>
-            <div class="w3-card w3-round-large w3-padding" style="margin-top: 50px; background: #fff;">
-                <p>
-                    Trocio est un outil simple et efficace pour échanger vos objets.
-                </p>
-                <p>
-                    Que vous soyez organisateur ou amateur de bonnes affaires,
-                    Trocio vous offre une structure pour améliorer votre expérience sur des évenements éphemères.
-                </p>
-                <p>
-                    L'interface fournit de nombreuses fonctionalitées qui vous permettent de gagner un temps précieux,
-                    d'éviter des erreurs et d'être informé en temps réel.
-                </p>
+            <a href="/search">
+                <Button
+                style="transform: translate(0px, 10px); z-index: 2;"
+                class="w3-right w3-large w3-margin">
+                    Trouver un troc
+                </Button>
+            </a>
 
-                <span class="warning">
-                    <i class="fas fa-exclamation-triangle"></i>&nbsp;
-                    La plateforme est en phase beta.
-                </span>   
-            </div>
+            <Card class="pa-4" style="margin-top: 50px;">
+                <CardText>
+                    <p>
+                        Trocio est un outil simple et efficace pour échanger vos objets.
+                    </p>
+                    <p>
+                        Que vous soyez organisateur ou amateur de bonnes affaires,
+                        Trocio vous offre une structure pour améliorer votre expérience sur des évenements éphemères.
+                    </p>
+                    <p>
+                        L'interface fournit de nombreuses fonctionalitées qui vous permettent de gagner un temps précieux,
+                        d'éviter des erreurs et d'être informé en temps réel.
+                    </p>
+        
+                    <span class="warning">
+                        <i class="fas fa-exclamation-triangle"></i>&nbsp;
+                        La plateforme est en phase beta.
+                    </span>   
+                </CardText>
+            </Card>
+
         </div>
     </div>
 
@@ -72,15 +74,15 @@
         
         <i class="fas fa-arrow-down" style="margin-right: 40px;"></i>
 
-        <Button href="#discover" color="secondary" class="w3-large" style="width: 130px;">
+        <Button href="#discover" text color="secondary" class="w3-large" style="width: 130px;">
             Découvrir
         </Button>
 
-        <Button href="#propose" color="secondary" class="w3-large" style="width: 130px;">
+        <Button href="#propose" text color="secondary" class="w3-large" style="width: 130px;">
             Proposer
         </Button>
 
-        <Button href="#organize" color="secondary" class="w3-large" style="width: 130px;">
+        <Button href="#organize" text color="secondary" class="w3-large" style="width: 130px;">
             Organiser
         </Button>
         <i class="fas fa-arrow-down" style="margin-left: 40px;"></i>
@@ -299,12 +301,12 @@
         <br><br>
 
         <div class="w3-center">
-            <div class="w3-card w3-round-large w3-padding" style="max-width: 500px; margin: auto;">
-                
+
+            <Card class="pa-4" style="max-width: 500px; margin: auto;">
                 <p>L'organisation d'un troc est <b class="w3-text-green">gratuite</b>.</p>
                 <p>Seul les bénéfices réalisés sont prélevés à hauteur de <b class="w3-text-orange">2%</b>.</p>
                 <p>Nous souhaitons ainsi soutenir les trocs à but non lucratif.</p>
-            </div>
+            </Card>
 
             <br><br>
 
@@ -316,9 +318,8 @@
             class="w3-large">
                 Organiser un troc
             </Button>
-        </div>
 
-        
+        </div>
 
     </section>
 
@@ -358,7 +359,7 @@
         main { padding: 10px;}
     }
     @media only screen and (max-width: 992px) {
-        .rayons {height: 200px!important;}
+        .logo {height: 200px!important;}
     }
 
     .fa-arrow-down {
@@ -410,10 +411,10 @@
         }
     }
 
-    .rayons {
+    .logo {
         position: relative;
-        height: 400px;
-        z-index: -10;
+        height: 500px;
+        /*z-index: -10;*/
     }
 
     @media only screen and (max-width: 1200px) {
