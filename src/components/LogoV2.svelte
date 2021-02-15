@@ -108,7 +108,7 @@
 
 </script>
 
-<div class="container" transition:fade|local style={`--duration-rotation-logo: ${duration / 4}s; --cube-size: ${cubeSize}%;`}>
+<div class="container" in:fade|local style={`--duration-rotation-logo: ${duration / 4}s; --cube-size: ${cubeSize}%;`}>
 
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
 

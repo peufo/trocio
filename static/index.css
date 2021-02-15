@@ -18,6 +18,13 @@ a {
     text-decoration: none;
 }
 
+.s-app.theme--dark a > button > span {
+    color: #fff!important;
+}
+.s-app.theme--light a > button > span {
+    color: #000!important;
+}
+
 textarea {
     margin-top: 10px;
     resize: vertical;

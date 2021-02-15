@@ -27,11 +27,11 @@
 
         <div class="w3-col l6">
             <div class="logo">
-                
-                <Rayons/>
 
-                <Logo duration="20" cubeSize="50"/>
-                                
+                    <Rayons/>
+    
+                    <Logo duration="20" cubeSize="50"/>
+                      
             </div>
         </div>
 
@@ -73,18 +73,22 @@
     <div class="w3-center w3-xlarge hideIfVerySmall">
         
         <i class="fas fa-arrow-down" style="margin-right: 40px;"></i>
+        <a href="#discover">
+            <Button text class="w3-large" style="width: 130px;">
+                Découvrir
+            </Button>
+        </a>
+        <a href="#propose">
+            <Button text class="w3-large" style="width: 130px;">
+                Proposer
+            </Button>
+        </a>
+        <a href="#organize">
+            <Button text class="w3-large" style="width: 130px;">
+                Organiser
+            </Button>
+        </a>
 
-        <Button href="#discover" text color="secondary" class="w3-large" style="width: 130px;">
-            Découvrir
-        </Button>
-
-        <Button href="#propose" text color="secondary" class="w3-large" style="width: 130px;">
-            Proposer
-        </Button>
-
-        <Button href="#organize" text color="secondary" class="w3-large" style="width: 130px;">
-            Organiser
-        </Button>
         <i class="fas fa-arrow-down" style="margin-left: 40px;"></i>
         
         <br><br><br>
@@ -120,13 +124,11 @@
         <br><br>
 
         <div class="w3-center">
-            <Button
-            href="/search"
-            variant="outlined"
-            color="secondary"
-            class="w3-large">
-                Trouver un troc
-            </Button>
+            <a href="/search">
+                <Button class="w3-large">
+                    Trouver un troc
+                </Button>
+            </a>
         </div>
 
     </section>
@@ -160,13 +162,11 @@
         <br><br>
 
         <div class="w3-center">
-            <Button
-            href="/search"
-            variant="outlined"
-            color="secondary"
-            class="w3-large">
-                Trouver un troc
-            </Button>        
+            <a href="/search">
+                <Button class="w3-large">
+                    Trouver un troc
+                </Button>        
+            </a>
         </div>
 
     </section>
@@ -309,15 +309,11 @@
             </Card>
 
             <br><br>
-
-            <Button
-            on:click={console.log}
-            href="/activity/create"
-            variant="outlined"
-            color="secondary"
-            class="w3-large">
-                Organiser un troc
-            </Button>
+            <a href="/activity/create">
+                <Button class="w3-large">
+                    Organiser un troc
+                </Button>
+            </a>
 
         </div>
 
@@ -326,10 +322,6 @@
 </main>
 
 <Footer/>
-
-<svelte:head>
-    <style>#waitLoaded {display: none;}</style>
-</svelte:head>
 
 <style>
 
