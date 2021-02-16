@@ -1,35 +1,54 @@
 <script>
+	import { tick } from 'svelte'
+	import { afterPageLoad } from '@roxi/routify'
 	import { MaterialApp, Button } from 'svelte-materialify'
 	import Head from '$/Head.svelte'
+	import Footer from '$/Footer.svelte'
 	import FadeDecorator from '$/FadeDecorator.svelte'
 	import { isDarkTheme } from '$/stores.js'
 
 	let headHeight
+	let footerHeight
+	let totalHeight
 
 	const themes = ['light', 'dark']
 
+	$afterPageLoad(loadHeight)
+	
+	async function loadHeight() {
+		totalHeight = 0
+		await tick()
+		totalHeight = document.getElementsByTagName('HTML')[0].scrollHeight
+	}
+
 </script>
 
-<MaterialApp theme={themes[+$isDarkTheme]} style="height: 100%;">
+<svelte:window on:resize={loadHeight}/>
+
+<div style={`min-height: ${totalHeight}px;`}>
+	<MaterialApp theme={themes[+$isDarkTheme]}>
+		
+		<Head bind:offsetHeight={headHeight}/>
 	
-	<Head bind:offsetHeight={headHeight}/>
+		<div style={`height: ${totalHeight - headHeight - footerHeight}px`}>
+			<slot decorator={FadeDecorator} scoped={{headHeight, footerHeight}}/>
+		</div>
 
-	<slot decorator={FadeDecorator} scoped={{headHeight}}/>
-
-	<Button icon class="toggleTheme" on:click={() => $isDarkTheme = !$isDarkTheme}>
-		{#if $isDarkTheme}
-			<i class="fas fa-sun"></i>
-		{:else}
-			<i class="fas fa-moon"></i>
-		{/if}
-	</Button>
-
-</MaterialApp>
+		<Footer bind:offsetHeight={footerHeight}/>
+	
+		<!-- Theme Button-->
+		<Button icon class="toggleTheme" on:click={() => $isDarkTheme = !$isDarkTheme}>
+			{#if $isDarkTheme}
+				<i class="fas fa-sun"></i>
+			{:else}
+				<i class="fas fa-moon"></i>
+			{/if}
+		</Button>
+	
+	</MaterialApp>
+</div>
 
 <style global>
-	html, body, #routify-app {
-		height: 100%;
-	}
 
 	.toggleTheme {
 		position: fixed!important;

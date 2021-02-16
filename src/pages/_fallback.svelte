@@ -1,4 +1,5 @@
 <script>
+	import { Button } from 'svelte-materialify'
 	import Footer from '$/Footer.svelte'
 
 	let footerHeight
@@ -7,11 +8,14 @@
 
 <div class="image" style={`height: calc(100% - ${footerHeight}px);`}>
 	<br><br><br><br>
-	<h1>Nous ne trouvons pas ce que vous cherchez</h1>
+	<h4>Nous ne trouvons pas ce que vous cherchez</h4>
+	<br><br>
+	<a href="/">
+		<Button class="theme--dark">Retour à la l'acceuil</Button>
+	</a>
 </div>
 
 <Footer bind:offsetHeight={footerHeight}/>
-
 
 <svelte:head>
 	<style>

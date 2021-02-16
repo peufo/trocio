@@ -1,5 +1,4 @@
 <script>
-    import Footer from '$/Footer.svelte'
 
     const contactMail = 'info@trocio.ch'
 
@@ -27,8 +26,6 @@
     
     <br><br><br>
 </main>
-
-<Footer/>
 
 <style>
     main {
