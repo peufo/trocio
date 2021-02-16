@@ -1,6 +1,7 @@
 <script>
-    import Footer from '$/Footer.svelte'
+
     import TermsOfUse from '$/Terms-of-use.svelte'
+
 </script>
 
 <main>
@@ -12,8 +13,6 @@
     <TermsOfUse/>
 
 </main>
-
-<Footer/>
 
 <style>
 

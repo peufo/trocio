@@ -1,7 +1,3 @@
-<script>
-    import Footer from '$/Footer.svelte'
-</script>
-
 <main>
     <br>
     <br>
@@ -54,14 +50,11 @@
     <br><br><br>
 </main>
 
-<Footer/>
-
 <style>
     .w3-col {
         padding: 1em;
     }
     main {
-        min-height: 620px;
         max-width: 800px;
         margin: auto;
         text-align: justify;

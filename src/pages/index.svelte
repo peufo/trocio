@@ -4,18 +4,19 @@
     import DrawingSold from '$/DrawingSold.svelte'
     import Logo from '$/LogoV2.svelte'
     import Rayons from '$/Rayons.svelte'
-    import Footer from '$/Footer.svelte'
     import { user } from "$/stores.js"
     
     //Ralentie considerablement l'animation de départ
     //import { prefetch } from '@roxi/routify'
     //prefetch('/search', { validFor: 60 * 1 })
 
+    let footerHeight
+
 </script>
 
 <img class="hideIfSmall" class:w3-hide={!!$user} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
 
-<main>
+<main style={`min-height: calc(100% - ${footerHeight}px)`}>
 
     <span class="w3-jumbo">TROCIO</span>
     
@@ -320,8 +321,6 @@
     </section>
 
 </main>
-
-<Footer/>
 
 <style>
 
