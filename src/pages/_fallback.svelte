@@ -1,12 +1,13 @@
+<!-- routify:options isFooterDisplay=true -->
+
 <script>
 	import { Button } from 'svelte-materialify'
-	import Footer from '$/Footer.svelte'
 
 	let footerHeight
 
 </script>
 
-<div class="image" style={`height: calc(100% - ${footerHeight}px);`}>
+<div class="image" style="height: 100%;">
 	<br><br><br><br>
 	<h4>Nous ne trouvons pas ce que vous cherchez</h4>
 	<br><br>
@@ -14,8 +15,6 @@
 		<Button class="theme--dark">Retour à la l'acceuil</Button>
 	</a>
 </div>
-
-<Footer bind:offsetHeight={footerHeight}/>
 
 <svelte:head>
 	<style>

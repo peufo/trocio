@@ -1,6 +1,6 @@
 <script>
 	import { tick } from 'svelte'
-	import { afterPageLoad } from '@roxi/routify'
+	import { afterPageLoad, page } from '@roxi/routify'
 	import { MaterialApp, Button } from 'svelte-materialify'
 	import Head from '$/Head.svelte'
 	import Footer from '$/Footer.svelte'
@@ -10,6 +10,7 @@
 	let headHeight
 	let footerHeight
 	let totalHeight
+	let mainHeight
 
 	const themes = ['light', 'dark']
 
@@ -21,6 +22,11 @@
 		totalHeight = document.getElementsByTagName('HTML')[0].scrollHeight
 	}
 
+	$: {
+		mainHeight = totalHeight - headHeight
+		if ($page.meta.isFooterDisplay) mainHeight -= footerHeight
+	}
+
 </script>
 
 <svelte:window on:resize={loadHeight}/>
@@ -30,12 +36,14 @@
 		
 		<Head bind:offsetHeight={headHeight}/>
 	
-		<div style={`height: ${totalHeight - headHeight - footerHeight}px`}>
+		<div style={`height: ${mainHeight}px`}>
 			<slot decorator={FadeDecorator} scoped={{headHeight, footerHeight}}/>
 		</div>
-
-		<Footer bind:offsetHeight={footerHeight}/>
-	
+		
+		{#if $page.meta.isFooterDisplay}
+			<Footer bind:offsetHeight={footerHeight}/>
+		{/if}
+		
 		<!-- Theme Button-->
 		<Button icon class="toggleTheme" on:click={() => $isDarkTheme = !$isDarkTheme}>
 			{#if $isDarkTheme}

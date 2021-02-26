@@ -1,3 +1,5 @@
+<!-- routify:options isFooterDisplay=true -->
+
 <script>
 
     const contactMail = 'info@trocio.ch'
