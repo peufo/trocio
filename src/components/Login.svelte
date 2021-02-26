@@ -4,7 +4,7 @@
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
     import { afterPageLoad, goto } from '@roxi/routify'
-    import Button from '@smui/button'
+    import { Button, TextField } from 'svelte-materialify'
 
     import { getHeader } from './utils'
     import { user } from './stores'
@@ -104,69 +104,52 @@
 </script>
 
 
-<div class="w3-padding" style="min-width: 330px;">
+<div style="min-width: 340px;">
 
     {#if newUser}
-        <h3 class="w3-center" in:fade>Nouveau compte</h3>
+        <h5 class="w3-center" in:fade>Nouveau compte</h5>
     {:else if reset}
-        <h3 class="w3-center" in:fade>Récupération</h3>
+        <h5 class="w3-center" in:fade>Récupération</h5>
     {:else}
-        <h3 class="w3-center" in:fade>Login</h3>
+        <h5 class="w3-center" in:fade>Login</h5>
     {/if}
 
     <br>
 
     {#if newUser}
-    <div transition:slide|local>
-        <div class="w3-col iconInput"><i class="w3-large far fa-user"></i></div>
-        <div class=" w3-rest">
-            <input
-                bind:value={name}
-                class="userInput w3-input"
-                type="text"
-                placeholder="Nom & prénom"
-                on:keyup="{e => e.which == 13 && submit()}">
+        <div transition:slide|local>
+            <TextField placeholder="Nom & prénom" flat
+            bind:value={name}
+            on:keyup={e => e.key == 'Enter' && submit()}>
+                <div slot="prepend"><i class="w3-large far fa-user"></i></div>
+            </TextField>
         </div>
-    </div>
     {/if}
 
-
-    <div class="w3-col iconInput"><i class="w3-large far fa-envelope"></i></div>
-    <div  class="w3-rest">
-        <input
-            bind:value={mail}
-            class="userInput w3-input"
-            type="email"
-            placeholder="Email"
-            on:keyup="{e => e.which == 13 && submit()}">
-    </div>							
+    <TextField placeholder="Email" flat
+    bind:value={mail}
+    on:keyup={e => e.key == 'Enter' && submit()}>
+        <div slot="prepend"><i class="w3-large far fa-envelope"></i></div>
+    </TextField>
 
     {#if !reset && !$user}
-    <div transition:slide|local>
-        <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
-        <div class="w3-rest">
-            <input
-                bind:value={password}
-                class="userInput w3-input"
-                type="password"
-                placeholder="Mot de passe"
-                on:keyup="{e => e.which == 13 && submit()}">
-        </div>	
-    </div>					
+        <div transition:slide|local>
+            <TextField placeholder="Mot de passe" flat type="password"
+            bind:value={password}
+            on:keyup={e => e.key == 'Enter' && submit()}>
+                <div slot="prepend"><i class="w3-large fas fa-key"></i></div>
+            </TextField>
+        </div>
     {/if}
 
     {#if newUser && !$user}
-    <div transition:slide|local>
-        <div class="w3-col iconInput"><i class="w3-large fas fa-key"></i></div>
-        <div  class="w3-rest">
-            <input
-                bind:value={password2}
-                class="userInput w3-input"
-                type="password"
-                placeholder="Pour être sûr :)"
-                on:keyup="{e => e.which == 13 && submit()}">
-        </div>						
-    </div>
+        <div transition:slide|local>
+            <TextField placeholder="Pour être sûr :)" flat type="password"
+            bind:value={password2}
+            on:keyup={e => e.key == 'Enter' && submit()}>
+                <div slot="prepend"><i class="w3-large fas fa-key"></i></div>
+            </TextField>				
+        </div>
     {/if}
 
     <div>
@@ -189,12 +172,12 @@
             {/if}
 
             {#await submitPromise}
-                <Button disabled>
+                <Button text disabled>
                     <i class="fas fa-circle-notch w3-spin"></i>
                     Validation...
                 </Button>
             {:then}
-                <Button on:click={submit} disabled={!!loginError}>
+                <Button text on:click={submit} disabled={!!loginError}>
                     Envoyer
                 </Button>
             {/await}
@@ -208,7 +191,7 @@
             <div class="or">
                 <span>OU</span> 
             </div>
-            <Button href={googleAuthApi}>
+            <Button text href={googleAuthApi}>
                 <i class="fab fa-google"></i>&nbsp;
                 Login avec Google
             </Button>
