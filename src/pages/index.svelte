@@ -1,3 +1,4 @@
+<!-- routify:options isFooterDisplay=true -->
 <script>
     import { Button, Card, CardText } from 'svelte-materialify'
     import DrawingSearch from '$/DrawingSearch.svelte'

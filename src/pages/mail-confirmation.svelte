@@ -1,3 +1,5 @@
+<!-- routify:options isFooterDisplay=true -->
+
 <div class="w3-row" style="height: 500px; max-width: 1200px; margin: auto;">
     <div class="w3-col l6" style="margin-top: 100px;">
         <img src="/images/mailconfirmation.png" alt="Icon mail confirmé" class="w3-right">

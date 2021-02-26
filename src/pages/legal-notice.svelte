@@ -1,3 +1,5 @@
+<!-- routify:options isFooterDisplay=true -->
+
 <main>
     <br>
     <br>
