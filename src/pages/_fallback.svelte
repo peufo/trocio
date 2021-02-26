@@ -12,7 +12,7 @@
 	<h4>Nous ne trouvons pas ce que vous cherchez</h4>
 	<br><br>
 	<a href="/">
-		<Button class="theme--dark">Retour à la l'acceuil</Button>
+		<Button class="theme--dark">Retour à la page d'accueil</Button>
 	</a>
 </div>
 

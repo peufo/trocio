@@ -1,10 +1,10 @@
 <script>
 
-	import { AppBar, Button } from 'svelte-materialify'
+	import { AppBar, Button, Dialog } from 'svelte-materialify'
 	//import Dialog, { Content, Title as TitleDialog, Actions } from '@smui/dialog'
 
 	import { user, userPromise, troc } from './stores'
-	//import Login from './Login.svelte'
+	import Login from './Login.svelte'
 	import TermsOfUse from './Terms-of-use.svelte'
 	import notify from './notify.js'
 	import { getHeader } from './utils.js'
@@ -71,13 +71,15 @@
 		
 	</AppBar>
 </div>
-<!--
-<Dialog bind:this={dialogLogin}>
-	<Content>
+
+<Dialog bind:active={dialogLoginIsActive} class="pa-6" width="">
+	<!--
 		<Login on:close={dialogLogin.close}/>
-	</Content>
+	-->
+	<Login/>
 </Dialog>
 
+<!--
 <Dialog bind:this={dialogAcceptTerms} escapeKeyAction='' scrimClickAction=''>
 	<TitleDialog>Conditions d'utilisation</TitleDialog>
 	<Content>
