@@ -75,7 +75,7 @@
     <div class="w3-large search">
         <i class="fas fa-search"></i>
         <input type="text" readonly value={text}
-        class="{$isDarkTheme && 'grey darken-3 white-text'}">
+        class={$isDarkTheme && 'grey darken-3 white-text'}>
     </div>
     
 </div>
