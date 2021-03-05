@@ -15,15 +15,10 @@
 
 </script>
 
-<img class="hideIfSmall" class:w3-hide={!!$user} src="/images/participe.png" alt="Incitation à participer" style="float: right; margin-right: 60px;">
-
 <main style={`min-height: calc(100% - ${footerHeight}px)`}>
 
-    <span class="w3-jumbo">TROCIO</span>
-    
-    <p class="w3-xxlarge" style="margin-top: 6px; margin-bottom: 66px;">
-        Pour troquer organisé
-    </p>
+    <div class="w3-jumbo w3-center">TROCIO</div>
+    <br><br><br>
  
     <div class="w3-row">
 
@@ -40,13 +35,13 @@
         <div class="w3-col l6">
             <a href="/search">
                 <Button
-                style="transform: translate(0px, 10px); z-index: 2;"
+                style="transform: translate(0px, 60px); z-index: 2;"
                 class="w3-right w3-large w3-margin">
                     Trouver un troc
                 </Button>
             </a>
 
-            <Card class="pa-4" style="margin-top: 50px;">
+            <Card class="pa-4" style="margin-top: 100px;">
                 <CardText>
                     <p>
                         Trocio est un outil simple et efficace pour échanger vos objets.
@@ -409,11 +404,6 @@
         /*z-index: -10;*/
     }
 
-    @media only screen and (max-width: 1200px) {
-        .hideIfSmall {
-            display: none;
-        }
-    }
     @media only screen and (max-width: 600px) {
         .hideIfVerySmall { display: none;}
     }

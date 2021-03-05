@@ -1,13 +1,12 @@
 <script>
-    import { onMount, onDestroy } from 'svelte'
     import { slide, fade } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
     import { afterPageLoad, goto } from '@roxi/routify'
-    import { Button, TextField } from 'svelte-materialify'
+    import { Button, TextField, Icon } from 'svelte-materialify'
 
     import { getHeader } from './utils'
-    import { user } from './stores'
+    import { user, isDarkTheme } from './stores'
     
     export let newUser = !!$user
 
@@ -118,36 +117,44 @@
 
     {#if newUser}
         <div transition:slide|local>
-            <TextField placeholder="Nom & prénom" flat
+            <TextField placeholder="Nom & prénom" solo
             bind:value={name}
             on:keyup={e => e.key == 'Enter' && submit()}>
-                <div slot="prepend"><i class="w3-large far fa-user"></i></div>
+                <div slot="prepend">
+                    <Icon class="far fa-user" />
+                </div>
             </TextField>
         </div>
     {/if}
 
-    <TextField placeholder="Email" flat
+    <TextField placeholder="Email" solo
     bind:value={mail}
     on:keyup={e => e.key == 'Enter' && submit()}>
-        <div slot="prepend"><i class="w3-large far fa-envelope"></i></div>
+        <div slot="prepend">
+            <Icon class="far fa-envelope"/>
+        </div>
     </TextField>
 
     {#if !reset && !$user}
         <div transition:slide|local>
-            <TextField placeholder="Mot de passe" flat type="password"
+            <TextField placeholder="Mot de passe" solo type="password" 
             bind:value={password}
             on:keyup={e => e.key == 'Enter' && submit()}>
-                <div slot="prepend"><i class="w3-large fas fa-key"></i></div>
+                <div slot="prepend">
+                    <Icon class="fas fa-key"></Icon>
+                </div>
             </TextField>
         </div>
-    {/if}
-
-    {#if newUser && !$user}
+        {/if}
+        
+        {#if newUser && !$user}
         <div transition:slide|local>
-            <TextField placeholder="Pour être sûr :)" flat type="password"
+            <TextField placeholder="Pour être sûr :)" solo type="password"
             bind:value={password2}
             on:keyup={e => e.key == 'Enter' && submit()}>
-                <div slot="prepend"><i class="w3-large fas fa-key"></i></div>
+                <div slot="prepend">
+                    <Icon class="fas fa-key"></Icon>
+                </div>
             </TextField>				
         </div>
     {/if}
@@ -188,13 +195,15 @@
     {#if !$user}
         <br><br>
         <div class="w3-center w3-border-top">
-            <div class="or">
+            <div class="or {$isDarkTheme && 'grey darken-4'}">
                 <span>OU</span> 
             </div>
-            <Button text href={googleAuthApi}>
-                <i class="fab fa-google"></i>&nbsp;
-                Login avec Google
-            </Button>
+            <a href={googleAuthApi}>
+                <Button text>
+                    <i class="fab fa-google"></i>&nbsp;
+                    Login avec Google
+                </Button>
+            </a>
         </div>
     {/if}
 
@@ -210,8 +219,6 @@
         width: 35px;
         margin: auto;
         padding: 5px;
-        border: 1px solid #ccc;
-        border-radius: 50%;
     }
 
     .underline-span {

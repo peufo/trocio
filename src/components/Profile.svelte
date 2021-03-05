@@ -1,8 +1,7 @@
 <script>
     import { slide, fade } from 'svelte/transition'
-    import Textfield from '@smui/textfield'
-    import HelperText from '@smui/textfield/helper-text/index'
-    import Button from '@smui/button'
+    import { Button, Textfield, } from 'svelte-materialify'
+    //TODO: import HelperText from '@smui/textfield/helper-text/index'
     
     import { user } from './stores'
     import { getHeader } from './utils'
@@ -142,16 +141,18 @@
             style="width: calc(100% - 43px);"
             class="w3-margin-top"
             />
-
-            {#if !changeMail}
-                <HelperText id="helper-text-mail" persistent style="margin-left: 37px;">
-                {#if $user.mailvalided}
-                    <span class="w3-text-green"><i class="fas fa-check"></i> mail validé</span>
-                {:else}
-                    <span class="w3-text-red"><i class="fas fa-exclamation-triangle"></i> mail non validé</span>
+            
+            <!-- TODO
+                {#if !changeMail}
+                    <HelperText id="helper-text-mail" persistent style="margin-left: 37px;">
+                    {#if $user.mailvalided}
+                        <span class="w3-text-green"><i class="fas fa-check"></i> mail validé</span>
+                    {:else}
+                        <span class="w3-text-red"><i class="fas fa-exclamation-triangle"></i> mail non validé</span>
+                    {/if}
+                    </HelperText>
                 {/if}
-                </HelperText>
-            {/if}
+            -->
 
             {#if changeMail}
 
