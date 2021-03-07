@@ -22,14 +22,13 @@ a {
     text-decoration: none;
 }
 
-.s-app.theme--dark a > button > span, .s-app.theme--light a > button.theme--dark > span {
-    color: #fff!important;
-}
-.s-app.theme--light a > button:not(.theme--dark) > span {
+.theme--light a > button {
     color: #000!important;
 }
 
-
+.theme--dark a > button {
+    color: #fff!important;
+}
 
 textarea {
     margin-top: 10px;

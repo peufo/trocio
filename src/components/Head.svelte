@@ -36,7 +36,7 @@
 </svelte:head>
 
 <div bind:offsetHeight>
-	<AppBar dense flat class="grey darken-2 white-text">
+	<AppBar dense flat class="grey darken-2 theme--dark">
 		
 		<div slot="title">
 			<img src="/favicon.ico" alt="logo Trocio" height="35">
@@ -49,16 +49,18 @@
 
 		{#if $user}
 			<div>
-
-				<Button href='/profile' text>
-					<i class="fas fa-user w3-large"></i>
-					<span class="button-label">&nbsp;{$user.name}</span>
-				</Button>
-
-				<Button href='/activity' text>
-					<i class="fas fa-bars w3-large"></i>
-					<span class="button-label">&nbsp;Mes trocs</span>
-				</Button>
+				<a href="/profile">
+					<Button text>
+						<i class="fas fa-user w3-large"></i>
+						<span class="button-label">&nbsp;{$user.name}</span>
+					</Button>
+				</a>
+				<a href="/activity">
+					<Button text>
+						<i class="fas fa-bars w3-large"></i>
+						<span class="button-label">&nbsp;Mes trocs</span>
+					</Button>
+				</a>
 
 			</div>
 			
@@ -73,10 +75,7 @@
 </div>
 
 <Dialog bind:active={dialogLoginIsActive} class="pa-6" width="">
-	<!--
-		<Login on:close={dialogLogin.close}/>
-	-->
-	<Login/>
+	<Login on:close={() => dialogLoginIsActive = false}/>
 </Dialog>
 
 <!--

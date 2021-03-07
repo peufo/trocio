@@ -17,6 +17,7 @@
 
 <main style={`min-height: calc(100% - ${footerHeight}px)`}>
 
+    <br><br>
     <div class="w3-jumbo w3-center">TROCIO</div>
     <br><br><br>
  

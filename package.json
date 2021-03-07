@@ -15,7 +15,7 @@
     "@snowpack/plugin-svelte": "^3.5.2",
     "@snowpack/plugin-webpack": "^2.3.0",
     "npm-run-all": "^4.1.5",
-    "snowpack": "^3.0.3"
+    "snowpack": "^3.0.13"
   },
   "dependencies": {
     "@pnotify/animate": "^5.2.0",
@@ -30,7 +30,7 @@
     "express": "^4.17.1",
     "got": "^11.8.1",
     "http-proxy": "^1.18.1",
-    "http-proxy-middleware": "^1.0.6",
+    "http2-proxy": "^5.0.53",
     "leaflet": "^1.7.1",
     "mongoose": "^5.11.12",
     "mongoose-lean-virtuals": "^0.7.6",
