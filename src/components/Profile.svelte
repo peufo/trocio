@@ -1,12 +1,16 @@
 <script>
     import { slide, fade } from 'svelte/transition'
-    import { Button, Textfield, } from 'svelte-materialify'
+    import { Button, TextField, Icon } from 'svelte-materialify'
     //TODO: import HelperText from '@smui/textfield/helper-text/index'
-    
+    import notify from './notify.js'
     import { user } from './stores'
     import { getHeader } from './utils'
     
     let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+    let userName = $user.name
+    let userNameError = false
+    const userNameRules = [v => v.trim().length < 3 && 'Nom & prénom trop court']
 
     let changePassword = false
     let oldPassword = ''
@@ -14,7 +18,6 @@
     let newPassword2 = ''
 
     let changeMail = false
-    let changeName = false
 
     let patchNamePromise
     let patchMailPromise
@@ -22,20 +25,18 @@
     let mailValidatorSent = false
 
 
+
     // FETCH FUNCTIONS
 
     async function patchName() {
         try {
-            let res = await fetch('/__API__/users/me', getHeader({name: $user.name}, 'PATCH'))
+            let res = await fetch('/__API__/users/me', getHeader({name: userName}, 'PATCH'))
             let json = await res.json()
-            if (json.success) {
-                changeName = false
-                return
-            }else{
-                alert(json.message)
-            }
+            if (!json.success) throw json.message
+            $user.name = userName
+            notify.success('Votre nom à bien été modifié')
         } catch(error) {
-			console.trace(error)
+			notify.error(error)
 		}
     }
     
@@ -43,16 +44,12 @@
         try {
             let res = await fetch('/__API__/users/me', getHeader({mail: $user.mail}, 'PATCH'))
             let json = await res.json()
-            if (json.success) {
-                changeMail = false
-                $user.mailvalided = false
-                return
-            }else{
-                //Pas sur mais ca ira...
-                alert('Le mail indiqué est invalide ou déjà pris !')
-            }
+            if (!json.success) throw json.message
+            changeMail = false
+            $user.mailvalided = false
+            notify.success('Votre mail à bien été modifié') 
         } catch(error) {
-			console.trace(error)
+            notify.error(error)
 		}
     }
 
@@ -60,14 +57,11 @@
         try {
             let res = await fetch('/__API__/users/sendvalidmail', getHeader({}))
             let json = await res.json()
-            if (json.success) {
-                mailValidatorSent = true
-                return
-            }else{
-                alert(json.message)
-            }
+            if (!json.success) throw json.message
+            mailValidatorSent = true
+            notify.success('Un mail de validation vuos à été envoyé')
         } catch(error) {
-			console.trace(error)
+			notify.error(error)
 		}
     }
 
@@ -75,17 +69,14 @@
         try {
             let res = await fetch('/__API__/users/changepwd', getHeader({oldPassword, newPassword}))
             let json = await res.json()
-            if (json.success) {
-                changePassword = false
-                oldPassword = ''
-                newPassword = ''
-                newPassword2 = ''
-                alert('Changement du mot de passe accepté')
-            }else {
-                alert('Changement du mot de passe refusé')
-            }
+            if (!json.success) throw json.message
+            changePassword = false
+            oldPassword = ''
+            newPassword = ''
+            newPassword2 = ''
+            notify.success('Changement du mot de passe accepté')
         } catch(error) {
-			console.trace(error)
+			notify.error(error)
 		}
     }
 
@@ -98,33 +89,26 @@
         <div style="max-width: 500px; margin: auto;">
             <br><br>
 
-            <i class="w3-xlarge far fa-user" style="margin-right: 16px;"></i>
-            <Textfield
-            bind:value="{$user.name}"
-            on:input="{() => changeName = true}"
-            label="Nom & Prénom"
-            variant="outlined"
-            style="width: calc(100% - 43px);"
-            class="w3-margin-top"
-            />
+            <TextField placeholder="Nom & Prénom"
+                bind:value={userName}
+                rules={userNameRules}
+                bind:error={userNameError}>
+                <div slot="prepend">
+                    <Icon class="far fa-user"/>
+                </div>
+            </TextField>
 
-            {#if changeName}
-                <div in:fade|local>
+            {#if userName !== $user.name}
+                <div in:fade|local class="w3-right">
                     {#await patchNamePromise}
-                        <Button
-                        variant="outlined"
-                        color="secondary"
-                        class="w3-right w3-margin-top">
+                        <Button disabled>
                             <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Validation ...
                         </Button>
                     {:then}
                         <Button
                         on:click="{() => patchNamePromise = patchName()}"
-                        variant="raised"
-                        disabled={$user.name.trim().length < 2}
-                        class="w3-right w3-margin-top"
-                        style="color: white;">
-                            Valider votre nouveau nom & prénom
+                        disabled={userNameError}>
+                            Valider modification
                         </Button>
                     {/await}
                     <br><br>
@@ -133,7 +117,7 @@
             <br><br>
 
             <i class="w3-xlarge far fa-envelope" style="margin-right: 13px;"></i>
-            <Textfield
+            <TextField
             bind:value="{$user.mail}"
             on:input="{() => changeMail = true}"
             label="Mail"
@@ -215,7 +199,7 @@
             {:else}
                 <div in:slide|local>
                     <i class="w3-xlarge fas fa-unlock" style="margin-right: 16px;"></i>
-                    <Textfield
+                    <TextField
                     bind:value="{oldPassword}"
                     label="Mot de passe actuel"
                     type="password"
@@ -225,7 +209,7 @@
                     />
 
                     <i class="w3-xlarge fas fa-key" style="margin-right: 13px;"></i>
-                    <Textfield
+                    <TextField
                     bind:value="{newPassword}"
                     label="Nouveau mot de passe"
                     type="password"
@@ -235,7 +219,7 @@
                     />
 
                     <i class="w3-xlarge fas fa-key" style="margin-right: 13px;"></i>
-                    <Textfield
+                    <TextField
                     bind:value="{newPassword2}"
                     label="Confirmation"
                     type="password"

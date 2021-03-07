@@ -1,7 +1,8 @@
 /** @type {import('snowpack').SnowpackUserConfig } */
+const fs = require('fs')
 
-const { TROCIO_API_HOST } = require('./config.js')
-const { createProxyMiddleware } = require('http-proxy-middleware')
+const { TROCIO_API_PORT } = require('./config.js')
+const proxy = require('http2-proxy')
 
 module.exports = {
   mount: {
@@ -18,7 +19,6 @@ module.exports = {
   },
   devOptions: {
     secure: true,
-    fallback: './build/index.html',
     output: 'stream'
   },
   buildOptions: {
@@ -26,7 +26,13 @@ module.exports = {
   },
   routes: [
     //API Proxy
-    {src: '/__API__/.*', dest: createProxyMiddleware({pathRewrite: {'^/__API__': '/'}, target: TROCIO_API_HOST, changeOrigin: true})},
+    {
+      src: '/__API__/.*',
+      dest: (req, res) => {
+        req.url = req.url.replace(/^\/__API__/, '')
+        proxy.web(req, res, {hostname: 'localhost', port: TROCIO_API_PORT})
+      }
+    },
     //SPA Fallback
     {match: 'routes', src: '.*', dest: '/index.html'},
   ],
