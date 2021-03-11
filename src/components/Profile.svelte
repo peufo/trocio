@@ -1,30 +1,29 @@
 <script>
     import { slide, fade } from 'svelte/transition'
-    import { Button, TextField, Icon } from 'svelte-materialify'
-    //TODO: import HelperText from '@smui/textfield/helper-text/index'
+    import { Button, TextField, Icon, Card } from 'svelte-materialify'
     import notify from './notify.js'
     import { user } from './stores'
     import { getHeader } from './utils'
+    import RULES from './rules'
     
-    let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-
-    let userName = $user.name
+    let userName = $user?.name
     let userNameError = false
-    const userNameRules = [v => v.trim().length < 3 && 'Nom & prénom trop court']
+    
+    let patchNamePromise
+    
+    let userMail = $user?.mail
+    let patchMailPromise
+    let sendMailValidatorPromise
+    let mailValidatorSent = false
+    let userMailError = false
 
     let changePassword = false
     let oldPassword = ''
     let newPassword = ''
+    let newPasswordError = false
     let newPassword2 = ''
-
-    let changeMail = false
-
-    let patchNamePromise
-    let patchMailPromise
-    let sendMailValidatorPromise
-    let mailValidatorSent = false
-
-
+    let newPassword2Error = false
+    const RULE_NEW_PASSWORD = [() => newPassword !== newPassword2 && 'Pas identique']
 
     // FETCH FUNCTIONS
 
@@ -42,11 +41,12 @@
     
     async function patchMail() {
         try {
-            let res = await fetch('/__API__/users/me', getHeader({mail: $user.mail}, 'PATCH'))
+            let res = await fetch('/__API__/users/me', getHeader({mail: userMail}, 'PATCH'))
             let json = await res.json()
             if (!json.success) throw json.message
-            changeMail = false
             $user.mailvalided = false
+            $user.mail = userMail
+            console.log(json)
             notify.success('Votre mail à bien été modifié') 
         } catch(error) {
             notify.error(error)
@@ -80,112 +80,106 @@
 		}
     }
 
+    $: patchNamePromise?.then(() => patchNamePromise = null)
+    $: patchMailPromise?.then(() => patchMailPromise = null)
+
 </script>
 
 {#if $user}
     <br>
-    <div class="w3-padding w3-card w3-round" style="max-width: 850px; margin: auto;">
-
+    <Card class="pa-8" style="max-width: 850px; margin: auto;">
         <div style="max-width: 500px; margin: auto;">
             <br><br>
-
-            <TextField placeholder="Nom & Prénom"
+    
+            <TextField
                 bind:value={userName}
-                rules={userNameRules}
+                rules={RULES.NAME}
                 bind:error={userNameError}>
                 <div slot="prepend">
                     <Icon class="far fa-user"/>
                 </div>
+                Nom & Prénom
             </TextField>
-
+    
             {#if userName !== $user.name}
-                <div in:fade|local class="w3-right">
-                    {#await patchNamePromise}
-                        <Button disabled>
-                            <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Validation ...
-                        </Button>
-                    {:then}
-                        <Button
-                        on:click="{() => patchNamePromise = patchName()}"
-                        disabled={userNameError}>
-                            Valider modification
-                        </Button>
-                    {/await}
+                <div transition:slide|local>
+                    <Button
+                    on:click={() => patchNamePromise = patchName()}
+                    disabled={userNameError || !!patchNamePromise}
+                    class="w3-right">
+                        {#if !!patchNamePromise}
+                            <i class="fas fa-circle-notch w3-spin"></i>
+                            &nbsp;Validation ...
+                        {:else}
+                            Valider la modification
+                        {/if}
+                    </Button>
                     <br><br>
                 </div>
             {/if}
-            <br><br>
-
-            <i class="w3-xlarge far fa-envelope" style="margin-right: 13px;"></i>
+    
+            <br><br><br>
+    
             <TextField
-            bind:value="{$user.mail}"
-            on:input="{() => changeMail = true}"
-            label="Mail"
-            variant="outlined"
-            style="width: calc(100% - 43px);"
-            class="w3-margin-top"
-            />
-            
-            <!-- TODO
-                {#if !changeMail}
-                    <HelperText id="helper-text-mail" persistent style="margin-left: 37px;">
-                    {#if $user.mailvalided}
-                        <span class="w3-text-green"><i class="fas fa-check"></i> mail validé</span>
-                    {:else}
-                        <span class="w3-text-red"><i class="fas fa-exclamation-triangle"></i> mail non validé</span>
-                    {/if}
-                    </HelperText>
-                {/if}
-            -->
-
-            {#if changeMail}
-
-                <div in:fade|local>
-                    {#await patchMailPromise}
-                        <Button variant="outlined" color="secondary" class="w3-right w3-margin-top">
-                            <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Validation ...
-                        </Button>
-                    {:then}
-                        <Button
-                        on:click="{() => patchMailPromise = patchMail()}"
-                        variant="raised"
-                        disabled="{!$user.mail.match(EMAIL_REGEX)}"
-                        class="w3-right w3-margin-top"
-                        style="color: white;">
-                            Valider votre nouveau mail
-                        </Button>
-                    {/await}
+            bind:value={userMail}
+            rules={RULES.MAIL}
+            bind:error={userMailError}>
+                <div slot="prepend">
+                    <Icon class="far fa-envelope"/>
+                </div>
+                Mail
+            </TextField>
+    
+            {#if userMail !== $user.mail}
+                <div transition:slide|local>
+                    <Button
+                    on:click="{() => patchMailPromise = patchMail()}"
+                    disabled={userMailError || !!patchMailPromise}
+                    class="w3-right">
+                        {#if !!patchMailPromise}
+                            <i class="fas fa-circle-notch w3-spin"></i>
+                            &nbsp;Validation ...
+                        {:else}
+                            Valider la modification
+                        {/if}
+                    </Button>
                     <br><br>
                 </div>
-                <br>
-
-            {:else if !$user.mailvalided}
-
+            {/if}
+            <br>
+    
+            {#if !$user.mailvalided}
+    
                 {#if mailValidatorSent}
-                    <Button color="secondary" class="w3-right">
-                        <i class="fas fa-check"></i>&nbsp;Mail de validation envoyer
-                    </Button>
+                    <span>
+                        Un mail de validation vous à été envoyé.
+                    </span>
                 {:else}
-
+    
                     {#await sendMailValidatorPromise}
-                        <Button color="secondary" class="w3-right">
+                        <Button text disabled class="w3-right">
                             <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Envoie du mail ...
                         </Button>
                     {:then}
-                        <Button
+                    
+                        <div class="w3-text-red w3-left" style="transform: translateY(6px);">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            mail non validé
+                        </div>
+    
+                        <Button text
                         on:click="{() => sendMailValidatorPromise = sendMailValidator()}"
-                        class="w3-right"
-                        variant="outlined"
-                        color="secondary">
+                        class="w3-right">
                             Envoyer un mail de validation ?
                         </Button>   
                     {/await}
-
+    
                 {/if}
                 
             {/if}
-            <br><br>
-
+    
+            <br><br><br>
+    
             {#if !changePassword}
                 <div out:slide|local>
                     <Button
@@ -198,64 +192,69 @@
                 </div>
             {:else}
                 <div in:slide|local>
-                    <i class="w3-xlarge fas fa-unlock" style="margin-right: 16px;"></i>
-                    <TextField
-                    bind:value="{oldPassword}"
-                    label="Mot de passe actuel"
-                    type="password"
-                    variant="outlined"
-                    style="width: calc(100% - 43px);"
-                    class="w3-margin-top"
-                    />
-
-                    <i class="w3-xlarge fas fa-key" style="margin-right: 13px;"></i>
-                    <TextField
-                    bind:value="{newPassword}"
-                    label="Nouveau mot de passe"
-                    type="password"
-                    variant="outlined"
-                    style="width: calc(100% - 43px);"
-                    class="w3-margin-top"
-                    />
-
-                    <i class="w3-xlarge fas fa-key" style="margin-right: 13px;"></i>
-                    <TextField
-                    bind:value="{newPassword2}"
-                    label="Confirmation"
-                    type="password"
-                    variant="outlined"
-                    style="width: calc(100% - 43px);"
-                    class="w3-margin-top"
-                    />
-
                     <br>
-
+                    <TextField type="password" bind:value={oldPassword}>
+                        <div slot="prepend">
+                            <Icon class="fas fa-unlock"/>
+                        </div>
+                        Mot de passe actuel
+                    </TextField>
+                    
+                    <br><br>
+    
+                    <TextField type="password"
+                        bind:value={newPassword}
+                        rules={RULES.NEW_PASSWORD}
+                        bind:error={newPasswordError}>
+                        <div slot="prepend">
+                            <Icon class="fas fa-key"/>
+                        </div>
+                        Nouveau mot de passe
+                    </TextField>
+                    
+                    <br>
+    
+                    <TextField type="password"
+                        bind:value={newPassword2}
+                        rules={RULE_NEW_PASSWORD}
+                        bind:error={newPassword2Error}>
+                        <div slot="prepend">
+                            <Icon class="fas fa-key"/>
+                        </div>
+                        Confirmation
+                    </TextField>
+    
+    
+                    <br>
+    
                     <Button 
                     variant="raised"
                     on:click={validChangePassword}
-                    disabled={oldPassword.trim().length < 4 || newPassword.trim().length < 4 || newPassword != newPassword2}
-                    class="w3-margin-top w3-right"
-                    style="color: white;">
+                    disabled={!newPassword || newPasswordError || newPassword2Error}
+                    class="w3-margin-top w3-right">
                         Valider votre nouveau mot de passe
                     </Button>
-
+    
                     <br>
-
+    
                 </div>
             {/if}
             <br><br><br>
-
+    
             <Button
             on:click={user.logout}
             color="secondary"
             class="w3-margin-top w3-right">
                 Déconnexion
             </Button>
-
+    
             <br><br><br>
         </div>
 
-    </div>
+    </Card>
+    
+
+
     <br>
 {/if}
 
