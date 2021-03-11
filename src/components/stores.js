@@ -64,15 +64,13 @@ function userBuilder() {
 			try {
 				let res = await fetch('/__API__/users/login', getHeader({mail, password}))
 				let json = await res.json()
-				if (res.ok && !json.error) {
-					loadUser(set)
-					cb()
-				}else{
-					set(null)
-					cb(json)
-				}
+				if (json.error) throw json.message
+				loadUser(set)
+				cb()
 			}catch (error) {
-				console.trace(error)
+				set(null)
+				cb(error)
+				notify.error(error)
 			}
 		},
 		logout: async () => {
@@ -81,6 +79,7 @@ function userBuilder() {
 				let json = await res.json()
 				//if (res.ok && json.success)
 				set(null)
+				notify.error(error)
 			} catch(error) {
 				console.trace(error)
 			}
@@ -100,6 +99,7 @@ async function authenticate(set) {
 		let json = await res.json()
 		if (res.ok && !json.error) {
 			set(json)
+			notify.success(`Bienvenu ${json.name}`)
 			return json
 		}else{
 			set(null)

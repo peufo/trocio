@@ -4,9 +4,8 @@
     "dev:snowpack": "snowpack dev",
     "build": "run-s routify:build build:snowpack",
     "build:snowpack": "snowpack build",
-    "serve": "run-p serve:api serve:web",
+    "serve": "nodemon server.js -w",
     "serve:api": "nodemon ./api/server.js -w ./api",
-    "serve:web": "nodemon server.js -w",
     "routify": "routify",
     "routify:build": "routify --single-build"
   },
@@ -29,7 +28,6 @@
     "dayjs": "^1.10.3",
     "express": "^4.17.1",
     "got": "^11.8.1",
-    "http-proxy": "^1.18.1",
     "http2-proxy": "^5.0.53",
     "leaflet": "^1.7.1",
     "mongoose": "^5.11.12",

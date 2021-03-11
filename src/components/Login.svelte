@@ -7,6 +7,8 @@
 
     import { getHeader } from './utils'
     import { user, isDarkTheme } from './stores'
+    import notify from './notify'
+    import RULES from './rules'
     
     export let newUser = !!$user
 
@@ -15,6 +17,7 @@
     let mail = ''
     let password = ''
     let password2 = ''
+    const RULE_NEW_PASSWORD = [() => password !== password2 && 'Pas identique']
 
     let submitPromise
 
@@ -51,14 +54,14 @@
             let json = await res.json()
             if (json.success) {
                 if ($user) {//Un Cassier à créer un utilisateur
-                    alert(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
+                    notify.warning(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
                     dispatch('newClient', json.message)
                 }else{
                     await Login()
                 }
                 return
             }else{
-                alert(json.message)
+                notify.warning(json.message)
             }
         } catch(error) {
 			console.trace(error)
@@ -67,7 +70,7 @@
 
     async function Login() {
         return user.login(mail, password, err => {
-            if (err) return alert(err.message)
+            if (err) return
             dispatch('close')
             dispatch('done')
             return
@@ -79,13 +82,13 @@
             let res = await fetch('/__API__/users/resetpwd', getHeader({mail}))
             let json = await res.json()
             if (res.ok) {
-                alert('Votre nouveau mot de passe vous à été envoyé par mail')
+                notify.warning('Votre nouveau mot de passe vous à été envoyé par mail')
                 reset = false
                 password = ''
                 password2 = ''
                 return
             }else{
-                alert(json.message)
+                notify.warning(json.message)
             }
         } catch(error) {
 			console.trace(error)
@@ -118,27 +121,31 @@
     {#if newUser}
         <div transition:slide|local>
             <TextField placeholder="Nom & prénom" solo
-            bind:value={name}
-            on:keyup={e => e.key == 'Enter' && submit()}>
+                bind:value={name}
+                rules={RULES.NAME}
+                on:keyup={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="far fa-user" />
                 </div>
             </TextField>
+            <br>
         </div>
     {/if}
-
     <TextField placeholder="Email" solo
     bind:value={mail}
+    rules={RULES.MAIL}
     on:keyup={e => e.key == 'Enter' && submit()}>
         <div slot="prepend">
             <Icon class="far fa-envelope"/>
         </div>
     </TextField>
+    <br>
 
     {#if !reset && !$user}
         <div transition:slide|local>
             <TextField placeholder="Mot de passe" solo type="password" 
             bind:value={password}
+            rules={RULES.NEW_PASSWORD}
             on:keyup={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="fas fa-key"></Icon>
@@ -151,6 +158,7 @@
         <div transition:slide|local>
             <TextField placeholder="Pour être sûr :)" solo type="password"
             bind:value={password2}
+            rules={RULE_NEW_PASSWORD}
             on:keyup={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="fas fa-key"></Icon>
@@ -181,7 +189,6 @@
             {#await submitPromise}
                 <Button text disabled>
                     <i class="fas fa-circle-notch w3-spin"></i>
-                    Validation...
                 </Button>
             {:then}
                 <Button text on:click={submit} disabled={!!loginError}>
