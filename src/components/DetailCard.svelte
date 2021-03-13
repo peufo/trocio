@@ -2,7 +2,7 @@
 <script>
     import { createEventDispatcher } from 'svelte'
     import { slide } from 'svelte/transition'
-    import List, { Item, Text } from '@smui/list'
+    import { List, ListItem, Icon } from 'svelte-materialify'
 
     export let count = 0
     export let title = ''
@@ -53,11 +53,11 @@
 
                 <List style="padding: 7px;" {nonInteractive}>
                     {#each items as item}
-                        <Item style="padding: 0 6px">
-                            <Text class="w3-col s1"><slot name="col-1" {item}></slot></Text>
-                            <Text class="w3-col s8"><slot name="col-2" {item}></slot></Text>
-                            <Text class="w3-col s3 w3-right-align"><slot name="col-3" {item}></slot></Text>
-                        </Item>
+                        <ListItem style="padding: 0 6px">
+                            <span class="w3-col s1"><slot name="col-1" {item}></slot></span>
+                            <span class="w3-col s8"><slot name="col-2" {item}></slot></span>
+                            <span class="w3-col s3 w3-right-align"><slot name="col-3" {item}></slot></span>
+                        </ListItem>
                     {/each}
                 </List>
 

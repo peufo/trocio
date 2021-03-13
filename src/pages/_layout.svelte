@@ -36,7 +36,7 @@
 		
 		<Head bind:offsetHeight={headHeight}/>
 	
-		<div style={`height: ${mainHeight}px`}>
+		<div style={`min-height: ${mainHeight}px;`}>
 			<slot decorator={FadeDecorator} scoped={{headHeight, footerHeight}}/>
 		</div>
 		

@@ -2,10 +2,8 @@
     import { slide } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
-	import Dialog, {Title, Content} from '@smui/dialog'
-    import Menu from '@smui/menu'
-    import List, { Item, Text } from '@smui/list'
-	import Textfield from '@smui/textfield'
+
+    import { Dialog, Menu, List, ListItem } from 'svelte-materialify'
     
     import AutoPatch from './AutoPatch.svelte'
     import notify from './notify.js'
@@ -135,9 +133,9 @@
                 </span>
                 <Menu bind:this={statutFilterMenu}>
                     <List>
-                        <Item on:click={() => statutFilter = -1 }><Text>Tous</Text></Item>
+                        <ListItem on:click={() => statutFilter = -1 }><span>Tous</span></ListItem>
                         {#each STATUTS as statut, i}
-                            <Item on:click={() => statutFilter = i }><Text>{statut}</Text></Item>
+                            <ListItem on:click={() => statutFilter = i }><span>{statut}</span></ListItem>
                         {/each}
                     </List>
                 </Menu>

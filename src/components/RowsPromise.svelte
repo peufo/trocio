@@ -1,8 +1,7 @@
     
 <script>
     import { onMount } from 'svelte'
-    import { Row, Cell } from '@smui/data-table'
-    import List, { Item, Text } from '@smui/list'
+    import { ListItem } from 'svelte-materialify'
 
     export let rowsNumber = 5
     export let cellsWidth = [60, 60, 60]
@@ -20,29 +19,27 @@
 
 {#if listMode}
     {#each emptyRows as emptyRow}
-        <Item>
-            <Text style="width: 100%;">
-                {#if twoLine}
-                    <span class="ghostText primaryText" style={`width: ${(0.5 + Math.random() / 2) * 100}%;`}>&nbsp;</span>
-                    <span class="ghostText secondaryText" style={`width: ${(0.5 + Math.random() / 2) * 100}%;`}>&nbsp;</span>
-                {:else}
-                    TODO
-                {/if}
-            </Text>
+        <ListItem>
+            {#if twoLine}
+                <span class="ghostText primaryText" style={`width: ${(0.5 + Math.random() / 2) * 100}%;`}>&nbsp;</span>
+                <span class="ghostText secondaryText" style={`width: ${(0.5 + Math.random() / 2) * 100}%;`}>&nbsp;</span>
+            {:else}
+                TODO
+            {/if}
             {#if meta}
                 <span class="ghostMeta"></span>
             {/if}
-        </Item>
+        </ListItem>
     {/each}
 {:else}
     {#each emptyRows as emptyRow}
-        <Row style="text-align: left;">
+        <tr style="text-align: left;">
             {#each cellsWidth as cellWidth}
-                <Cell style={`width: ${cellWidth}px;`}>
+                <td style={`width: ${cellWidth}px;`}>
                     <span class="ghostText" style={`width: ${(0.5 + Math.random() / 2) * 100}%;`}>&nbsp;</span>
-                </Cell>
+                </td>
             {/each}
-        </Row>
+        </tr>
     {/each}
 {/if}
 

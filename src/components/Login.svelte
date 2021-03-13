@@ -2,27 +2,39 @@
     import { slide, fade } from 'svelte/transition'
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
-    import { afterPageLoad, goto } from '@roxi/routify'
+    import { afterPageLoad } from '@roxi/routify'
     import { Button, TextField, Icon } from 'svelte-materialify'
 
     import { getHeader } from './utils'
     import { user, isDarkTheme } from './stores'
     import notify from './notify'
     import RULES from './rules'
-    
-    export let newUser = !!$user
 
-    let reset = false
+    //TODO: Gestion des création d'utilisateur par un caissier
+
+    let state = 1
+    const LOGIN = 1
+    const REGISTER = 2
+    const RECOVER = 3
+
     let name = ''
     let mail = ''
     let password = ''
     let password2 = ''
-    const RULE_NEW_PASSWORD = [() => password !== password2 && 'Pas identique']
+    const RULE_NEW_PASSWORD2 = [() => password !== password2 && 'Mot de passe de confirmation différent']
 
     let submitPromise
 
-    let loginError = ''
-    let EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    let error = ''
+    function checkForm() {
+        error = checkRules(RULES.MAIL, mail)
+        if (!error && state === REGISTER)
+            error = checkRules(RULES.NAME, name) || checkRules(RULES.NEW_PASSWORD, password) || checkRules(RULE_NEW_PASSWORD2)
+    }
+    function checkRules(rules, value) {
+        return rules.map((r) => r(value)).filter((r) => typeof r === 'string')[0]
+    }
+    $: state && checkForm()
 
     const googleAuthApiParams = new URLSearchParams({
         scope: 'email profile',
@@ -37,34 +49,27 @@
     })
 
     function submit() {
-        if (!loginError) {
-            if (newUser || $user) {
-                submitPromise = Register()
-            }else if(reset){
-                submitPromise = Reset()
-            }else{
-                submitPromise = Login()
-            }
-        }
+        if (error) return notify.warning(error)
+        if (state === LOGIN) submitPromise = Login()
+        if (state === REGISTER) submitPromise = Register()
+        if (state === RECOVER) submitPromise = Recover()   
     }
 
     async function Register() {
         try {
             let res = await fetch('/__API__/users', getHeader({name, mail, password}))
             let json = await res.json()
-            if (json.success) {
-                if ($user) {//Un Cassier à créer un utilisateur
-                    notify.warning(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
-                    dispatch('newClient', json.message)
-                }else{
-                    await Login()
-                }
-                return
+            if (!json.success) throw json.message
+            //TODO
+            if ($user) {//Un Cassier à créer un utilisateur
+                notify.warning(`Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`)
+                dispatch('newClient', json.message)
             }else{
-                notify.warning(json.message)
+                await Login()
             }
+                
         } catch(error) {
-			console.trace(error)
+            notify.error(error)
 		}
     }   
 
@@ -77,30 +82,18 @@
         })
     }
 
-    async function Reset() {
+    async function Recover() {
         try {
             let res = await fetch('/__API__/users/resetpwd', getHeader({mail}))
             let json = await res.json()
-            if (res.ok) {
-                notify.warning('Votre nouveau mot de passe vous à été envoyé par mail')
-                reset = false
-                password = ''
-                password2 = ''
-                return
-            }else{
-                notify.warning(json.message)
-            }
+            if (!res.ok) throw json.message
+            notify.warning('Votre nouveau mot de passe vous à été envoyé par mail')
+            reset = false
+            password = ''
+            password2 = ''
         } catch(error) {
-			console.trace(error)
+            notify.error(error)
 		}
-    }
-
-    $: {
-        loginError = ''
-        if (!mail.match(EMAIL_REGEX)) loginError = 'Mail invalide !'
-        if (!newUser && !reset && password.length < 3) loginError = 'Mot de passe trop court'
-        if (newUser && name.length < 3) loginError = 'Nom trop court'
-        if (!$user && newUser && password != password2) loginError = 'Mot de passe de confirmation pas identique'
     }
 
 </script>
@@ -108,21 +101,21 @@
 
 <div style="min-width: 340px;">
 
-    {#if newUser}
+    {#if state === REGISTER}
         <h5 class="w3-center" in:fade>Nouveau compte</h5>
-    {:else if reset}
-        <h5 class="w3-center" in:fade>Récupération</h5>
-    {:else}
+    {:else if state === RECOVER}
+        <h5 class="w3-center" in:fade>Oubli</h5>
+    {:else if state === LOGIN}
         <h5 class="w3-center" in:fade>Login</h5>
     {/if}
 
     <br>
 
-    {#if newUser}
+    {#if state === REGISTER}
         <div transition:slide|local>
             <TextField placeholder="Nom & prénom" solo
                 bind:value={name}
-                rules={RULES.NAME}
+                on:input={checkForm}
                 on:keyup={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="far fa-user" />
@@ -131,35 +124,37 @@
             <br>
         </div>
     {/if}
+
     <TextField placeholder="Email" solo
-    bind:value={mail}
-    rules={RULES.MAIL}
-    on:keyup={e => e.key == 'Enter' && submit()}>
+        bind:value={mail}
+        on:input={checkForm}
+        on:keyup={e => e.key == 'Enter' && submit()}>
         <div slot="prepend">
             <Icon class="far fa-envelope"/>
         </div>
     </TextField>
+
     <br>
 
-    {#if !reset && !$user}
+    {#if state === LOGIN || state === REGISTER}
         <div transition:slide|local>
             <TextField placeholder="Mot de passe" solo type="password" 
-            bind:value={password}
-            rules={RULES.NEW_PASSWORD}
-            on:keyup={e => e.key == 'Enter' && submit()}>
+                bind:value={password}
+                on:input={checkForm}
+                on:keyup={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="fas fa-key"></Icon>
                 </div>
             </TextField>
         </div>
-        {/if}
+    {/if}
         
-        {#if newUser && !$user}
+    {#if state === REGISTER}
         <div transition:slide|local>
             <TextField placeholder="Pour être sûr :)" solo type="password"
-            bind:value={password2}
-            rules={RULE_NEW_PASSWORD}
-            on:keyup={e => e.key == 'Enter' && submit()}>
+                bind:value={password2}
+                on:input={checkForm}
+                on:keyup={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="fas fa-key"></Icon>
                 </div>
@@ -170,20 +165,22 @@
     <div>
         <div class="w3-margin-top w3-small w3-center">
 
-            {#if !$user}
-                <div on:click={() => {newUser = !newUser; reset = false}} class="underline-div w3-padding">
-                    <span class="underline-span">
-                        {newUser ? `Déjà un compte` : `Nouveau compte`} 
-                    </span>
+            {#if state !== REGISTER}
+                <div on:click={() => state = REGISTER} class="underline-div w3-padding">
+                    <span class="underline-span">Nouveau compte</span>
                 </div>
-                
-                {#if !newUser}
-                    <div on:click={() => {reset = !reset}} class="underline-div w3-padding">
-                        <span class="underline-span">
-                            {reset ? 'Login' : 'Oubli'} 
-                        </span>
-                    </div>
-                {/if}
+            {/if}
+
+            {#if state !== RECOVER}
+                <div on:click={() => state = RECOVER} class="underline-div w3-padding">
+                    <span class="underline-span">Oubli</span>
+                </div>
+            {/if}
+
+            {#if state !== LOGIN}
+                <div on:click={() => state = LOGIN} class="underline-div w3-padding">
+                    <span class="underline-span">Login</span>
+                </div>
             {/if}
 
             {#await submitPromise}
@@ -191,7 +188,7 @@
                     <i class="fas fa-circle-notch w3-spin"></i>
                 </Button>
             {:then}
-                <Button text on:click={submit} disabled={!!loginError}>
+                <Button text on:click={submit}>
                     Envoyer
                 </Button>
             {/await}

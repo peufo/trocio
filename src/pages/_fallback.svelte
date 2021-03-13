@@ -7,12 +7,12 @@
 
 </script>
 
-<div class="image" style="height: 100%;">
+<div class="image" style="min-height: 100%;">
 	<br><br><br><br>
 	<h4>Nous ne trouvons pas ce que vous cherchez</h4>
 	<br><br>
 	<a href="/">
-		<Button class="theme--dark">Retour à la page d'accueil</Button>
+		<Button>Retour à la page d'accueil</Button>
 	</a>
 </div>
 

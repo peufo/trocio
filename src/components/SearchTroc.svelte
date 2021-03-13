@@ -2,12 +2,9 @@
 	import { goto } from '@roxi/routify'
 	import { onMount } from 'svelte'
 	import { flip } from 'svelte/animate'
-    import { crossfade, slide } from 'svelte/transition'
+    import { crossfade, fade } from 'svelte/transition'
 
-	import Dialog, {Title, Content} from '@smui/dialog'
-	import Textfield from '@smui/textfield'
-	import Switch from '@smui/switch'
-	import FormField from '@smui/form-field'
+	import { Dialog, Card, TextField, Switch, Icon } from 'svelte-materialify'
 
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
@@ -39,7 +36,7 @@
 		timeFilter = true,
 		search = '',
 		start = dayjs().format('YYYY-MM-DD'), 
-		end = '',
+		end = dayjs().add(6, 'month').format('YYYY-MM-DD'),
 		limitTrocsDisplay = 3,
 		scrollY = 0,
 		innerHeight
@@ -73,7 +70,7 @@
 				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 			}).addTo(map)
 	
-			map.on('move', onMapMove)
+			map.on('move', () => mapFilter && newSearch())
 	
 			loadTrocs()
 
@@ -83,13 +80,9 @@
 
 	//Events which update
 	let waiting
-	function onMapMove() {
-		if (mapFilter) {
-			clearTimeout(waiting)
-			waiting = setTimeout(() => loadTrocs(), 200)
-		}
-	}
+
 	function newSearch() {
+		console.log('new search')
 		clearTimeout(waiting)
 		waiting = setTimeout(() => loadTrocs(), 200)
 	}
@@ -159,7 +152,9 @@
 
 <svelte:window bind:scrollY bind:innerHeight></svelte:window>
 
-<h3 class="mdc-typography--headline6" >Trouver un troc</h3><br>
+<h3 class="w3-center">Trouver un troc</h3>
+
+<br>
 
 <!-- Commande -->
 <div class="w3-row">
@@ -167,42 +162,63 @@
     <div class="w3-col m6 w3-padding">
 
         <!-- Search -->
-        <Textfield
-			class="w3-large"
-			style="width: 100%;"
+        <TextField
 			bind:value={search}
 			on:input={newSearch}
-			type="search"
-			label="Recherche"
-        ></Textfield>
+			clearable
+			placeholder="Recherche">
+			<div slot="prepend">
+				<Icon class="fas fa-search"/>
+			</div>
+		</TextField>
+
         <br><br>
 
-        <!-- Map filter -->
-        <FormField>
-            <Switch bind:checked={mapFilter} on:input={() => setTimeout(loadTrocs, 0)}/>
-            <span slot="label">
-                <i class="fas fa-globe-europe w3-large"></i>
-                <span class="w3-large">Carte</span>
-            </span>
-        </FormField>
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <!-- Time filter -->
-        <FormField>
-            <Switch bind:checked={timeFilter} on:input={() => setTimeout(loadTrocs, 0)}/>
-            <span slot="label">
-                <i class="far fa-clock w3-large"></i>
-                <span class="w3-large">Période</span>
-            </span>
-        </FormField><br><br>
+		<div class="container-filter">
+			<!-- Time filter -->
+			<Switch
+				bind:checked={timeFilter}
+				on:change={() => loadTrocs()}
+				color="grey">
+				<Icon class="far fa-clock"></Icon>
+				Période
+			</Switch>
+			
+			<!-- Map filter -->
+			<Switch
+				bind:checked={mapFilter}
+				on:change={() => loadTrocs()}
+				color="grey">
+				<Icon class="fas fa-globe-europe"/>
+				Carte
+			</Switch>
+		</div>
+		
+        <br><br>
+		{#if timeFilter}
+			<div transition:fade|local class="container-filter">
+				<TextField
+					bind:value={start}
+					on:change={newSearch}
+					type="date">
+					<div slot="prepend">
+						<Icon class="far fa-calendar-alt"/>
+					</div>
+					A partir du
+				</TextField>
+				
+				<TextField
+					bind:value={end}
+					on:input={newSearch}
+					type="date">
+					<div slot="prepend">
+						<Icon class="far fa-calendar-alt"/>
+					</div>
+					Jusqu'au
+				</TextField>
+			</div>
+		{/if}
 
-        {#if timeFilter}
-            <div transition:slide|local class="w3-margin-bottom">
-                <Textfield bind:value={start} on:input={() => setTimeout(loadTrocs, 0)} type="date" label="A partir du"/>
-                &nbsp;
-                <Textfield bind:value={end} on:input={() => setTimeout(loadTrocs, 0)} type="date" label="Jusqu'au"/>
-            </div>
-        {/if}
 
     </div>
 
@@ -219,10 +235,10 @@
 			in:receive|local={{key: troc._id}}
 			out:send|local={{key: troc._id}}
 			animate:flip={{duration: 500}}
-			on:click={() => clickTroc(troc)}
-			class="simple-card">
-			
-			<TrocInfo {troc} on:clickArticles={dialogArticles.open}/>
+			on:click={() => clickTroc(troc)}>
+			<Card class="mt-8 pa-4">
+				<TrocInfo {troc} on:clickArticles={dialogArticles.open}/>
+			</Card>
 
 		</div>
 
@@ -239,10 +255,10 @@
 <!-- Dialogs -->
 
 <Dialog bind:this={dialogArticles} style="min-height: 430px;">
-	<Title>Fouiller les articles dans <i>{trocSelectedName}</i></Title>
-	<Content>
-		<Articles troc={trocSelected}/>
-	</Content>
+	<h2>Fouiller les articles dans <i>{trocSelectedName}</i></h2>
+	
+	<Articles troc={trocSelected}/>
+	
 </Dialog>
 
 <svelte:head>
@@ -258,21 +274,9 @@
 		z-index: 0;
 	}
 
-	.simple-card {
-		margin-top: 30px;
-		margin-bottom: 30px;
-		padding: 1em;
-		box-shadow: 0px 0px 10px rgba(78, 78, 78, 0.15);
-		transition: all .2s;
-		background: #fff;
-	}
-
-	.simple-card:hover {
-		box-shadow: 0px 0px 10px rgba(78, 78, 78, 0.25);
-	}
-
-	.simple-card:last-child {
-		margin-bottom: 120px;
+	.container-filter {
+		display: flex;
+		justify-content: space-around;
 	}
 	
 </style>

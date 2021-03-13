@@ -1,20 +1,12 @@
 <script>
     import { onMount, createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
-    import Textfield from '@smui/textfield'
-    import DataTable, { Head, Body, Row, Cell } from '@smui/data-table'
-    import List, { Item, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list'
-    import FormField from '@smui/form-field'
-    import Checkbox from '@smui/checkbox'
-    import Button from '@smui/button'
-    import Menu from '@smui/menu'
-    import MenuSurface from '@smui/menu-surface'
-    import Icon from '@smui/textfield/icon'
-    
+    import { Table, List, ListItem, Icon, Checkbox, Button, Menu } from 'svelte-materialify'
+
     import { troc } from './stores.js'
     import { addStatutField, getFields } from './utils'
     import RowsPromise from './RowsPromise.svelte'
-    import SearchUser from './SearchUser.svelte'
+    //import SearchUser from './SearchUser.svelte'
     
     export let title = ''
     export let baseURL = '/articles?'
@@ -146,89 +138,77 @@
 <div style="display: flex; justify-content: center; flex-wrap: wrap-reverse;">
     <div style="display: flex; flex-direction: column;">
         <span class="w3-large">{title}</span>
-        <DataTable class="clickable" style="min-width: 690px; overflow-x: visible;">
-            <Head>
-                <Row>
+        <Table class="clickable" style="min-width: 690px; overflow-x: visible;">
+            <thead>
+                <tr>
                     {#each fields.filter(f => showAllFields || f.checked) as field}
-                        <Cell class="headCell" on:click={() => openMenu(field)}  style={`width: ${field.cellWidth}px;`}>
-                            <Text>
-                                <PrimaryText>{field.label}</PrimaryText>
-                                <SecondaryText>
-                                    
-                                    {#if field.typeMenu == 'search'  || field.typeMenu == 'or_search'}
+                        <td class="headCell" on:click={() => openMenu(field)}  style={`width: ${field.cellWidth}px;`}>
+                            
+                            <span>{field.label}</span><br>
+                            <span>
+                                
+                                {#if field.typeMenu == 'search'  || field.typeMenu == 'or_search'}
 
-                                        {#if field.queryValue.length || field.isFocus}
-                                            <i class="fas fa-search"></i>
-                                        {/if}
-
-                                        <input
-                                        id={`search${field.dataName}Input`}
-                                        class="searchInput"
-                                        type="text"
-                                        on:input={searchInput}
-                                        on:focus={() => field.isFocus = true}
-                                        on:blur={() => field.isFocus = false}
-                                        bind:value={field.queryValue}>
-
-                                    {:else if field.queryValue.length && (field.typeMenu == 'filter'  || field.typeMenu == 'sort' || field.typeMenu == 'user')}
-                                        {@html field.queryIcon}
-                                        {field.queryLabel}
+                                    {#if field.queryValue.length || field.isFocus}
+                                        <i class="fas fa-search"></i>
                                     {/if}
-                                    
-                                </SecondaryText>
-                            </Text>
-                            <!--
-                            {#if field.typeMenu == 'search' || field.typeMenu === 'or_search'}
-                                <MenuSurface bind:this={menus[field.dataName]} style="min-width: 140px;">
-                                    <div style="margin: 1em;">
-                                        
-                                        <Textfield 
-                                        id={`search${field.dataName}Input`}
-                                        on:input={searchInput}
-                                        bind:value={field.queryValue}
-                                        label={field.label}
-                                        withLeadingIcon>
-                                            <Icon class="material-icons">search</Icon>
-                                        </Textfield>
-                                        
-                                    </div>
-                                </MenuSurface>
-                            -->
+
+                                    <input
+                                    id={`search${field.dataName}Input`}
+                                    class="searchInput"
+                                    type="text"
+                                    on:input={searchInput}
+                                    on:focus={() => field.isFocus = true}
+                                    on:blur={() => field.isFocus = false}
+                                    bind:value={field.queryValue}>
+
+                                {:else if field.queryValue.length && (field.typeMenu == 'filter'  || field.typeMenu == 'sort' || field.typeMenu == 'user')}
+                                    {@html field.queryIcon}
+                                    {field.queryLabel}
+                                {/if}
+                                
+                            </span>
+                            
+
                             {#if field.typeMenu == 'sort' || field.typeMenu == 'filter'}
                                 <Menu bind:this={menus[field.dataName]}>
                                     <List>
                                         {#each field.options as option, i}
-                                            <Item on:click={() => selectOption(field, i)}>
-                                                <Graphic>{@html option.icon}</Graphic>
-                                                <Text>{option.label}</Text>
-                                            </Item>
+                                            <ListItem on:click={() => selectOption(field, i)}>
+                                                <Icon>{@html option.icon}</Icon>
+                                                <span>{option.label}</span>
+                                            </ListItem>
                                         {/each}
                                     </List>
                                 </Menu>
                             {:else if field.typeMenu == 'user'}
-                                <MenuSurface bind:this={menus[field.dataName]} on:click={e => e.stopPropagation()} style="overflow: visible; min-width: 200px;">
-                                    <div style="margin: 1em;">
-                                        <SearchUser
-                                        id={field.dataName}
-                                        on:select={e => selectUser(field, e)}
-                                        placeholder={`Chercher un ${field.label.toLowerCase()}`}/>
-                                    </div>
-                                </MenuSurface>
+                                <Menu bind:this={menus[field.dataName]} on:click={e => e.stopPropagation()} style="overflow: visible; min-width: 200px;">
+                                    TODO:
+                                    <!--
+                                        <div style="margin: 1em;" slot="activator">
+                                            <SearchUser
+                                            id={field.dataName}
+                                            on:select={e => selectUser(field, e)}
+                                            placeholder={`Chercher un ${field.label.toLowerCase()}`}/>
+                                        </div>
+                                    -->
+                                </Menu>
                             {/if}                  
-                        </Cell>
+                        </td>
 
                     {/each}
-
-                </Row>
-            </Head>
-            <Body>
+    
+                    
+                </tr>
+            </thead>
+            <tbody>
                 {#await dataPromise}
                     <RowsPromise cellsWidth={fields.filter(f => showAllFields || f.checked).map(f => f.cellWidth)}></RowsPromise>
                 {:then}
                     {#each items as item, index}
-                        <Row style="text-align: left;" on:click={() => select(index)} class={selectedIndex == index ? 'row-selected' : ''}>
+                        <tr style="text-align: left;" on:click={() => select(index)} class={selectedIndex == index ? 'row-selected' : ''}>
                             {#each fields.filter(f => showAllFields || f.checked) as field}
-                                <Cell numeric={field.dataType == 'number'}>
+                                <td numeric={field.dataType == 'number'}>
                                     {#if field.dataName.indexOf('.') === -1}
 
                                         {#if !item[field.dataName]}
@@ -254,9 +234,9 @@
                                         {/if}
 
                                     {/if}
-                                </Cell>
+                                </td>
                             {/each}
-                        </Row>
+                        </tr>
                     {/each}
 
                     {#await moreDataPromise}
@@ -264,9 +244,9 @@
                     {/await}
 
                 {/await}
-            </Body> 
+            </tbody> 
             
-        </DataTable>
+        </Table>
 
         <div style="align-self: flex-end;" class="w3-margin-top">
 
@@ -288,19 +268,19 @@
 
     {#if !showAllFields}
         <div class="w3-margin-left w3-margin-bottom" style="align-self: flex-end; transform: translate(0px, 26.67px);">
-            <Button on:click={() => fieldsMenu.setOpen(true)} variant="outlined" color="secondary">
-                Champs
-            </Button>
-            <MenuSurface bind:this={fieldsMenu}>
+            <Menu>
+                <div slot="activator">
+                    <Button>Champs</Button>
+                </div>
+
                 <div style="margin: 1em;">
                     {#each fields as {label, checked, disabled}}
-                        <FormField style="display: flex;">
-                            <Checkbox bind:checked={checked} bind:disabled={disabled}/>
-                            <span slot="label">{label}</span>
-                        </FormField>
+                        <Checkbox bind:checked={checked} bind:disabled={disabled}>
+                            {label}
+                        </Checkbox>
                     {/each}
                 </div>
-            </MenuSurface>
+            </Menu>
         </div>
     {/if}
 
