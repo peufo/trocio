@@ -2,7 +2,7 @@
     import { createEventDispatcher } from 'svelte'
     import { fly, fade } from 'svelte/transition'
 
-    import Button from '@smui/button'
+    import { Button } from 'svelte-materialify'
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
     import 'dayjs/locale/fr'
@@ -31,9 +31,11 @@
     <div class="w3-col m6">
         
         <span class="w3-large">{troc.name}</span>
+
+        <br>
         
         <!-- Infos -->
-        <span style="margin-left: 1em;">
+        <span>
             <i class="fas fa-child w3-opacity"></i>
             {troc.subscriber}
         </span>
@@ -41,13 +43,15 @@
             <i class="fas fa-cubes w3-opacity"></i>
             {troc.articles}
         </span>
+        
+        {#if troc.is_try || troc.isClosed}
+            <span style="margin-left: 1em;">
+                <i class="fas {troc.is_try ? 'fa-table-tennis' : 'fa-door-closed'} w3-opacity"></i>
+                {troc.is_try ? 'Entrainement' : 'Terminé'}
+            </span>
+        {/if}
 
-
-        {#if troc.isClosed}<span class="warning">Ce troc est terminé</span>{/if}
-
-        {#if troc.is_try}<span class="warning">Troc d'entrainement</span>{/if}
-
-        <br>
+        <br><br>
 
         <p class="describe">
             {troc.description.slice(0, sliceDescription)}
@@ -189,10 +193,21 @@
         padding: 20px;
     }
 
+    .bar, .tabs {
+        --border-width: 1px;
+        --border-width-negatif: -1px;
+        --border-width-double: 2px;
+        --border-color: #bbb;
+    }
+
+    :global(.theme--dark) .bar, :global(.theme--dark) .tabs {
+        --border-color: #333;  
+    }
+
     .bar {
         min-height: 3em;
         margin-right: 10px;
-        border-top: 1px solid #ddd;
+        border-top: var(--border-width) solid var(--border-color);
         padding-top: 10px;
     }
 
@@ -201,10 +216,6 @@
         display: flex;
         flex-direction: column;
         align-content: stretch;
-        --border-width: 1px;
-        --border-width-negatif: -1px;
-        --border-width-double: 2px;
-        --border-color: #ddd;
     }
 
     .tab {
@@ -215,7 +226,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-left: var(--border-width) solid #fff;
+        border-left: var(--border-width) solid rgba(0, 0, 0, 0);
         position: relative;
         cursor: pointer;
     }
@@ -232,16 +243,16 @@
         height: calc(100% + var(--border-width-double));
         right: 0px;
         top: var(--border-width-negatif);
-        border-top: var(--border-width)  solid var(--border-color);
-        border-right: var(--border-width)  solid var(--border-color);
-        border-bottom: var(--border-width)  solid var(--border-color);
+        border-top: var(--border-width) solid var(--border-color);
+        border-right: var(--border-width) solid var(--border-color);
+        border-bottom: var(--border-width) solid var(--border-color);
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
     }
 
     .tab:first-child.selected:after  {
-        border-top: var(--border-width)  solid #fff;
-        border-top-right-radius: 0px;
+        border-top: transparent;
+        border-top-right-radius: 10px;
     }
 
     /*.tab:last-child.selected:after  {
@@ -281,13 +292,20 @@
         font-size: .6em;
         text-transform: uppercase;
         padding: .6em 1em;
-        background: #f6f6f6;
         border-radius: 4px;
         cursor: pointer;
+        background: #eee;
     }
 
     .showDescription:hover {
-        background: #eee;
+        background: #ddd;
+    }
+
+    :global(.theme--dark) .showDescription {
+        background: #333;
+    }
+    :global(.theme--dark) .showDescription:hover {
+        background: #444;
     }
 
 </style>

@@ -2,8 +2,7 @@
 	import { createEventDispatcher } from 'svelte'
 	import { slide, fade } from 'svelte/transition'
 
-	import Dialog, {Title, Content} from '@smui/dialog'
-	import Button from '@smui/button'
+	import { Dialog, Button } from 'svelte-materialify'
 	
 	import SearchTable from './SearchTable.svelte'
 	//import ArticleDialog from './ArticleDialog.svelte'

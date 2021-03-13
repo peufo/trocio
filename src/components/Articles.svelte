@@ -1,6 +1,6 @@
 <script>
     import { fade } from 'svelte/transition'
-    import TextField from '@smui/textfield'
+    import { TextField } from 'svelte-materialify'
 
     export let troc = ''
 
@@ -56,7 +56,7 @@
             bind:value="{search}"
             on:input="{searchInput}"
             class="shaped-outlined w3-margin-top"
-            label="Recherche"
+            placeholder="Recherche"
             variant="outlined"
             style="width: 100%;"
             />
