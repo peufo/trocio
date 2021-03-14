@@ -116,7 +116,7 @@
             <TextField placeholder="Nom & prénom" solo
                 bind:value={name}
                 on:input={checkForm}
-                on:keyup={e => e.key == 'Enter' && submit()}>
+                on:keypress={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="far fa-user" />
                 </div>
@@ -128,7 +128,7 @@
     <TextField placeholder="Email" solo
         bind:value={mail}
         on:input={checkForm}
-        on:keyup={e => e.key == 'Enter' && submit()}>
+        on:keypress={e => e.key == 'Enter' && submit()}>
         <div slot="prepend">
             <Icon class="far fa-envelope"/>
         </div>
@@ -141,7 +141,7 @@
             <TextField placeholder="Mot de passe" solo type="password" 
                 bind:value={password}
                 on:input={checkForm}
-                on:keyup={e => e.key == 'Enter' && submit()}>
+                on:keypress={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="fas fa-key"></Icon>
                 </div>
@@ -154,7 +154,7 @@
             <TextField placeholder="Pour être sûr :)" solo type="password"
                 bind:value={password2}
                 on:input={checkForm}
-                on:keyup={e => e.key == 'Enter' && submit()}>
+                on:keypress={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="fas fa-key"></Icon>
                 </div>

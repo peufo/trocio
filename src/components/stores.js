@@ -77,11 +77,10 @@ function userBuilder() {
 			try {
 				let res = await fetch('/__API__/users/logout')
 				let json = await res.json()
-				//if (res.ok && json.success)
+				if (json.error) throw json.message
 				set(null)
-				notify.error(error)
 			} catch(error) {
-				console.trace(error)
+				notify.error(error)
 			}
 		}
 	}

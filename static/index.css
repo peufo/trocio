@@ -9,11 +9,7 @@
 .s-app {
     position: relative;
 }
-/*
-:root, body, .s-app {
-    height: 100%;
-}
-*/
+
 body {
     font-family: Roboto,sans-serif!important;
 }

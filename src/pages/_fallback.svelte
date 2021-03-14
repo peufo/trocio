@@ -3,11 +3,13 @@
 <script>
 	import { Button } from 'svelte-materialify'
 
-	let footerHeight
+	export let scoped
+
+	$: console.count(scoped)
 
 </script>
 
-<div class="image" style="min-height: 100%;">
+<div class="image" style="min-height: {scoped.mainHeight}px;">
 	<br><br><br><br>
 	<h4>Nous ne trouvons pas ce que vous cherchez</h4>
 	<br><br>
@@ -15,15 +17,6 @@
 		<Button>Retour à la page d'accueil</Button>
 	</a>
 </div>
-
-<svelte:head>
-	<style>
-		html, body, #routify-app, main {
-			height: 100%;
-		}
-	</style>
-
-</svelte:head>
 
 <style>
 
