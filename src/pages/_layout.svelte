@@ -1,43 +1,35 @@
 <script>
-	import { tick } from 'svelte'
-	import { afterPageLoad, page } from '@roxi/routify'
+	import { page } from '@roxi/routify'
 	import { MaterialApp, Button } from 'svelte-materialify'
 	import Head from '$/Head.svelte'
 	import Footer from '$/Footer.svelte'
 	import FadeDecorator from '$/FadeDecorator.svelte'
 	import { isDarkTheme } from '$/stores.js'
 
-	let headHeight
-	let footerHeight
-	let totalHeight
-	let mainHeight
-
 	const themes = ['light', 'dark']
 
-	$afterPageLoad(loadHeight)
-	
-	async function loadHeight() {
-		totalHeight = 0
-		await tick()
-		totalHeight = document.getElementsByTagName('HTML')[0].scrollHeight
-	}
+	let innerHeight 	// Window height
+	let headHeight		// Header height
+	let mainHeight		// Main content height
+	let footerHeight 	// Footer height
 
 	$: {
-		mainHeight = totalHeight - headHeight
+		mainHeight = innerHeight - headHeight
 		if ($page.meta.isFooterDisplay) mainHeight -= footerHeight
 	}
 
+
 </script>
 
-<svelte:window on:resize={loadHeight}/>
+<svelte:window bind:innerHeight/>
 
-<div style={`min-height: ${totalHeight}px;`}>
+<div style={`min-height: ${innerHeight}px;`}>
 	<MaterialApp theme={themes[+$isDarkTheme]}>
 		
 		<Head bind:offsetHeight={headHeight}/>
 	
-		<div style={`min-height: ${mainHeight}px;`}>
-			<slot decorator={FadeDecorator} scoped={{headHeight, footerHeight}}/>
+		<div style="min-height: {mainHeight}px;">
+			<slot decorator={FadeDecorator} scoped={{headHeight, footerHeight, mainHeight}}/>
 		</div>
 		
 		{#if $page.meta.isFooterDisplay}

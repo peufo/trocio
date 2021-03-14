@@ -7,7 +7,7 @@
 </script>
 
 {#if $user == null}
-	<div class="w3-margin-top">
+	<div>
 		<SearchTroc/>
 	</div>
 {:else}

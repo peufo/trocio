@@ -1,6 +1,7 @@
 <script>
     import { fade } from 'svelte/transition'
-    import { TextField } from 'svelte-materialify'
+    import { TextField, Icon } from 'svelte-materialify'
+    import notify from './notify.js'
 
     export let troc = ''
 
@@ -16,6 +17,8 @@
     $:  if (troc) initArticles()
         else articles = []
 
+    $: (!!search || !search) && newSearch()
+
     function initArticles() {
         articles = []
         articlesPromise = getArticles()
@@ -23,7 +26,7 @@
     function getMoreResults() {
         moreResultsPromise = getArticles()
     }
-    function searchInput() {
+    function newSearch() {
         articles = []
         if (wait) clearTimeout(wait)
         wait = setTimeout(() => articlesPromise = getArticles(), 200)
@@ -33,42 +36,39 @@
         try {
             let res = await fetch(`/__API__/articles?troc=${troc}&search_name=${search}&skip=${articles.length}&limit=${LIMIT}`)
             let json = await res.json()
-            if(res.ok) {
+            if(!res.ok || json.error) throw json.message
     
-                if (json.data.length < LIMIT) noMoreResults = true
-                else noMoreResults = false
-    
-                articles = [...articles, ...json.data]
-    
-                return
-            }
+            if (json.data.length < LIMIT) noMoreResults = true
+            else noMoreResults = false
+
+            articles = [...articles, ...json.data]    
+            
         } catch(error) {
-            console.trace(error)
+            notify.error(error)
         }
     }
 
 </script>
 
 <div id="articles">
-
-    <div style="max-width: 400px; margin: auto;">
+    <br>
+    <div style="max-width: 350px; margin: auto;">
         <TextField
-            bind:value="{search}"
-            on:input="{searchInput}"
-            class="shaped-outlined w3-margin-top"
-            placeholder="Recherche"
-            variant="outlined"
-            style="width: 100%;"
-            />
+            bind:value={search}
+            clearable
+            placeholder="Recherche">
+            <div slot="prepend">
+                <Icon class="fas fa-search"/>
+            </div>
+        </TextField>
     </div>
 
-    <hr>
+    <br>
 
     {#await articlesPromise}
-        <div class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
+        <div in:fade class="w3-center"><img src="/favicon.ico" alt="Logo trocio" class="w3-spin"></div>
     {:then}
-    
-        <div class="flex" style="width: calc(100% + 5px);">
+        <div in:fade class="flex" style="width: calc(100% + 5px);">
             {#each articles as article}
                 <div class="list-element w3-padding w3-display-container valided" style="margin-right: 5px;">
                     {article.name}
@@ -110,21 +110,7 @@
 <style>
 
     #articles {
-        width: 480px;
         min-height: 550px;
-    }
-
-    @media screen and (max-width: 600px) {
-         #articles {width: 450px;}
-    }
-    @media screen and (max-width: 550px) {
-         #articles {width: 400px;}
-    }
-    @media screen and (max-width: 500px) {
-         #articles {width: 350px;}
-    }
-    @media screen and (max-width: 450px) {
-         #articles {width: 300px;}
     }
 
     .flex {

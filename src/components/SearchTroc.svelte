@@ -42,7 +42,7 @@
 		innerHeight
 
 	//Dialogs
-	let dialogArticles
+	let dialogArticlesActive = false
 
 	$: if(scrollY && scrollY + innerHeight > document.body.offsetHeight - 50 ) {
 		limitTrocsDisplay++
@@ -80,12 +80,13 @@
 
 	//Events which update
 	let waiting
-
 	function newSearch() {
 		console.log('new search')
 		clearTimeout(waiting)
 		waiting = setTimeout(() => loadTrocs(), 200)
 	}
+
+	$: (!!search || !search) && newSearch()
 
 	async function loadTrocs(skip = 0) {
 		let query = `/__API__/trocs/search?search=${search}&skip=${skip}`
@@ -162,9 +163,8 @@
     <div class="w3-col m6 w3-padding">
 
         <!-- Search -->
-        <TextField
+		<TextField
 			bind:value={search}
-			on:input={newSearch}
 			clearable
 			placeholder="Recherche">
 			<div slot="prepend">
@@ -237,7 +237,7 @@
 			animate:flip={{duration: 500}}
 			on:click={() => clickTroc(troc)}>
 			<Card class="mt-8 pa-4">
-				<TrocInfo {troc} on:clickArticles={dialogArticles.open}/>
+				<TrocInfo {troc} on:clickArticles={() => dialogArticlesActive = true}/>
 			</Card>
 
 		</div>
@@ -254,8 +254,8 @@
 
 <!-- Dialogs -->
 
-<Dialog bind:this={dialogArticles} style="min-height: 430px;">
-	<h2>Fouiller les articles dans <i>{trocSelectedName}</i></h2>
+<Dialog bind:active={dialogArticlesActive} style="min-height: 430px;" class="pa-4">
+	<h5>Fouiller les articles dans <i>{trocSelectedName}</i></h5>
 	
 	<Articles troc={trocSelected}/>
 	
