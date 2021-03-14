@@ -2,15 +2,13 @@
 	import { createEventDispatcher } from 'svelte'
 	import { slide, fade } from 'svelte/transition'
 
-	import { Dialog, Button } from 'svelte-materialify'
+	import { Button } from 'svelte-materialify'
 	
-	import SearchTable from './SearchTable.svelte'
-	//import ArticleDialog from './ArticleDialog.svelte'
 	import ProvidedTable from './ProvidedTable.svelte'
 
 	import notify from './notify.js'
 	import { trocDetails as details, trocDetailsPromise as detailsPromise } from './stores'
-	import { getFields, addStatutField, formatPrice, getHeader, sortByUpdatedAt } from './utils'
+	import { addStatutField, getHeader, sortByUpdatedAt } from './utils'
 	
 	import DetailCard from './DetailCard.svelte'
 
@@ -20,11 +18,6 @@
 	dayjs.locale('fr')
 	dayjs.extend(relativeTime)
 	const dispatch = createEventDispatcher()
-
-	let providedFields = getFields('# Désignation Statut Frais Marge Prix', '')
-
-	let articleDialog
-	let article = {} //Article selected
 
 	let onPrint = false
 

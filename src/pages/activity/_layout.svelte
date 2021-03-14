@@ -1,11 +1,9 @@
 <script>
-    import { layout, page } from '@roxi/routify'
+    import { page } from '@roxi/routify'
     import { onMount, onDestroy } from 'svelte'
     import { fade, fly } from 'svelte/transition'
 
-    import Card, { Content as CardContent, Actions } from '@smui/card'
-    import List, {Item, Text, PrimaryText, SecondaryText, Meta} from '@smui/list'
-    import Button, { Label } from '@smui/button'
+    import { Button, List, ListItem } from 'svelte-materialify'
 
 	import dayjs from 'dayjs'
 	import relativeTime from 'dayjs/plugin/relativeTime'
@@ -121,18 +119,17 @@
             <!-- LISTE DES TROCS-->
             <div class="item" class:no-margin={smallDisplay}>
                 <div class="simple-card">
-                    <div style="height: 66px;">
 
-                        <div class="w3-right" style="transform: translate(0px, 4px);">
-                            <Button href="/activity/create">
-                                <Label>Organiser</Label>
-                            </Button>
-                            <Button href="/activity/search">
-                                <Label>Trouver</Label>
-                            </Button>
+                    <div class="header">
+                        <span class="title">Mes trocs</span>
+                        <div>
+                            <a href="/activity/create">
+                                <Button text>Organiser</Button>
+                            </a>
+                            <a href="/activity/search">
+                                <Button text>Trouver</Button>
+                            </a>
                         </div>
-
-                        <h3 class="mdc-typography--headline6" style="margin: 0;">Mes trocs</h3>
                     </div>
 
                     {#await subscribedTrocsPromise}
@@ -140,20 +137,19 @@
                             <RowsPromise listMode twoLine meta/>
                         </List>
                     {:then}
-                        <List threeLine avatarList singleSelection>
+                        <List>
                             {#each $subscribedTrocs as troc, i}
                                 <a href={`/activity/detail?troc=${troc._id}`}>
-                                    <Item selected={trocSelected && trocSelected._id === troc._id} title={troc.address}>
-                                        <Text>
-                                            <PrimaryText>
-                                                {troc.name}
-                                                {#if troc.is_try}<span class="warning">Troc d'entrainement</span>{/if}
-                                                {#if troc.isClosed}<span class="warning">Ce troc est terminé</span>{/if}
-                                            </PrimaryText>
-                                            <SecondaryText>{dayjs(troc.schedule && troc.schedule[0] && troc.schedule[0].open).fromNow()}</SecondaryText>
-                                            <SecondaryText>{troc.description.slice(0, 124)}</SecondaryText>
-                                        </Text>
-                                        <Meta>
+                                    <ListItem active={trocSelected && trocSelected._id === troc._id} title={troc.address}>
+                                        {troc.name}
+                                        {#if troc.is_try}<span class="warning">Troc d'entrainement</span>{/if}
+                                        {#if troc.isClosed}<span class="warning">Ce troc est terminé</span>{/if}
+                                        <span slot="subtitle">
+                                            {dayjs(troc.schedule && troc.schedule[0] && troc.schedule[0].open).fromNow()}
+                                            <br>
+                                            {troc.description.slice(0, 124)}
+                                        </span>
+                                        <span slot="append">
                                             {#if troc.isAdmin}
                                                 <a href="{`/admin?troc=${troc._id}`}" title="Accéder à la page d'administration">
                                                     <i class="fa fa-cog button-icon w3-large w3-padding"></i>
@@ -163,8 +159,9 @@
                                                     <i class="fa fa-cash-register w3-large w3-padding"></i>
                                                 </a>
                                             {/if}
-                                        </Meta>
-                                    </Item>
+                                        </span>
+                                        
+                                    </ListItem>
                                 </a>
                             {:else}
                                 Vous n'avez pas encore de troc
@@ -178,7 +175,7 @@
                         
                         {#if $subscribedTrocs.length == subscribedSkip + subscribedLimit}
                             <div class="w3-center">
-                                <Button color="secondary" on:click={clickMoreSubscribedTroc}>
+                                <Button on:click={clickMoreSubscribedTroc}>
                                     Afficher plus
                                 </Button>
                             </div>
@@ -192,7 +189,9 @@
             <!-- ACTIVITE -->
             <div class="item no-margin-top" class:no-margin={smallDisplay}>
                 <div class="simple-card">
-                    <h3 class="mdc-typography--headline6" style="margin: 0;">Actualités</h3>
+                    <div class="header">
+                        <span class="title">Actualités</span>
+                    </div>
                     <p>Aucune actualité</p>
                 </div>
             </div>
@@ -237,7 +236,6 @@
 
     .item {
         margin: 1em;
-        background: #fff;
     }
     .simple-card {
         padding: 16px;
@@ -261,6 +259,17 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #eee;
+        padding-bottom: .7em;
+    }
+
+    :global(.theme--dark) .header {
+        border-bottom: 1px solid #444;
     }
 
 </style>

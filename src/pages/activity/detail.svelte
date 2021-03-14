@@ -1,8 +1,9 @@
 <script>
     import { onMount } from 'svelte'
-    import Dialog, { Content, Title } from '@smui/dialog'
 
-    import { user, subscribedTrocs, trocDetailsPromise, troc, trocPromise } from '$/stores.js'
+    import { Dialog } from 'svelte-materialify'
+
+    import { subscribedTrocs, trocDetailsPromise, troc, trocPromise } from '$/stores.js'
     import { getHeader } from '$/utils.js'
     import notify from '$/notify.js'
     import TrocInfo from '$/TrocInfo.svelte'
@@ -12,9 +13,9 @@
     import TarifInfoDialog from '$/TarifInfoDialog.svelte'
     import Articles from '$/Articles.svelte'
 
-    let articleCreateDialog
-    let tarifInfoDialog
-    let dialogArticles
+    let articleCreateDialogActive
+    let tarifInfoDialogActive
+    let dialogArticlesActive
 
     onMount(() => {
         $trocPromise.then(() => {
@@ -42,7 +43,7 @@
 <div style="max-width: 800px; margin: auto;">
 
     {#if !!$troc}
-        <TrocInfo troc={$troc} displayGetActivity={false} on:clickArticles={dialogArticles.open}/>
+        <TrocInfo troc={$troc} displayGetActivity={false} on:clickArticles={() => dialogArticlesActive = true}/>
     {/if}
 
     <br>
@@ -53,21 +54,19 @@
         {:then}
             <Resume
                 on:articlesImported={e => $troc.articles += e.detail.nbArticles}
-                on:openCreateDialog={articleCreateDialog.open}
-                on:openTarifDialog={tarifInfoDialog.open}/>
+                on:openCreateDialog={() => articleCreateDialogActive = true}
+                on:openTarifDialog={() => tarifInfoDialogActive = true}/>
         {/await}
     </div>
-    <ArticleCreateDialog bind:dialog={articleCreateDialog} on:articleCreated={() => $troc.articles++}/>
+    <ArticleCreateDialog bind:dialogActive={articleCreateDialogActive} on:articleCreated={() => $troc.articles++}/>
 
-    <TarifInfoDialog bind:dialog={tarifInfoDialog}/>
+    <TarifInfoDialog bind:dialog={tarifInfoDialogActive}/>
 
 </div>
 
 {#if !!$troc}
-    <Dialog bind:this={dialogArticles} style="min-height: 430px;">
-        <Title>Fouiller les articles dans <i>{$troc.name}</i></Title>
-        <Content>
-            <Articles troc={$troc._id}/>
-        </Content>
+    <Dialog bind:active={dialogArticlesActive} style="min-height: 430px;" class="pa-4">
+        <h5>Fouiller les articles dans <i>{$troc.name}</i></h5>
+        <Articles troc={$troc._id}/>
     </Dialog>
 {/if}

@@ -153,7 +153,7 @@
 
 <svelte:window bind:scrollY bind:innerHeight></svelte:window>
 
-<h3 class="w3-center">Trouver un troc</h3>
+<h4>Trouver un troc</h4>
 
 <br>
 
@@ -201,9 +201,6 @@
 					bind:value={start}
 					on:change={newSearch}
 					type="date">
-					<div slot="prepend">
-						<Icon class="far fa-calendar-alt"/>
-					</div>
 					A partir du
 				</TextField>
 				
@@ -211,9 +208,6 @@
 					bind:value={end}
 					on:input={newSearch}
 					type="date">
-					<div slot="prepend">
-						<Icon class="far fa-calendar-alt"/>
-					</div>
 					Jusqu'au
 				</TextField>
 			</div>
@@ -253,12 +247,9 @@
 
 
 <!-- Dialogs -->
-
 <Dialog bind:active={dialogArticlesActive} style="min-height: 430px;" class="pa-4">
 	<h5>Fouiller les articles dans <i>{trocSelectedName}</i></h5>
-	
 	<Articles troc={trocSelected}/>
-	
 </Dialog>
 
 <svelte:head>
