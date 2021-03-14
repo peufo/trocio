@@ -12,6 +12,8 @@
 
     //TODO: Gestion des création d'utilisateur par un caissier
 
+    export let mailInput // For focus
+
     let state = 1
     const LOGIN = 1
     const REGISTER = 2
@@ -116,7 +118,7 @@
             <TextField placeholder="Nom & prénom" solo
                 bind:value={name}
                 on:input={checkForm}
-                on:keypress={e => e.key == 'Enter' && submit()}>
+                on:keyup={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="far fa-user" />
                 </div>
@@ -126,9 +128,10 @@
     {/if}
 
     <TextField placeholder="Email" solo
+        bind:inputElement={mailInput}
         bind:value={mail}
         on:input={checkForm}
-        on:keypress={e => e.key == 'Enter' && submit()}>
+        on:keyup={e => e.key == 'Enter' && submit()}>
         <div slot="prepend">
             <Icon class="far fa-envelope"/>
         </div>
@@ -141,7 +144,7 @@
             <TextField placeholder="Mot de passe" solo type="password" 
                 bind:value={password}
                 on:input={checkForm}
-                on:keypress={e => e.key == 'Enter' && submit()}>
+                on:keyup={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="fas fa-key"></Icon>
                 </div>
@@ -154,7 +157,7 @@
             <TextField placeholder="Pour être sûr :)" solo type="password"
                 bind:value={password2}
                 on:input={checkForm}
-                on:keypress={e => e.key == 'Enter' && submit()}>
+                on:keyup={e => e.key == 'Enter' && submit()}>
                 <div slot="prepend">
                     <Icon class="fas fa-key"></Icon>
                 </div>
@@ -199,7 +202,7 @@
     {#if !$user}
         <br><br>
         <div class="w3-center w3-border-top">
-            <div class="or {$isDarkTheme && 'grey darken-4'}">
+            <div class="or {$isDarkTheme ? 'grey darken-4' : ''}">
                 <span>OU</span> 
             </div>
             <a href={googleAuthApi}>

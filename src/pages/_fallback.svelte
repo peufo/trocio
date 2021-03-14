@@ -5,8 +5,6 @@
 
 	export let scoped
 
-	$: console.count(scoped)
-
 </script>
 
 <div class="image" style="min-height: {scoped.mainHeight}px;">

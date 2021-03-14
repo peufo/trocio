@@ -6,10 +6,12 @@
     import { user } from '$/stores.js'
     import { Button, Icon, Card } from 'svelte-materialify'
 
+    export let scoped
+
 </script>
 
 {#if $user === null}
-    <div class="container">
+    <div class="container" style="height: {scoped.mainHeight}px;">
         <div class="half w3-center">
             <a href="/">
                 <Button>
@@ -43,7 +45,6 @@
         display: flex;
         justify-content: space-around;
         align-items: center;
-        height: 100%;
         flex-wrap: wrap-reverse;
     }
     

@@ -24,7 +24,6 @@ PNotify.defaults.stack = new PNotify.Stack({
 function formatOptions(options, defaultIcon = '') {
     if (typeof options === 'string') options = {title: options}
     if (!options.icon) options.icon = defaultIcon
-    console.log({options})
     return options
 }
 

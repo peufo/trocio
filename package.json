@@ -39,7 +39,7 @@
     "qr-scanner": "^1.2.0",
     "randomatic": "^3.1.1",
     "svelte": "^3.31.1",
-    "svelte-materialify": "^0.3.4",
+    "svelte-materialify": "^0.3.6",
     "swiper": "^6.4.5"
   }
 }
