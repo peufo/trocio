@@ -232,7 +232,7 @@
                     on:click={validChangePassword}
                     disabled={!newPassword || newPasswordError || newPassword2Error}
                     class="w3-margin-top w3-right">
-                        Valider votre nouveau mot de passe
+                        Valider la modification
                     </Button>
     
                     <br>

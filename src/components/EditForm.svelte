@@ -1,13 +1,11 @@
 <script>
 	
 	import { onMount } from 'svelte'
-	import { slide } from 'svelte/transition'
 	import { createEventDispatcher } from 'svelte'
 	const dispatch = createEventDispatcher()
 	import dayjs from 'dayjs'
-	import TextField from '@smui/textfield'
-	import Button, { Label } from '@smui/button'
-	import DataTable, {Head, Body, Row, Cell} from '@smui/data-table'
+
+	import { Button, TextField, Textarea, Table } from 'svelte-materialify'
 
 	import notify from './notify.js'
 	import { troc, user } from './stores'
@@ -122,14 +120,17 @@
 <div id="editForm" bind:offsetWidth>
 	<div class="container" class:smallDisplay>
 		<div class="item troc">
-			<h4>Mon troc</h4><br>
-			<TextField bind:value={name} label="Nom de l'évènement" variant="outlined" style="width: 100%;"/>
-			<br><br>
-			<TextField bind:value={description} label="Déscription" fullwidth textarea style="min-height: 168px;"/>
+			<h6>Mon troc</h6>
+			<br>
+			<TextField bind:value={name} outlined>Nom de l'évènement</TextField>
+			<br>
+			<Textarea bind:value={description} autogrow rows={5} outlined>
+				Déscription
+			</Textarea>
 		</div>
 
 		<div class="item location">
-			<h4>Lieu</h4><br>
+			<h6>Lieu</h6><br>
 			{#if $troc && $troc.is_try}
 				<div class="icon-container">
 					<br><span class="w3-text-orange">Les trocs d'entrainements n'ont pas de lieu</span>
@@ -144,43 +145,45 @@
 		</div>
 
 		<div class="item schedule">
-			<h4>Horaire</h4><br>
+			<h6>Horaire</h6><br>
 			{#if $troc && $troc.is_try}
 				<div class="icon-container">
 					<br><span class="w3-text-orange">Les trocs d'entrainements n'ont pas d'horaire</span>
 					<i class="far fa-calendar-alt"></i>
 				</div>
 			{:else}
-				<DataTable class="w3-margin-bottom" style="min-width: 100%;">
-					<Head>
-						<Row>
-							<Cell>Date</Cell>
-							<Cell>Ouverture</Cell>
-							<Cell>Fermeture</Cell>
-							<Cell style="width: 20px;"></Cell>
-						</Row>
-					</Head>
-					<Body>
+				<Table class="w3-margin-bottom" style="min-width: 100%;">
+					<thead>
+						<tr>
+							<td>Date</td>
+							<td>Ouverture</td>
+							<td>Fermeture</td>
+							<td style="width: 20px;"></td>
+						</tr>
+					</thead>
+					<tbody>
 						{#each scheduleIn as {day, open, close}, i}
-							<Row>
-								<Cell><input bind:value={day} type="date" /></Cell>
-								<Cell><input bind:value={open} max={close} on:input={convertSchedule} type="time" /></Cell>
-								<Cell style="width: 20px; padding: 1px 0px 1px 16px">
+							<tr>
+								<td>
+									<TextField bind:value={day} type="date" solo dense/>
+								</td>
+								<td><input bind:value={open} max={close} on:input={convertSchedule} type="time" /></td>
+								<td style="width: 20px; padding: 1px 0px 1px 16px">
 									<input bind:value={close} min={open} on:input={convertSchedule} type="time" />
-								</Cell>
-								<Cell style="width: 20px; padding: 0px">
+								</td>
+								<td style="width: 20px; padding: 0px">
 									<i 	on:click="{() => removeSchedule(i)}"
 										class="patchButton far fa-trash-alt w3-right w3-large w3-padding"
 										title="supprimer la période">
 									</i>
-								</Cell>	
-							</Row>
+								</td>	
+							</tr>
 						{/each}				
-					</Body>
-				</DataTable>
+					</tbody>
+				</Table>
 				
-				<Button on:click={addSchedule} variant="outlined" color="secondary" class="patchButton w3-right" title="Ajouter un période">
-					<Label>+1 période</Label>
+				<Button on:click={addSchedule} outlined class="patchButton w3-right" title="Ajouter un période">
+					+1 période
 				</Button>
 
 				<br>
@@ -192,9 +195,11 @@
 		</div>
 	
 		<div class="item society">
-			<h4>Mon organisation <span class="w3-small w3-opacity">Pas obligatoire</span></h4><br>
-			<TextField bind:value={society} label="Nom de l'organisation" variant="outlined" style="width: 100%;"/><br><br>
-			<TextField bind:value={societyweb} label="Site internet de l'organisation" variant="outlined" style="width: 100%;"/>
+			<h6>Mon organisation <span class="w3-small w3-opacity">Pas obligatoire</span></h6>
+			<br>
+			<TextField bind:value={society} outlined>Nom de l'organisation</TextField>
+			<br>
+			<TextField bind:value={societyweb} outlined>Site internet de l'organisation</TextField>
 		</div>
 
 	</div>
@@ -204,12 +209,12 @@
 			{#await createPromise}
 				<Button>Création en cours...</Button>
 			{:then}
-				<Button on:click={createPublic} variant="raised" class="w3-right" title="Valider la création de mon troc">
-					<Label>Créer un troc public</Label>
+				<Button on:click={createPublic} raised class="w3-right" title="Valider la création de mon troc">
+					Créer un troc public
 				</Button>
 
-				<Button on:click={createTry} variant="outlined" class="w3-right w3-margin-right" title="Valider la création de mon troc">
-					<Label>Créer un troc d'entrainement</Label>
+				<Button on:click={createTry} outlined class="w3-right w3-margin-right" title="Valider la création de mon troc">
+					Créer un troc d'entrainement
 				</Button>
 
 			{/await}

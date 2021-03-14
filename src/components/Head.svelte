@@ -50,16 +50,17 @@
 
 		{#if $user}
 			<div>
-				<a href="/profile">
-					<Button text>
-						<i class="fas fa-user w3-large"></i>
-						<span class="button-label">&nbsp;{$user.name}</span>
-					</Button>
-				</a>
 				<a href="/activity">
 					<Button text>
 						<i class="fas fa-bars w3-large"></i>
 						<span class="button-label">&nbsp;Mes trocs</span>
+					</Button>
+				</a>
+				
+				<a href="/profile">
+					<Button text>
+						<i class="fas fa-user w3-large"></i>
+						<span class="button-label">&nbsp;{$user.name}</span>
 					</Button>
 				</a>
 

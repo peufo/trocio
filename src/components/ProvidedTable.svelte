@@ -3,7 +3,7 @@
     import { createEventDispatcher } from 'svelte'
     const dispatch = createEventDispatcher()
 
-    import { Dialog, Menu, List, ListItem } from 'svelte-materialify'
+    import { Menu, List, ListItem } from 'svelte-materialify'
     
     import AutoPatch from './AutoPatch.svelte'
     import notify from './notify.js'

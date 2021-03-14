@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte'
-	import { fade, fly, slide } from 'svelte/transition'
+	import { slide } from 'svelte/transition'
 	import L from 'leaflet'
 
 	export let address = ''

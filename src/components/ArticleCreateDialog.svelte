@@ -1,13 +1,13 @@
 <script>
 	import { createEventDispatcher } from 'svelte'
-    import Dialog, { Title, Content } from '@smui/dialog'
-    import Button from '@smui/button'
+
+	import { Button, Dialog } from 'svelte-materialify'
 
     import { trocDetails as details } from './stores.js'
     import { addStatutField, formatPrice, getHeader } from './utils.js'
     import notify from './notify.js'
 
-    export let dialog = {}
+	export let dialogActive = false
 	export let createPromise = {}
 	const dispatch = createEventDispatcher()
 	let newName = ''
@@ -37,7 +37,7 @@
 
 				//preserve dialog
 				//document.getElementById(`newArticleName`).focus()
-				dialog.close()
+				dialogActive = false
 				dispatch('articleCreated')
 				notify.success('Article ajouté')
 				return
@@ -50,19 +50,21 @@
 
 </script>
 
-<Dialog bind:this={dialog}>
-    <Title>Proposer un article</Title>
-    <Content>
-        <textarea id="newArticleName" cols="30" rows="3" placeholder="Désignation" bind:value={newName}></textarea>
-        <input use:formatPrice style="width: 30%; height: 36px;" bind:value={newPrice}  />
-        {#await createPromise}
-            <Button color="secondary" variant="outlined" class="w3-right">
-                <i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
-            </Button>
-        {:then}
-            <Button variant="outlined" class="w3-right" on:click={e => createPromise = createArticle(e)}>
-                Valider
-            </Button>
-        {/await}
-    </Content>
+<Dialog bind:active={dialogActive} class="pa-4">
+
+    <h4>Proposer un article</h4>
+    
+	<textarea id="newArticleName" cols="30" rows="3" placeholder="Désignation" bind:value={newName}></textarea>
+	<input use:formatPrice style="width: 30%; height: 36px;" bind:value={newPrice} />
+
+	{#await createPromise}
+		<Button outlined class="w3-right">
+			<i class="fas fa-circle-notch w3-spin"></i>&nbsp;Création de l'article ...
+		</Button>
+	{:then}
+		<Button outlined class="w3-right" on:click={e => createPromise = createArticle(e)}>
+			Valider
+		</Button>
+	{/await}
+    
 </Dialog>
