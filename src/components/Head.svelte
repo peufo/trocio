@@ -12,6 +12,7 @@
 	export let offsetHeight
 	let dialogLoginIsActive
 	//let dialogAcceptTerms
+	let mailInput
 
 	//$: if (!!$user && !$user.acceptTerms && !!dialogAcceptTerms.open) dialogAcceptTerms.open()
 
@@ -74,8 +75,11 @@
 	</AppBar>
 </div>
 
-<Dialog bind:active={dialogLoginIsActive} class="pa-6" width="">
-	<Login on:close={() => dialogLoginIsActive = false}/>
+<Dialog
+	bind:active={dialogLoginIsActive}
+	on:introend={() => mailInput && mailInput.focus()}
+	class="pa-6" width="">
+	<Login on:close={() => dialogLoginIsActive = false} bind:mailInput/>
 </Dialog>
 
 <!--
