@@ -5,7 +5,7 @@
 	const dispatch = createEventDispatcher()
 	import dayjs from 'dayjs'
 
-	import { Button, TextField, Textarea, Table } from 'svelte-materialify'
+	import { Button, TextField, Textarea, Table, Checkbox, Tooltip } from 'svelte-materialify'
 
 	import notify from './notify.js'
 	import { troc, user } from './stores'
@@ -15,6 +15,7 @@
 
 	export let _id = ''
 	export let name = ''
+	export let is_try = true
 	export let address = ''
 	export let location = {}
 	export let description = ''
@@ -23,7 +24,7 @@
 	export let societyweb = ''
 	export let mapDelay = 0
 
-	let createPromise
+	let createTrocPromise
 
 	let offsetWidth = 0
 	let smallDisplay = false
@@ -88,7 +89,7 @@
 		else if (schedule.indexOf(undefined) != -1) invalid = 'Plage horaire incomplette'
 	}
 
-	async function create(is_try = false) {
+	async function createTroc() {
 		if (invalid) return notify.warning(invalid)
 		try {
 			let res = await fetch(`/__API__/trocs`, getHeader({name, address, location, description, schedule, society, societyweb, is_try}))
@@ -103,14 +104,6 @@
 
 	}
 
-	function createPublic(event) {
-		if (event.isTrusted) createPromise = create()
-	}
-
-	function createTry(event) {
-		if (event.isTrusted) createPromise = create(true)
-	}
-
 	//For SearchLocation to Autopatch
 	//Très bof bof, mais ca marche
 	let changeFlag = false 
@@ -121,7 +114,16 @@
 	<div class="container" class:smallDisplay>
 		<div class="item troc">
 			<h6>Mon troc</h6>
-			<br>
+			<Tooltip right raised>
+				<Checkbox
+					bind:checked={is_try}
+					title="Troc d'entrainement"
+					style="">
+					Troc d'entrainement
+				</Checkbox>
+				<span slot="tip">Testez l'interface et préparez votre équipe sans risques</span>
+			</Tooltip>
+			<br><br>
 			<TextField bind:value={name} outlined>Nom de l'évènement</TextField>
 			<br>
 			<Textarea bind:value={description} autogrow rows={5} outlined>
@@ -131,22 +133,24 @@
 
 		<div class="item location">
 			<h6>Lieu</h6><br>
-			{#if $troc && $troc.is_try}
+			{#if is_try || $troc?.is_try}
 				<div class="icon-container">
 					<br><span class="w3-text-orange">Les trocs d'entrainements n'ont pas de lieu</span>
 					<i class="fas fa-map-marked-alt"></i>
 				</div>
 			{:else}
-				<SearchAddress 	{mapDelay}
-								bind:address={address}
-								bind:location={location}
-								bind:changeFlag={changeFlag}/>
+				<SearchAddress
+					{mapDelay}
+					bind:address={address}
+					bind:location={location}
+					bind:changeFlag={changeFlag}
+				/>
 			{/if}
 		</div>
 
 		<div class="item schedule">
 			<h6>Horaire</h6><br>
-			{#if $troc && $troc.is_try}
+			{#if is_try ||  $troc?.is_try}
 				<div class="icon-container">
 					<br><span class="w3-text-orange">Les trocs d'entrainements n'ont pas d'horaire</span>
 					<i class="far fa-calendar-alt"></i>
@@ -165,7 +169,7 @@
 						{#each scheduleIn as {day, open, close}, i}
 							<tr>
 								<td>
-									<TextField bind:value={day} type="date" solo dense/>
+									<input bind:value={day} type="date" solo dense/>
 								</td>
 								<td><input bind:value={open} max={close} on:input={convertSchedule} type="time" /></td>
 								<td style="width: 20px; padding: 1px 0px 1px 16px">
@@ -205,18 +209,17 @@
 	</div>
 	
 	{#if !$troc}
-		<div style="margin-top: 40px;">
-			{#await createPromise}
+		<div class="buttons-container">
+			{#await createTrocPromise}
 				<Button>Création en cours...</Button>
 			{:then}
-				<Button on:click={createPublic} raised class="w3-right" title="Valider la création de mon troc">
-					Créer un troc public
+				<Button
+					on:click={() => createTrocPromise = createTroc()}
+					raised
+					title="Valider la création de mon troc"
+					class="green white-text">
+					Créer un troc
 				</Button>
-
-				<Button on:click={createTry} outlined class="w3-right w3-margin-right" title="Valider la création de mon troc">
-					Créer un troc d'entrainement
-				</Button>
-
 			{/await}
 		</div>
 		<br><br>
@@ -234,6 +237,12 @@
 </div>
 
 <style>
+
+	.buttons-container {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 40px;
+	}
 
 	.container {
 		display: grid;
@@ -273,13 +282,21 @@
 		border-radius: 5px;
 		text-align: center;
 	}
-
+	
 	.icon-container i {
 		left: 50%;
 		top: 64%;
 		position: absolute;
 		transform: translate(-50%, -50%) scale(3);
 		color: #fff;
+	}
+	
+	:global(.theme--dark) .icon-container {
+		border: none;
+		background: #333;
+	}
+	:global(.theme--dark) .icon-container i {
+		color: #666;
 	}
 
 
