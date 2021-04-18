@@ -1,7 +1,7 @@
-.build
+.routify
+.env
 build
 web_modules
 node_modules
-.routify
 snowpack.crt
 snowpack.key

@@ -184,6 +184,7 @@
                 <div out:slide|local>
                     <Button
                     on:click="{() => changePassword = true}"
+                    text
                     color="secondary"
                     class="w3-margin-top w3-right">
                         Changer votre mot de passe ?

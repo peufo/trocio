@@ -81,7 +81,6 @@
 	//Events which update
 	let waiting
 	function newSearch() {
-		console.log('new search')
 		clearTimeout(waiting)
 		waiting = setTimeout(() => loadTrocs(), 200)
 	}

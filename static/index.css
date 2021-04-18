@@ -22,7 +22,7 @@ a {
     color: #000!important;
 }
 
-.theme--dark a > button {
+.theme--dark a > button, .theme--dark input {
     color: #fff!important;
 }
 
@@ -202,6 +202,7 @@ textarea {
 }
 
 input[type="date"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-calendar-picker-indicator,
 input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(.5);
 }

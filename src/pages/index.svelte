@@ -12,6 +12,7 @@
     //prefetch('/search', { validFor: 60 * 1 })
 
     let footerHeight
+    //TODO: Verifier que footerHeight soit valide
 
 </script>
 
