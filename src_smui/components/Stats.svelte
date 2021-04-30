@@ -131,7 +131,7 @@
             req += `view=${selectedView}`
         }
         try {
-            let res = await fetch(`/__API__${req}`)
+            let res = await fetch(`/api${req}`)
             let json = await res.json()
     
             articlesProposed = json.articlesProposed

@@ -1,7 +1,9 @@
 {
   "scripts": {
-    "dev": "run-p routify serve:api dev:snowpack",
-    "dev:snowpack": "snowpack dev",
+    "dev": "run-p dev:*",
+    "dev:vite": "vite",
+    "dev:routify": "routify",
+    "dev:api": "nodemon ./api/server.js -w ./api",
     "build": "run-s routify:build build:snowpack",
     "build:snowpack": "snowpack build",
     "serve": "nodemon server.js -w",
@@ -13,14 +15,20 @@
     "@roxi/routify": "^2.12.3",
     "@snowpack/plugin-svelte": "^3.5.2",
     "@snowpack/plugin-webpack": "^2.3.0",
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.9",
     "npm-run-all": "^4.1.5",
     "snowpack": "^3.0.13",
-    "typescript": "^4.2.3"
+    "svelte": "^3.37.0",
+    "svelte-materialify": "^0.3.10",
+    "svelte-preprocess": "^4.7.2",
+    "typescript": "^4.2.3",
+    "vite": "^2.2.3"
   },
   "dependencies": {
     "@pnotify/animate": "^5.2.0",
     "@pnotify/font-awesome5": "^5.2.0",
     "@pnotify/mobile": "^5.2.0",
+    "@sveltestack/svelte-query": "^1.4.0",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "bwip-js": "^2.0.11",
@@ -40,8 +48,6 @@
     "print-js": "^1.5.0",
     "qr-scanner": "^1.2.0",
     "randomatic": "^3.1.1",
-    "svelte": "^3.31.1",
-    "svelte-materialify": "^0.3.6",
     "swiper": "^6.4.5"
   }
 }

@@ -50,7 +50,7 @@
     async function valid() {
         let articlesRecover = $details.provided.filter(recoverFilter)
         try {
-            let res = await fetch('/__API__/articles', getHeader(articlesRecover, 'PATCH'))
+            let res = await fetch('/api/articles', getHeader(articlesRecover, 'PATCH'))
             let json = await res.json()
             if (res.ok && json.success) {
                 let articlesPatched = json.message

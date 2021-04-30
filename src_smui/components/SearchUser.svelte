@@ -51,7 +51,7 @@
 	
 	async function searchUser() {
 		try {
-			const res = await fetch(`/__API__/users/search/${search}`)
+			const res = await fetch(`/api/users/search/${search}`)
 			const json = await res.json()
 			if (res.ok)	return json
 			else return []

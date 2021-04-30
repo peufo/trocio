@@ -69,7 +69,7 @@
 
     async function getSubscribedTrocs() {
         try {
-            let res = await fetch(`/__API__/subscribes/me?skip=${subscribedSkip}&limit=${subscribedLimit}`)
+            let res = await fetch(`/api/subscribes/me?skip=${subscribedSkip}&limit=${subscribedLimit}`)
             let json = await res.json()
             if (json.error) throw json.message
             if (subscribedSkip == 0) $subscribedTrocs = addIsClosed(json)
