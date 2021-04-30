@@ -71,7 +71,7 @@
         articlesPrinted = articlesValided
         
         try {
-            let res = await fetch('/__API__/articles', getHeader(articlesValided, 'PATCH'))
+            let res = await fetch('/api/articles', getHeader(articlesValided, 'PATCH'))
             let json = await res.json()
             if (res.ok && json.success) {
     

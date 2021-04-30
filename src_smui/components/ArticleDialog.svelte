@@ -129,7 +129,7 @@
 
     async function getTarif(trocId, userId) {
         try {
-            let res = await fetch(`/__API__/trocs/spec?troc=${trocId}&user=${userId}`)
+            let res = await fetch(`/api/trocs/spec?troc=${trocId}&user=${userId}`)
             let json = await res.json()
             tarif = json.tarif
         } catch(error) {
@@ -144,7 +144,7 @@
         console.log({createEventDispatcher})
 
         try {
-            let res = await fetch('/__API__/articles/edit', getHeader({edits, article: article._id}))
+            let res = await fetch('/api/articles/edit', getHeader({edits, article: article._id}))
             let json = await res.json()
             if (json.error) throw json.message
             notify.success('Modification enregistré')

@@ -25,7 +25,7 @@
 
 	async function subcribe(trocId) {
         try {
-            let res = await fetch('/__API__/subscribes', getHeader({troc: trocId}))
+            let res = await fetch('/api/subscribes', getHeader({troc: trocId}))
             let json = await res.json()
             if (json.error) throw json.message || 'Not found'
             notify.success('Vous participez à un nouveau troc')

@@ -10,16 +10,13 @@ module.exports = {
     src: '/dist',
     '.routify': '/',
   },
-  plugins: [
-    '@snowpack/plugin-svelte',
-    '@snowpack/plugin-webpack'
-  ],
+  plugins: ['@snowpack/plugin-svelte', '@snowpack/plugin-webpack'],
   packageOptions: {
     /* ... */
   },
   devOptions: {
     secure: true,
-    output: 'stream'
+    output: 'stream',
   },
   buildOptions: {
     /* ... */
@@ -27,16 +24,16 @@ module.exports = {
   routes: [
     //API Proxy
     {
-      src: '/__API__/.*',
+      src: '/api/.*',
       dest: (req, res) => {
-        req.url = req.url.replace(/^\/__API__/, '')
-        proxy.web(req, res, {hostname: 'localhost', port: TROCIO_API_PORT})
-      }
+        req.url = req.url.replace(/^\/api/, '')
+        proxy.web(req, res, { hostname: 'localhost', port: TROCIO_API_PORT })
+      },
     },
     //SPA Fallback
-    {match: 'routes', src: '.*', dest: '/index.html'},
+    { match: 'routes', src: '.*', dest: '/index.html' },
   ],
   alias: {
-    '$': './src/components' 
+    $: './src/components',
   },
 }

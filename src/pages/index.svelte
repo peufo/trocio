@@ -14,6 +14,7 @@
     let footerHeight
     //TODO: Verifier que footerHeight soit valide
 
+
 </script>
 
 <main style={`min-height: calc(100% - ${footerHeight}px)`}>

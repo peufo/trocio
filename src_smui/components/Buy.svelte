@@ -42,7 +42,7 @@
         req += `${$params.client && $params.client !== 'undefined' ? `&providernot=${$params.client}` :''}`
 
         try {
-            let res = await fetch(`/__API__${req}`)
+            let res = await fetch(`/api${req}`)
             let json = await res.json()
     
             if(res.ok) {
@@ -103,7 +103,7 @@
         })
 
         try {
-            let res = await fetch('/__API__/articles', getHeader(patchedArticles, 'PATCH'))
+            let res = await fetch('/api/articles', getHeader(patchedArticles, 'PATCH'))
             let json = await res.json()
             if (res.ok && json.success) {
                 let newPurchases = json.message
