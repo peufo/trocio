@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte'
-    import { isDarkTheme } from '$/stores.js'
+    import { isDarkTheme } from '$lib/stores.js'
 
     export let number = 40
 

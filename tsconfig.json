@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "paths": {
-      "$/*": ["./src/lib/*"]
+      "$lib/*": ["./src/lib/*"],
+      "$assets/*": ["./src/assets/*"]
     },
 
     "moduleResolution": "node",

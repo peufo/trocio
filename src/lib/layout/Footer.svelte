@@ -1,5 +1,5 @@
 <script>
-    import { isDarkTheme } from '$/stores.js'
+    import { isDarkTheme } from '$lib/stores.js'
 
     export let offsetHeight
 </script>

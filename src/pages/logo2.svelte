@@ -1,6 +1,6 @@
 <script>
-    import Logo from '$/LogoV2.svelte'
-    // this file is just used for dev
+  import Logo from '$lib/draw/LogoV2.svelte'
+  // this file is just used for dev
 </script>
 
-<Logo/>
+<Logo />

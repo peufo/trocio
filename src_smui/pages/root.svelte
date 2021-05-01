@@ -4,9 +4,9 @@
     import Button from '@smui/button'
     import DataTable, { Head, Body, Row, Cell } from '@smui/data-table'
 
-    import { getHeader, syntaxHighlight } from '$/utils.js'
-    import notify from '$/notify.js'
-    import SearchUser from '$/SearchUser.svelte'
+    import { getHeader, syntaxHighlight } from '$lib/utils.js'
+    import notify from '$lib/notify.js'
+    import SearchUser from '$lib/SearchUser.svelte'
 
     let isRootUser = false
 

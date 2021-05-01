@@ -7,7 +7,8 @@ export default defineConfig({
   clearScreen: false,
   resolve: {
     alias: {
-      $: '/src/lib',
+      $lib: '/src/lib',
+      $assets: '/src/assets',
     },
   },
   optimizeDeps: {

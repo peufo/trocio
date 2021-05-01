@@ -1,26 +1,21 @@
 <!-- routify:options isFooterDisplay=true -->
-
 <script>
-
-    import TermsOfUse from '$/Terms-of-use.svelte'
-
+  import TermsOfUse from '$lib/layout/Terms-of-use.svelte'
 </script>
 
 <main>
-    <br>
-    <br>
-    <h4 class="w3-center">Conditions d'utilisation</h4>
-    <br>
+  <br />
+  <br />
+  <h4 class="w3-center">Conditions d'utilisation</h4>
+  <br />
 
-    <TermsOfUse/>
-
+  <TermsOfUse />
 </main>
 
 <style>
-
-    main {
-        min-height: 620px;
-        max-width: 650px;
-        margin: auto;
-    }
+  main {
+    min-height: 620px;
+    max-width: 650px;
+    margin: auto;
+  }
 </style>
