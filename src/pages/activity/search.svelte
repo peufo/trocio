@@ -1,8 +1,7 @@
 <script>
-    import SearchTroc from '$/SearchTroc.svelte'
-
+  import SearchTroc from '$lib/control/SearchTroc.svelte'
 </script>
 
 <div style="max-width: 850px; margin: auto;">
-    <SearchTroc mapDelay="350"/>
+  <SearchTroc mapDelay="350" />
 </div>

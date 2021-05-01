@@ -4,16 +4,16 @@
     import Card from '@smui/card'
     import { onMount, onDestroy } from 'svelte'
 
-    import { trocDetails, trocDetailsPromise } from '$/stores.js'
-    import Swip     from '$/Swip.svelte'
-    import Provide  from '$/Provide.svelte'
-    import Recover  from '$/Recover.svelte'
-    import Buy      from '$/Buy.svelte'
-    import Giveback from '$/Giveback.svelte'
-    import Resume   from '$/Resume.svelte'
-    import Logo     from '$/Logo.svelte'
-    import ArticleCreateDialog from '$/ArticleCreateDialog.svelte'
-    import TarifInfoDialog from '$/TarifInfoDialog.svelte'
+    import { trocDetails, trocDetailsPromise } from '$lib/stores.js'
+    import Swip     from '$lib/Swip.svelte'
+    import Provide  from '$lib/Provide.svelte'
+    import Recover  from '$lib/Recover.svelte'
+    import Buy      from '$lib/Buy.svelte'
+    import Giveback from '$lib/Giveback.svelte'
+    import Resume   from '$lib/Resume.svelte'
+    import Logo     from '$lib/Logo.svelte'
+    import ArticleCreateDialog from '$lib/ArticleCreateDialog.svelte'
+    import TarifInfoDialog from '$lib/TarifInfoDialog.svelte'
 
     let swiper
     let tabs = [

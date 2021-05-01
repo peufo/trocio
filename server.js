@@ -7,14 +7,13 @@ const api = require('./api/app.js')
 // Activation des logs TODO: sorti dans le file system ?
 app.use(logger('dev'))
 
-// Instancation de l'API
-//TODO: FIX
+// Sert l'API
 app.use('/api', api)
 
 // Sert le build
-app.use(express.static('./build'))
+app.use(express.static('./dist'))
 
-// Par défault, sert la spa
+// Par défault, sert la SPA
 app.get('*', (req, res) => {
   res.sendFile(`${__dirname}/build/index.html`)
 })

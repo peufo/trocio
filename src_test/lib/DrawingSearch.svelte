@@ -1,7 +1,7 @@
 <script>
 
     import { onMount, onDestroy } from 'svelte'
-    import { isDarkTheme } from '$/stores.js'
+    import { isDarkTheme } from '$lib/stores.js'
 
     const WRITE_WAIT = 200
     const ERASE_WAIT = 100

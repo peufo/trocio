@@ -1,6 +1,7 @@
 .routify
 .env
 build
+dist
 web_modules
 node_modules
 snowpack.crt

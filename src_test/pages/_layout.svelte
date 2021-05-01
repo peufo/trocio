@@ -1,57 +1,59 @@
 <script>
-	import { page } from '@roxi/routify'
-	import { MaterialApp, Button } from 'svelte-materialify'
-	import Head from '$/Head.svelte'
-	import Footer from '$/Footer.svelte'
-	import FadeDecorator from '$/FadeDecorator.svelte'
-	import { isDarkTheme } from '$/stores.js'
+  import { page } from '@roxi/routify'
+  import { MaterialApp, Button } from 'svelte-materialify'
 
-	let innerHeight 	// Window height
-	let headHeight		// Header height
-	let mainHeight		// Main content height
-	let footerHeight 	// Footer height
+  import Head from '$lib/Head.svelte'
+  import Footer from '$lib/layout/Footer.svelte'
+  import FadeDecorator from '$lib/decorator/Fade.svelte'
+  import { isDarkTheme } from '$lib/stores.js'
 
-	$: {
-		mainHeight = innerHeight - headHeight
-		if ($page.meta.isFooterDisplay) mainHeight -= footerHeight
-	}
+  let innerHeight // Window height
+  let headerHeight // Header height
+  let mainHeight // Main content height
+  let footerHeight // Footer height
 
+  $: {
+    mainHeight = innerHeight - headerHeight
+    if ($page.meta.isFooterDisplay) mainHeight -= footerHeight
+  }
 </script>
 
-<svelte:window bind:innerHeight/>
+<svelte:window bind:innerHeight />
 
 <div style={`min-height: ${innerHeight}px;`}>
-	<MaterialApp theme={$isDarkTheme ? 'dark' : 'light'}>
-		
-		<Head bind:offsetHeight={headHeight}/>
-	
-		<div style="min-height: {mainHeight}px;">
-			<slot decorator={FadeDecorator} scoped={{headHeight, footerHeight, mainHeight}}/>
-		</div>
-		
-		{#if $page.meta.isFooterDisplay}
-			<Footer bind:offsetHeight={footerHeight}/>
-		{/if}
-		
-		<!-- Theme Button-->
-		<Button icon class="toggleTheme" on:click={() => $isDarkTheme = !$isDarkTheme}>
-			{#if $isDarkTheme}
-				<i class="fas fa-sun"></i>
-			{:else}
-				<i class="fas fa-moon"></i>
-			{/if}
-		</Button>
-	
-	</MaterialApp>
+  <MaterialApp theme={$isDarkTheme ? 'dark' : 'light'}>
+    <Head bind:offsetHeight={headerHeight} />
+
+    <div style="min-height: {mainHeight}px;">
+      <slot
+        decorator={FadeDecorator}
+        scoped={{ headerHeight, footerHeight, mainHeight }}
+      />
+    </div>
+
+    {#if $page.meta.isFooterDisplay}
+      <Footer bind:offsetHeight={footerHeight} />
+    {/if}
+
+    <!-- Theme Button-->
+    <Button
+      icon
+      class="toggleTheme"
+      on:click={() => ($isDarkTheme = !$isDarkTheme)}
+    >
+      {#if $isDarkTheme}
+        <i class="fas fa-sun" />
+      {:else}
+        <i class="fas fa-moon" />
+      {/if}
+    </Button>
+  </MaterialApp>
 </div>
 
 <style global>
-
-	.toggleTheme {
-		position: fixed!important;
-		right: 5px;
-		bottom: 5px;
-	}
-
+  .toggleTheme {
+    position: fixed !important;
+    right: 5px;
+    bottom: 5px;
+  }
 </style>
-

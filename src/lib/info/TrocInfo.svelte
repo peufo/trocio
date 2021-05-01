@@ -9,8 +9,8 @@
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
-  import { user } from './stores.js'
-  import { convertDMS } from './utils.js'
+  import { user } from '$lib/stores.js'
+  import { convertDMS } from '$lib/utils.js'
 
   const dispatch = createEventDispatcher()
 
@@ -25,7 +25,8 @@
   const DESCRIPTION_SIZE = 250
   let sliceDescription = DESCRIPTION_SIZE
 
-  if (!!troc.society) tabs = [...tabs, {name: 'SOCIETY',icon: 'fas fa-user-tie'}]
+  if (!!troc.society)
+    tabs = [...tabs, { name: 'SOCIETY', icon: 'fas fa-user-tie' }]
 </script>
 
 <div class="w3-row">
@@ -265,7 +266,6 @@
     border-top: transparent;
     border-top-right-radius: 10px;
   }
-
 
   /*.tab:last-child.selected:after  {
         border-bottom: var(--border-width)  solid #fff;
