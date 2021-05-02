@@ -2,7 +2,8 @@
   import { slide, fade } from 'svelte/transition'
   import { Button, TextField, Icon, Card } from 'svelte-materialify'
   import notify from '$lib/notify'
-  import { user } from '$lib/stores'
+  import { user, userQuery } from '$lib/store/user'
+
   import { getHeader } from '$lib/utils'
   import RULES from '$lib/rules'
 
@@ -259,7 +260,7 @@
       <br /><br /><br />
 
       <Button
-        on:click={user.logout}
+        on:click={userQuery.logout}
         color="secondary"
         class="w3-margin-top w3-right"
       >

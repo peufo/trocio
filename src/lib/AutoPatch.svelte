@@ -1,6 +1,5 @@
-<script>
+<script lang="ts">
   //TODO: Can become a simple module
-
   import { onMount } from 'svelte'
 
   import { troc } from '$lib/stores'

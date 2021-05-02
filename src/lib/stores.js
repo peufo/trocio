@@ -2,7 +2,7 @@ import { writable } from 'svelte/store'
 import qs from 'qs'
 
 import { getHeader, addStatutField } from './utils'
-import notify from './notify.js'
+import notify from './notify'
 
 export let user = userBuilder()
 export let userPromise = writable()

@@ -1,11 +1,14 @@
-<script>
+<script lang="ts">
   import { AppBar, Button, Dialog } from 'svelte-materialify'
+  import { onMount } from 'svelte'
+  // TODO: User Terme dialog
   //import Dialog, { Content, Title as TitleDialog, Actions } from '@smui/dialog'
+  import { troc } from '$lib/stores'
+  import { user } from '$lib/store/user'
 
-  import { user, userPromise, troc } from '$lib/stores'
   import Login from '$lib/form/Login.svelte'
-  import notify from '$lib/notify.js'
-  import { getHeader } from '$lib/utils.js'
+  import notify from '$lib/notify'
+  import { getHeader } from '$lib/utils'
 
   import logo from '$assets/favicon.ico'
 
@@ -24,7 +27,7 @@
       )
       let json = await res.json()
       if (json.error) return notify.error(json.message)
-      $user.acceptTerms = true
+      //$user.acceptTerms = true
       notify.success({
         title: 'Merci et bienvenue !',
         text: `Vous avez accepté nos conditions d'utilisations`,

@@ -1,4 +1,4 @@
-declare interface User {
+export declare interface User {
   name: string
   ref?: number
   birth?: Date
