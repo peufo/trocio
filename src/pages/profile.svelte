@@ -4,12 +4,16 @@
 
   import Login from '$lib/form/Login.svelte'
   import Profile from '$lib/form/Profile.svelte'
-  import { user } from '$lib/stores.js'
+  import { userQuery, user } from '$lib/store/user'
 
   export let scoped
+
+  $: console.log($user)
 </script>
 
-{#if $user === null}
+{#if $user}
+  <Profile />
+{:else}
   <div class="container" style="height: {scoped.mainHeight}px;">
     <div class="half w3-center">
       <a href="/">
@@ -30,8 +34,6 @@
       </Card>
     </div>
   </div>
-{:else if $user !== undefined}
-  <Profile />
 {/if}
 
 <style>

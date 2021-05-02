@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { slide, fade } from 'svelte/transition'
   import { createEventDispatcher } from 'svelte'
   const dispatch = createEventDispatcher()
@@ -7,6 +7,7 @@
 
   import { getHeader } from '$lib/utils'
   import { user, isDarkTheme } from '$lib/stores'
+  import { userQuery } from '$lib/store/user'
   import notify from '$lib/notify'
   import RULES from '$lib/rules'
 
@@ -61,7 +62,11 @@
 
   function submit() {
     if (error) return notify.warning(error)
-    if (state === LOGIN) submitPromise = Login()
+    if (state === LOGIN)
+      userQuery.login(mail, password).then(() => {
+        dispatch('close')
+        dispatch('done')
+      })
     if (state === REGISTER) submitPromise = Register()
     if (state === RECOVER) submitPromise = Recover()
   }
@@ -79,20 +84,11 @@
         )
         dispatch('newClient', json.message)
       } else {
-        await Login()
+        // await Login()
       }
     } catch (error) {
       notify.error(error)
     }
-  }
-
-  async function Login() {
-    return user.login(mail, password, (err) => {
-      if (err) return
-      dispatch('close')
-      dispatch('done')
-      return
-    })
   }
 
   async function Recover() {
@@ -213,11 +209,13 @@
         </div>
       {/if}
 
-      {#await submitPromise}
+      {#await $userQuery}
         <Button text disabled>
           <i class="fas fa-circle-notch w3-spin" />
         </Button>
       {:then}
+        <Button text on:click={submit}>Envoyer</Button>
+      {:catch}
         <Button text on:click={submit}>Envoyer</Button>
       {/await}
     </div>

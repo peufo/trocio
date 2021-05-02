@@ -12,6 +12,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
+    include: ['detect-node'],
     exclude: ['@roxi/routify'],
   },
   server: {

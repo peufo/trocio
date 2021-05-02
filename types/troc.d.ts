@@ -1,4 +1,4 @@
-declare interface Troc {
+export declare interface Troc {
   _id: string
   tag: {
     width: number
