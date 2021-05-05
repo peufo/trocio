@@ -15,6 +15,7 @@
   let mailValidationSent = false
   let userMailError = false
 
+  let changePasswordPromise
   let changePassword = false
   let oldPassword = ''
   let newPassword = ''
@@ -25,24 +26,22 @@
     () => newPassword !== newPassword2 && 'Pas identique',
   ]
 
-  // FETCH FUNCTIONS
+  function handleSendValidationMail() {
+    sendValidationMailPromise = userQuery
+      .sendValidationMail()
+      .then(() => (mailValidationSent = true))
+  }
 
-  async function validChangePassword() {
-    try {
-      let res = await fetch(
-        '/api/users/changepwd',
-        getHeader({ oldPassword, newPassword })
-      )
-      let json = await res.json()
-      if (!json.success) throw json.message
-      changePassword = false
-      oldPassword = ''
-      newPassword = ''
-      newPassword2 = ''
-      notify.success('Changement du mot de passe accepté')
-    } catch (error) {
-      notify.error(error)
-    }
+  function handleChangePassword() {
+    changePasswordPromise = userQuery
+      .changePassword(oldPassword, newPassword)
+      .then(() => {
+        changePassword = false
+        oldPassword = ''
+        newPassword = ''
+        newPassword2 = ''
+      })
+      .catch(() => {})
   }
 </script>
 
@@ -130,14 +129,7 @@
               mail non validé
             </div>
 
-            <Button
-              text
-              on:click={() =>
-                (sendValidationMailPromise = userQuery
-                  .sendValidationMail()
-                  .then(() => (mailValidationSent = true)))}
-              class="w3-right"
-            >
+            <Button text on:click={handleSendValidationMail} class="w3-right">
               Envoyer un mail de validation ?
             </Button>
           {/await}
@@ -197,15 +189,30 @@
           </TextField>
 
           <br />
-
-          <Button
-            variant="raised"
-            on:click={validChangePassword}
-            disabled={!newPassword || newPasswordError || newPassword2Error}
-            class="w3-margin-top w3-right"
-          >
-            Valider la modification
-          </Button>
+          {#await changePasswordPromise}
+            <Button text disabled class="w3-right">
+              <i class="fas fa-circle-notch w3-spin" />&nbsp;Modification du mot
+              de passe...
+            </Button>
+          {:then}
+            <Button
+              variant="raised"
+              on:click={handleChangePassword}
+              disabled={!newPassword || newPasswordError || newPassword2Error}
+              class="w3-margin-top w3-right"
+            >
+              Valider la modification
+            </Button>
+          {:catch}
+            <Button
+              variant="raised"
+              on:click={handleChangePassword}
+              disabled={!newPassword || newPasswordError || newPassword2Error}
+              class="w3-margin-top w3-right"
+            >
+              Valider la modification
+            </Button>
+          {/await}
 
           <br />
         </div>

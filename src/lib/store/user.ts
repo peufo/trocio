@@ -56,6 +56,9 @@ function createUserQuery() {
     sendValidationMail: apiUser.sendValidationMail,
 
     validMail: (validator: string) => apiUser.validMail(validator),
+
+    changePassword: (oldPassword: string, newPassword: string) =>
+      apiUser.changePassword(oldPassword, newPassword),
   }
 }
 
