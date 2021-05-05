@@ -8,8 +8,6 @@ interface BaseResponse {
   message?: string
 }
 
-type Res = { success: string; error: false } | { success: false; error: string }
-
 interface UserResponse extends BaseResponse, User {}
 
 /**
@@ -148,23 +146,6 @@ export function changePassword(oldPassword: string, newPassword: string) {
       throw notify.error(error)
     })
 }
-/*
-  try {
-    let res = await fetch(
-      '/api/users/changepwd',
-      getHeader({ oldPassword, newPassword })
-    )
-    let json = await res.json()
-    if (!json.success) throw json.message
-    changePassword = false
-    oldPassword = ''
-    newPassword = ''
-    newPassword2 = ''
-  } catch (error) {
-    notify.error(error)
-  }
-}
-*/
 
 export default {
   login,

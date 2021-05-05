@@ -11,15 +11,19 @@ interface Status {
 
 export const userQuery = createUserQuery()
 
-export const userStatus = derived<typeof userQuery, Status>(
-  userQuery,
-  ($userQuery, set) => {
-    set({ isLoading: true })
-    $userQuery
-      .then(() => set({ isLoading: false, isSuccess: true }))
-      .catch(() => set({ isLoading: false, isError: true }))
+export const userStatus = derived<
+  typeof userQuery,
+  {
+    isLoading: boolean
+    isSuccess?: boolean
+    isError?: boolean
   }
-)
+>(userQuery, ($userQuery, set) => {
+  set({ isLoading: true })
+  $userQuery
+    .then(() => set({ isLoading: false, isSuccess: true }))
+    .catch(() => set({ isLoading: false, isError: true }))
+})
 
 export const user = derived<typeof userQuery, User>(
   userQuery,
@@ -62,8 +66,6 @@ function createUserQuery() {
   }
 }
 
-type AsyncFunction<Tres> = (...args: any) => Promise<Tres>
-
 /**
  * Initialise le set du setter
  */
@@ -75,17 +77,3 @@ function createSetAndReturnPromise(
     return promise
   }
 }
-
-/**
- * Passe la promesse en argument à set() avant de la retourner
- * Util si l'appel de la méthode à besoin d'utilisé .then()
- */
-/*
-function setAndReturnPromise(
-  set: (this: void, value: Promise<User>) => void,
-  promise: Promise<User>
-) {
-  set(promise)
-  return promise
-}
-*/

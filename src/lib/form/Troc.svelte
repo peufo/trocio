@@ -13,8 +13,9 @@
     Tooltip,
   } from 'svelte-materialify'
 
-  import notify from '$lib/notify.js'
-  import { troc, user } from '$lib/stores'
+  import notify from '$lib/notify'
+  import { user, userQuery } from '$lib/store/user'
+  import { troc } from '$lib/stores'
   import { getHeader } from '$lib/utils'
   import AutoPatch from '$lib/AutoPatch.svelte'
   import SearchAddress from '$lib/control/SearchAddress.svelte'
@@ -122,7 +123,7 @@
       let json = await res.json()
       if (json.error) return notify.error(json.message)
       notify.success('Nouveau troc créer !')
-      $user.creditTroc--
+      userQuery.set({ ...$user, creditTroc: $user.creditTroc - 1 })
       dispatch('create', json.message)
     } catch (error) {
       console.trace(error)

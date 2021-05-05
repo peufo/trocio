@@ -4,11 +4,9 @@
 
   import Login from '$lib/form/Login.svelte'
   import Profile from '$lib/form/Profile.svelte'
-  import { userQuery, user } from '$lib/store/user'
+  import { user } from '$lib/store/user'
 
   export let scoped
-
-  $: console.log($user)
 </script>
 
 {#if $user}

@@ -10,7 +10,7 @@
     trocPromise,
   } from '$lib/stores.js'
   import { getHeader } from '$lib/utils.js'
-  import notify from '$lib/notify.js'
+  import notify from '$lib/notify'
 
   import TrocInfo from '$lib/info/TrocInfo.svelte'
   import Resume from '$lib/info/UserResume.svelte'
