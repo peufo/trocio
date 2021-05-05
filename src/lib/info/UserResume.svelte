@@ -6,7 +6,7 @@
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
 
-  import notify from '$lib/notify.js'
+  import notify from '$lib/notify'
   import {
     trocDetails as details,
     trocDetailsPromise as detailsPromise,

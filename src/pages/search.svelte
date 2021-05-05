@@ -1,7 +1,7 @@
 <script>
   import { redirect } from '@roxi/routify'
 
-  import { user } from '$lib/stores.js'
+  import { user } from '$lib/store/user'
   import SearchTroc from '$lib/control/SearchTroc.svelte'
 </script>
 

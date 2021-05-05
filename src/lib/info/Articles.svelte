@@ -2,7 +2,7 @@
   import { fade } from 'svelte/transition'
   import { TextField, Icon } from 'svelte-materialify'
 
-  import notify from '$lib/notify.js'
+  import notify from '$lib/notify'
 
   export let troc = ''
 

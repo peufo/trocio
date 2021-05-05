@@ -5,7 +5,7 @@
 
   import { trocDetails as details } from '$lib/stores.js'
   import { addStatutField, formatPrice, getHeader } from '$lib/utils.js'
-  import notify from '$lib/notify.js'
+  import notify from '$lib/notify'
 
   export let dialogActive = false
   export let createPromise = {}

@@ -10,7 +10,7 @@
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
-  import notify from '$lib/notify.js'
+  import notify from '$lib/notify'
   import { addIsClosed } from '$lib/utils.js'
   import { user, userPromise, subscribedTrocs } from '$lib/stores.js'
   import RowsPromise from '$lib/generic/RowsPromise.svelte'

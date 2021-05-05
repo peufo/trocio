@@ -1,5 +1,4 @@
 <script>
-  import { goto } from '@roxi/routify'
   import { onMount } from 'svelte'
   import { flip } from 'svelte/animate'
   import { crossfade, fade } from 'svelte/transition'
@@ -9,11 +8,9 @@
   import 'dayjs/locale/fr'
   import L from 'leaflet'
 
-  import { user, subscribedTrocs } from '$lib/stores.js'
-  import { getHeader, crossfadeConfig } from '$lib/utils.js'
-  import notify from '$lib/notify.js'
+  import { crossfadeConfig } from '$lib/utils.js'
+  import notify from '$lib/notify'
   import TrocInfo from '$lib/info/TrocInfo.svelte'
-  import Resume from '$lib/info/UserResume.svelte'
   import Articles from '$lib/info/Articles.svelte'
 
   import markerIcon from '$assets/images/marker-icon.png'

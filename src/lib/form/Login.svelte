@@ -5,9 +5,8 @@
   import { afterPageLoad } from '@roxi/routify'
   import { Button, TextField, Icon } from 'svelte-materialify'
 
-  import { getHeader } from '$lib/utils'
-  import { user, isDarkTheme } from '$lib/stores'
-  import { userQuery } from '$lib/store/user'
+  import { isDarkTheme } from '$lib/stores'
+  import { user, userQuery } from '$lib/store/user'
   import notify from '$lib/notify'
   import RULES from '$lib/rules'
 

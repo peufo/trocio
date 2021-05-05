@@ -9,7 +9,7 @@
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
-  import { user } from '$lib/stores.js'
+  import { user } from '$lib/store/user'
   import { convertDMS } from '$lib/utils.js'
 
   const dispatch = createEventDispatcher()
