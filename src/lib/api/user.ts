@@ -8,6 +8,8 @@ interface BaseResponse {
   message?: string
 }
 
+type Res = { success: string; error: false } | { success: false; error: string }
+
 interface UserResponse extends BaseResponse, User {}
 
 /**
@@ -134,19 +136,19 @@ export function validMail(validator: string) {
     })
 }
 
-async function sendMailValidator() {
-  try {
-    let res = await fetch('/api/users/sendvalidmail', getHeader({}))
-    let json = await res.json()
-    if (!json.success) throw json.message
-    mailValidatorSent = true
-    notify.success('Un mail de validation vuos à été envoyé')
-  } catch (error) {
-    notify.error(error)
-  }
+export function changePassword(oldPassword: string, newPassword: string) {
+  return axios
+    .post<BaseResponse>('/api/users/changepwd', { oldPassword, newPassword })
+    .then(({ data }) => {
+      if (data.error) throw data.message || 'error'
+      notify.success('Changement du mot de passe accepté')
+      return null
+    })
+    .catch((error) => {
+      throw notify.error(error)
+    })
 }
-
-async function validChangePassword() {
+/*
   try {
     let res = await fetch(
       '/api/users/changepwd',
@@ -158,11 +160,11 @@ async function validChangePassword() {
     oldPassword = ''
     newPassword = ''
     newPassword2 = ''
-    notify.success('Changement du mot de passe accepté')
   } catch (error) {
     notify.error(error)
   }
 }
+*/
 
 export default {
   login,
@@ -173,4 +175,5 @@ export default {
   update,
   sendValidationMail,
   validMail,
+  changePassword,
 }
