@@ -2,7 +2,7 @@
   import { slide, fade } from 'svelte/transition'
   import { Button, TextField, Icon, Card } from 'svelte-materialify'
   import notify from '$lib/notify'
-  import { user, userQuery } from '$lib/store/user'
+  import { user, userQuery, userStatus } from '$lib/store/user'
 
   import { getHeader } from '$lib/utils'
   import RULES from '$lib/rules'
@@ -10,12 +10,9 @@
   let userName = $user?.name
   let userNameError = false
 
-  let patchNamePromise
-
   let userMail = $user?.mail
-  let patchMailPromise
-  let sendMailValidatorPromise
-  let mailValidatorSent = false
+  let sendValidationMailPromise
+  let mailValidationSent = false
   let userMailError = false
 
   let changePassword = false
@@ -29,50 +26,6 @@
   ]
 
   // FETCH FUNCTIONS
-
-  async function patchName() {
-    try {
-      let res = await fetch(
-        '/api/users/me',
-        getHeader({ name: userName }, 'PATCH')
-      )
-      let json = await res.json()
-      if (!json.success) throw json.message
-      $user.name = userName
-      notify.success('Votre nom à bien été modifié')
-    } catch (error) {
-      notify.error(error)
-    }
-  }
-
-  async function patchMail() {
-    try {
-      let res = await fetch(
-        '/api/users/me',
-        getHeader({ mail: userMail }, 'PATCH')
-      )
-      let json = await res.json()
-      if (!json.success) throw json.message
-      $user.mailvalided = false
-      $user.mail = userMail
-      console.log(json)
-      notify.success('Votre mail à bien été modifié')
-    } catch (error) {
-      notify.error(error)
-    }
-  }
-
-  async function sendMailValidator() {
-    try {
-      let res = await fetch('/api/users/sendvalidmail', getHeader({}))
-      let json = await res.json()
-      if (!json.success) throw json.message
-      mailValidatorSent = true
-      notify.success('Un mail de validation vuos à été envoyé')
-    } catch (error) {
-      notify.error(error)
-    }
-  }
 
   async function validChangePassword() {
     try {
@@ -91,9 +44,6 @@
       notify.error(error)
     }
   }
-
-  $: patchNamePromise?.then(() => (patchNamePromise = null))
-  $: patchMailPromise?.then(() => (patchMailPromise = null))
 </script>
 
 {#if $user}
@@ -116,16 +66,16 @@
       {#if userName !== $user.name}
         <div transition:slide|local>
           <Button
-            on:click={() => (patchNamePromise = patchName())}
-            disabled={userNameError || !!patchNamePromise}
+            on:click={() => userQuery.update({ name: userName })}
+            disabled={userNameError || $userStatus.isLoading}
             class="w3-right"
           >
-            {#if !!patchNamePromise}
+            {#await $userQuery}
               <i class="fas fa-circle-notch w3-spin" />
               &nbsp;Validation ...
-            {:else}
+            {:then}
               Valider la modification
-            {/if}
+            {/await}
           </Button>
           <br /><br />
         </div>
@@ -147,16 +97,16 @@
       {#if userMail !== $user.mail}
         <div transition:slide|local>
           <Button
-            on:click={() => (patchMailPromise = patchMail())}
-            disabled={userMailError || !!patchMailPromise}
+            on:click={() => userQuery.update({ mail: userMail })}
+            disabled={userMailError || $userStatus.isLoading}
             class="w3-right"
           >
-            {#if !!patchMailPromise}
+            {#await $userQuery}
               <i class="fas fa-circle-notch w3-spin" />
               &nbsp;Validation ...
-            {:else}
+            {:then}
               Valider la modification
-            {/if}
+            {/await}
           </Button>
           <br /><br />
         </div>
@@ -164,10 +114,10 @@
       <br />
 
       {#if !$user.mailvalided}
-        {#if mailValidatorSent}
+        {#if mailValidationSent}
           <span> Un mail de validation vous à été envoyé. </span>
         {:else}
-          {#await sendMailValidatorPromise}
+          {#await sendValidationMailPromise}
             <Button text disabled class="w3-right">
               <i class="fas fa-circle-notch w3-spin" />&nbsp;Envoie du mail ...
             </Button>
@@ -182,7 +132,10 @@
 
             <Button
               text
-              on:click={() => (sendMailValidatorPromise = sendMailValidator())}
+              on:click={() =>
+                (sendValidationMailPromise = userQuery
+                  .sendValidationMail()
+                  .then(() => (mailValidationSent = true)))}
               class="w3-right"
             >
               Envoyer un mail de validation ?
