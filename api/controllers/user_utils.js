@@ -2,7 +2,6 @@ const User = require('../models/user')
 const createError = require('http-errors')
 const {
   TROCIO_ADMIN,
-  TROCIO_FRONT_HOST,
   TROCIO_GOOGLE_CLIENT_ID,
   TROCIO_GOOGLE_CLIENT_SECRET,
 } = require('../../config.js')
@@ -26,7 +25,7 @@ function checkSuperAdmin(req, res, next) {
 
 function login(req, res, next) {
   if (!req.body.mail || !req.body.password) {
-    return next(createError(401))
+    return next(Error('mail and password required'))
   } else {
     User.getAuthenticated(
       req.body.mail,
@@ -37,7 +36,7 @@ function login(req, res, next) {
           console.log(`Nouvelle connection de ${user.name}`)
           req.session.user = user
           delete req.session.user.password //TODO: not work ?
-          res.redirect('/api/users/me')
+          next()
         } else {
           var reasons = User.failedLogin
           switch (reason) {

@@ -39,69 +39,47 @@
         checkRules(RULES.NEW_PASSWORD, password) ||
         checkRules(RULE_NEW_PASSWORD2)
   }
-  function checkRules(rules, value) {
+  function checkRules(rules, value = undefined) {
     return rules.map((r) => r(value)).filter((r) => typeof r === 'string')[0]
   }
   $: state && checkForm()
 
-  const googleAuthApiParams = new URLSearchParams({
+  const GOOGLE_AUTH_API_PARAMS = new URLSearchParams({
     scope: 'email profile',
     access_type: 'online',
     response_type: 'code',
     redirect_uri: `${location.origin}/api/users/login-with-google`,
     client_id: '__GOOGLE_CLIENT_ID__',
   })
-  let googleAuthApi = `https://accounts.google.com/o/oauth2/v2/auth?${googleAuthApiParams.toString()}&state=${
-    location.href
-  }`
-  $afterPageLoad(() => {
-    googleAuthApi = `https://accounts.google.com/o/oauth2/v2/auth?${googleAuthApiParams.toString()}&state=${
+
+  const GOOGLE_AUTH_API_URL = `https://accounts.google.com/o/oauth2/v2/auth`
+  const getGoogleAuthApi = () =>
+    `${GOOGLE_AUTH_API_URL}?${GOOGLE_AUTH_API_PARAMS.toString()}&state=${
       location.href
     }`
-  })
+  let googleAuthApi = getGoogleAuthApi()
+  $afterPageLoad(() => (googleAuthApi = getGoogleAuthApi()))
 
   function submit() {
     if (error) return notify.warning(error)
-    if (state === LOGIN)
-      userQuery.login(mail, password).then(() => {
-        dispatch('close')
-        dispatch('done')
-      })
-    if (state === REGISTER) submitPromise = Register()
-    if (state === RECOVER) submitPromise = Recover()
-  }
 
-  async function Register() {
-    try {
-      let res = await fetch('/api/users', getHeader({ name, mail, password }))
-      let json = await res.json()
-      if (!json.success) throw json.message
-      //TODO
-      if ($user) {
-        //Un Cassier à créer un utilisateur
-        notify.warning(
-          `Transmettez les information de compte à ${json.message.name}\n\nMail : ${json.message.mail}\nMot de passe : ${json.message.password}`
-        )
-        dispatch('newClient', json.message)
-      } else {
-        // await Login()
-      }
-    } catch (error) {
-      notify.error(error)
-    }
-  }
+    switch (state) {
+      case LOGIN:
+        userQuery.login(mail, password).then(() => {
+          dispatch('close')
+          dispatch('done')
+        })
+        break
 
-  async function Recover() {
-    try {
-      let res = await fetch('/api/users/resetpwd', getHeader({ mail }))
-      let json = await res.json()
-      if (!res.ok) throw json.message
-      notify.warning('Votre nouveau mot de passe vous à été envoyé par mail')
-      reset = false
-      password = ''
-      password2 = ''
-    } catch (error) {
-      notify.error(error)
+      case REGISTER:
+        userQuery.register(name, mail, password)
+        break
+
+      case RECOVER:
+        userQuery.recover(mail).then(() => {
+          state = LOGIN
+        })
+        break
     }
   }
 </script>
@@ -247,12 +225,6 @@
 
   .underline-span {
     text-transform: uppercase;
-  }
-
-  .iconInput {
-    margin-top: 12px;
-    width: 30px;
-    color: #888;
   }
 
   .underline-div {

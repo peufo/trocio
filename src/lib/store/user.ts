@@ -1,75 +1,88 @@
-import { writable, derived, Readable } from 'svelte/store'
+import { writable, derived, Updater } from 'svelte/store'
 
 import type { User } from 'types'
 import apiUser from '$lib/api/user'
 
+interface Status {
+  isLoading: boolean
+  isSuccess?: boolean
+  isError?: boolean
+}
+
 export const userQuery = createUserQuery()
+
+export const userStatus = derived<typeof userQuery, Status>(
+  userQuery,
+  ($userQuery, set) => {
+    set({ isLoading: true })
+    $userQuery
+      .then(() => set({ isLoading: false, isSuccess: true }))
+      .catch(() => set({ isLoading: false, isError: true }))
+  }
+)
 
 export const user = derived<typeof userQuery, User>(
   userQuery,
   ($userQuery, set) => {
-    console.log('Update')
     $userQuery.then(set).catch(() => set(null))
   }
 )
 
 function createUserQuery() {
-  const { subscribe, set } = writable<Promise<User>>(apiUser.authenticate())
+  const { subscribe, set, update } = writable<Promise<User>>(
+    apiUser.authenticate()
+  )
+
+  const setAndReturnPromise = createSetAndReturnPromise(set)
+
   return {
     subscribe,
-    login: (mail: string, password: string) => {
-      const promise = apiUser.login(mail, password)
-      set(promise)
-      return promise
-    },
-    logout: () => set(apiUser.logout()),
+
+    set: (value: User) => setAndReturnPromise(Promise.resolve(value)),
+
+    login: (mail: string, password: string) =>
+      setAndReturnPromise(apiUser.login(mail, password)),
+
+    register: (name: string, mail: string, password: string) =>
+      setAndReturnPromise(apiUser.register(name, mail, password)),
+
+    logout: () => setAndReturnPromise(apiUser.logout()),
+
+    recover: (mail: string) => setAndReturnPromise(apiUser.recover(mail)),
+
+    update: (newValue: Partial<User>) =>
+      setAndReturnPromise(apiUser.update(newValue)),
+
+    sendValidationMail: apiUser.sendValidationMail,
+
+    validMail: (validator: string) => apiUser.validMail(validator),
   }
 }
 
-/*
-export const user = userFactory()
+type AsyncFunction<Tres> = (...args: any) => Promise<Tres>
 
-function userFactory() {
-  const { subscribe, set, update } = writable<UserStore>({ isLoading: true }, (set) => {
-    apiUser.authenticate().then((user) => {
-      if (!user) return set({  })
-      return set({ isLogged: true, ...user })
-    })
-  })
-  return {
-    subscribe,
-    set,
-    update,
-    login: async (mail: string, password: string) => {
-        set({isLoading: true})
-        apiUser.login(mail, password).then(user => {
-            if (!user) return set({})
-            return set({ isLogged })
-        })
-
-
-      try {
-        let res = await fetch('/api/users/login', getHeader({ mail, password }))
-        let json = await res.json()
-        if (json.error) throw json.message
-        loadUser(set)
-        cb()
-      } catch (error) {
-        set(null)
-        cb(error)
-        notify.error(error)
-      }
-    },
-    logout: async () => {
-      try {
-        let res = await fetch('/api/users/logout')
-        let json = await res.json()
-        if (json.error) throw json.message
-        set(null)
-      } catch (error) {
-        notify.error(error)
-      }
-    },
+/**
+ * Initialise le set du setter
+ */
+function createSetAndReturnPromise(
+  set: (this: void, value: Promise<User>) => void
+) {
+  return (promise: Promise<User>) => {
+    set(promise)
+    return promise
   }
+}
+
+/**
+ * Passe la promesse en argument à set() avant de la retourner
+ * Util si l'appel de la méthode à besoin d'utilisé .then()
+ */
+/*
+function setAndReturnPromise(
+  set: (this: void, value: Promise<User>) => void,
+  promise: Promise<User>
+) {
+  set(promise)
+  return promise
 }
 */

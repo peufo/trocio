@@ -1,4 +1,4 @@
-const { TROCIO_FRONT_PORT } = require('./config.js')
+const { TROCIO_PORT } = require('./config.js')
 const express = require('express')
 const app = express()
 const logger = require('morgan')
@@ -18,7 +18,7 @@ app.get('*', (req, res) => {
   res.sendFile(`${__dirname}/build/index.html`)
 })
 
-app.listen(TROCIO_FRONT_PORT, (err) => {
+app.listen(TROCIO_PORT, (err) => {
   if (err) return console.log(err)
-  console.log(`Server listen on port ${TROCIO_FRONT_PORT}`)
+  console.log(`Server listen on port ${TROCIO_PORT}`)
 })
