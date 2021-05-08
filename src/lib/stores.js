@@ -1,11 +1,12 @@
 import { writable } from 'svelte/store'
 import qs from 'qs'
 
+import { userQuery } from './store/user'
 import { getHeader, addStatutField } from './utils'
 import notify from './notify'
 
-export let user = userBuilder()
-export let userPromise = writable()
+//export let user = userBuilder()
+//export let userPromise = writable()
 
 //Theme
 export let isDarkTheme = writable(true)
@@ -23,7 +24,7 @@ export let subscribedTrocs = writable([]) //Managed with /activity/layout
 export let cashierOptions = writable({ autoPrintTag: true }) //Managed with cashier
 
 let userPromiseSubscribed
-userPromise.subscribe((v) => {
+userQuery.subscribe((v) => {
   userPromiseSubscribed = v
 })
 
@@ -53,6 +54,7 @@ function buildListenQuery(query, promise, load, set) {
 // 							USER
 // ------------------------------------------------------
 
+/*
 function userBuilder() {
   const { subscribe, set } = writable({}, loadUser)
   set(undefined)
@@ -89,6 +91,7 @@ function loadUser(set) {
   userPromise.set(authenticate(set))
   return () => {}
 }
+*/
 
 async function authenticate(set) {
   try {
@@ -96,7 +99,7 @@ async function authenticate(set) {
     let json = await res.json()
     if (res.ok && !json.error) {
       set(json)
-      notify.success(`Bienvenu ${json.name}`)
+      notify.success(`Bienvenuuuu ${json.name}`)
       return json
     } else {
       set(null)
