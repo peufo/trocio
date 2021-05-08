@@ -27,7 +27,7 @@
 
   onMount(() => {
     $trocPromise.then(() => {
-      if (!$troc.isSubscribed) subcribe($troc._id)
+      if (!$troc?.isSubscribed) subcribe($troc._id)
     })
   })
 
