@@ -12,7 +12,8 @@
 
   import notify from '$lib/notify'
   import { addIsClosed } from '$lib/utils.js'
-  import { user, userPromise, subscribedTrocs } from '$lib/stores.js'
+  import { user, userQuery } from '$lib/store/user'
+  import { subscribedTrocs } from '$lib/stores.js'
   import RowsPromise from '$lib/generic/RowsPromise.svelte'
   import Login from '$lib/form/Login.svelte'
 
@@ -44,10 +45,10 @@
   let segment = undefined
   $: segment = segments[$page.title]
 
-  //Juste pour ne pas attendre sur les détails
+  // Juste pour ne pas attendre sur les détails
   async function updateTrocByQuery() {
     let { troc } = qs.parse(location.search.substr(1))
-    if (!$user) await $userPromise
+    if (!$user) await $userQuery
     if (troc && $user) {
       let index = $subscribedTrocs.map((t) => t._id).indexOf(troc)
       trocSelected = $subscribedTrocs[index]
