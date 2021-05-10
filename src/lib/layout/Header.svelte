@@ -2,7 +2,6 @@
   import { AppBar, Button, Dialog } from 'svelte-materialify'
   import { onMount } from 'svelte'
   // TODO: User Terme dialog
-  //import Dialog, { Content, Title as TitleDialog, Actions } from '@smui/dialog'
   import { troc } from '$lib/stores'
   import { user } from '$lib/store/user'
 

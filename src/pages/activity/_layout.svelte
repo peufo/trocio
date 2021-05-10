@@ -1,34 +1,15 @@
 <script>
   import { page } from '@roxi/routify'
-  import qs from 'qs'
-  import { onMount, onDestroy } from 'svelte'
   import { fade, fly } from 'svelte/transition'
-  import { Button, List, ListItem } from 'svelte-materialify'
-  import dayjs from 'dayjs'
-  import relativeTime from 'dayjs/plugin/relativeTime'
-  import 'dayjs/locale/fr'
-  dayjs.locale('fr')
-  dayjs.extend(relativeTime)
 
-  import notify from '$lib/notify'
-  import { addIsClosed } from '$lib/utils.js'
-  import { user, userQuery } from '$lib/store/user'
-  import { subscribedTrocs } from '$lib/stores.js'
-  import RowsPromise from '$lib/generic/RowsPromise.svelte'
+  import { user } from '$lib/store/user'
+  import UserTrocs from '$lib/info/UserTrocs.svelte'
   import Login from '$lib/form/Login.svelte'
 
-  let subscribedSkip = 0
-  let subscribedLimit = 5
-  let subscribedTrocsPromise
-  let moreSubscribedTrocsPromise
-
+  export let scoped
   let offsetWidth = 0
   let smallDisplay = false
   $: smallDisplay = offsetWidth < 1300
-
-  let rightMenuOpen = false
-
-  let trocSelected = {}
 
   let segments = {
     create: {
@@ -44,62 +25,13 @@
 
   let segment = undefined
   $: segment = segments[$page.title]
-
-  // Juste pour ne pas attendre sur les détails
-  async function updateTrocByQuery() {
-    let { troc } = qs.parse(location.search.substr(1))
-    if (!$user) await $userQuery
-    if (troc && $user) {
-      let index = $subscribedTrocs.map((t) => t._id).indexOf(troc)
-      trocSelected = $subscribedTrocs[index]
-    } else if (!troc) {
-      trocSelected = {}
-    }
-  }
-
-  onMount(() => {
-    //if (!!$user) initTrocsSubscribedList()
-  })
-
-  onDestroy(() => {
-    removeEventListener('locationchange', updateTrocByQuery)
-  })
-
-  function initTrocsSubscribedList() {
-    subscribedTrocsPromise = getSubscribedTrocs().then(() => {
-      updateTrocByQuery()
-      addEventListener('locationchange', updateTrocByQuery)
-    })
-  }
-
-  async function getSubscribedTrocs() {
-    try {
-      let res = await fetch(
-        `/api/subscribes/me?skip=${subscribedSkip}&limit=${subscribedLimit}`
-      )
-      let json = await res.json()
-      if (json.error) throw json.message
-      if (subscribedSkip == 0) $subscribedTrocs = addIsClosed(json)
-      else $subscribedTrocs = [...$subscribedTrocs, ...addIsClosed(json)]
-      return
-    } catch (error) {
-      notify.error(error)
-    }
-  }
-
-  function clickMoreSubscribedTroc() {
-    subscribedSkip += subscribedLimit
-    moreSubscribedTrocsPromise = getSubscribedTrocs()
-  }
 </script>
 
 {#if $user === null}
-  <div class="login">
+  <div class="centered" style={`height: ${scoped.mainHeight}px`}>
     <Login />
   </div>
 {:else if $user !== undefined}
-  <span style="display: none;">{initTrocsSubscribedList()}</span>
-
   <div class="window" class:main-open={segment} bind:offsetWidth>
     <div class="main-container" class:open={segment} class:smallDisplay>
       {#if segment}
@@ -108,11 +40,6 @@
           class:no-margin={smallDisplay}
           in:fade|local={{ delay: 200 }}
         >
-          <!--
-                        <a class="w3-right w3-padding" href="/activity">
-                            <i class="fa fa-times button-icon" title={segment.closeTitle}></i>
-                        </a>
-                    -->
           <slot />
         </div>
       {/if}
@@ -124,89 +51,9 @@
         class:smallDisplay
         transition:fly|local={{ x: 500 }}
       >
-        <!-- LISTE DES TROCS-->
         <div class="item" class:no-margin={smallDisplay}>
           <div class="simple-card">
-            <div class="header">
-              <span class="title">Mes trocs</span>
-              <div>
-                <a href="/activity/create">
-                  <Button text>Organiser</Button>
-                </a>
-                <a href="/activity/search">
-                  <Button text>Trouver</Button>
-                </a>
-              </div>
-            </div>
-
-            {#await subscribedTrocsPromise}
-              <List twoLine>
-                <RowsPromise listMode twoLine meta />
-              </List>
-            {:then}
-              <List>
-                {#each $subscribedTrocs as troc, i}
-                  <a href={`/activity/detail?troc=${troc._id}`}>
-                    <ListItem
-                      active={trocSelected && trocSelected._id === troc._id}
-                      title={troc.address}
-                    >
-                      {troc.name}
-                      {#if troc.is_try}<span class="warning"
-                          >Troc d'entrainement</span
-                        >{/if}
-                      {#if troc.isClosed}<span class="warning"
-                          >Ce troc est terminé</span
-                        >{/if}
-                      <span slot="subtitle">
-                        {dayjs(
-                          troc.schedule &&
-                            troc.schedule[0] &&
-                            troc.schedule[0].open
-                        ).fromNow()}
-                        <br />
-                        {troc.description.slice(0, 124)}
-                      </span>
-                      <span slot="append">
-                        {#if troc.isAdmin}
-                          <a
-                            href={`/admin?troc=${troc._id}`}
-                            title="Accéder à la page d'administration"
-                          >
-                            <i
-                              class="fa fa-cog button-icon w3-large w3-padding"
-                            />
-                          </a>
-                        {:else if troc.isCashier}
-                          <a
-                            href={`/cashier?troc=${troc._id}`}
-                            title="Accéder à la caisse"
-                          >
-                            <i
-                              class="fa fa-cash-register w3-large w3-padding"
-                            />
-                          </a>
-                        {/if}
-                      </span>
-                    </ListItem>
-                  </a>
-                {:else}
-                  Vous n'avez pas encore de troc
-                {/each}
-
-                {#await moreSubscribedTrocsPromise}
-                  <RowsPromise listMode twoLine meta />
-                {/await}
-              </List>
-
-              {#if $subscribedTrocs.length == subscribedSkip + subscribedLimit}
-                <div class="w3-center">
-                  <Button on:click={clickMoreSubscribedTroc}>
-                    Afficher plus
-                  </Button>
-                </div>
-              {/if}
-            {/await}
+            <UserTrocs />
           </div>
         </div>
 
@@ -283,7 +130,6 @@
   }
 
   .login {
-    background: #fff;
     border-radius: 5px;
     position: absolute;
     left: 50%;
