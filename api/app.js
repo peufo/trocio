@@ -1,11 +1,7 @@
 let express = require('express')
 let cookieParser = require('cookie-parser')
 let logger = require('morgan')
-let {
-  TROCIO_DB,
-  TROCIO_DEV,
-  TROCIO_SECRET_STRING_COOKIE,
-} = require('../config.js')
+let { TROCIO_DB, TROCIO_SECRET_STRING_COOKIE } = require('../config.js')
 let { checkSuperAdmin } = require('./controllers/user_utils')
 let session = require('express-session')
 let mongoose = require('mongoose')
@@ -27,10 +23,6 @@ try {
 }
 
 let app = express()
-
-app.set('secret', TROCIO_SECRET_STRING_COOKIE)
-if (!TROCIO_SECRET_STRING_COOKIE && !TROCIO_DEV)
-  console.warn('A SECRET_STRING_COOKIE must be defined')
 
 app.use(logger('dev'))
 app.use(express.json({ limit: '2mb', extended: true }))

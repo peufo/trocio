@@ -48,7 +48,7 @@
     access_type: 'online',
     response_type: 'code',
     redirect_uri: `${location.origin}/api/users/login-with-google`,
-    client_id: '__GOOGLE_CLIENT_ID__',
+    client_id: String(import.meta.env.VITE_TROCIO_GOOGLE_CLIENT_ID),
   })
 
   const GOOGLE_AUTH_API_URL = `https://accounts.google.com/o/oauth2/v2/auth`

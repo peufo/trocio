@@ -2,11 +2,8 @@ import { writable } from 'svelte/store'
 import qs from 'qs'
 
 import { userQuery } from './store/user'
-import { getHeader, addStatutField } from './utils'
+import { addStatutField } from './utils'
 import notify from './notify'
-
-//export let user = userBuilder()
-//export let userPromise = writable()
 
 //Theme
 export let isDarkTheme = writable(true)
@@ -47,66 +44,6 @@ function buildListenQuery(query, promise, load, set) {
     return () => {
       removeEventListener('locationchange', createPromise)
     }
-  }
-}
-
-// ------------------------------------------------------
-// 							USER
-// ------------------------------------------------------
-
-/*
-function userBuilder() {
-  const { subscribe, set } = writable({}, loadUser)
-  set(undefined)
-  return {
-    subscribe,
-    set,
-    login: async (mail, password, cb) => {
-      try {
-        let res = await fetch('/api/users/login', getHeader({ mail, password }))
-        let json = await res.json()
-        if (json.error) throw json.message
-        loadUser(set)
-        cb()
-      } catch (error) {
-        set(null)
-        cb(error)
-        notify.error(error)
-      }
-    },
-    logout: async () => {
-      try {
-        let res = await fetch('/api/users/logout')
-        let json = await res.json()
-        if (json.error) throw json.message
-        set(null)
-      } catch (error) {
-        notify.error(error)
-      }
-    },
-  }
-}
-
-function loadUser(set) {
-  userPromise.set(authenticate(set))
-  return () => {}
-}
-*/
-
-async function authenticate(set) {
-  try {
-    let res = await fetch('/api/users/me')
-    let json = await res.json()
-    if (res.ok && !json.error) {
-      set(json)
-      notify.success(`Bienvenuuuu ${json.name}`)
-      return json
-    } else {
-      set(null)
-      return null
-    }
-  } catch (error) {
-    notify.error(error)
   }
 }
 
