@@ -13,7 +13,7 @@
 
   import { troc } from '$lib/stores.js'
   import { addStatutField, getFields } from '$lib/utils'
-  import RowsPromise from '$lib/generic/RowsPromise.svelte'
+  import RowsPromise from '$lib/util/RowsPromise.svelte'
   //import SearchUser from '$lib/SearchUser.svelte'
 
   export let title = ''

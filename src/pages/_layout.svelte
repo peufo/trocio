@@ -6,6 +6,7 @@
   import Footer from '$lib/layout/Footer.svelte'
   import FadeDecorator from '$lib/decorator/Fade.svelte'
   import { isDarkTheme } from '$lib/stores.js'
+  import { layout } from '$lib/store/layout'
 
   import '$assets/Pnotify_Material.css'
   import '$assets/index.css'
@@ -19,6 +20,7 @@
   $: {
     mainHeight = innerHeight - headerHeight
     if ($page.meta.isFooterDisplay) mainHeight -= footerHeight
+    $layout = { headerHeight, footerHeight, mainHeight }
   }
 </script>
 
@@ -33,10 +35,7 @@
     <Header bind:offsetHeight={headerHeight} />
 
     <div style="min-height: {mainHeight}px;">
-      <slot
-        decorator={FadeDecorator}
-        scoped={{ headerHeight, footerHeight, mainHeight }}
-      />
+      <slot decorator={FadeDecorator} scoped={$layout} />
     </div>
 
     {#if $page.meta.isFooterDisplay}
