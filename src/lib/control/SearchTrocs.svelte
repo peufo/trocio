@@ -38,8 +38,8 @@
   let west
   $: mapFilter = mapFilterChecked ? { north, east, sud, west } : {}
 
+  export let map
   let mapId = 'map' + Math.random()
-  let map
   let markers = []
   const icon = L.icon({
     iconUrl: markerIcon,
@@ -64,12 +64,14 @@
     }).addTo(map)
 
     loadBounds()
-    map.on('move', debounce(loadBounds, 200))
+    map.on('move', (event) => !!event.originalEvent && handleMoveMap())
   })
 
   onDestroy(() => {
     map.remove()
   })
+
+  const handleMoveMap = debounce(loadBounds, 200)
 
   function loadBounds() {
     let sw = map.getBounds()._southWest

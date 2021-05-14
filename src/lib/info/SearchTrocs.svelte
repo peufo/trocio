@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte'
   import { fade } from 'svelte/transition'
 
   import debounce from 'debounce'
@@ -13,6 +14,8 @@
   export let queryTrocs: UseInfiniteQueryStoreResult
   export let trocs: Troc[] = []
   export let trocsElement: HTMLElement[] = []
+
+  const dispatch = createEventDispatcher()
 
   const handleScroll = debounce(() => {
     if ($queryTrocs.hasNextPage && !$queryTrocs.isFetchingNextPage) {
@@ -34,9 +37,12 @@
       <div class="centered" in:fade style="height: 200px;">Pas de résultat</div>
     {:else}
       <div in:fade>
-        {#each trocs.sort((a, b) => b.up - a.up) as troc (troc._id)}
-          <div bind:this={trocsElement[troc._id]}>
-            <Card class="mt-8 pa-4">
+        {#each trocs as troc (troc._id)}
+          <div
+            bind:this={trocsElement[troc._id]}
+            on:click={() => dispatch('clickTroc', troc)}
+          >
+            <Card class="mt-8 pa-4" hover>
               <TrocInfo {troc} on:clickArticles={() => console.log('TODO')} />
             </Card>
           </div>
