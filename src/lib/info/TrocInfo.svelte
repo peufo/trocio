@@ -166,22 +166,22 @@
 
 <!-- Bar du fond -->
 <div class="bar">
-  <Button on:click={() => dispatch('clickArticles')} color="secondary">
+  <Button text on:click={() => dispatch('clickArticles')} color="secondary">
     Fouiller les articles
   </Button>
 
   {#if displayGetActivity && (!troc.isClosed || troc.isSubscribed)}
-    <Button href={`/activity/detail?troc=${troc._id}`}>
+    <Button text href={`/activity/detail?troc=${troc._id}`}>
       {troc.isSubscribed ? 'Voir mon activité' : 'Participer au troc'}
     </Button>
   {/if}
 
   {#if !!$user && troc.isAdmin}
-    <Button href={`/admin?troc=${troc._id}`} color="secondary">
+    <Button text href={`/admin?troc=${troc._id}`} color="secondary">
       <i class="fa fa-cog w3-large" />&nbsp; Page d'administration
     </Button>
   {:else if !!$user && troc.isCashier}
-    <Button href={`/cashier?troc=${troc._id}`} color="secondary">
+    <Button text href={`/cashier?troc=${troc._id}`} color="secondary">
       <i class="fa fa-cash-register w3-large" />&nbsp; Caisse
     </Button>
   {/if}
