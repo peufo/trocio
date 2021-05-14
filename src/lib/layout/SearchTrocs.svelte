@@ -10,13 +10,14 @@
   let query = {}
   let trocs = []
   let trocsElement: HTMLElement[] = []
+  let map
   const queryTrocs = useSearchTrocs(query)
   $: queryTrocs.setOptions(useSearchTrocsOptions(query))
   $: {
     trocs = $queryTrocs.data ? $queryTrocs.data.pages.flat() : []
   }
 
-  function clickMarker(event) {
+  function handleClickMarker(event) {
     const trocElement = trocsElement[event.detail._id]
     const moveScroll = Math.abs(window.scrollY - (trocElement.offsetTop - 150))
     window.scrollTo({
@@ -30,15 +31,30 @@
       }, 500)
     }, moveScroll / 3)
   }
+
+  function handleClickTroc(event) {
+    const troc = event.detail
+    map?.setView(troc.location, 8)
+  }
 </script>
 
 <div class="container">
   <div class="controller" style="max-height: {$layout.mainHeight}px;">
-    <SearchTrocsControl bind:query {trocs} on:clickMarker={clickMarker} />
+    <SearchTrocsControl
+      bind:query
+      {trocs}
+      on:clickMarker={handleClickMarker}
+      bind:map
+    />
   </div>
 
   <div class="info">
-    <SearchTrocsInfo {queryTrocs} {trocs} bind:trocsElement />
+    <SearchTrocsInfo
+      {queryTrocs}
+      {trocs}
+      bind:trocsElement
+      on:clickTroc={handleClickTroc}
+    />
   </div>
 </div>
 
