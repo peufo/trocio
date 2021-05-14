@@ -73,7 +73,7 @@
       {trocs}
       bind:trocsElement
       on:clickTroc={handleClickTroc}
-      on:clickArtciles={handleClickArticles}
+      on:clickArticles={handleClickArticles}
     />
   </div>
 </div>
@@ -83,7 +83,6 @@
     display: grid;
     grid-template-columns: minmax(400px, 450px) minmax(600px, 850px);
     grid-template-areas: 'controller info';
-    max-width: 100%;
     justify-content: center;
   }
 
