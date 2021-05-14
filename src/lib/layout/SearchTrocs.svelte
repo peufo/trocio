@@ -17,11 +17,18 @@
   }
 
   function clickMarker(event) {
-    console.log(trocsElement[event.detail._id].offsetTop)
+    const trocElement = trocsElement[event.detail._id]
+    const moveScroll = Math.abs(window.scrollY - (trocElement.offsetTop - 150))
     window.scrollTo({
-      top: trocsElement[event.detail._id]?.offsetTop - 150 || 0,
+      top: trocElement.offsetTop - 150 || 0,
       behavior: 'smooth',
     })
+    setTimeout(() => {
+      trocElement.classList.add('animate__animated', 'animate__shakeX')
+      setTimeout(() => {
+        trocElement.classList.remove('animate__animated', 'animate__shakeX')
+      }, 500)
+    }, moveScroll / 3)
   }
 </script>
 
