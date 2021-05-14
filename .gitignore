@@ -4,5 +4,5 @@ build
 dist
 web_modules
 node_modules
-snowpack.crt
-snowpack.key
+localhost.crt
+localhost.key
