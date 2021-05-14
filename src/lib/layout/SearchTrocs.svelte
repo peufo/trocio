@@ -17,24 +17,43 @@
     trocs = $queryTrocs.data ? $queryTrocs.data.pages.flat() : []
   }
 
+  /** Scroll et attire l'attention sur le bon troc quand on click sur un marker. */
   function handleClickMarker(event) {
     const trocElement = trocsElement[event.detail._id]
-    const moveScroll = Math.abs(window.scrollY - (trocElement.offsetTop - 150))
+    const positionTarget = trocElement.offsetTop - 150
     window.scrollTo({
-      top: trocElement.offsetTop - 150 || 0,
+      top: positionTarget || 0,
       behavior: 'smooth',
     })
-    setTimeout(() => {
+
+    function animate() {
       trocElement.classList.add('animate__animated', 'animate__shakeX')
       setTimeout(() => {
         trocElement.classList.remove('animate__animated', 'animate__shakeX')
       }, 500)
-    }, moveScroll / 3)
+    }
+
+    /* Déclenche l'animation dés que le scroll est static */
+    let position = null
+    const checkIfScrollIsStatic = setInterval(() => {
+      if (position === window.scrollY) {
+        clearInterval(checkIfScrollIsStatic)
+        animate()
+      }
+      position = window.scrollY
+    }, 50)
   }
 
+  /** Zoom sur le bon marker de la map quand on click sur un troc. */
   function handleClickTroc(event) {
     const troc = event.detail
     map?.setView(troc.location, 8)
+  }
+
+  /** Affiche la dialoge d'articles quand on click sur "Fouiller les articles". */
+  function handleClickArticles(event) {
+    const troc = event.detail
+    console.log({ troc })
   }
 </script>
 
@@ -54,6 +73,7 @@
       {trocs}
       bind:trocsElement
       on:clickTroc={handleClickTroc}
+      on:clickArtciles={handleClickArticles}
     />
   </div>
 </div>

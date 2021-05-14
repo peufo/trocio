@@ -166,7 +166,11 @@
 
 <!-- Bar du fond -->
 <div class="bar">
-  <Button text on:click={() => dispatch('clickArticles')} color="secondary">
+  <Button
+    text
+    on:click={() => dispatch('clickArticles', troc)}
+    color="secondary"
+  >
     Fouiller les articles
   </Button>
 
