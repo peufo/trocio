@@ -13,7 +13,7 @@
   } from '$lib/stores'
   import { addStatutField, getHeader, sortByUpdatedAt } from '$lib/utils'
   import ProvidedTable from '$lib/info/ProvidedTable.svelte'
-  import DetailCard from '$lib/generic/DetailCard.svelte'
+  import DetailCard from '$lib/util/DetailCard.svelte'
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)

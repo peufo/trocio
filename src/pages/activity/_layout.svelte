@@ -9,7 +9,7 @@
   export let scoped
   let offsetWidth = 0
   let smallDisplay = false
-  $: smallDisplay = offsetWidth < 1300
+  $: smallDisplay = offsetWidth < 1500
 
   let segments = {
     create: {
@@ -86,7 +86,7 @@
         grid-template-columns: auto minmax(360px, 500px);
         */
     margin: auto;
-    max-width: 1500px;
+    max-width: 2000px;
     display: flex;
     justify-content: center;
   }

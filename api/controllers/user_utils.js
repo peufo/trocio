@@ -2,7 +2,7 @@ const User = require('../models/user')
 const createError = require('http-errors')
 const {
   TROCIO_ADMIN,
-  TROCIO_GOOGLE_CLIENT_ID,
+  VITE_TROCIO_GOOGLE_CLIENT_ID,
   TROCIO_GOOGLE_CLIENT_SECRET,
 } = require('../../config.js')
 const axios = require('axios')
@@ -65,14 +65,13 @@ async function loginWithGoogle(req, res, next) {
   const host = state.match(/^(http|https):\/\/[^\/]+/)[0]
 
   const data = qs.stringify({
-    client_id: TROCIO_GOOGLE_CLIENT_ID,
+    client_id: VITE_TROCIO_GOOGLE_CLIENT_ID,
     client_secret: TROCIO_GOOGLE_CLIENT_SECRET,
     code,
     grant_type: 'authorization_code',
     redirect_uri: `${host}/api/users${req.path}`,
   })
 
-  console.log({ redirect_uri: `${host}api/users${req.path}` })
   const config = {
     method: 'post',
     url: 'https://oauth2.googleapis.com/token',

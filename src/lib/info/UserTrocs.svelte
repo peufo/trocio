@@ -1,7 +1,12 @@
 <script>
   import { Button, List, ListItem, Icon } from 'svelte-materialify'
-  import { faCog, faCashRegister } from '@fortawesome/free-solid-svg-icons'
+  import {
+    faCog,
+    faCashRegister,
+    faSnowflake,
+  } from '@fortawesome/free-solid-svg-icons'
   import { useInfiniteQuery } from '@sveltestack/svelte-query'
+  import IconLink from '$lib/util/IconLink.svelte'
   import { getUserTrocs } from '$lib/api/troc'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
@@ -9,7 +14,7 @@
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
-  import RowsPromise from '$lib/generic/RowsPromise.svelte'
+  import RowsPromise from '$lib/util/RowsPromise.svelte'
 
   const queryUserTrocs = useInfiniteQuery('userTrocs', getUserTrocs, {
     getNextPageParam: (lastPage, allPages) => {
@@ -17,8 +22,6 @@
       return lastPage.count > loadedCount ? loadedCount : undefined
     },
   })
-
-  $: console.log($queryUserTrocs)
 
   $: userTrocs = $queryUserTrocs.isLoading
     ? []
@@ -71,33 +74,19 @@
           </span>
           <span slot="append">
             {#if troc.isAdmin}
-              <!--
-
-            -->
-              <a
+              <IconLink
                 href={`/admin?troc=${troc._id}`}
-                title="Accéder à la page d'administration"
-              >
-                <Button icon>
-                  <Icon
-                    path={faCog.icon[4]}
-                    viewWidth={faCog.icon[0]}
-                    viewHeight={faCog.icon[1]}
-                    size="20px"
-                  />
-                </Button>
-              </a>
+                tip="Accéder à la page d'administration"
+                icon={faCog}
+                size="20px"
+              />
             {:else if troc.isCashier}
-              <a href={`/cashier?troc=${troc._id}`} title="Accéder à la caisse">
-                <Button icon>
-                  <Icon
-                    path={faCashRegister.icon[4]}
-                    viewWidth={faCashRegister.icon[0]}
-                    viewHeight={faCashRegister.icon[1]}
-                    size="20px"
-                  />
-                </Button>
-              </a>
+              <IconLink
+                href={`/cashier?troc=${troc._id}`}
+                tip="Accéder à la caisse"
+                icon={faCashRegister}
+                size="20px"
+              />
             {/if}
           </span>
         </ListItem>
@@ -105,17 +94,24 @@
     {:else}
       Vous n'avez pas encore de troc
     {/each}
-
-    {#if $queryUserTrocs.isFetchingNextPage}
-      <RowsPromise listMode twoLine meta />
-    {/if}
   </List>
 
-  {#if !$queryUserTrocs.isFetchingNextPage && $queryUserTrocs.hasNextPage}
-    <div class="w3-center">
-      <Button on:click={() => $queryUserTrocs.fetchNextPage()}
-        >Afficher plus</Button
-      >
+  {#if $queryUserTrocs.hasNextPage}
+    <div class="centered">
+      {#if !$queryUserTrocs.isFetchingNextPage}
+        <Button on:click={() => $queryUserTrocs.fetchNextPage()}
+          >Afficher plus</Button
+        >
+      {:else}
+        <Button disabled>
+          <Icon
+            spin
+            path={faSnowflake.icon[4]}
+            viewWidth={faSnowflake.icon[0]}
+            viewHeight={faSnowflake.icon[1]}
+          />
+        </Button>
+      {/if}
     </div>
   {/if}
 {/await}

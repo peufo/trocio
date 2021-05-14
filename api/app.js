@@ -56,8 +56,10 @@ app.use(
 // error handler
 app.use(function (err, req, res, next) {
   if (!err) return next()
+
   if (req.app.get('env') === 'development' || err.name == 'Error') {
     res.json({ error: true, message: err.message })
+    console.log(err)
   } else {
     res.json({ error: true })
   }
