@@ -43,7 +43,7 @@
             on:click={() => dispatch('clickTroc', troc)}
           >
             <Card class="mt-8 pa-4" hover>
-              <TrocInfo {troc} on:clickArticles={() => console.log('TODO')} />
+              <TrocInfo {troc} on:clickArticles />
             </Card>
           </div>
         {/each}
