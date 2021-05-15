@@ -4,5 +4,4 @@ build
 dist
 web_modules
 node_modules
-localhost.crt
-localhost.key
+
