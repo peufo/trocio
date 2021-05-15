@@ -20,7 +20,8 @@
   /** Scroll et attire l'attention sur le bon troc quand on click sur un marker. */
   function handleClickMarker(event) {
     const trocElement = trocsElement[event.detail._id]
-    const positionTarget = trocElement.offsetTop - 150
+    console.log(trocElement.offsetTop, map.boxZoom._container.offsetTop)
+    const positionTarget = trocElement.offsetTop - 265
     window.scrollTo({
       top: positionTarget || 0,
       behavior: 'smooth',
