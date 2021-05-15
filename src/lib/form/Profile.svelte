@@ -1,10 +1,8 @@
 <script>
   import { slide, fade } from 'svelte/transition'
   import { Button, TextField, Icon, Card } from 'svelte-materialify'
-  import notify from '$lib/notify'
   import { user, userQuery, userStatus } from '$lib/store/user'
 
-  import { getHeader } from '$lib/utils'
   import RULES from '$lib/rules'
 
   let userName = $user?.name

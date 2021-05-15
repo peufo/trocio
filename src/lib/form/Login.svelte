@@ -27,8 +27,6 @@
     () => password !== password2 && 'Mot de passe de confirmation différent',
   ]
 
-  let submitPromise
-
   let error = ''
   function checkForm() {
     error = checkRules(RULES.MAIL, mail)

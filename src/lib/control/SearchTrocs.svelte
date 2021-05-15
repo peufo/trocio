@@ -116,7 +116,7 @@
   }
 </script>
 
-<div class="container">
+<div class="container simple-card pa-4">
   <h5>Trouver un troc</h5>
 
   <div class="form">
@@ -161,6 +161,8 @@
 <style>
   .container {
     max-width: 850px;
+    overflow-y: auto;
+    max-height: 100%;
   }
 
   .map {
