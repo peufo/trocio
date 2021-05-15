@@ -1,5 +1,5 @@
 <script>
-  import { page } from '@roxi/routify'
+  import { page, redirect } from '@roxi/routify'
   import { fade, fly } from 'svelte/transition'
 
   import { user } from '$lib/store/user'
@@ -28,15 +28,13 @@
 </script>
 
 {#if $user === null}
-  <div class="centered" style={`height: ${scoped.mainHeight}px`}>
-    <Login />
-  </div>
+  {$redirect('/login', { callback: '/activity' })}
 {:else if $user !== undefined}
   <div class="window" class:main-open={segment} bind:offsetWidth>
     <div class="main-container" class:open={segment} class:smallDisplay>
       {#if segment}
         <div
-          class="item no-margin-right simple-card"
+          class="item no-margin-right"
           class:no-margin={smallDisplay}
           in:fade|local={{ delay: 200 }}
         >
@@ -70,14 +68,6 @@
     {/if}
   </div>
 {/if}
-
-<svelte:head
-  ><style>
-    body {
-      background: #fafafa;
-    }
-  </style></svelte:head
->
 
 <style>
   .window {
@@ -127,14 +117,6 @@
 
   .no-margin {
     margin: 0px;
-  }
-
-  .login {
-    border-radius: 5px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
   }
 
   .header {
