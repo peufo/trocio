@@ -34,16 +34,15 @@
 
 <!-- LISTE DES TROCS-->
 
-<div class="header">
+<div>
   <span class="title">Mes trocs</span>
-  <div>
-    <a href="/activity/create">
-      <Button text>Organiser</Button>
-    </a>
-    <a href="/activity/search">
-      <Button text>Trouver</Button>
-    </a>
-  </div>
+
+  <a href="/activity/create">
+    <Button text>Organiser</Button>
+  </a>
+  <a href="/activity/search">
+    <Button text>Trouver</Button>
+  </a>
 </div>
 
 {#await $queryUserTrocs.isLoading}
