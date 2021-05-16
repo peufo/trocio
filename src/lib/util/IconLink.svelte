@@ -4,8 +4,12 @@
 
   export let tip = ''
   export let href = ''
+  export let clickable = false
   export let icon: IconDefinition
-  export let size = '32px'
+  export let size = '1em'
+  export let rotate = 0
+  export let spin = false
+  export let style = ''
 </script>
 
 {#if !!tip}
@@ -13,12 +17,15 @@
     <Tooltip bottom>
       <span slot="tip">{tip}</span>
       <a {href}>
-        <Button icon>
+        <Button icon on:click>
           <Icon
             path={icon.icon[4]}
             viewWidth={icon.icon[0]}
             viewHeight={icon.icon[1]}
             {size}
+            {rotate}
+            {spin}
+            {style}
           />
         </Button>
       </a>
@@ -26,34 +33,53 @@
   {:else}
     <Tooltip bottom>
       <span slot="tip">{tip}</span>
-      <Button icon>
+      <Button icon on:click>
         <Icon
           path={icon.icon[4]}
           viewWidth={icon.icon[0]}
           viewHeight={icon.icon[1]}
           {size}
+          {rotate}
+          {spin}
+          {style}
         />
       </Button>
     </Tooltip>
   {/if}
 {:else if !!href}
   <a {href}>
-    <Button icon>
+    <Button icon on:click>
       <Icon
         path={icon.icon[4]}
         viewWidth={icon.icon[0]}
         viewHeight={icon.icon[1]}
         {size}
+        {rotate}
+        {spin}
+        {style}
       />
     </Button>
   </a>
-{:else}
-  <Button icon>
+{:else if clickable}
+  <Button icon on:click>
     <Icon
       path={icon.icon[4]}
       viewWidth={icon.icon[0]}
       viewHeight={icon.icon[1]}
       {size}
+      {rotate}
+      {spin}
+      {style}
     />
   </Button>
+{:else}
+  <Icon
+    path={icon.icon[4]}
+    viewWidth={icon.icon[0]}
+    viewHeight={icon.icon[1]}
+    {size}
+    {rotate}
+    {spin}
+    {style}
+  />
 {/if}

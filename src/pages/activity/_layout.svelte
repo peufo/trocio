@@ -4,7 +4,6 @@
 
   import { user } from '$lib/store/user'
   import UserTrocs from '$lib/info/UserTrocs.svelte'
-  import Login from '$lib/form/Login.svelte'
 
   export let scoped
   let offsetWidth = 0

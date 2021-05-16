@@ -1,21 +1,25 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
   import { fade } from 'svelte/transition'
-
   import debounce from 'debounce'
-  import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
-
-  import type { Troc } from 'types'
 
   import { Card } from 'svelte-materialify'
   import TrocInfo from '$lib/info/TrocInfo.svelte'
   import Loader from '$lib/util/Loader.svelte'
 
-  export let queryTrocs: UseInfiniteQueryStoreResult
-  export let trocs: Troc[] = []
-  export let trocsElement: HTMLElement[] = []
+  import {
+    query,
+    trocs,
+    trocsElement,
+    map,
+    useSearchTrocs,
+    useSearchTrocsOptions,
+  } from '$lib/searchTrocs/store'
 
-  const dispatch = createEventDispatcher()
+  const queryTrocs = useSearchTrocs($query)
+  $: queryTrocs.setOptions(useSearchTrocsOptions($query))
+  $: {
+    $trocs = $queryTrocs.data ? $queryTrocs.data.pages.flat() : []
+  }
 
   const handleScroll = debounce(() => {
     if ($queryTrocs.hasNextPage && !$queryTrocs.isFetchingNextPage) {
@@ -27,20 +31,25 @@
       }
     }
   }, 50)
+
+  /** Zoom sur le bon marker de la map quand on click sur un troc. */
+  function clickTroc(troc) {
+    $map?.setView(troc.location, 8)
+  }
 </script>
 
 <svelte:window on:scroll={handleScroll} />
 
 <div class="container">
   {#if $queryTrocs.isSuccess}
-    {#if !trocs.length}
+    {#if !$trocs.length}
       <div class="centered" in:fade style="height: 200px;">Pas de résultat</div>
     {:else}
       <div in:fade>
-        {#each trocs as troc (troc._id)}
+        {#each $trocs as troc (troc._id)}
           <div
-            bind:this={trocsElement[troc._id]}
-            on:click={() => dispatch('clickTroc', troc)}
+            bind:this={$trocsElement[troc._id]}
+            on:click={() => clickTroc(troc)}
           >
             <Card class="mt-8 pa-4" hover>
               <TrocInfo {troc} on:clickArticles />

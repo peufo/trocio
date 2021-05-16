@@ -1,5 +1,10 @@
+import { writable, derived } from 'svelte/store'
 import axios, { AxiosError } from 'axios'
-import { useInfiniteQuery } from '@sveltestack/svelte-query'
+import {
+  useInfiniteQuery,
+  UseInfiniteQueryResult,
+  UseInfiniteQueryStoreResult,
+} from '@sveltestack/svelte-query'
 
 import type { Troc } from 'types'
 import notify from '$lib/notify'
@@ -12,6 +17,24 @@ interface SearchTrocsQuery {
   sud?: number
   west?: number
 }
+
+export const query = writable<SearchTrocsQuery>({})
+
+// Initialized by ./Info.svelte
+// Not work
+export let queryTrocs: UseInfiniteQueryStoreResult<Troc[], AxiosError> | null =
+  null
+
+export const trocs = writable<Troc[]>([])
+
+export const trocsElement = writable<HTMLElement[]>([])
+
+export const map = writable(null)
+
+/*
+const queryTrocs = useSearchTrocs($query)
+  $: queryTrocs.setOptions(useSearchTrocsOptions($query))
+*/
 
 function getTrocs({ queryKey, pageParam = 0 }) {
   let params = { skip: pageParam, ...queryKey[0], limit: pageParam ? 5 : 15 }

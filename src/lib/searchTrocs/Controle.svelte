@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte'
+  import { onMount, onDestroy } from 'svelte'
   import { fade } from 'svelte/transition'
   import { TextField, Switch, Icon, Checkbox } from 'svelte-materialify'
   import dayjs from 'dayjs'
@@ -11,20 +11,20 @@
   import markerIcon from '$assets/images/marker-icon.png'
   import markerIcon2X from '$assets/images/marker-icon-2x.png'
 
-  export let search = ''
-  export let timeFilter: { start?: string; end?: string } = {}
-  export let mapFilter: {
+  import { query, trocs, trocsElement, map } from '$lib/searchTrocs/store'
+
+  let search = ''
+  let timeFilter: { start?: string; end?: string } = {}
+  let mapFilter: {
     north?: number
     east?: number
     sud?: number
     west?: number
   } = {}
 
-  export let query = {}
-  $: query = { search, ...timeFilter, ...mapFilter }
+  $: $query = { search, ...timeFilter, ...mapFilter }
 
-  export let trocs: Array<{ up?: number } & Troc> = []
-  $: trocs && updateMarkers()
+  $: $trocs && updateMarkers()
 
   let timeFilterChecked = false
   let start = dayjs().format('YYYY-MM-DD')
@@ -38,7 +38,7 @@
   let west
   $: mapFilter = mapFilterChecked ? { north, east, sud, west } : {}
 
-  export let map
+  // export let map
   let mapId = 'map' + Math.random()
   let markers = []
   const icon = L.icon({
@@ -49,10 +49,8 @@
     tooltipAnchor: [14, -30],
   })
 
-  const dispatch = createEventDispatcher()
-
   onMount(() => {
-    map = L.map(mapId, {
+    $map = L.map(mapId, {
       center: [47.4013048812248, 7.076493501663209],
       zoom: 6,
       watch: true,
@@ -61,21 +59,21 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map)
+    }).addTo($map)
 
     loadBounds()
-    map.on('move', (event) => !!event.originalEvent && handleMoveMap())
+    $map.on('move', (event) => !!event.originalEvent && handleMoveMap())
   })
 
   onDestroy(() => {
-    map.remove()
+    $map.remove()
   })
 
   const handleMoveMap = debounce(loadBounds, 200)
 
   function loadBounds() {
-    let sw = map.getBounds()._southWest
-    let ne = map.getBounds()._northEast
+    let sw = $map.getBounds()._southWest
+    let ne = $map.getBounds()._northEast
     north = ne.lat
     east = ne.lng
     sud = sw.lat
@@ -87,32 +85,57 @@
   }, 300)
 
   function updateMarkers() {
-    if (!map) return
+    // For HMR
+    if (!$map?._panes?.mapPane) return
 
-    trocs.slice(0, markers.length).forEach((troc, i) => {
+    $trocs.slice(0, markers.length).forEach((troc, i) => {
       markers[i].off('click')
       markers[i]
         .setLatLng(troc.location)
         .bindTooltip(troc.name)
         .on('click', () => clickMarker(troc))
     })
-    if (trocs.length > markers.length) {
-      trocs.slice(markers.length).forEach((troc) => {
+    if ($trocs.length > markers.length) {
+      $trocs.slice(markers.length).forEach((troc) => {
         markers.push(
           L.marker(troc.location, { icon })
-            .addTo(map)
+            .addTo($map)
             .bindTooltip(troc.name)
             .on('click', () => clickMarker(troc))
         )
       })
     } else {
-      markers.slice(trocs.length).forEach((m) => m.remove())
-      markers.splice(trocs.length)
+      markers.slice($trocs.length).forEach((m) => m.remove())
+      markers.splice($trocs.length)
     }
   }
 
-  function clickMarker(troc: Troc) {
-    dispatch('clickMarker', troc)
+  /** Scroll et attire l'attention sur le bon troc quand on click sur un marker. */
+  function clickMarker(troc) {
+    const trocElement = $trocsElement[troc._id]
+    if (!trocElement) return
+    const positionTarget = trocElement.offsetTop - 265
+    window.scrollTo({
+      top: positionTarget || 0,
+      behavior: 'smooth',
+    })
+
+    function animate() {
+      trocElement.classList.add('animate__animated', 'animate__shakeX')
+      setTimeout(() => {
+        trocElement.classList.remove('animate__animated', 'animate__shakeX')
+      }, 500)
+    }
+
+    /* Déclenche l'animation dés que le scroll est static */
+    let position = null
+    const checkIfScrollIsStatic = setInterval(() => {
+      if (position === window.scrollY) {
+        clearInterval(checkIfScrollIsStatic)
+        animate()
+      }
+      position = window.scrollY
+    }, 50)
   }
 </script>
 
