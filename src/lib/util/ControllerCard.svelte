@@ -2,9 +2,7 @@
   import { slide } from 'svelte/transition'
   import { Card, CardTitle } from 'svelte-materialify'
   import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
-  import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 
-  export let icon: IconDefinition | null = null
   export let title = 'Title'
   export let open = false
 
@@ -19,10 +17,8 @@
 <Card outlined hover={!open}>
   <div on:click={() => (open = true)}>
     <CardTitle>
-      {#if icon}
-        <IconLink {icon} />
-        &nbsp;&nbsp;
-      {/if}
+      <slot name="icon" />
+      &nbsp;&nbsp;
       {title}
       <div style="flex-grow: 1;" />
       <IconLink
@@ -34,7 +30,7 @@
       />
     </CardTitle>
     {#if open}
-      <div transition:slide|local>
+      <div transition:slide|local class="pa-4">
         <slot />
       </div>
     {/if}

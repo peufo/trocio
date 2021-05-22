@@ -13,7 +13,7 @@
     map,
     useSearchTrocs,
     useSearchTrocsOptions,
-  } from '$lib/searchTrocs/store'
+  } from '$lib/troc/store'
 
   const queryTrocs = useSearchTrocs($query)
   $: queryTrocs.setOptions(useSearchTrocsOptions($query))
