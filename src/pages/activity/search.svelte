@@ -1,5 +1,5 @@
 <script>
-  import SearchTrocs from '$lib/searchTrocs/Layout.svelte'
+  import SearchTrocs from '$lib/troc/Layout.svelte'
 </script>
 
 <SearchTrocs />

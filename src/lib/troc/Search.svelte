@@ -7,11 +7,10 @@
   import 'leaflet/dist/leaflet.css'
   import debounce from 'debounce'
 
-  import type { Troc } from 'types'
   import markerIcon from '$assets/images/marker-icon.png'
   import markerIcon2X from '$assets/images/marker-icon-2x.png'
 
-  import { query, trocs, trocsElement, map } from '$lib/searchTrocs/store'
+  import { query, trocs, trocsElement, map } from '$lib/troc/store'
 
   let search = ''
   let timeFilter: { start?: string; end?: string } = {}
@@ -38,7 +37,6 @@
   let west
   $: mapFilter = mapFilterChecked ? { north, east, sud, west } : {}
 
-  // export let map
   let mapId = 'map' + Math.random()
   let markers = []
   const icon = L.icon({
@@ -63,6 +61,7 @@
 
     loadBounds()
     $map.on('move', (event) => !!event.originalEvent && handleMoveMap())
+    $map.on('zoom', handleMoveMap)
   })
 
   onDestroy(() => {
@@ -139,55 +138,44 @@
   }
 </script>
 
-<div class="container simple-card pa-4">
-  <h5>Trouver un troc</h5>
-
-  <div class="form">
-    <!-- Search -->
-    <TextField
-      on:input={handleSearch}
-      on:change={handleSearch}
-      clearable
-      placeholder="Recherche"
-    >
-      <div slot="prepend">
-        <Icon class="fas fa-search" />
-      </div>
-    </TextField>
-
-    <br /><br />
-
-    <!-- Time filter -->
-    <Switch bind:checked={timeFilterChecked} color="grey">
-      Filtrer sur une période
-    </Switch>
-    <br />
-
-    <div transition:fade|local class="d-flex">
-      <TextField bind:value={start} type="date">A partir du</TextField>
-
-      <TextField bind:value={end} type="date">Jusqu'au</TextField>
-    </div>
+<!-- Search -->
+<TextField
+  on:input={handleSearch}
+  on:change={handleSearch}
+  clearable
+  placeholder="Recherche"
+>
+  <div slot="prepend">
+    <Icon class="fas fa-search" size="1em" />
   </div>
+</TextField>
 
-  <br />
-  <br />
+<br />
+<br />
 
-  <!-- Map filter -->
-  <Switch bind:checked={mapFilterChecked} color="grey">
-    Filtrer sur la carte
-  </Switch>
+<!-- Time filter -->
+<Switch bind:checked={timeFilterChecked} color="grey">
+  Filtrer sur une période
+</Switch>
+<br />
 
-  <div class="map" id={mapId} />
+<div transition:fade|local class="d-flex">
+  <TextField bind:value={start} type="date">A partir du</TextField>
+
+  <TextField bind:value={end} type="date">Jusqu'au</TextField>
 </div>
 
-<style>
-  .container {
-    max-width: 850px;
-    overflow-y: auto;
-    max-height: 100%;
-  }
+<br />
+<br />
 
+<!-- Map filter -->
+<Switch bind:checked={mapFilterChecked} color="grey">
+  Filtrer sur la carte
+</Switch>
+
+<div class="map" id={mapId} />
+
+<style>
   .map {
     height: 280px;
     border-radius: 5px;

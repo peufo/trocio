@@ -1,25 +1,25 @@
 <script lang="ts">
   import layout from '$lib/store/layout'
 
-  import Controle from './Controle.svelte'
-  import Info from './Info.svelte'
+  import TrocSearch from './Search.svelte'
+  import TrocResult from './Result.svelte'
 </script>
 
 <div class="container">
   <div class="controller" style="max-height: {$layout.mainHeight}px;">
-    <Controle />
+    <TrocSearch />
   </div>
 
   <div class="info">
-    <Info />
+    <TrocResult />
   </div>
 </div>
 
 <style>
   .container {
     display: grid;
-    grid-template-columns: minmax(400px, 450px) minmax(600px, 850px);
     grid-template-areas: 'controller info';
+    grid-template-columns: minmax(400px, 450px) minmax(600px, 850px);
     justify-content: center;
   }
 

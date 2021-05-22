@@ -61,8 +61,7 @@ export const useSearchTrocsOptions = (query: SearchTrocsQuery) => {
   }
 }
 
-export const useSearchTrocs = (query: SearchTrocsQuery) => {
-  return useInfiniteQuery<Troc[], AxiosError>(useSearchTrocsOptions(query))
-}
+export const useSearchTrocs = (query: SearchTrocsQuery) =>
+  useInfiniteQuery<Troc[], AxiosError>(useSearchTrocsOptions(query))
 
 export default useSearchTrocs
