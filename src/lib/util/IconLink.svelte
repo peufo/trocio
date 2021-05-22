@@ -2,6 +2,8 @@
   import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
   import { Button, Tooltip, Icon } from 'svelte-materialify'
 
+  let klass = ''
+  export { klass as class }
   export let tip = ''
   export let href = ''
   export let clickable = false
@@ -26,6 +28,7 @@
             {rotate}
             {spin}
             {style}
+            class={klass}
           />
         </Button>
       </a>
@@ -42,6 +45,7 @@
           {rotate}
           {spin}
           {style}
+          class={klass}
         />
       </Button>
     </Tooltip>
@@ -57,6 +61,7 @@
         {rotate}
         {spin}
         {style}
+        class={klass}
       />
     </Button>
   </a>
@@ -70,6 +75,7 @@
       {rotate}
       {spin}
       {style}
+      class={klass}
     />
   </Button>
 {:else}
@@ -81,5 +87,6 @@
     {rotate}
     {spin}
     {style}
+    class={klass}
   />
 {/if}

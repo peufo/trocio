@@ -1,17 +1,25 @@
 <script lang="ts">
-  import { AppBar, Button, Dialog } from 'svelte-materialify'
-  import { onMount } from 'svelte'
+  import { AppBar, Button, Dialog, Icon } from 'svelte-materialify'
+  import { faUser } from '@fortawesome/free-regular-svg-icons'
+  import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons'
+
   // TODO: User Terme dialog
   import { troc } from '$lib/stores'
   import { user } from '$lib/store/user'
 
+  import logo from '$assets/logo'
+  import logoIco from '$assets/favicon.ico'
+  import IconLink from '$lib/util/IconLink.svelte'
   import Login from '$lib/form/Login.svelte'
   import notify from '$lib/notify'
   import { getHeader } from '$lib/utils'
 
-  import logo from '$assets/favicon.ico'
-
   export let offsetHeight
+  let offsetWidth = 0
+  $: mobileMode = offsetWidth < 640
+
+  $: console.log(mobileMode)
+
   let dialogLoginIsActive
   //let dialogAcceptTerms
   let mailInput
@@ -43,37 +51,47 @@
   </title>
 </svelte:head>
 
-<div bind:offsetHeight>
-  <AppBar dense flat class="grey darken-2 theme--dark">
+<div bind:offsetHeight bind:offsetWidth>
+  <!--<AppBar dense flat class="grey darken-2 theme--dark">-->
+  <AppBar dense flat>
+    <img slot="icon" src={logoIco} alt="logo Trocio" height="35" class="ml-2" />
     <div slot="title">
-      <img src={logo} alt="logo Trocio" height="35" />
-      <a href="/" class="white-text">
+      <a href="/" style="color: var(--theme-text-primary);">
         TROCIO {$troc ? ` - ${$troc.name}` : ''}
       </a>
     </div>
 
     <div style="flex-grow: 1;" />
 
-    {#if $user}
-      <div>
-        <a href="/activity">
-          <Button text>
-            <i class="fas fa-bars w3-large" />
-            <span class="button-label">&nbsp;Mes trocs</span>
-          </Button>
-        </a>
+    <a href="/trocs/explore">
+      <Button text fab={mobileMode}>
+        <IconLink icon={faMapMarkerAlt} />
+        {#if !mobileMode}&nbsp;&nbsp;Explorer{/if}
+      </Button>
+    </a>
+    <a href="/trocs">
+      <Button text fab={mobileMode}>
+        <Icon {...logo} size="1.1em" />
+        {#if !mobileMode}&nbsp;&nbsp;Mes trocs{/if}
+      </Button>
+    </a>
 
-        <a href="/profile">
-          <Button text>
-            <i class="fas fa-user w3-large" />
-            <span class="button-label">&nbsp;{$user.name}</span>
-          </Button>
-        </a>
-      </div>
+    {#if $user}
+      <a href="/profile">
+        <Button text fab={mobileMode}>
+          <IconLink icon={faUser} />
+          {#if !mobileMode}&nbsp;&nbsp;{$user.name}{/if}
+        </Button>
+      </a>
     {:else}
-      <Button on:click={() => (dialogLoginIsActive = true)} text>
-        <i class="far fa-user w3-large" />
-        <span class="button-label">&nbsp;Connexion</span>
+      <Button
+        on:click={() => (dialogLoginIsActive = true)}
+        text
+        fab={mobileMode}
+        class="mr-1"
+      >
+        <IconLink icon={faUser} />
+        {#if !mobileMode}&nbsp;&nbsp;Connexion{/if}
       </Button>
     {/if}
   </AppBar>
@@ -104,10 +122,3 @@
 	</Actions>
 </Dialog>
 -->
-<style>
-  @media screen and (max-width: 500px) {
-    .button-label {
-      display: none;
-    }
-  }
-</style>
