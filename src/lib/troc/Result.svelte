@@ -17,10 +17,9 @@
 
   const queryTrocs = useSearchTrocs($query)
   $: queryTrocs.setOptions(useSearchTrocsOptions($query))
-  $: {
-    $trocs = $queryTrocs.data ? $queryTrocs.data.pages.flat() : []
-  }
+  $: $trocs = $queryTrocs.data ? $queryTrocs.data.pages.flat() : []
 
+  /** Charge les résultat suivant en cas de scroll */
   const handleScroll = debounce(() => {
     if ($queryTrocs.hasNextPage && !$queryTrocs.isFetchingNextPage) {
       const { scrollY, innerHeight } = window
@@ -51,7 +50,7 @@
             bind:this={$trocsElement[troc._id]}
             on:click={() => clickTroc(troc)}
           >
-            <Card class="mt-8 pa-4" hover>
+            <Card class="mb-6 pa-4" hover>
               <TrocInfo {troc} on:clickArticles />
             </Card>
           </div>
@@ -80,6 +79,7 @@
 <style>
   .container {
     max-width: 850px;
+    margin: auto;
     padding-left: 1em;
     padding-right: 1em;
   }

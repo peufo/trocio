@@ -1,6 +1,6 @@
 <script>
   import { goto } from '@roxi/routify'
-  import EditForm from '$lib/form/Troc.svelte'
+  import TrocEdit from '$lib/troc/Edit.svelte'
 
   function createTroc(e) {
     let troc = e.detail
@@ -10,4 +10,4 @@
 
 <h4>Organiser un troc</h4>
 
-<EditForm mapDelay="250" on:create={createTroc} />
+<TrocEdit mapDelay="250" on:create={createTroc} />

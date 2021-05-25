@@ -18,8 +18,6 @@
   let offsetWidth = 0
   $: mobileMode = offsetWidth < 640
 
-  $: console.log(mobileMode)
-
   let dialogLoginIsActive
   //let dialogAcceptTerms
   let mailInput
@@ -69,7 +67,7 @@
         {#if !mobileMode}&nbsp;&nbsp;Explorer{/if}
       </Button>
     </a>
-    <a href="/trocs">
+    <a href="/trocs/my">
       <Button text fab={mobileMode}>
         <Icon {...logo} size="1.1em" />
         {#if !mobileMode}&nbsp;&nbsp;Mes trocs{/if}
