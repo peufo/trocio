@@ -1,4 +1,7 @@
-import type { UseInfiniteQueryResult } from '@sveltestack/svelte-query'
+import type {
+  GetNextPageParamFunction,
+  UseInfiniteQueryResult,
+} from '@sveltestack/svelte-query'
 
 /**
  * Find and update an item on infinit result pages
@@ -18,4 +21,8 @@ export function setItemById(
       ),
     },
   }
+}
+
+export function getNextPageParam(lastPage, allPages): GetNextPageParamFunction {
+  return lastPage.length ? allPages.flat().length : undefined
 }

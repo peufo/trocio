@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import { fade } from 'svelte/transition'
-  import { TextField, Switch, Icon, Checkbox } from 'svelte-materialify'
+  import { TextField, Switch, Icon } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import L from 'leaflet'
   import 'leaflet/dist/leaflet.css'
@@ -159,7 +158,7 @@
 </Switch>
 <br />
 
-<div transition:fade|local class="d-flex">
+<div class="d-flex">
   <TextField bind:value={start} type="date">A partir du</TextField>
 
   <TextField bind:value={end} type="date">Jusqu'au</TextField>

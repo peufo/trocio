@@ -6,7 +6,7 @@ import { addStatutField } from './utils'
 import notify from './notify'
 
 //Theme
-export let isDarkTheme = writable(true)
+export let isDarkTheme = writable(false)
 
 //Troc's meta
 export let troc = trocBuilder()

@@ -1,9 +1,9 @@
 let Subscribe = require('../models/subscribe')
 
 function getMySubscribedTrocs(req, res, next) {
-  let { limit = 10, skip = 0 } = req.query
-  limit = Number(limit)
+  let { skip = 0, limit = 10 } = req.query
   skip = Number(skip)
+  limit = Number(limit)
 
   console.log({ skip, limit })
 
@@ -20,10 +20,6 @@ function getMySubscribedTrocs(req, res, next) {
     .lean()
     .exec(async (err, subs) => {
       if (err) return next(err)
-
-      let count = await Subscribe.countDocuments({
-        user: req.session.user._id,
-      })
 
       //Admin and cashier becomes booleans
       let trocs = subs
@@ -43,7 +39,7 @@ function getMySubscribedTrocs(req, res, next) {
         })
         .filter(Boolean)
 
-      res.json({ docs: trocs, count })
+      res.json(trocs)
     })
 }
 

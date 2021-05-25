@@ -1,5 +1,5 @@
 <script>
-  import { Button, List, ListItem, Icon } from 'svelte-materialify'
+  import { Button, List, ListItem } from 'svelte-materialify'
   import { faCog, faCashRegister } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
@@ -19,19 +19,6 @@
 
   let trocSelected = {}
 </script>
-
-<!-- LISTE DES TROCS-->
-
-<div>
-  <span class="title">Mes trocs</span>
-
-  <a href="/activity/create">
-    <Button text>Organiser</Button>
-  </a>
-  <a href="/activity/search">
-    <Button text>Trouver</Button>
-  </a>
-</div>
 
 {#await $queryUserTrocs.isLoading}
   <List twoLine>
