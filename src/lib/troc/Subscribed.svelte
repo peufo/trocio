@@ -1,5 +1,5 @@
 <script>
-  import { Button, List, ListItem } from 'svelte-materialify'
+  import { List, ListItem } from 'svelte-materialify'
   import { faCog, faCashRegister } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
@@ -12,7 +12,7 @@
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
-  import RowsPromise from '$lib/util/RowsPromise.svelte'
+  export let offset = 0
 
   const queryUserTrocs = useSubscribedTrocs()
   $: userTrocs = $queryUserTrocs.data ? $queryUserTrocs.data.pages.flat() : []
@@ -22,15 +22,17 @@
 
 {#await $queryUserTrocs.isLoading}
   <List twoLine>
-    <RowsPromise listMode twoLine meta />
+    <ListItem disabled>
+      <Loader />
+    </ListItem>
   </List>
 {:then}
-  <List>
+  <List dense>
     {#each userTrocs as troc}
       <a href={`/activity/detail?troc=${troc._id}`}>
         <ListItem
           active={trocSelected && trocSelected._id === troc._id}
-          title={troc.address}
+          style="padding-left: {offset}px;"
         >
           {troc.name}
           {#if troc.is_try}
@@ -50,14 +52,13 @@
             {#if troc.isAdmin}
               <IconLink
                 href={`/admin?troc=${troc._id}`}
-                tip="Accéder à la page d'administration"
                 icon={faCog}
                 size="20px"
+                style="opacity: .6;"
               />
             {:else if troc.isCashier}
               <IconLink
                 href={`/cashier?troc=${troc._id}`}
-                tip="Accéder à la caisse"
                 icon={faCashRegister}
                 size="20px"
               />
@@ -68,19 +69,20 @@
     {:else}
       Vous n'avez pas encore de troc
     {/each}
-  </List>
 
-  {#if $queryUserTrocs.hasNextPage}
-    <div class="centered">
-      {#if !$queryUserTrocs.isFetchingNextPage}
-        <Button on:click={() => $queryUserTrocs.fetchNextPage()}>
+    {#if $queryUserTrocs.hasNextPage}
+      <ListItem
+        on:click={() =>
+          !$queryUserTrocs.isFetchingNextPage &&
+          $queryUserTrocs.fetchNextPage()}
+        style="padding-left: {offset}px;"
+      >
+        {#if !$queryUserTrocs.isFetchingNextPage}
           Afficher plus
-        </Button>
-      {:else}
-        <Button disabled>
+        {:else}
           <Loader />
-        </Button>
-      {/if}
-    </div>
-  {/if}
+        {/if}
+      </ListItem>
+    {/if}
+  </List>
 {/await}

@@ -8,7 +8,7 @@
   export let href = ''
   export let clickable = false
   export let icon: IconDefinition
-  export let size = '1em'
+  export let size = '24px'
   export let rotate = 0
   export let spin = false
   export let style = ''

@@ -252,61 +252,64 @@
         >Site internet de l'organisation</TextField
       >
     </div>
+    {#if !$troc}
+      <div class="item buttons-container">
+        {#await createTrocPromise}
+          <Button>Création en cours...</Button>
+        {:then}
+          <Button
+            on:click={() => (createTrocPromise = createTroc())}
+            raised
+            title="Valider la création de mon troc"
+            class="green white-text"
+          >
+            Créer un troc
+          </Button>
+        {/await}
+      </div>
+    {:else}
+      <AutoPatch
+        source="editForm"
+        path={`/trocs/${_id}`}
+        {invalid}
+        body={{
+          name,
+          address,
+          location,
+          description,
+          schedule,
+          society,
+          societyweb,
+        }}
+        trocRefresh
+        bind:changeFlag
+      />
+    {/if}
   </div>
-
-  {#if !$troc}
-    <div class="buttons-container">
-      {#await createTrocPromise}
-        <Button>Création en cours...</Button>
-      {:then}
-        <Button
-          on:click={() => (createTrocPromise = createTroc())}
-          raised
-          title="Valider la création de mon troc"
-          class="green white-text"
-        >
-          Créer un troc
-        </Button>
-      {/await}
-    </div>
-    <br /><br />
-  {:else}
-    <AutoPatch
-      source="editForm"
-      path={`/trocs/${_id}`}
-      {invalid}
-      body={{
-        name,
-        address,
-        location,
-        description,
-        schedule,
-        society,
-        societyweb,
-      }}
-      trocRefresh
-      bind:changeFlag
-    />
-  {/if}
 </div>
 
-<style>
+<style lang="scss">
   .buttons-container {
     display: flex;
     justify-content: flex-end;
-    margin-top: 40px;
+    grid-column: 2;
   }
 
   .container {
     display: grid;
     width: 100%;
-    grid-template-columns: minmax(50%, 500px) minmax(25%, 50%);
+    max-width: 1000px;
+    margin: auto;
+    grid-template-columns: minmax(50%, 500px) minmax(40%, 50%);
     gap: 2rem;
     padding-bottom: 2em;
   }
 
   .container.smallDisplay {
     grid-template-columns: 100%;
+    .buttons-container {
+      grid-column: 1;
+    }
   }
 
   .schedule input {
