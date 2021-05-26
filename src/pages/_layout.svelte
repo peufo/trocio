@@ -20,7 +20,7 @@
   $: {
     mainHeight = innerHeight - headerHeight
     if ($page.meta.isFooterDisplay) mainHeight -= footerHeight
-    $layout = { headerHeight, footerHeight, mainHeight }
+    $layout = { headerHeight, footerHeight, mainHeight, innerHeight }
   }
 </script>
 

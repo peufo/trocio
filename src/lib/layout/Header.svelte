@@ -16,7 +16,7 @@
 
   export let offsetHeight
   let offsetWidth = 0
-  $: mobileMode = offsetWidth < 640
+  $: mobileMode = offsetWidth < 540
 
   let dialogLoginIsActive
   //let dialogAcceptTerms
@@ -50,8 +50,7 @@
 </svelte:head>
 
 <div bind:offsetHeight bind:offsetWidth>
-  <!--<AppBar dense flat class="grey darken-2 theme--dark">-->
-  <AppBar dense flat>
+  <AppBar flat>
     <img slot="icon" src={logoIco} alt="logo Trocio" height="35" class="ml-2" />
     <div slot="title">
       <a href="/" style="color: var(--theme-text-primary);">
@@ -61,16 +60,10 @@
 
     <div style="flex-grow: 1;" />
 
-    <a href="/trocs/explore">
+    <a href="/trocs">
       <Button text fab={mobileMode}>
-        <IconLink icon={faMapMarkerAlt} />
-        {#if !mobileMode}&nbsp;&nbsp;Explorer{/if}
-      </Button>
-    </a>
-    <a href="/trocs/my">
-      <Button text fab={mobileMode}>
-        <Icon {...logo} size="1.1em" />
-        {#if !mobileMode}&nbsp;&nbsp;Mes trocs{/if}
+        <Icon {...logo} />
+        {#if !mobileMode}&nbsp;&nbsp;Les trocs{/if}
       </Button>
     </a>
 

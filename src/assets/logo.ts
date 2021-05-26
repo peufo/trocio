@@ -30,7 +30,7 @@ function line(from: Dot, to: Dot) {
 
 const center = { x: 500, y: 500 }
 const angles = [0, 60, 120, 180, 240, 300]
-const RAYON = 400
+const RAYON = 450
 const dots = angles.map((angle) => {
   const radians = (angle / 360) * Math.PI * 2
   let x = center.x + Math.cos(radians) * RAYON
