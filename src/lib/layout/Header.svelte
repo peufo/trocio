@@ -1,11 +1,11 @@
 <script lang="ts">
   import { AppBar, Button, Dialog, Icon } from 'svelte-materialify'
   import { faUser } from '@fortawesome/free-regular-svg-icons'
-  import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons'
 
   // TODO: User Terme dialog
   import { troc } from '$lib/stores'
   import { user } from '$lib/store/user'
+  import { trocNavigationActive } from '$lib/store/layout'
 
   import logo from '$assets/logo'
   import logoIco from '$assets/favicon.ico'
@@ -61,7 +61,11 @@
     <div style="flex-grow: 1;" />
 
     <a href="/trocs">
-      <Button text fab={mobileMode}>
+      <Button
+        text
+        fab={mobileMode}
+        on:click={() => ($trocNavigationActive = true)}
+      >
         <Icon {...logo} />
         {#if !mobileMode}&nbsp;&nbsp;Les trocs{/if}
       </Button>

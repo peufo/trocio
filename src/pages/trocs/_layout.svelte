@@ -1,21 +1,31 @@
 <script lang="ts">
-  import layout from '$lib/store/layout'
+  import { page, metatags } from '@roxi/routify'
+  import { Overlay } from 'svelte-materialify'
+
   import TrocNavigation from '$lib/troc/Navigation.svelte'
-  import { page } from '@roxi/routify'
+  import { trocNavigationActive } from '$lib/store/layout'
 
-  let offsetWidth = 500
-
+  let offsetWidth
   let navigationWidth = '360px'
+
+  $: mobileMode = offsetWidth < 1000
+  $: $trocNavigationActive = !mobileMode
+  $: overlayActive = $trocNavigationActive && mobileMode
 </script>
 
 <div
   class="layout"
   bind:offsetWidth
-  style="padding-left: {!$page.meta.navigationClosed ? navigationWidth : '0px'}"
+  style="padding-left: {$trocNavigationActive && !mobileMode
+    ? navigationWidth
+    : '0px'}"
 >
-  <TrocNavigation
-    active={!$page.meta.navigationClosed}
-    width={navigationWidth}
+  <TrocNavigation active={$trocNavigationActive} width={navigationWidth} />
+
+  <Overlay
+    index={2}
+    active={overlayActive}
+    on:click={() => ($trocNavigationActive = false)}
   />
 
   <div class="pa-4" style="width: 100%;">

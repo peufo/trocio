@@ -29,7 +29,7 @@
 {:then}
   <List dense>
     {#each userTrocs as troc}
-      <a href={`/activity/detail?troc=${troc._id}`}>
+      <a href={`/trocs/${troc._id}`}>
         <ListItem
           active={trocSelected && trocSelected._id === troc._id}
           style="padding-left: {offset}px;"

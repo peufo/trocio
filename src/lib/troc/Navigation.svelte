@@ -25,7 +25,7 @@
   export let active = true
   export let width = '360px'
 
-  let trocSubscribedShow = true
+  let trocSubscribedShow = false
   let scrollY = 0
 
   let search = ''
@@ -106,7 +106,7 @@
       </ListItem>
 
       {#if trocSubscribedShow}
-        <div transition:slide|locale>
+        <div transition:slide|local>
           <TrocSubscribed offset={72} />
         </div>
       {/if}
