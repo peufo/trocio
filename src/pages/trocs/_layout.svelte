@@ -1,12 +1,17 @@
 <script lang="ts">
-  import { page, metatags } from '@roxi/routify'
   import { Overlay } from 'svelte-materialify'
+  import { afterPageLoad, isActive } from '@roxi/routify'
 
   import TrocNavigation from '$lib/troc/Navigation.svelte'
   import { trocNavigationActive } from '$lib/store/layout'
 
   let offsetWidth
   let navigationWidth = '360px'
+
+  $afterPageLoad(() => {
+    // Hide navigation for create form
+    $trocNavigationActive = !$isActive('./create')
+  })
 
   $: mobileMode = offsetWidth < 1000
   $: $trocNavigationActive = !mobileMode
