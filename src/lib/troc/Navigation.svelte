@@ -26,6 +26,7 @@
 
   export let active = true
   export let width = '360px'
+  export let mobileMode = false
 
   let trocSubscribedShow = false
   let scrollY = 0
@@ -45,7 +46,8 @@
   }, 300)
 
   $afterPageLoad(() => {
-    if ($isActive('/trocs/index')) setTimeout(() => searchElement?.focus(), 200)
+    if (!mobileMode && $isActive('/trocs/index'))
+      setTimeout(() => searchElement?.focus(), 200)
   })
 </script>
 
@@ -64,7 +66,10 @@
   "
 >
   <div class="pa-2">
-    <TrocMap bind:mapFilter />
+    <TrocMap
+      bind:mapFilter
+      on:clickMarker={() => mobileMode && (active = false)}
+    />
   </div>
 
   <div class="pa-2">
@@ -129,7 +134,10 @@
               </div>
             </ListItem>
           {:else}
-            <TrocSubscribed offset={72} />
+            <TrocSubscribed
+              offset={72}
+              on:click={() => mobileMode && (active = false)}
+            />
           {/if}
         </div>
       {/if}

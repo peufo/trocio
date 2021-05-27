@@ -45,7 +45,7 @@
     <!-- Theme Button-->
     <Button
       icon
-      style="position: fixed!important; right: 5px; bottom: 5px;"
+      style="position: fixed!important; right: 10px; bottom: 10px;"
       on:click={() => ($isDarkTheme = !$isDarkTheme)}
     >
       {#if $isDarkTheme}

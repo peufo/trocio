@@ -4,6 +4,7 @@
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
+  import { params } from '@roxi/routify'
 
   import IconLink from '$lib/util/IconLink.svelte'
   import Loader from '$lib/util/Loader.svelte'
@@ -16,8 +17,6 @@
 
   const queryUserTrocs = useSubscribedTrocs()
   $: userTrocs = $queryUserTrocs.data ? $queryUserTrocs.data.pages.flat() : []
-
-  let trocSelected = {}
 </script>
 
 {#await $queryUserTrocs.isLoading}
@@ -31,7 +30,8 @@
     {#each userTrocs as troc}
       <a href={`/trocs/${troc._id}`}>
         <ListItem
-          active={trocSelected && trocSelected._id === troc._id}
+          on:click
+          active={$params.trocId === troc._id}
           style="padding-left: {offset}px;"
         >
           {troc.name}
@@ -67,7 +67,9 @@
         </ListItem>
       </a>
     {:else}
-      Vous n'avez pas encore de troc
+      <div class="text--disabled text-center">
+        Vous n'avez pas encore de troc
+      </div>
     {/each}
 
     {#if $queryUserTrocs.hasNextPage}

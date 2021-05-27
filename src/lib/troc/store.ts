@@ -38,7 +38,8 @@ export const useSearchTrocs = (query: SearchTrocsQuery) =>
  */
 export const subscribedTrocs = writable<Troc[]>([])
 export const useSubscribedTrocs = () =>
-  useInfiniteQuery('userTrocs', {
+  useInfiniteQuery({
+    queryKey: 'subscribedTrocs',
     queryFn: getSubscribedTrocs,
     getNextPageParam,
   })

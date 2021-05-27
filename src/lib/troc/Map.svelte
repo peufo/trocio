@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
+  import { onMount, onDestroy, createEventDispatcher } from 'svelte'
   import { Switch } from 'svelte-materialify'
   import L from 'leaflet'
   import 'leaflet/dist/leaflet.css'
@@ -26,6 +26,8 @@
 
   $: $trocs && updateMarkers()
 
+  const dispatch = createEventDispatcher()
+
   let mapId = 'map' + Math.random()
   let markers = []
   const icon = L.icon({
@@ -35,6 +37,9 @@
     iconAnchor: [14, 42],
     tooltipAnchor: [14, -30],
   })
+
+  // Flag util pour s'assuré de l'origine des zoom et move de la map
+  let isUserAction = false
 
   onMount(() => {
     $map = L.map(mapId, {
@@ -48,8 +53,9 @@
     }).addTo($map)
 
     loadBounds()
-    $map.on('move', (event) => !!event.originalEvent && handleMoveMap())
-    $map.on('zoom', handleMoveMap)
+
+    $map.on('move', (event) => isUserAction && handleMoveMap())
+    $map.on('zoom', (event) => isUserAction && handleMoveMap())
   })
 
   onDestroy(() => {
@@ -95,9 +101,10 @@
 
   /** Scroll et attire l'attention sur le bon troc quand on click sur un marker. */
   function clickMarker(troc) {
+    dispatch('clickMarker')
     const trocElement = $trocsElement[troc._id]
     if (!trocElement) return
-    const positionTarget = trocElement.offsetTop - 265
+    const positionTarget = trocElement.offsetTop - 10
     window.scrollTo({
       top: positionTarget || 0,
       behavior: 'smooth',
@@ -122,14 +129,14 @@
   }
 </script>
 
-<!-- Map filter -->
-<!--
-  <Switch bind:checked={mapFilterChecked} color="grey">
-    Filtrer sur la carte
-  </Switch>
--->
-
-<div class="map" id={mapId} />
+<div
+  class="map"
+  id={mapId}
+  on:mouseover={() => (isUserAction = true)}
+  on:touchstart={() => (isUserAction = true)}
+  on:mouseleave={() => (isUserAction = false)}
+  on:touchend={() => (isUserAction = false)}
+/>
 
 <style>
   .map {
