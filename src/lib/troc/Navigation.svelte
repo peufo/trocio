@@ -14,10 +14,12 @@
   } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
   import debounce from 'debounce'
+  import { isActive, afterPageLoad } from '@roxi/routify'
 
   import logo from '$assets/logo'
   import { query } from '$lib/troc/store'
   import layout from '$lib/store/layout'
+  import { user } from '$lib/store/user'
   import IconLink from '$lib/util/IconLink.svelte'
   import TrocMap from '$lib/troc/Map.svelte'
   import TrocSubscribed from '$lib/troc/Subscribed.svelte'
@@ -29,25 +31,29 @@
   let scrollY = 0
 
   let search = ''
+  let searchElement: undefined | HTMLInputElement
   let mapFilter = {}
   let timeFilter: { start?: string; end?: string } = {}
-  // TODO: remove timeFilterChecked ?
-  let timeFilterChecked = true
   let start = dayjs().add(-1, 'year').format('YYYY-MM-DD')
   let end = dayjs().add(6, 'month').format('YYYY-MM-DD')
 
-  $: timeFilter = timeFilterChecked ? { start, end } : {}
+  $: timeFilter = { start, end }
   $: $query = { search, ...timeFilter, ...mapFilter }
 
   const handleSearch = debounce((event) => {
     search = event.target.value
   }, 300)
+
+  $afterPageLoad(() => {
+    if ($isActive('/trocs/index')) setTimeout(() => searchElement?.focus(), 200)
+  })
 </script>
 
 <svelte:window bind:scrollY />
 
 <NavigationDrawer
   {active}
+  transition={() => ({ duration: 0, css: (t) => '' })}
   fixed
   style="
     width: {width};
@@ -57,34 +63,43 @@
     : $layout.headerHeight - scrollY}px;
   "
 >
-  <TextField
-    clearable
-    placeholder="Recherche"
-    class="pa-2 mb-3 mt-3"
-    on:input={handleSearch}
-    on:change={handleSearch}
-  >
-    <span slot="prepend">
-      <IconLink icon={faSearch} />
-    </span>
-  </TextField>
-
-  <!--
-    <Switch bind:checked={timeFilterChecked} color="grey" class="pt-3 pl-3 pr-3">
-      Filtrer sur une période
-    </Switch>
-  -->
-  <div class="d-flex pa-2">
-    <TextField bind:value={start} type="date">A partir du</TextField>
-    <TextField bind:value={end} type="date">Jusqu'au</TextField>
-  </div>
-
   <div class="pa-2">
     <TrocMap bind:mapFilter />
   </div>
 
   <div class="pa-2">
-    <List style="d-flex flex-row">
+    <List>
+      {#if $isActive('/trocs/index')}
+        <div transition:slide|local>
+          <TextField
+            clearable
+            placeholder="Recherche"
+            class="pa-2 pb-5"
+            bind:inputElement={searchElement}
+            on:input={handleSearch}
+            on:change={handleSearch}
+          >
+            <span slot="prepend"><IconLink icon={faSearch} /></span>
+          </TextField>
+
+          <div class="d-flex pa-2">
+            <TextField bind:value={start} type="date">A partir du</TextField>
+            <TextField bind:value={end} type="date">Jusqu'au</TextField>
+          </div>
+        </div>
+      {:else}
+        <div transition:slide|local>
+          <a href="/trocs">
+            <ListItem>
+              <span slot="prepend">
+                <IconLink icon={faSearch} />
+              </span>
+              Recherche
+            </ListItem>
+          </a>
+        </div>
+      {/if}
+
       <a href="/trocs/create">
         <ListItem>
           <span slot="prepend"><IconLink icon={faPlus} /></span>
@@ -107,7 +122,15 @@
 
       {#if trocSubscribedShow}
         <div transition:slide|local>
-          <TrocSubscribed offset={72} />
+          {#if !$user}
+            <ListItem disabled>
+              <div class="text--disabled text-center">
+                Connectez-vous pour voir vos trocs.
+              </div>
+            </ListItem>
+          {:else}
+            <TrocSubscribed offset={72} />
+          {/if}
         </div>
       {/if}
     </List>
