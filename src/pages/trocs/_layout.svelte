@@ -8,14 +8,15 @@
   let offsetWidth
   let navigationWidth = '360px'
 
-  $afterPageLoad(() => {
-    // Hide navigation for create form
-    $trocNavigationActive = !$isActive('./create')
-  })
-
   $: mobileMode = offsetWidth < 1000
   $: $trocNavigationActive = !mobileMode
   $: overlayActive = $trocNavigationActive && mobileMode
+  $afterPageLoad(() => {
+    // Hide navigation for create form
+    if ($isActive('./create')) $trocNavigationActive = false
+    else if (!mobileMode) $trocNavigationActive = true
+    else if ($isActive('./index')) $trocNavigationActive = true
+  })
 </script>
 
 <div
@@ -25,7 +26,11 @@
     ? navigationWidth
     : '0px'}"
 >
-  <TrocNavigation active={$trocNavigationActive} width={navigationWidth} />
+  <TrocNavigation
+    bind:active={$trocNavigationActive}
+    width={navigationWidth}
+    {mobileMode}
+  />
 
   <Overlay
     index={2}

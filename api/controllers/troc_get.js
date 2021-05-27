@@ -70,19 +70,14 @@ async function getDetails(req, res, next) {
       let paymentsPromise = Payment.find({ troc, user }).exec()
       let specPromise = findSpec(troc, user)
 
-      let [
-        provided,
-        purchases,
-        givebacks,
-        payments,
-        { tarif, prefix },
-      ] = await Promise.all([
-        providedPromise,
-        purchasesPromise,
-        givbacksPromise,
-        paymentsPromise,
-        specPromise,
-      ])
+      let [provided, purchases, givebacks, payments, { tarif, prefix }] =
+        await Promise.all([
+          providedPromise,
+          purchasesPromise,
+          givbacksPromise,
+          paymentsPromise,
+          specPromise,
+        ])
 
       //Compute sum
       let buySum = purchases.length
@@ -164,6 +159,7 @@ function getStats(req, res, next) {
 
 function search(req, res, next) {
   let {
+    _id,
     search,
     skip = 0,
     limit = 20,
@@ -174,25 +170,31 @@ function search(req, res, next) {
     sud,
     west,
   } = req.query
-  let query = { is_try: false }
 
-  if (search && search.length) {
-    let regexp = new RegExp(search, 'i')
-    query.$or = []
-    query.$or.push({ name: regexp })
-    query.$or.push({ description: regexp })
-    query.$or.push({ address: regexp })
-    query.$or.push({ society: regexp })
+  let query = {}
+
+  if (_id) query = { _id }
+  else {
+    query = { is_try: false }
+
+    if (search && search.length) {
+      let regexp = new RegExp(search, 'i')
+      query.$or = []
+      query.$or.push({ name: regexp })
+      query.$or.push({ description: regexp })
+      query.$or.push({ address: regexp })
+      query.$or.push({ society: regexp })
+    }
+
+    if (start || end || north || east || sud || west) query.$and = []
+
+    if (start) query.$and.push({ 'schedule.close': { $gte: start } })
+    if (end) query.$and.push({ 'schedule.open': { $lte: end } })
+    if (!isNaN(north)) query.$and.push({ 'location.lat': { $lt: north } })
+    if (!isNaN(east)) query.$and.push({ 'location.lng': { $lt: east } })
+    if (!isNaN(sud)) query.$and.push({ 'location.lat': { $gt: sud } })
+    if (!isNaN(west)) query.$and.push({ 'location.lng': { $gt: west } })
   }
-
-  if (start || end || north || east || sud || west) query.$and = []
-
-  if (start) query.$and.push({ 'schedule.close': { $gte: start } })
-  if (end) query.$and.push({ 'schedule.open': { $lte: end } })
-  if (!isNaN(north)) query.$and.push({ 'location.lat': { $lt: north } })
-  if (!isNaN(east)) query.$and.push({ 'location.lng': { $lt: east } })
-  if (!isNaN(sud)) query.$and.push({ 'location.lat': { $gt: sud } })
-  if (!isNaN(west)) query.$and.push({ 'location.lng': { $gt: west } })
 
   Troc.find(query)
     .skip(Number(skip))
