@@ -12,7 +12,7 @@
   import { getHeader } from '$lib/utils.js'
   import notify from '$lib/notify'
 
-  import TrocInfo from '$lib/info/TrocInfo.svelte'
+  import TrocInfo from '$lib/troc/Info.svelte'
   import Resume from '$lib/info/UserResume.svelte'
   import TarifInfoDialog from '$lib/info/TarifInfoDialog.svelte'
   import Articles from '$lib/info/Articles.svelte'

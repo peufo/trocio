@@ -3,7 +3,7 @@
   import { params } from '@roxi/routify'
   import { Button, Icon } from 'svelte-materialify'
   import Logo from '$lib/draw/Logo.svelte'
-  import { user, userQuery } from '$lib/store/user'
+  import { user, userQuery } from '$lib/user/store'
   export let scoped: LayoutScoped
 
   let error: string | undefined

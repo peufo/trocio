@@ -3,7 +3,7 @@
   import debounce from 'debounce'
 
   import { Card } from 'svelte-materialify'
-  import TrocInfo from '$lib/info/TrocInfo.svelte'
+  import TrocInfo from '$lib/troc/Info.svelte'
   import Loader from '$lib/util/Loader.svelte'
 
   import {
@@ -65,7 +65,7 @@
     {/if}
   {:else if $queryTrocs.isError}
     <div class="centered" in:fade style="height: 200px;">
-      Oups, une erreur est surveneu !
+      Oups, une erreur est survenue !
     </div>
   {/if}
 

@@ -19,7 +19,7 @@
   import logo from '$assets/logo'
   import { query } from '$lib/troc/store'
   import layout from '$lib/store/layout'
-  import { user } from '$lib/store/user'
+  import { user } from '$lib/user/store'
   import IconLink from '$lib/util/IconLink.svelte'
   import TrocMap from '$lib/troc/Map.svelte'
   import TrocSubscribed from '$lib/troc/Subscribed.svelte'

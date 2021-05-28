@@ -3,7 +3,7 @@
   import { redirect } from '@roxi/routify'
 
   import Profile from '$lib/form/Profile.svelte'
-  import { user } from '$lib/store/user'
+  import { user } from '$lib/user/store'
 </script>
 
 {#if !$user}

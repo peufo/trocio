@@ -2,7 +2,7 @@
   import { page, redirect } from '@roxi/routify'
   import { fade, fly } from 'svelte/transition'
 
-  import { user } from '$lib/store/user'
+  import { user } from '$lib/user/store'
   import UserTrocs from '$lib/info/UserTrocs.svelte'
 
   export let scoped

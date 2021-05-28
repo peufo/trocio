@@ -2,10 +2,10 @@ import axios from 'axios'
 import notify from '$lib/notify'
 import { addIsClosed } from '$lib/utils.js'
 
-/**
- * queryKey = ['troc', trocId]
- */
-export function getTroc({ queryKey }) {
+interface GetTrocQuery {
+  queryKey: ['troc', string]
+}
+export function getTroc({ queryKey }: GetTrocQuery) {
   return axios
     .get(`/api/trocs/${queryKey[1]}`)
     .then(({ data }) => {
@@ -18,7 +18,7 @@ export function getTroc({ queryKey }) {
 }
 
 export function searchTrocs({ pageParam = 0, queryKey }) {
-  const params = { skip: pageParam, ...queryKey[0], limit: pageParam ? 1 : 4 }
+  const params = { ...queryKey[0], skip: pageParam, limit: pageParam ? 2 : 6 }
   return axios
     .get('/api/trocs/search', { params })
     .then(({ data }) => {

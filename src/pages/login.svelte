@@ -4,7 +4,7 @@
   import { redirect, params, afterPageLoad } from '@roxi/routify'
 
   import Login from '$lib/form/Login.svelte'
-  import { user } from '$lib/store/user'
+  import { user } from '$lib/user/store'
 
   export let scoped
 

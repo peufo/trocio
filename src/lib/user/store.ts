@@ -1,7 +1,7 @@
 import { writable, derived, Updater } from 'svelte/store'
 
 import type { User } from 'types'
-import apiUser from '$lib/api/user'
+import apiUser from '$lib/user/api'
 
 interface Status {
   isLoading: boolean
