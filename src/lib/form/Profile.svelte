@@ -1,7 +1,7 @@
 <script>
-  import { slide, fade } from 'svelte/transition'
+  import { slide } from 'svelte/transition'
   import { Button, TextField, Icon, Card } from 'svelte-materialify'
-  import { user, userQuery, userStatus } from '$lib/store/user'
+  import { user, userQuery, userStatus } from '$lib/user/store'
 
   import RULES from '$lib/rules'
 

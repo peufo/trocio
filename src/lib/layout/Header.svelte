@@ -4,7 +4,7 @@
 
   // TODO: User Terme dialog
   import { troc } from '$lib/stores'
-  import { user } from '$lib/store/user'
+  import { user } from '$lib/user/store'
   import { trocNavigationActive } from '$lib/store/layout'
 
   import logo from '$assets/logo'

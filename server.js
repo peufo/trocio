@@ -15,7 +15,7 @@ app.use(express.static('./dist'))
 
 // Par défault, sert la SPA
 app.get('*', (req, res) => {
-  res.sendFile(`${__dirname}/build/index.html`)
+  res.sendFile(`${__dirname}/dist/index.html`)
 })
 
 app.listen(TROCIO_PORT, (err) => {

@@ -11,6 +11,7 @@
   export let size = '24px'
   export let rotate = 0
   export let spin = false
+  export let disabled = false
   export let style = ''
 </script>
 
@@ -27,6 +28,7 @@
             {size}
             {rotate}
             {spin}
+            {disabled}
             {style}
             class={klass}
           />
@@ -44,6 +46,7 @@
           {size}
           {rotate}
           {spin}
+          {disabled}
           {style}
           class={klass}
         />
@@ -60,6 +63,7 @@
         {size}
         {rotate}
         {spin}
+        {disabled}
         {style}
         class={klass}
       />
@@ -74,6 +78,7 @@
       {size}
       {rotate}
       {spin}
+      {disabled}
       {style}
       class={klass}
     />
@@ -86,6 +91,7 @@
     {size}
     {rotate}
     {spin}
+    {disabled}
     {style}
     class={klass}
   />

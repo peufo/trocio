@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store'
 import qs from 'qs'
 
-import { userQuery } from './store/user'
+import { userQuery } from './user/store'
 import { addStatutField } from './utils'
 import notify from './notify'
 

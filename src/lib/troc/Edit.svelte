@@ -14,7 +14,7 @@
   } from 'svelte-materialify'
 
   import notify from '$lib/notify'
-  import { user, userQuery } from '$lib/store/user'
+  import { user, userQuery } from '$lib/user/store'
   import { troc } from '$lib/stores'
   import { getHeader } from '$lib/utils'
   import AutoPatch from '$lib/AutoPatch.svelte'
