@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { slide, fade } from 'svelte/transition'
   import { Button } from 'svelte-materialify'
@@ -6,14 +6,24 @@
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
 
+  import { addStatutField, getHeader, sortByUpdatedAt } from '$lib/utils'
+  import ProvidedTable from '$lib/info/ProvidedTable.svelte'
+  import DetailCard from '$lib/util/DetailCard.svelte'
+
   import notify from '$lib/notify'
   import {
     trocDetails as details,
     trocDetailsPromise as detailsPromise,
   } from '$lib/stores'
-  import { addStatutField, getHeader, sortByUpdatedAt } from '$lib/utils'
-  import ProvidedTable from '$lib/info/ProvidedTable.svelte'
-  import DetailCard from '$lib/util/DetailCard.svelte'
+
+  import { useTrocUserResum, useTrocUserResumOptions } from '$lib/troc/store'
+
+  export let trocId = ''
+  export let userId: string | undefined
+
+  const queryUserResum = useTrocUserResum(trocId, userId)
+  $: queryUserResum.setOptions(useTrocUserResumOptions(trocId, userId))
+  $: userResum = $queryUserResum.data
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
@@ -237,6 +247,9 @@
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
 </svelte:head>
+<pre>
+  {JSON.stringify(userResum, null, 2)}
+</pre>
 
 {#if $details}
   <div id="resume-container" in:fade|local>

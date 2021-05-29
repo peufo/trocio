@@ -13,7 +13,7 @@
   import notify from '$lib/notify'
 
   import TrocInfo from '$lib/troc/Info.svelte'
-  import Resume from '$lib/info/UserResume.svelte'
+  import UserTrocResum from '$lib/user/TrocResum.svelte'
   import TarifInfoDialog from '$lib/info/TarifInfoDialog.svelte'
   import Articles from '$lib/info/Articles.svelte'
 
@@ -61,7 +61,7 @@
     {#await $trocDetailsPromise}
       <Logo />
     {:then}
-      <Resume
+      <UserTrocResum
         on:articlesImported={(e) => ($troc.articles += e.detail.nbArticles)}
         on:openCreateDialog={() => (articleCreateDialogActive = true)}
         on:openTarifDialog={() => (tarifInfoDialogActive = true)}

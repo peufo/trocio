@@ -24,7 +24,7 @@
   on:change={handleSearch}
   clearable
   placeholder="Recherche d'article"
-  class="mt-2 mb-2"
+  class="mt-3 mb-1 ml-1"
   style="width: 35%; min-width: 200px;"
 >
   <div slot="prepend">

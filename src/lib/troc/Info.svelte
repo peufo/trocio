@@ -25,13 +25,14 @@
   import { user } from '$lib/user/store'
   import { convertDMS } from '$lib/utils.js'
   import ArticleList from '$lib/article/List.svelte'
+  import UserResum from '$lib/user/TrocResum.svelte'
 
   const dispatch = createEventDispatcher()
 
   export let troc = null
   export let displayGetActivity = true
-  export let articlesOpen = true
-  export let activityOpen = false
+  export let articlesOpen = false
+  export let activityOpen = true
 
   let tabs = [
     { name: 'LOCATION', icon: faMapMarkerAlt },
@@ -252,7 +253,9 @@
 {/if}
 
 {#if activityOpen}
-  <div transition:slide|local>Activité</div>
+  <div transition:slide|local>
+    <UserResum trocId={troc._id} />
+  </div>
 {/if}
 
 <style>

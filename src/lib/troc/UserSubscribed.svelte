@@ -1,4 +1,8 @@
 <script>
+  /**
+   * Liste les trocs auxquels l'utilisateur est abonné
+   */
+
   import { List, ListItem } from 'svelte-materialify'
   import { faCog, faCashRegister } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
@@ -19,13 +23,7 @@
   $: userTrocs = $queryUserTrocs.data ? $queryUserTrocs.data.pages.flat() : []
 </script>
 
-{#await $queryUserTrocs.isLoading}
-  <List twoLine>
-    <ListItem disabled>
-      <Loader />
-    </ListItem>
-  </List>
-{:then}
+{#if $queryUserTrocs.isSuccess}
   <List dense>
     {#each userTrocs as troc}
       <a href={`/trocs/${troc._id}`}>
@@ -71,20 +69,25 @@
         Vous n'avez pas encore de troc
       </div>
     {/each}
-
-    {#if $queryUserTrocs.hasNextPage}
-      <ListItem
-        on:click={() =>
-          !$queryUserTrocs.isFetchingNextPage &&
-          $queryUserTrocs.fetchNextPage()}
-        style="padding-left: {offset}px;"
-      >
-        {#if !$queryUserTrocs.isFetchingNextPage}
-          Afficher plus
-        {:else}
-          <Loader />
-        {/if}
-      </ListItem>
-    {/if}
   </List>
-{/await}
+{:else if $queryUserTrocs.isError}
+  <ListItem disabled>Oups, une erreur est survenue !</ListItem>
+{/if}
+
+{#if $queryUserTrocs.isFetching}
+  <ListItem disabled class="pl-16">
+    <Loader />
+  </ListItem>
+{:else if $queryUserTrocs.hasNextPage}
+  <ListItem
+    on:click={() =>
+      !$queryUserTrocs.isFetchingNextPage && $queryUserTrocs.fetchNextPage()}
+    style="padding-left: {offset}px;"
+  >
+    {#if !$queryUserTrocs.isFetchingNextPage}
+      Afficher plus
+    {:else}
+      <Loader />
+    {/if}
+  </ListItem>
+{/if}

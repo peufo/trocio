@@ -14,11 +14,15 @@ function getSpec(req, res, next) {
 
 async function getDetails(req, res, next) {
   let { troc, user } = req.query
-  if (!troc || !user) return next(Error('Troc and user query is required'))
+  if (!troc) return next(Error('Troc query is required'))
   if (!req.session.user) return next(Error('Login is required'))
+
+  // Utilisateur connecté
+  if (!user) user = req.session.user._id
 
   try {
     if (user === 'undefined') {
+      // client anonyme
       let purchasesPromise = Article.find({
         troc,
         sold: { $exists: true },

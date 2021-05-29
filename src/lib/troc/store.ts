@@ -9,10 +9,16 @@ import {
 import { getNextPageParam } from '$lib/store/util'
 import type { Troc } from 'types'
 
-import { getTroc, searchTrocs, getSubscribedTrocs } from './api'
+import {
+  getTroc,
+  searchTrocs,
+  getSubscribedTrocs,
+  getTrocUserResum,
+} from './api'
 
 /**
  * Get troc
+ * Info de base d'un troc
  */
 export const useTrocOptions = (trocId: string) => ({
   queryFn: getTroc,
@@ -23,6 +29,7 @@ export const useTroc = (trocId: string) =>
 
 /**
  * Search trocs
+ * Liste de trocs selon un recherche
  */
 interface SearchTrocsQuery {
   _id?: string
@@ -41,7 +48,7 @@ export function useSearchTrocsOptions(
   query: SearchTrocsQuery
 ): UseInfiniteQueryOptions<Troc[], AxiosError> {
   return {
-    queryKey: [query],
+    queryKey: ['searchTroc', query],
     queryFn: searchTrocs,
     getNextPageParam,
   }
@@ -51,11 +58,25 @@ export const useSearchTrocs = (query: SearchTrocsQuery) =>
 
 /**
  * Subscribed trocs
+ * Liste des trocs auxquels l'utilisateur est abonné
  */
-export const subscribedTrocs = writable<Troc[]>([])
 export const useSubscribedTrocs = () =>
   useInfiniteQuery({
     queryKey: 'subscribedTrocs',
     queryFn: getSubscribedTrocs,
     getNextPageParam,
   })
+
+/**
+ * User resum
+ * Résumé des interactions de l'utilisateur ou d'un client sur un troc
+ */
+export function useTrocUserResumOptions(trocId: string, userId?: string) {
+  const query = userId ? { trocId, userId } : { trocId }
+  return {
+    queryKey: ['trocUserResum', query],
+    queryFn: getTrocUserResum,
+  }
+}
+export const useTrocUserResum = (trocId: string, userId?: string) =>
+  useQuery(useTrocUserResumOptions(trocId, userId))

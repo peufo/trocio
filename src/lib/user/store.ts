@@ -3,12 +3,6 @@ import { writable, derived, Updater } from 'svelte/store'
 import type { User } from 'types'
 import apiUser from '$lib/user/api'
 
-interface Status {
-  isLoading: boolean
-  isSuccess?: boolean
-  isError?: boolean
-}
-
 export const userQuery = createUserQuery()
 
 export const userStatus = derived<
