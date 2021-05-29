@@ -10,17 +10,17 @@
 
   userQuery
     .validMail($params.validator)
-    .then((res) => {
+    .then((data) => {
       error = undefined
-      userQuery.set({ ...$user, ...res })
+      userQuery.set({ ...$user, ...data })
     })
     .catch((e) => (error = e))
 </script>
 
 <div
   on:click={() =>
-    userQuery.validMail($params.validator).then((res) => {
-      userQuery.set({ ...$user, ...res })
+    userQuery.validMail($params.validator).then((data) => {
+      userQuery.set({ ...$user, ...data })
     })}
   class="centered"
   style="height: {scoped.mainHeight}px; flex-direction: column;"

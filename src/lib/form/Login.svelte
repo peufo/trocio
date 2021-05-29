@@ -69,7 +69,10 @@
         break
 
       case REGISTER:
-        userQuery.register(name, mail, password)
+        userQuery.register(name, mail, password).then(() => {
+          dispatch('close')
+          dispatch('done')
+        })
         break
 
       case RECOVER:

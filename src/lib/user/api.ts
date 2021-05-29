@@ -1,150 +1,96 @@
-import axios from 'axios'
-import type { User } from 'types'
-import notify from '$lib/notify'
-
-interface BaseResponse {
-  error?: boolean
-  success?: boolean
-  message?: string
-}
-
-interface UserResponse extends BaseResponse, User {}
+import { api } from '$lib/api'
+import type { BaseResponse, User } from 'types'
 
 /**
  * Connection de l'utilisateur
  * Est automatiquement redirigé vers authenticate
  */
 export function login(mail: string, password: string) {
-  return axios
-    .post<UserResponse>('/api/users/login', { mail, password })
-    .then(({ data }) => {
-      if (data.error) throw data.message
-      notify.success(`Bienvenu ${data.name}`)
-      return data
-    })
-    .catch((error) => {
-      throw notify.error(error.response?.data?.message || error)
-    })
+  return api<User>('/api/users/login', {
+    method: 'post',
+    data: { mail, password },
+    success: (data) => `Bienvenu ${data.name}`,
+  })
 }
 
 /**
- * Verification de la connection de l'utilisateur
+ * Verification de la connexion de l'utilisateur
  */
 export function authenticate() {
-  return axios
-    .get<UserResponse>('/api/users/me')
-    .then(({ data }) => {
-      if (data.error) throw data.message
-      return data
-    })
-    .catch((error) => {
-      throw error
-    })
+  return api<User>('/api/users/me')
 }
 
 /**
  * Déconnection de l'utilisateur
  */
 export function logout() {
-  return axios
-    .get<BaseResponse>('/api/users/logout')
-    .then(({ data }) => {
-      if (data.error) throw data.message
-      notify.success('Au revoir 👋')
-      return null
-    })
-    .catch((error) => {
-      throw notify.error(error)
-    })
+  return api('/api/users/logout', {
+    success: 'Au revoir 👋',
+    format: () => null,
+  })
 }
 
 /**
  * Création d'un nouveau compte utilisateur
  */
 export function register(name: string, mail: string, password: string) {
-  return axios
-    .post<UserResponse>('/api/users', { name, mail, password })
-    .then(({ data }) => {
-      if (data.error) throw data.message
-      notify.success(`Bienvenu ${data.name}`)
-      return data
-    })
-    .catch((error) => {
-      throw notify.error(error)
-    })
+  return api<User>('/api/users', {
+    method: 'post',
+    data: { name, mail, password },
+    success: (data) => `Bienvenu ${data.name}`,
+  })
 }
 
 /**
  * Réinitialisation du mot de passe
  */
 export function recover(mail: string) {
-  return axios
-    .post<BaseResponse>('/api/users/resetpwd', { mail })
-    .then(({ data }) => {
-      if (data.error) throw data.message
-      notify.info(`Votre nouveau mot de passe vous à été envoyé par mail`)
-      return null
-    })
-    .catch((error) => {
-      throw notify.error(error)
-    })
+  return api('/api/users/resetpwd', {
+    method: 'post',
+    data: { mail },
+    info: 'Votre nouveau mot de passe vous à été envoyé par mail',
+    format: () => null,
+  })
 }
 
 /**
  * Mise à jour des infos utilisateur
  */
 export function update(newValue: Partial<User>) {
-  return axios
-    .patch<UserResponse>('/api/users/me', newValue)
-    .then(({ data }) => {
-      if (data.error) throw data.message
-      notify.success('Profil mis à jour')
-      return data
-    })
-    .catch((error) => {
-      throw notify.error(error)
-    })
+  return api<User>('/api/users/me', {
+    method: 'patch',
+    data: newValue,
+    success: 'Profil mis à jour',
+  })
 }
 
 /**
  * Evoyer un mail de vaildation
  */
 export function sendValidationMail() {
-  return axios
-    .post<BaseResponse>('/api/users/validmail')
-    .then(({ data }) => {
-      if (data.error) throw data.message
-      notify.success('Un mail de validation vous à été envoyé')
-      return null
-    })
-    .catch((error) => {
-      throw notify.error(error)
-    })
+  return api('/api/users/validmail', {
+    method: 'post',
+    success: 'Un mail de validation vous à été envoyé',
+  })
 }
+
+/**
+ * Validation du mail
+ */
 export function validMail(validator: string) {
-  return axios
-    .get<BaseResponse>(`/api/users/validmail/${validator}`)
-    .then(({ data }) => {
-      if (data.error) throw data.message
-      notify.success('Votre mail est vaildé')
-      return { mailvalided: true }
-    })
-    .catch((error) => {
-      throw notify.error(error)
-    })
+  return api(`/api/users/validmail/${validator}`, {
+    success: 'Votre mail est vaildé',
+    format: () => ({ mailvalided: true }),
+  })
 }
 
 export function changePassword(oldPassword: string, newPassword: string) {
-  return axios
-    .post<BaseResponse>('/api/users/changepwd', { oldPassword, newPassword })
-    .then(({ data }) => {
-      if (data.error) throw data.message || 'error'
-      notify.success('Changement du mot de passe accepté')
-      return null
-    })
-    .catch((error) => {
-      throw notify.error(error)
-    })
+  return api('/api/users/changepwd', {
+    method: 'post',
+    data: { oldPassword, newPassword },
+    success: 'Changement du mot de passe réussi',
+    error: 'Le changement du mot de passe à échoué',
+  })
 }
 
 export default {

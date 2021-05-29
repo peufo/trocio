@@ -22,7 +22,7 @@
   import { user } from '$lib/user/store'
   import IconLink from '$lib/util/IconLink.svelte'
   import TrocMap from '$lib/troc/Map.svelte'
-  import TrocSubscribed from '$lib/troc/Subscribed.svelte'
+  import TrocUserSubscribed from '$lib/troc/UserSubscribed.svelte'
 
   export let active = true
   export let width = '360px'
@@ -134,7 +134,7 @@
               </div>
             </ListItem>
           {:else}
-            <TrocSubscribed
+            <TrocUserSubscribed
               offset={72}
               on:click={() => mobileMode && (active = false)}
             />
