@@ -1,3 +1,5 @@
+import { Article } from 'types'
+
 export declare interface Troc {
   _id: string
   tag: {
@@ -43,4 +45,18 @@ export declare interface Troc {
   isAdmin: boolean
   isCashier: boolean
   isSubscribed: boolean
+}
+
+export declare interface TrocUserResume {
+  troc: string
+  user: string
+  provided: Article[]
+  purchases: Article[]
+  givebacks: Article[]
+  payments: Article[]
+  buySum: number
+  paySum: number
+  soldSum: number
+  feeSum: number
+  balance: number
 }

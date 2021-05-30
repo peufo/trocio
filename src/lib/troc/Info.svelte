@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
   import { fly, fade, slide } from 'svelte/transition'
   import {
     faChild,
@@ -25,11 +24,10 @@
   import { user } from '$lib/user/store'
   import { convertDMS } from '$lib/utils.js'
   import ArticleList from '$lib/article/List.svelte'
-  import UserResum from '$lib/user/TrocResum.svelte'
+  import UserResum from '$lib/troc/UserResum.svelte'
+  import type { Troc } from 'types'
 
-  const dispatch = createEventDispatcher()
-
-  export let troc = null
+  export let troc: Troc
   export let displayGetActivity = true
   export let articlesOpen = false
   export let activityOpen = true

@@ -1,10 +1,11 @@
-<script>
+<script lang="ts">
   import { slide } from 'svelte/transition'
   import { createEventDispatcher } from 'svelte'
   const dispatch = createEventDispatcher()
 
   import { Menu, List, ListItem } from 'svelte-materialify'
 
+  import type { Article } from 'types'
   import AutoPatch from '$lib/AutoPatch.svelte'
   import notify from '$lib/notify'
   import {
@@ -35,19 +36,22 @@
   let searchRef = ''
   let searchRefFocused = false
 
-  let provided = []
-  let feeSum = 0
-  let soldSum = 0
-  $: {
-    provided = $details.provided
-      .filter((art) => {
-        let ok = statutFilter === -1 || STATUTS[statutFilter] === art.statut
-        if (ok && searchName) ok = art.name.indexOf(searchName) > -1
-        if (ok && searchRef) ok = art.ref.indexOf(searchRef) > -1
-        return ok
-      })
-      .sort(sortByUpdatedAt)
-  }
+  export let provided: Article[] = []
+  export let feeSum = 0
+  export let soldSum = 0
+  /**
+   * TODO: Gestion du statut et du filtre
+   $: {
+     provided = $details.provided
+       .filter((art) => {
+         let ok = statutFilter === -1 || STATUTS[statutFilter] === art.statut
+         if (ok && searchName) ok = art.name.indexOf(searchName) > -1
+         if (ok && searchRef) ok = art.ref.indexOf(searchRef) > -1
+         return ok
+       })
+       .sort(sortByUpdatedAt)
+   }
+  */
 
   //For AutoPatch
   function addModifiedArticle(e, art) {
@@ -169,14 +173,14 @@
       <th class="clickable" on:click={() => dispatch('openTarifDialog')}>
         <span>Frais</span><br />
         <span class="w3-small fee w3-right">
-          {$details.feeSum.toFixed(2)}
+          {feeSum.toFixed(2)}
         </span>
       </th>
 
       <th style="max-width: 100px;">
         <span>Prix</span><br />
         <span class="w3-small sold w3-right">
-          {$details.soldSum.toFixed(2)}
+          {soldSum.toFixed(2)}
         </span>
       </th>
     </tr>
@@ -216,7 +220,6 @@
                 rows="3"
                 style="resize: none;"
                 on:input={(e) => addModifiedArticle(e, article)}
-                class:lastInputName={i == $details.provided.length - 1}
                 value={article.name}
                 class="w3-input unvalided"
                 placeholder="Désignation"
