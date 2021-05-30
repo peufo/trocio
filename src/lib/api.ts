@@ -9,7 +9,7 @@ export function api<TypeResponse>(
     {
       method: Method
       /** Params passed to query of request */
-      params: Partial<TypeResponse>
+      params: { skip?: number; limit?: number } & any
       /** Data passed on body of resquest*/
       data: Partial<TypeResponse>
       /** Wrapper to format returned data */

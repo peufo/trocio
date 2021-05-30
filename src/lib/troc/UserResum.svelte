@@ -6,24 +6,21 @@
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
 
+  import Loader from '$lib/util/Loader.svelte'
   import { addStatutField, getHeader, sortByUpdatedAt } from '$lib/utils'
-  import ProvidedTable from '$lib/info/ProvidedTable.svelte'
+  import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
 
   import notify from '$lib/notify'
-  import {
-    trocDetails as details,
-    trocDetailsPromise as detailsPromise,
-  } from '$lib/stores'
 
   import { useTrocUserResum, useTrocUserResumOptions } from '$lib/troc/store'
 
   export let trocId = ''
-  export let userId: string | undefined
+  export let userId = ''
 
-  const queryUserResum = useTrocUserResum(trocId, userId)
-  $: queryUserResum.setOptions(useTrocUserResumOptions(trocId, userId))
-  $: userResum = $queryUserResum.data
+  const queryTrocUserResum = useTrocUserResum(trocId, userId)
+  $: queryTrocUserResum.setOptions(useTrocUserResumOptions(trocId, userId))
+  $: trocUserResum = $queryTrocUserResum.data
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
@@ -66,9 +63,9 @@
 
   async function createImportArticles() {
     if (
-      $details.tarif &&
-      $details.provided.length + importArticles.length >
-        $details.tarif.maxarticles
+      trocUserResum.tarif &&
+      trocUserResum.provided.length + importArticles.length >
+        trocUserResum.tarif.maxarticles
     ) {
       notify.warning({
         title: `Trop d'articles`,
@@ -83,8 +80,8 @@
       if (json.success) {
         let articlesImported = json.message
 
-        $details.provided = [
-          ...$details.provided,
+        trocUserResum.provided = [
+          ...trocUserResum.provided,
           ...addStatutField(articlesImported),
         ]
         //Hide importe articles input
@@ -112,7 +109,7 @@
       let cells = []
       let price = 0
 
-      if (!$details.prefix) {
+      if (!trocUserResum.prefix) {
         // utilsateur simple
         lines.forEach((line, i) => {
           cells = line.split(/[\t:;]/)
@@ -128,8 +125,8 @@
             importArticles.push({
               name: cells[0].trim(),
               price,
-              troc: $details.troc,
-              provider: $details.user,
+              troc: trocUserResum.troc,
+              provider: trocUserResum.user,
             })
           } else if (line.length > 0) {
             failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
@@ -151,12 +148,12 @@
             }
 
             if (
-              isNaN(cells[0].replace($details.prefix, '')) ||
+              isNaN(cells[0].replace(trocUserResum.prefix, '')) ||
               cells[0].indexOf('.') != -1
             )
               failFormatRaison = `Vous devez mettre un nombre après le préfixe !`
-            if (cells[0].trim()[0] != $details.prefix)
-              failFormatRaison = `Vous devez utilier un "${$details.prefix}" comme préfixe !`
+            if (cells[0].trim()[0] != trocUserResum.prefix)
+              failFormatRaison = `Vous devez utilier un "${trocUserResum.prefix}" comme préfixe !`
 
             importArticles = [
               ...importArticles,
@@ -164,8 +161,8 @@
                 ref: cells[0].trim(),
                 name: cells[1].trim(),
                 price,
-                troc: $details.troc,
-                provider: $details.user,
+                troc: trocUserResum.troc,
+                provider: trocUserResum.user,
               },
             ]
           } else if (line.length > 0) {
@@ -180,7 +177,7 @@
 
   function clickDownladCSV(e) {
     e.stopPropagation()
-    let list = $details.provided.map((p) => {
+    let list = trocUserResum.provided.map((p) => {
       return {
         ref: p.ref,
         name: p.name,
@@ -247,29 +244,36 @@
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
 </svelte:head>
-<pre>
-  {JSON.stringify(userResum, null, 2)}
-</pre>
 
-{#if $details}
-  <div id="resume-container" in:fade|local>
+{#if $queryTrocUserResum.isLoading}
+  <div in:fade|local class="centered mt-10">
+    <Loader />
+  </div>
+{:else if $queryTrocUserResum.isError}
+  <div in:fade|local class="centered mt-10">Oups, une erreur est survenu.</div>
+{:else if $queryTrocUserResum.isSuccess}
+  <div in:fade|local>
+    <pre>
+      {JSON.stringify(trocUserResum, null, 2)}
+    </pre>
+
     <br />
     <div class="w3-row w3-xlarge" style="padding-left: 7px;">
       <div class="w3-col s1">&nbsp;</div>
       <span class="w3-col s8">Solde actuel </span>
       <span id="balance" class="w3-col s3 w3-right-align"
-        >{$details.balance.toFixed(2)}</span
+        >{trocUserResum.balance.toFixed(2)}</span
       >
     </div>
     <br /><br />
 
     <DetailCard
       title="Paiements"
-      count={$details.payments.length}
-      sum={$details.paySum}
+      count={trocUserResum.payments.length}
+      sum={trocUserResum.paySum}
       nonInteractive
       show={paymentShow}
-      items={$details.payments.sort(sortByUpdatedAt)}
+      items={trocUserResum.payments.sort(sortByUpdatedAt)}
       let:item={payment}
     >
       <span slot="col-1" />
@@ -281,10 +285,10 @@
 
     <DetailCard
       title="Achats"
-      count={$details.purchases.length}
-      sum={$details.buySum}
+      count={trocUserResum.purchases.length}
+      sum={trocUserResum.buySum}
       show={buyShow}
-      items={$details.purchases.sort(sortByUpdatedAt)}
+      items={trocUserResum.purchases.sort(sortByUpdatedAt)}
       let:item={article}
     >
       <span slot="col-1">#{article.ref}</span>
@@ -292,21 +296,21 @@
       <span slot="col-3">{article.price.toFixed(2)}</span>
     </DetailCard><br />
 
-    {#if $details.provided}
+    {#if trocUserResum.provided}
       <DetailCard
         title="Ventes"
         free
         bind:show={providedShow}
         on:close={closeProvidedTable}
-        count={$details.provided.length}
-        sum={$details.soldSum + $details.feeSum}
+        count={trocUserResum.provided.length}
+        sum={trocUserResum.soldSum + trocUserResum.feeSum}
       >
         <span slot="head">
           <!-- Provide button -->
           <span class:w3-hide={onPrint} style="margin-left: 30px;">
             <!-- Bonton pour proposer un articles -->
             {#if !importArticlesListOpen}
-              <Button dense on:click={clickOpenCreateArticle}>
+              <Button outlined dense on:click={clickOpenCreateArticle}>
                 Proposer un article
               </Button>
             {/if}
@@ -333,8 +337,8 @@
             {:else}
               {#await createImportArticlesPromise}
                 <Button color="secondary" dense>
-                  <i class="fas fa-circle-notch w3-spin" />&nbsp;Création des
-                  articles ...
+                  <i class="fas fa-circle-notch w3-spin" />
+                  Création des articles ...
                 </Button>
               {:then}
                 <Button
@@ -350,7 +354,7 @@
             {/if}
 
             <!-- Bonton pour télécharger le fichier .csv -->
-            {#if $details.provided.length}
+            {#if trocUserResum.provided.length}
               <Button
                 dense
                 on:click={clickDownladCSV}
@@ -372,19 +376,19 @@
               bind:value={importArticlesValue}
               on:input={inputImportArticles}
               placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${
-                $details.prefix ? '[ Référence ] ' : ''
+                trocUserResum.prefix ? '[ Référence ] ' : ''
               }[ Désignation ] [ Prix ] --\n\n\n${
-                $details.prefix ? `${$details.prefix}1 ⭢ ` : ''
+                trocUserResum.prefix ? `${trocUserResum.prefix}1 ⭢ ` : ''
               } Mon premier article ⭢ 20\n${
-                $details.prefix ? `${$details.prefix}2 : ` : ''
+                trocUserResum.prefix ? `${trocUserResum.prefix}2 : ` : ''
               } Mon deuxième article : 15.35\n${
-                $details.prefix ? `${$details.prefix}3 ; ` : ''
+                trocUserResum.prefix ? `${trocUserResum.prefix}3 ; ` : ''
               } Mon troisième article ; 5,40\n ...`}
             />
           </div>
         {/if}
 
-        <ProvidedTable on:openTarifDialog />
+        <ArticleProvidedTable on:openTarifDialog />
       </DetailCard>
     {/if}
     <br />
@@ -400,9 +404,3 @@
     <br />
   </div>
 {/if}
-
-<style>
-  #resume-container {
-    position: relative;
-  }
-</style>

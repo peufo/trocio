@@ -14,7 +14,7 @@ import {
   searchTrocs,
   getSubscribedTrocs,
   getTrocUserResum,
-} from './api'
+} from '$lib/troc/api'
 
 /**
  * Get troc

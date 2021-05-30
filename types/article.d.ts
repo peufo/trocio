@@ -1,4 +1,6 @@
 export declare interface Article {
+  /** ID de l'article */
+  _id: string
   /** ID du troc auquel l'article proposé */
   troc: string
   /** ID de l'utilisateur qui propose l'article */
