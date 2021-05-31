@@ -47,3 +47,11 @@ export declare interface Article {
   /** ID du membre de l'organisation ayant vendu ou rendu l'article */
   seller: string
 }
+
+export declare interface ArticleCreate {
+  troc: string
+  provider: string
+  ref?: string
+  name: string
+  price: number
+}

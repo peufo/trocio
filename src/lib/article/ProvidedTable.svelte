@@ -5,7 +5,10 @@
 
   import { Menu, List, ListItem } from 'svelte-materialify'
 
-  import type { Article } from 'types'
+  import {
+    useProvidedArticles,
+    useProvidedArticlesOptions,
+  } from '$lib/article/store'
   import AutoPatch from '$lib/AutoPatch.svelte'
   import notify from '$lib/notify'
   import {
@@ -17,6 +20,15 @@
     STATUTS,
   } from '$lib/utils'
   import { trocDetails as details } from '$lib/stores'
+
+  export let trocId: string
+
+  let queryProvidedArticles = useProvidedArticles(trocId)
+  $: queryProvidedArticles.setOptions(useProvidedArticlesOptions(trocId))
+  $: providedArticles = $queryProvidedArticles.data
+    ? $queryProvidedArticles.data.pages.flat()
+    : []
+
   const uuid = String(Math.random()).slice(2)
 
   let modifiedArticles = [] //Array for minimize PATCH request on AutoPatch.svelte
@@ -28,7 +40,6 @@
   const LIMIT_LIST_INIT = 8 //Nombre d'élément d'une liste afficher initialement
   let limitList = LIMIT_LIST_INIT //Nombre d'élément afficher pour la premier liste (Achat)
 
-  let statutFilterMenu
   let statutFilter = -1
 
   let searchName = ''
@@ -36,7 +47,7 @@
   let searchRef = ''
   let searchRefFocused = false
 
-  export let provided: Article[] = []
+  // export let provided: Article[] = []
   export let feeSum = 0
   export let soldSum = 0
   /**
@@ -104,59 +115,66 @@
   }
 </script>
 
-<AutoPatch
-  source={`tableArticles${uuid}`}
-  path="/articles"
-  body={modifiedArticles}
-/>
+<!--
+  <AutoPatch
+    source={`tableArticles${uuid}`}
+    path="/articles"
+    body={modifiedArticles}
+  />
+-->
 <div style="padding: 7px 2px;">
-  <table id={`tableArticles${uuid}`} class="w3-table">
-    <!-- En-têtes -->
-    <tr class="w3-small">
-      <th on:click={() => document.getElementById('searchRef').focus()}>
-        <span>#</span>
-        &nbsp;<i
-          class="fa fa-search"
-          class:w3-hide={!searchRefFocused && !searchRef}
-        />
-        <br />
-        <input
-          id="searchRef"
-          class="searchInput w3-small"
-          bind:value={searchRef}
-          on:focus={() => (searchRefFocused = true)}
-          on:blur={() => (searchRefFocused = false)}
-          type="text"
-        />
-      </th>
+  {#if !providedArticles.length}
+    <div class="text-center text--secondary pt-2 pb-5">Aucun élément</div>
+  {:else}
+    <table id={`tableArticles${uuid}`} class="w3-table">
+      <!-- En-têtes -->
+      <tr class="w3-small">
+        <th on:click={() => document.getElementById('searchRef').focus()}>
+          <span>#</span>
+          &nbsp;<i
+            class="fa fa-search"
+            class:w3-hide={!searchRefFocused && !searchRef}
+          />
+          <br />
+          <input
+            id="searchRef"
+            class="searchInput w3-small"
+            bind:value={searchRef}
+            on:focus={() => (searchRefFocused = true)}
+            on:blur={() => (searchRefFocused = false)}
+            type="text"
+          />
+        </th>
 
-      <th
-        style="width: 60%; min-width: 170px;"
-        on:click={() => document.getElementById('searchName').focus()}
-      >
-        <span>Articles</span><br />
-        <i
-          class="fa fa-search"
-          class:w3-hide={!searchNameFocused && !searchName}
-        />
-        <input
-          id="searchName"
-          class="searchInput w3-small"
-          bind:value={searchName}
-          on:focus={() => (searchNameFocused = true)}
-          on:blur={() => (searchNameFocused = false)}
-          type="text"
-        />
-      </th>
+        <th
+          style="width: 60%; min-width: 170px;"
+          on:click={() => document.getElementById('searchName').focus()}
+        >
+          <span>Articles</span><br />
+          <i
+            class="fa fa-search"
+            class:w3-hide={!searchNameFocused && !searchName}
+          />
+          <input
+            id="searchName"
+            class="searchInput w3-small"
+            bind:value={searchName}
+            on:focus={() => (searchNameFocused = true)}
+            on:blur={() => (searchNameFocused = false)}
+            type="text"
+          />
+        </th>
 
-      <!-- 0=Proposé, 1=En vente, 2=Vendu, 3=Récupéré -->
-      <th class="clickable" on:click={() => statutFilterMenu.setOpen(true)}>
-        <span>Statuts</span><br />
-        <span class="w3-tiny w3-opacity">
-          <i class="fas fa-filter" />
-          {statutFilter === -1 ? 'Tous' : STATUTS[statutFilter]}
-        </span>
-        <Menu bind:this={statutFilterMenu}>
+        <!-- 0=Proposé, 1=En vente, 2=Vendu, 3=Récupéré -->
+        <Menu>
+          <th class="clickable" slot="activator">
+            <span>Statuts</span><br />
+            <span class="w3-tiny w3-opacity">
+              <i class="fas fa-filter" />
+              {statutFilter === -1 ? 'Tous' : STATUTS[statutFilter]}
+            </span>
+          </th>
+
           <List>
             <ListItem on:click={() => (statutFilter = -1)}
               ><span>Tous</span></ListItem
@@ -168,27 +186,25 @@
             {/each}
           </List>
         </Menu>
-      </th>
 
-      <th class="clickable" on:click={() => dispatch('openTarifDialog')}>
-        <span>Frais</span><br />
-        <span class="w3-small fee w3-right">
-          {feeSum.toFixed(2)}
-        </span>
-      </th>
+        <th class="clickable" on:click={() => dispatch('openTarifDialog')}>
+          <span>Frais</span><br />
+          <span class="w3-small fee w3-right">
+            {feeSum.toFixed(2)}
+          </span>
+        </th>
 
-      <th style="max-width: 100px;">
-        <span>Prix</span><br />
-        <span class="w3-small sold w3-right">
-          {soldSum.toFixed(2)}
-        </span>
-      </th>
-    </tr>
+        <th style="max-width: 100px;">
+          <span>Prix</span><br />
+          <span class="w3-small sold w3-right">
+            {soldSum.toFixed(2)}
+          </span>
+        </th>
+      </tr>
 
-    {#if provided.length}
       <!-- Corp -->
       <!-- TODO: Comparaison de string pour STATUTS bof -->
-      {#each provided.slice(0, limitList) as article, i (article._id)}
+      {#each providedArticles.slice(0, limitList) as article, i (article._id)}
         <tr transition:slide|local>
           <!-- Ref # -->
           <td>
@@ -264,23 +280,18 @@
               />
             {/if}
           </td>
-        </tr>{/each}
-    {:else}
-      <br />
-      <div class="w3-center">
-        <span class="w3-opacity">Aucun article</span>
-      </div>
-      <br />
-    {/if}
-  </table>
+        </tr>
+      {/each}
+    </table>
+  {/if}
 </div>
 
 <!-- Bouton pour prolongé la liste -->
-{#if provided.length > limitList}
+{#if providedArticles.length > limitList}
   <br />
   <div on:click={() => (limitList += 50)} class="underline-div w3-center">
     <span class="underline-span w3-opacity">
-      Afficher plus de résultat ({provided.length - limitList})
+      Afficher plus de résultat ({providedArticles.length - limitList})
     </span>
   </div>
   <br />

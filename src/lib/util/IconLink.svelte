@@ -12,7 +12,12 @@
   export let rotate = 0
   export let spin = false
   export let disabled = false
+  export let opacity = false
   export let style = ''
+
+  $: style = opacity
+    ? style + 'opacity: 0.6;'
+    : style.replace('opacity: 0.6;', '')
 </script>
 
 {#if !!tip}

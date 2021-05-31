@@ -89,7 +89,7 @@ exec(backupCommand, (error, stdout, stderr) => {
         address: 'Rue Auguste-Cuenin, 2900 Porrentruy, Suisse',
         location: { lat: 47.4188925, lng: 7.0725335 },
         description:
-          'Vendez ou acheter votre vélo à bon prix. Un service de réparation à prix réduit sera également à disposition des clients. Venez nombreux !',
+          'Vendez ou achetez votre vélo à bon prix. Un service de réparation à prix réduit sera également à disposition des clients. Venez nombreux !',
         society: 'Groupe Sportif Ajoulot',
         societyweb: 'gsajoie.ch',
         schedule: [

@@ -203,7 +203,7 @@
       icon={faChevronRight}
       rotate={articlesOpen ? 90 : 0}
       class="ml-2"
-      style="opacity: 0.6"
+      opacity
       size="1.1em"
     />
   </Button>
@@ -221,7 +221,7 @@
         icon={faChevronRight}
         rotate={activityOpen ? 90 : 0}
         class="ml-2"
-        style="opacity: 0.6"
+        opacity
         size="1.1em"
       />
     </Button>

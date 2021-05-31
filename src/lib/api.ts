@@ -3,7 +3,7 @@ import notify from '$lib/notify'
 
 import type { BaseResponse, ResponseNotifyOptions } from 'types'
 
-export function api<TypeResponse>(
+export function api<TypeRequest, TypeResponse = TypeRequest>(
   url: string,
   options: Partial<
     {
@@ -11,7 +11,7 @@ export function api<TypeResponse>(
       /** Params passed to query of request */
       params: { skip?: number; limit?: number } & any
       /** Data passed on body of resquest*/
-      data: Partial<TypeResponse>
+      data: Partial<TypeRequest>
       /** Wrapper to format returned data */
       format: (data: TypeResponse) => TypeResponse
     } & ResponseNotifyOptions<TypeResponse>
