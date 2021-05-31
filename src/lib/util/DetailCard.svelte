@@ -49,7 +49,7 @@
       {#if free}
         <slot />
       {:else if !items.length}
-        <div class="w3-center w3-padding w3-opacity">Aucun élément</div>
+        <div class="text-center text--secondary pt-2 pb-5">Aucun élément</div>
       {:else if items.length}
         <List style="padding: 7px;" {nonInteractive}>
           {#each items as item}

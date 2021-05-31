@@ -3,7 +3,11 @@ let Article = require('../models/article')
 let Payment = require('../models/payment')
 let Subscribe = require('../models/subscribe')
 let { findSpec, lookupIfAdmin } = require('./troc_utils')
+const { ObjectId } = require('mongoose').Types
 
+/**
+ * Retourne les spécifications d'un utilisateur sur un troc (tarif, prefix, role)
+ */
 function getSpec(req, res, next) {
   let { troc, user } = req.query
   findSpec(troc, user, (err, spec) => {
@@ -12,40 +16,34 @@ function getSpec(req, res, next) {
   })
 }
 
-async function getDetails(req, res, next) {
-  let { troc, user } = req.query
+async function getResum(req, res, next) {
+  let { troc, user, cashier } = req.query
   if (!troc) return next(Error('Troc query is required'))
   if (!req.session.user) return next(Error('Login is required'))
 
   // Utilisateur connecté
   if (!user) user = req.session.user._id
+  if (user === 'undefined') user = { $exists: false }
 
   try {
+    // TODO : Adapter la requete pour les client anonymes + pour des groupe
     if (user === 'undefined') {
       // client anonyme
-      let purchasesPromise = Article.find({
+      let purchasesPromise = Article.countDocuments({
         troc,
         sold: { $exists: true },
         buyer: { $exists: false },
         seller: req.session.user._id,
       }).exec()
-      let paymentsPromise = Payment.find({
+      let paymentsPromise = Payment.countDocuments({
         troc,
         user: { $exists: false },
         acceptor: req.session.user._id,
       }).exec()
-      let givbacksPromise = Article.find({
-        troc,
-        giveback: { $size: { $gt: 0 } },
-        giveback: { $elemMatch: { user: { $exists: false } } },
-      }).exec()
-      let specPromise = findSpec(troc, user)
 
-      let [purchases, payments, givebacks, { tarif }] = await Promise.all([
+      let [purchasesCount, paymentsCount] = await Promise.all([
         purchasesPromise,
         paymentsPromise,
-        givbacksPromise,
-        specPromise,
       ])
 
       //Compute sum
@@ -59,54 +57,96 @@ async function getDetails(req, res, next) {
 
       res.json({
         troc,
-        purchases,
-        payments,
-        givebacks,
+        purchasesCount,
+        paymentsCount,
         tarif,
         buySum,
         paySum,
         balance,
       })
     } else {
-      let providedPromise = Article.find({ troc, provider: user }).exec()
-      let purchasesPromise = Article.find({ troc, buyer: user }).exec()
-      let givbacksPromise = Article.find({ troc, 'giveback.user': user }).exec()
-      let paymentsPromise = Payment.find({ troc, user }).exec()
-      let specPromise = findSpec(troc, user)
+      const providedResumPromise = Article.aggregate()
+        .match({ troc: ObjectId(troc), provider: ObjectId(user) })
+        .project({
+          price: true,
+          feeValided: {
+            valided: { $ifNull: ['$fee', 0] },
+          },
+          priceSold: {
+            sold: { $ifNull: ['$price', 0] },
+          },
+          marginSold: {
+            sold: { $ifNull: ['$margin', 0] },
+          },
+        })
+        .group({
+          _id: null,
+          providedCount: { $sum: 1 },
+          providedSum: { $sum: '$price' },
+          feeSum: { $sum: '$feeValided' },
+          soldSum: { $sum: '$priceSold' },
+          marginSum: { $sum: '$marginSold' },
+        })
+        .exec()
 
-      let [provided, purchases, givebacks, payments, { tarif, prefix }] =
-        await Promise.all([
-          providedPromise,
-          purchasesPromise,
-          givbacksPromise,
-          paymentsPromise,
-          specPromise,
-        ])
+      const purchasesResumPromise = Article.aggregate()
+        .match({
+          troc,
+          buyer: user,
+        })
+        .group({
+          _id: null,
+          purchasesCount: { $sum: 1 },
+          purchasesSum: { $sum: '$price' },
+        })
+        .exec()
 
-      //Compute sum
-      let buySum = purchases.length
-        ? -purchases.map((a) => a.price).reduce((acc, cur) => acc + cur)
-        : 0
-      let paySum = payments.length
-        ? payments.map((a) => a.amount).reduce((acc, cur) => acc + cur)
-        : 0
-      let { soldSum, feeSum } = computeSum(provided)
-      let balance = Math.round((buySum + paySum + soldSum + feeSum) * 100) / 100
+      const paymentsResumPromise = Payment.aggregate()
+        .match({ troc: ObjectId(troc), user: ObjectId(user) })
+        .group({
+          _id: null,
+          paymentsCount: { $sum: 1 },
+          paymentsSum: { $sum: '$amount' },
+        })
+        .exec()
+
+      const [providedResum, purchasesResum, paymentsResum] = await Promise.all([
+        providedResumPromise,
+        purchasesResumPromise,
+        paymentsResumPromise,
+      ])
+
+      /**
+       * Récupère les valeurs ou attribut par défault
+       */
+      const {
+        providedCount = 0,
+        providedSum = 0,
+        feeSum = 0,
+        soldSum = 0,
+        marginSum = 0,
+      } = providedResum[0] || {}
+      const { purchasesCount = 0, purchasesSum = 0 } = purchasesResum[0] || {}
+      const { paymentsCount = 0, paymentsSum = 0 } = paymentsResum[0] || {}
+
+      const balance =
+        Math.round(
+          (paymentsSum + soldSum - purchasesSum - feeSum - marginSum) * 100
+        ) / 100
 
       res.json({
         troc,
         user,
-        provided,
-        purchases,
-        givebacks,
-        payments,
-        tarif,
-        prefix,
-        buySum,
-        paySum,
-        soldSum,
-        feeSum,
         balance,
+        providedCount,
+        providedSum,
+        feeSum,
+        soldSum,
+        marginSum,
+        purchasesCount,
+        purchasesSum,
+        paymentsCount,
+        paymentsSum,
       })
     }
   } catch (error) {
@@ -285,7 +325,7 @@ function computeSum(articles) {
 
 module.exports = {
   getSpec,
-  getDetails,
+  getResum,
   getStats,
   search,
   getTroc,

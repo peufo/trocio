@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
-  import { slide, fade } from 'svelte/transition'
+  import { fade } from 'svelte/transition'
   import { Button } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
 
-  import Loader from '$lib/util/Loader.svelte'
+  import { useTrocUserResum, useTrocUserResumOptions } from '$lib/troc/store'
   import { addStatutField, getHeader, sortByUpdatedAt } from '$lib/utils'
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
+  import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
+  import Loader from '$lib/util/Loader.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
 
-  import notify from '$lib/notify'
-
-  import { useTrocUserResum, useTrocUserResumOptions } from '$lib/troc/store'
+  import IconLink from '$lib/util/IconLink.svelte'
+  import { faFileDownload, faPlus } from '@fortawesome/free-solid-svg-icons'
 
   export let trocId = ''
   export let userId = ''
@@ -21,19 +21,17 @@
   const queryTrocUserResum = useTrocUserResum(trocId, userId)
   $: queryTrocUserResum.setOptions(useTrocUserResumOptions(trocId, userId))
   $: trocUserResum = $queryTrocUserResum.data
+  $: console.log({ useTrocUserResum })
+
+  let articleCreateDialogActive = false
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
-  const dispatch = createEventDispatcher()
 
   let onPrint = false
 
   //Création d'article (buttons)
-  let createImportArticlesPromise
   let importArticlesListOpen = false //Modal popup for import list of articles
-  let importArticlesValue = '' //Value of textarea
-  let importArticles = [] //Array formated
-  let failFormatRaison = '' //Message if importArticlesValue is unavailable
   let paymentShow = false
 
   //For print ... not used now
@@ -61,122 +59,10 @@
 		*/
   }
 
-  async function createImportArticles() {
-    if (
-      trocUserResum.tarif &&
-      trocUserResum.provided.length + importArticles.length >
-        trocUserResum.tarif.maxarticles
-    ) {
-      notify.warning({
-        title: `Trop d'articles`,
-        text: `Vous avez atteint le nombre maximal d'articles pouvant être proposés.\nRenseignez-vous auprès de l'organisateur pour lever cette limite.`,
-      })
-      return
-    }
-
-    try {
-      let res = await fetch('/api/articles', getHeader(importArticles))
-      let json = await res.json()
-      if (json.success) {
-        let articlesImported = json.message
-
-        trocUserResum.provided = [
-          ...trocUserResum.provided,
-          ...addStatutField(articlesImported),
-        ]
-        //Hide importe articles input
-        importArticlesListOpen = false
-        importArticlesValue = ''
-        importArticles = []
-
-        dispatch('articlesImported', { nbArticles: articlesImported.length })
-        notify.success(`${articlesImported.length} articles ajoutés`)
-
-        return
-      } else notify.error(json.message)
-    } catch (error) {
-      console.trace(error)
-    }
-  }
-
-  function inputImportArticles() {
-    importArticles = []
-    failFormatRaison = ''
-
-    //Input Value parser
-    if (importArticlesValue.trim().length) {
-      let lines = importArticlesValue.split(/[\r\n]/)
-      let cells = []
-      let price = 0
-
-      if (!trocUserResum.prefix) {
-        // utilsateur simple
-        lines.forEach((line, i) => {
-          cells = line.split(/[\t:;]/)
-          if (cells.length >= 2) {
-            price = Number(cells[1].replace(/,/, '.'))
-            if (
-              isNaN(price) ||
-              !cells[0].trim().length ||
-              !cells[1].trim().length
-            ) {
-              failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
-            }
-            importArticles.push({
-              name: cells[0].trim(),
-              price,
-              troc: trocUserResum.troc,
-              provider: trocUserResum.user,
-            })
-          } else if (line.length > 0) {
-            failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
-          }
-        })
-      } else {
-        //Commerçants
-        lines.forEach((line, i) => {
-          cells = line.split(/[\t:;]/)
-          if (cells.length >= 3) {
-            price = Number(cells[2].replace(/,/, '.'))
-            if (
-              isNaN(price) ||
-              !cells[0].trim().length ||
-              !cells[1].trim().length ||
-              !cells[2].trim().length
-            ) {
-              failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
-            }
-
-            if (
-              isNaN(cells[0].replace(trocUserResum.prefix, '')) ||
-              cells[0].indexOf('.') != -1
-            )
-              failFormatRaison = `Vous devez mettre un nombre après le préfixe !`
-            if (cells[0].trim()[0] != trocUserResum.prefix)
-              failFormatRaison = `Vous devez utilier un "${trocUserResum.prefix}" comme préfixe !`
-
-            importArticles = [
-              ...importArticles,
-              {
-                ref: cells[0].trim(),
-                name: cells[1].trim(),
-                price,
-                troc: trocUserResum.troc,
-                provider: trocUserResum.user,
-              },
-            ]
-          } else if (line.length > 0) {
-            failFormatRaison = `L'article n°${i + 1} n'est pas valide !`
-          }
-        })
-      }
-    }
-    //Reset if failed
-    if (failFormatRaison.length) importArticles = []
-  }
-
   function clickDownladCSV(e) {
     e.stopPropagation()
+    // TODO: déplacé vers le serveur
+    console.log('TODO', 'déplacé vers le serveur')
     let list = trocUserResum.provided.map((p) => {
       return {
         ref: p.ref,
@@ -190,24 +76,24 @@
       }
     })
 
-    let { parse } = json2csv
-    let options = {
-      delimiter: '\t',
-      quote: '',
-      withBOM: true,
-      fields: [
-        'ref',
-        'name',
-        'statuts',
-        'price',
-        'fee',
-        'margin',
-        'createdAt',
-        'updatedAt',
-      ],
-    }
+    const fields = [
+      'ref',
+      'name',
+      'statuts',
+      'price',
+      'fee',
+      'margin',
+      'createdAt',
+      'updatedAt',
+    ]
 
-    let csv = parse(list, options)
+    let csv = [
+      fields.join('\t'),
+      ...list.map((row) => {
+        fields.map((field) => row[field]).join('\t')
+      }),
+    ].join('\n')
+
     downloadCSV('Export Trocio.txt', csv)
   }
 
@@ -226,24 +112,11 @@
 
   function clickOpenCreateArticle(e) {
     providedShow = true
-    dispatch('openCreateDialog')
-  }
-
-  function clickOpenImportArticle(e) {
-    providedShow = true
-    importArticlesListOpen = true
-  }
-
-  function closeProvidedTable(e) {
-    importArticlesListOpen = false
+    articleCreateDialogActive = true
   }
 </script>
 
-<svelte:head>
-  <!-- JSON to CSV -->
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/json2csv/4.5.3/json2csv.umd.min.js"></script>
-</svelte:head>
+<ArticleCreateDialog {trocId} bind:dialogActive={articleCreateDialogActive} />
 
 {#if $queryTrocUserResum.isLoading}
   <div in:fade|local class="centered mt-10">
@@ -253,27 +126,23 @@
   <div in:fade|local class="centered mt-10">Oups, une erreur est survenu.</div>
 {:else if $queryTrocUserResum.isSuccess}
   <div in:fade|local>
-    <pre>
-      {JSON.stringify(trocUserResum, null, 2)}
-    </pre>
-
     <br />
     <div class="w3-row w3-xlarge" style="padding-left: 7px;">
       <div class="w3-col s1">&nbsp;</div>
       <span class="w3-col s8">Solde actuel </span>
-      <span id="balance" class="w3-col s3 w3-right-align"
-        >{trocUserResum.balance.toFixed(2)}</span
-      >
+      <span id="balance" class="w3-col s3 w3-right-align">
+        {trocUserResum.balance.toFixed(2)}
+      </span>
     </div>
     <br /><br />
 
     <DetailCard
       title="Paiements"
-      count={trocUserResum.payments.length}
-      sum={trocUserResum.paySum}
+      count={trocUserResum.paymentsCount}
+      sum={trocUserResum.paymentsSum}
       nonInteractive
       show={paymentShow}
-      items={trocUserResum.payments.sort(sortByUpdatedAt)}
+      items={true ? [] : trocUserResum.payments.sort(sortByUpdatedAt)}
       let:item={payment}
     >
       <span slot="col-1" />
@@ -285,10 +154,10 @@
 
     <DetailCard
       title="Achats"
-      count={trocUserResum.purchases.length}
-      sum={trocUserResum.buySum}
+      count={trocUserResum.purchasesCount}
+      sum={trocUserResum.purchasesSum}
       show={buyShow}
-      items={trocUserResum.purchases.sort(sortByUpdatedAt)}
+      items={true ? [] : trocUserResum.purchases.sort(sortByUpdatedAt)}
       let:item={article}
     >
       <span slot="col-1">#{article.ref}</span>
@@ -296,13 +165,12 @@
       <span slot="col-3">{article.price.toFixed(2)}</span>
     </DetailCard><br />
 
-    {#if trocUserResum.provided}
+    {#if trocUserResum.providedCount}
       <DetailCard
         title="Ventes"
         free
         bind:show={providedShow}
-        on:close={closeProvidedTable}
-        count={trocUserResum.provided.length}
+        count={trocUserResum.providedCount}
         sum={trocUserResum.soldSum + trocUserResum.feeSum}
       >
         <span slot="head">
@@ -310,85 +178,27 @@
           <span class:w3-hide={onPrint} style="margin-left: 30px;">
             <!-- Bonton pour proposer un articles -->
             {#if !importArticlesListOpen}
-              <Button outlined dense on:click={clickOpenCreateArticle}>
-                Proposer un article
+              <Button text dense on:click={clickOpenCreateArticle}>
+                <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
+                article
               </Button>
-            {/if}
-
-            <!-- Bonton pour proposer une liste d'articles -->
-            {#if !importArticlesListOpen}
-              <Button
-                on:click={clickOpenImportArticle}
-                dense
-                title="Proposer une liste d'articles"
-              >
-                <i class="fas fa-list" />
-              </Button>
-            {:else if !importArticles.length}
-              <Button
-                on:click={() => (importArticlesListOpen = false)}
-                color="secondary"
-                dense
-              >
-                {failFormatRaison.length
-                  ? failFormatRaison
-                  : `Annuler la proposition`}
-              </Button>
-            {:else}
-              {#await createImportArticlesPromise}
-                <Button color="secondary" dense>
-                  <i class="fas fa-circle-notch w3-spin" />
-                  Création des articles ...
-                </Button>
-              {:then}
-                <Button
-                  on:click={() =>
-                    (createImportArticlesPromise = createImportArticles())}
-                  variant="raised"
-                  dense
-                  style="color: white;"
-                >
-                  Proposer les {importArticles.length} articles
-                </Button>
-              {/await}
             {/if}
 
             <!-- Bonton pour télécharger le fichier .csv -->
-            {#if trocUserResum.provided.length}
-              <Button
-                dense
+            {#if trocUserResum.providedCount}
+              <IconLink
+                clickable
+                icon={faFileDownload}
                 on:click={clickDownladCSV}
-                title="Télécharger les données"
-                color="secondary"
-              >
-                <i class="fas fa-download" />
-              </Button>
+                opacity
+                size=".7em"
+                tip="Télécharger les données"
+              />
             {/if}
           </span>
         </span>
 
-        <!-- Insertion de plusieurs d'article -->
-        {#if importArticlesListOpen}
-          <div class="w3-row w3-margin" transition:slide|local>
-            <textarea
-              class="w3-round"
-              rows="10"
-              bind:value={importArticlesValue}
-              on:input={inputImportArticles}
-              placeholder={`\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${
-                trocUserResum.prefix ? '[ Référence ] ' : ''
-              }[ Désignation ] [ Prix ] --\n\n\n${
-                trocUserResum.prefix ? `${trocUserResum.prefix}1 ⭢ ` : ''
-              } Mon premier article ⭢ 20\n${
-                trocUserResum.prefix ? `${trocUserResum.prefix}2 : ` : ''
-              } Mon deuxième article : 15.35\n${
-                trocUserResum.prefix ? `${trocUserResum.prefix}3 ; ` : ''
-              } Mon troisième article ; 5,40\n ...`}
-            />
-          </div>
-        {/if}
-
-        <ArticleProvidedTable on:openTarifDialog />
+        <ArticleProvidedTable {trocId} on:openTarifDialog />
       </DetailCard>
     {/if}
     <br />

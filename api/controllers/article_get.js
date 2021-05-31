@@ -8,6 +8,63 @@ function getArticle(req, res, next) {
   })
 }
 
+function getProvidedArticles(req, res, next) {
+  let {
+    troc,
+    provider = req.session.user._id,
+    skip = 0,
+    limit = 20,
+  } = req.query
+
+  skip = Number(skip)
+  limit = Number(limit)
+
+  Article.find({ troc, provider })
+    .skip(skip)
+    .limit(limit)
+    .exec((err, article) => {
+      if (err) return next(Error(err))
+      res.json(article)
+    })
+}
+
+function getPurchasesArticles(req, res, next) {
+  let { troc, buyer, seller, skip = 0, limit = 20 } = req.query
+  if (!buyer) {
+    // Client anonyme
+    buyer = { $exists: false }
+    if (!seller) seller = req.session.user._id
+  }
+  const query = seller ? { troc, buyer, seller } : { troc, buyer }
+
+  Article.find(query)
+    .skip(skip)
+    .limit(limit)
+    .exec((err, article) => {
+      if (err) return next(Error(err))
+      res.json(article)
+    })
+}
+
+function getGivbacksArticles(req, res, next) {
+  const { troc, user, skip = 0, limit = 20 } = req.query
+  const query = user
+    ? { troc, 'giveback.user': user }
+    : {
+        troc,
+        giveback: { $size: { $gt: 0 } },
+        giveback: { $elemMatch: { user: { $exists: false } } },
+      }
+
+  Article.find(query)
+    .skip(skip)
+    .limit(limit)
+    .exec((err, article) => {
+      if (err) return next(Error(err))
+      res.json(article)
+    })
+}
+
 function searchArticle(req, res, next) {
   let {
     troc,
@@ -134,5 +191,8 @@ interface SearchArticleQuery {
 
 module.exports = {
   getArticle,
+  getProvidedArticles,
+  getPurchasesArticles,
+  getGivbacksArticles,
   searchArticle,
 }

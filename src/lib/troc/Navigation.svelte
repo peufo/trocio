@@ -88,8 +88,12 @@
           </TextField>
 
           <div class="d-flex pa-2">
-            <TextField bind:value={start} type="date">A partir du</TextField>
-            <TextField bind:value={end} type="date">Jusqu'au</TextField>
+            <TextField bind:value={start} type="date" placeholder=" ">
+              A partir du
+            </TextField>
+            <TextField bind:value={end} type="date" placeholder=" ">
+              Jusqu'au
+            </TextField>
           </div>
         </div>
       {:else}

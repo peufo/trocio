@@ -20,7 +20,7 @@ export function getSubscribedTrocs({ pageParam = 0 }) {
 export function getTrocUserResum({ queryKey }) {
   const { trocId, userId } = queryKey[1]
   const params = userId ? { troc: trocId, user: userId } : { troc: trocId }
-  return api<TrocUserResume>('/api/trocs/details', { params })
+  return api<TrocUserResume>('/api/trocs/resum', { params })
 }
 
 async function taGrosseMere() {

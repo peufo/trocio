@@ -50,13 +50,14 @@ export declare interface Troc {
 export declare interface TrocUserResume {
   troc: string
   user: string
-  provided: Article[]
-  purchases: Article[]
-  givebacks: Article[]
-  payments: Article[]
-  buySum: number
-  paySum: number
-  soldSum: number
-  feeSum: number
   balance: number
+  providedCount: number
+  providedSum: number
+  feeSum: number
+  soldSum: number
+  marginSum: number
+  purchasesCount: number
+  purchasesSum: number
+  paymentsCount: number
+  paymentsSum: number
 }
