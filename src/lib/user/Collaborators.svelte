@@ -178,7 +178,7 @@
 
     <br />
 
-    <ExpansionCard title="Caissiers" hasSearchInput>
+    <ExpansionCard title="Caissiers">
       <List>
         {#each troc.cashier as cashier}
           <ListItem>
@@ -193,7 +193,6 @@
 
       <CardActions>
         <UserSelect
-          id="Newcashier"
           label="Nouveau caissier"
           exepted={troc.cashier}
           on:select={addCashier}
