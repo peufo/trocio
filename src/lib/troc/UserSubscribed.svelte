@@ -49,16 +49,17 @@
           <span slot="append">
             {#if troc.isAdmin}
               <IconLink
-                href={`/admin?troc=${troc._id}`}
+                href={`/admin?trocId=${troc._id}`}
                 icon={faCog}
                 size="20px"
-                style="opacity: .6;"
+                opacity
               />
             {:else if troc.isCashier}
               <IconLink
-                href={`/cashier?troc=${troc._id}`}
+                href={`/cashier?trocId=${troc._id}`}
                 icon={faCashRegister}
                 size="20px"
+                opacity
               />
             {/if}
           </span>

@@ -1,210 +1,129 @@
-<script>
+<script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte'
   const dispatch = createEventDispatcher()
   import { fly } from 'svelte/transition'
-  import { List, ListItem } from 'svelte-materialify'
+  import { TextField, List, ListItem } from 'svelte-materialify'
+  import debounce from 'debounce'
 
-  export let id = 0
-  export let search = ''
-  export let placeholder = 'Chercher un utilisateur'
-  export let exepted = []
-  export let modeSelect = false
-  export let itemSelected = {} //itemSelected = user
-  export let selectOk = false
-  export let disabled = false
+  import Loader from '$lib/util/Loader.svelte'
+  import { useSearchUser, useSearchUserOptions } from '$lib/user/store'
+
+  export let label = 'Chercher un utilisateur'
+  export let inputElement: HTMLInputElement
+  export let searchValue = ''
+  export let exepted: string[] = []
+  export let selectedItem = null
+  export let modeSelect = true
+  let selectedIndex = 0
+  let focus = false
+
+  const querySearch = useSearchUser(searchValue)
+  $: querySearch.setOptions(useSearchUserOptions(searchValue))
+  $: items = $querySearch.data ? $querySearch.data.pages.flat() : []
+  $: itemsFiltred = items.filter((item) => !exepted.includes(item._id))
+
+  const handleSearch = debounce(() => {
+    searchValue = inputElement.value
+  }, 200)
 
   //TODO: Transformer pour aussi servire au article
   //1. Utilisé ._id au lieu de .mail
   //2. remplacer user par item
   //3. Utilisé <slot> pour la représentation
 
-  let users = []
-  let selected = 0
-  let listhover = false
-  let waiting
-  let nextInput
-  let focus = false
-
-  onMount(() => {
-    //If item is preselected
-    if (itemSelected._id) {
-      select(itemSelected)
-    }
-
-    if (modeSelect) {
-      //TODO: WTF!?!?!
-
-      // Get next Input
-      let inputs = [...document.getElementsByClassName('w3-input')]
-      let input = document.getElementById(`searchUser${id}`)
-      let index = inputs.indexOf(input)
-      if (index < inputs.length - 1) {
-        nextInput = inputs[index + 1]
-      } else {
-        nextInput = inputs[0]
-      }
-    }
-  })
-
-  $: selectOk = itemSelected.name == search
-
-  async function searchUser() {
-    try {
-      const res = await fetch(`/api/users/search/${search}`)
-      const json = await res.json()
-      if (res.ok) return json
-      else return []
-    } catch (error) {
-      console.trace(error)
-    }
+  function select(item) {
+    selectedItem = item
+    dispatch('select', item)
+    inputElement.value = modeSelect ? item.name : ''
+    inputElement.blur()
   }
 
-  function input() {
-    dispatch('input')
-    clearTimeout(waiting)
-    if (search.length > 1)
-      waiting = setTimeout(() => (users = searchUser()), 100)
-  }
-
-  function select(user) {
-    if (!isExepted(user)) {
-      itemSelected = user
-      dispatch('select', user)
-      if (modeSelect) {
-        search = user.name
-        //nextInput.focus()
-        document.getElementById(`searchUser${id}`).blur()
-      } else {
-        search = ''
-      }
-    }
-  }
-
-  function isExepted(user) {
-    console.log({ user, exepted })
-    return exepted.map((e) => e._id).indexOf(user._id) > -1
-  }
-
-  const ENTER = 13,
-    DOWN = 40,
-    UP = 38
-
-  function keydown(e) {
-    if (Array.isArray(users)) return
-
-    switch (e.which) {
-      case ENTER:
-        if (selected > -1) {
-          users.then((users) => select(users[selected]))
+  function handleKeydown(event) {
+    switch (event.key) {
+      case 'Enter':
+        if (selectedIndex > -1) {
+          select(itemsFiltred[selectedIndex])
         }
         break
 
-      case DOWN:
-        e.preventDefault()
-        users.then((users) => {
-          for (var i = selected + 1; i < users.length; i++) {
-            if (!isExepted(users[i])) {
-              selected = i
-              break
-            }
-          }
-        })
-
+      case 'ArrowDown':
+        event.preventDefault()
+        if (++selectedIndex >= itemsFiltred.length) selectedIndex = 0
         break
 
-      case UP:
-        e.preventDefault()
-        users.then((users) => {
-          for (var i = selected - 1; i > -1; i--) {
-            if (!isExepted(users[i])) {
-              selected = i
-              break
-            }
-          }
-        })
+      case 'ArrowUp':
+        event.preventDefault()
+        if (--selectedIndex < 0) selectedIndex = itemsFiltred.length - 1
         break
 
       default:
-        selected = -1
+        selectedIndex = 0
     }
-    console.log(selected)
   }
 
-  function focusin() {
+  function handleFocus() {
     focus = true
-    dispatch('focusin')
+    if (modeSelect) {
+      selectedItem = null
+      inputElement.value = ''
+    }
   }
 
-  function focusout() {
-    setTimeout(() => (focus = false), 200)
+  function handleBlur() {
+    setTimeout(() => {
+      focus = false
+    }, 200)
   }
 </script>
 
 <div style="position: relative;">
-  <input
-    id={`searchUser${id}`}
-    bind:value={search}
-    on:keydown={keydown}
-    on:input={input}
-    on:focusin={focusin}
-    on:focusout={focusout}
-    type="text"
-    class:w3-disabled={disabled}
-    class="w3-input searchUser"
+  <TextField
+    bind:inputElement
+    on:keydown={handleKeydown}
+    on:input={handleSearch}
+    on:focus={handleFocus}
+    on:blur={handleBlur}
     autocomplete="off"
-    {placeholder}
-  />
+    placeholder={modeSelect && !!selectedItem ? ' ' : ''}
+    {...$$restProps}
+  >
+    {label}
+  </TextField>
 
-  {#if focus && search.length > 1 && (!modeSelect || !selectOk)}
-    <div
-      id="proposition"
-      class="w3-border w3-round w3-padding"
-      in:fly={{ y: 50 }}
-      style="min-width: 260px;"
-    >
-      {#await users}
-        <i class="fas fa-circle-notch w3-spin" />
-        Recherche...
-      {:then users}
-        <List
-          avatarList
-          dense
-          on:mouseenter={() => {
-            listhover = true
-            selected = -1
-          }}
-          on:mouseleave={() => (listhover = false)}
-        >
-          {#each users as user, i}
+  {#if focus}
+    <div class="items elevation-5 rounded" in:fly={{ y: 50 }}>
+      <List dense>
+        {#if $querySearch.isLoading}
+          <ListItem disabled><Loader /></ListItem>
+        {:else if $querySearch.isError}
+          <ListItem disabled>Oups, un problème est survenu</ListItem>
+        {:else}
+          {#each itemsFiltred as item, index}
             <ListItem
-              on:mouseenter={() => (selected = i)}
-              selected={selected === i && !isExepted(user)}
-              disabled={isExepted(user)}
-              on:click={() => select(user)}
+              active={selectedIndex === index}
+              on:click={() => select(item)}
             >
-              {user.name}
-              <span slot="subtitle">{user.mail}</span>
+              {item.name}
+              <span slot="subtitle">{item.mail}</span>
             </ListItem>
           {:else}
-            <div class="w3-center">
-              Aucun résultat pour <b>{search}</b>
-            </div>
+            <ListItem disabled>
+              Aucun résultat pour <b>{searchValue}</b>
+            </ListItem>
           {/each}
-        </List>
-      {:catch error}
-        <span class="w3-red">{error}</span>
-      {/await}
+        {/if}
+      </List>
     </div>
   {/if}
 </div>
 
 <style>
-  #proposition {
+  .items {
     position: absolute;
     width: 100%;
-    background: #fff;
+    min-width: 260px;
+    background: var(--theme-surface);
     margin-top: 4px;
-    box-shadow: 1px 1px 4px grey;
     z-index: 99;
   }
 </style>

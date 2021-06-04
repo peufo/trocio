@@ -1,4 +1,5 @@
 <script>
+  import { params, url } from '@roxi/routify'
   import { createEventDispatcher } from 'svelte'
   import {
     NavigationDrawer,
@@ -39,6 +40,8 @@
   ]
 
   const dispatch = createEventDispatcher()
+
+  $: console.log($url())
 </script>
 
 <svelte:window bind:scrollY />
@@ -69,12 +72,14 @@
     <Divider />
     <List nav>
       {#each tabs as tab, i}
-        <ListItem active={i == 2} disabled={i == 4}>
-          <span slot="prepend">
-            <IconLink icon={tab.icon} size="1.1em" />
-          </span>
-          {tab.label}
-        </ListItem>
+        <a href={$url($url(), { ...$params, tab_admin: tab.ref })}>
+          <ListItem>
+            <span slot="prepend">
+              <IconLink icon={tab.icon} size="1.1em" />
+            </span>
+            {tab.label}
+          </ListItem>
+        </a>
       {/each}
     </List>
 

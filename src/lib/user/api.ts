@@ -93,6 +93,19 @@ export function changePassword(oldPassword: string, newPassword: string) {
   })
 }
 
+export function search({
+  pageParam,
+  queryKey,
+}: {
+  pageParam: number
+  queryKey: [string, string]
+}) {
+  const searchValue = queryKey[1]
+  return api<User[]>('/api/users/search', {
+    params: { q: searchValue, skip: pageParam },
+  })
+}
+
 export default {
   login,
   authenticate,
@@ -103,4 +116,5 @@ export default {
   sendValidationMail,
   validMail,
   changePassword,
+  search,
 }
