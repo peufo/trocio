@@ -119,11 +119,13 @@
 <ArticleCreateDialog {trocId} bind:dialogActive={articleCreateDialogActive} />
 
 {#if $queryTrocUserResum.isLoading}
-  <div in:fade|local class="centered mt-10">
+  <div in:fade|local class="centered" style="height: 160px;">
     <Loader />
   </div>
 {:else if $queryTrocUserResum.isError}
-  <div in:fade|local class="centered mt-10">Oups, une erreur est survenu.</div>
+  <div in:fade|local class="centered" style="height: 160px;">
+    Oups, une erreur est survenu.
+  </div>
 {:else if $queryTrocUserResum.isSuccess}
   <div in:fade|local>
     <br />
@@ -165,42 +167,41 @@
       <span slot="col-3">{article.price.toFixed(2)}</span>
     </DetailCard><br />
 
-    {#if trocUserResum.providedCount}
-      <DetailCard
-        title="Ventes"
-        free
-        bind:show={providedShow}
-        count={trocUserResum.providedCount}
-        sum={trocUserResum.soldSum + trocUserResum.feeSum}
-      >
-        <span slot="head">
-          <!-- Provide button -->
-          <span class:w3-hide={onPrint} style="margin-left: 30px;">
-            <!-- Bonton pour proposer un articles -->
-            {#if !importArticlesListOpen}
-              <Button text dense on:click={clickOpenCreateArticle}>
-                <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
-                article
-              </Button>
-            {/if}
+    <DetailCard
+      title="Ventes"
+      free
+      bind:show={providedShow}
+      count={trocUserResum.providedCount}
+      sum={trocUserResum.soldSum + trocUserResum.feeSum}
+    >
+      <span slot="head">
+        <!-- Provide button -->
+        <span class:w3-hide={onPrint} style="margin-left: 30px;">
+          <!-- Bonton pour proposer un articles -->
+          {#if !importArticlesListOpen}
+            <Button text dense on:click={clickOpenCreateArticle}>
+              <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
+              article
+            </Button>
+          {/if}
 
-            <!-- Bonton pour télécharger le fichier .csv -->
-            {#if trocUserResum.providedCount}
-              <IconLink
-                clickable
-                icon={faFileDownload}
-                on:click={clickDownladCSV}
-                opacity
-                size=".7em"
-                tip="Télécharger les données"
-              />
-            {/if}
-          </span>
+          <!-- Bonton pour télécharger le fichier .csv -->
+          {#if trocUserResum.providedCount}
+            <IconLink
+              clickable
+              icon={faFileDownload}
+              on:click={clickDownladCSV}
+              opacity
+              size=".7em"
+              tip="Télécharger les données"
+            />
+          {/if}
         </span>
+      </span>
 
-        <ArticleProvidedTable {trocId} on:openTarifDialog />
-      </DetailCard>
-    {/if}
+      <ArticleProvidedTable {trocId} on:openTarifDialog />
+    </DetailCard>
+
     <br />
 
     <div
