@@ -8,6 +8,8 @@
 
   const trocQuery = useTroc($params.trocId)
   $: $params.trocId && trocQuery.setOptions(useTrocOptions($params.trocId))
+
+  // TODO: not util ?
   $: $trocs = $trocQuery.data ? [$trocQuery.data] : []
 </script>
 

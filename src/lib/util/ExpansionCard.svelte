@@ -1,8 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import { Card, CardTitle } from 'svelte-materialify'
-  import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
+  import { Card, CardTitle, TextField } from 'svelte-materialify'
+  import { faChevronDown, faSearch } from '@fortawesome/free-solid-svg-icons'
 
   export let title = 'Title'
   /**
@@ -11,6 +11,8 @@
    */
   export let controlled = false
   export let open = false
+  export let searchValue = ''
+  export let hasSearchInput = false
 
   import IconLink from '$lib/util/IconLink.svelte'
 
@@ -31,16 +33,29 @@
 
 <Card outlined hover={!open}>
   <div on:click={handleOpen}>
-    <CardTitle class="text-uppercase">
+    <CardTitle>
       <slot name="icon" />
-      &nbsp;&nbsp;
-      {title}
+      <span class="ml-3 text-uppercase">
+        {title}
+      </span>
+
       <div style="flex-grow: 1;" />
+
+      {#if hasSearchInput}
+        <div class="mr-5">
+          <TextField clearable bind:value={searchValue} on:change on:input>
+            <div slot="prepend">
+              <IconLink icon={faSearch} size="1.1em" />
+            </div>
+            Recherche
+          </TextField>
+        </div>
+      {/if}
       <IconLink
         icon={faChevronDown}
         clickable
         rotate={open ? 0 : -90}
-        style="opacity: .6;"
+        opacity
         on:click={handleClose}
       />
     </CardTitle>

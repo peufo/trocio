@@ -36,6 +36,7 @@
             {disabled}
             {style}
             class={klass}
+            {...$$restProps}
           />
         </Button>
       </a>
@@ -54,6 +55,7 @@
           {disabled}
           {style}
           class={klass}
+          {...$$restProps}
         />
       </Button>
     </Tooltip>
@@ -71,6 +73,7 @@
         {disabled}
         {style}
         class={klass}
+        {...$$restProps}
       />
     </Button>
   </a>
@@ -86,6 +89,7 @@
       {disabled}
       {style}
       class={klass}
+      {...$$restProps}
     />
   </Button>
 {:else}
@@ -99,5 +103,6 @@
     {disabled}
     {style}
     class={klass}
+    {...$$restProps}
   />
 {/if}

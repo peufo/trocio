@@ -32,7 +32,7 @@ router
   .post('/resetpwd', resetpwd)
   .post('/validmail', sendValidMail)
   .get('/validmail/:validator', validMail)
-  .get('/search/:search', searchUser)
+  .get('/search', searchUser)
   //.get('/:id', checkSuperAdmin, getUser)
   .get('/name/:id', getUserName)
 

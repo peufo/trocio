@@ -1,4 +1,5 @@
 export declare interface User {
+  _id: string
   name: string
   ref?: number
   birth?: Date

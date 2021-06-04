@@ -1,7 +1,10 @@
-import { writable, derived, Updater } from 'svelte/store'
+import { writable, derived } from 'svelte/store'
 
 import type { User } from 'types'
+import type { AxiosError } from 'axios'
 import apiUser from '$lib/user/api'
+import { useInfiniteQuery } from '@sveltestack/svelte-query'
+import { getNextPageParam } from '$lib/store/util'
 
 export const userQuery = createUserQuery()
 
@@ -60,9 +63,6 @@ function createUserQuery() {
   }
 }
 
-/**
- * Initialise le set du setter
- */
 function createSetAndReturnPromise(
   set: (this: void, value: Promise<User>) => void
 ) {
@@ -71,3 +71,14 @@ function createSetAndReturnPromise(
     return promise
   }
 }
+
+export function useSearchUserOptions(searchValue: string) {
+  return {
+    queryKey: ['searchUser', searchValue],
+    queryFn: apiUser.search,
+    getNextPageParam,
+  }
+}
+
+export const useSearchUser = (searchValue: string) =>
+  useInfiniteQuery<User[], AxiosError>(useSearchUserOptions(searchValue))

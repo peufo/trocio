@@ -23,7 +23,7 @@
           $params[s.dataset.query] === s.dataset.value &&
           !$params[s.dataset.queryavoid]
       )
-      if (section) content.scrollTo({ top: section.offsetTop - 50 })
+      if (section) content.scrollTo({ top: section.offsetTop - 110 })
     }
   }
 </script>
