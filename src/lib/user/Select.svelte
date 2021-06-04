@@ -9,11 +9,11 @@
   import { useSearchUser, useSearchUserOptions } from '$lib/user/store'
 
   export let label = 'Chercher un utilisateur'
-  export let inputElement: HTMLInputElement
+  export let inputElement: HTMLInputElement = null
   export let searchValue = ''
   export let exepted: string[] = []
   export let selectedItem = null
-  export let modeSelect = true
+  export let modeSelect = false
   let selectedIndex = 0
   let focus = false
 

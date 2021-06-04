@@ -4,6 +4,8 @@
   import { Card, CardTitle, TextField } from 'svelte-materialify'
   import { faChevronDown, faSearch } from '@fortawesome/free-solid-svg-icons'
 
+  import IconLink from '$lib/util/IconLink.svelte'
+
   export let title = 'Title'
   /**
    * Si controlled === true,
@@ -11,10 +13,11 @@
    */
   export let controlled = false
   export let open = false
+
   export let searchValue = ''
   export let hasSearchInput = false
-
-  import IconLink from '$lib/util/IconLink.svelte'
+  export let inputElement: HTMLInputElement = null
+  let isSearchActive = false
 
   const dispath = createEventDispatcher()
 
@@ -29,6 +32,15 @@
     if (!controlled) open = false
     dispath('close')
   }
+
+  function handleClickSearch() {
+    isSearchActive = true
+    inputElement.focus()
+  }
+
+  function handleBlur(event) {
+    if (event.target.value === '') isSearchActive = false
+  }
 </script>
 
 <Card outlined hover={!open}>
@@ -42,12 +54,30 @@
       <div style="flex-grow: 1;" />
 
       {#if hasSearchInput}
-        <div class="mr-5">
-          <TextField clearable bind:value={searchValue} on:change on:input>
+        <div
+          class="mr-5"
+          on:click={handleClickSearch}
+          class:clickable={!isSearchActive}
+        >
+          <TextField
+            placeholder="Recherche"
+            clearable
+            solo
+            dense
+            flat={!isSearchActive}
+            bind:inputElement
+            bind:value={searchValue}
+            on:change
+            on:input
+            on:blur={handleBlur}
+            style="
+              transition: width 300ms;
+              width: {isSearchActive ? '240px' : '46px'};
+            "
+          >
             <div slot="prepend">
               <IconLink icon={faSearch} size="1.1em" />
             </div>
-            Recherche
           </TextField>
         </div>
       {/if}
