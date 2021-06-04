@@ -30,7 +30,7 @@
   export let troc: Troc
   export let displayGetActivity = true
   export let articlesOpen = false
-  export let activityOpen = true
+  export let activityOpen = false
 
   let tabs = [
     { name: 'LOCATION', icon: faMapMarkerAlt },
@@ -228,14 +228,14 @@
   {/if}
 
   {#if !!$user && troc.isAdmin}
-    <a href={`/admin?troc=${troc._id}`}>
+    <a href={`/admin?trocId=${troc._id}`}>
       <Button text>
         <IconLink icon={faCog} class="mr-2" size="1.2em" />
         Page d'administration
       </Button>
     </a>
   {:else if !!$user && troc.isCashier}
-    <a href={`/cashier?troc=${troc._id}`}>
+    <a href={`/cashier?trocId=${troc._id}`}>
       <Button text>
         <IconLink icon={faCashRegister} class="mr-2" size="1.2em" />
         Caisse

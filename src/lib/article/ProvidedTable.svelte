@@ -29,8 +29,6 @@
     ? $queryProvidedArticles.data.pages.flat()
     : []
 
-  const uuid = String(Math.random()).slice(2)
-
   let modifiedArticles = [] //Array for minimize PATCH request on AutoPatch.svelte
   let clearModifiedArticles //Timeout
 
@@ -126,7 +124,7 @@
   {#if !providedArticles.length}
     <div class="text-center text--secondary pt-2 pb-5">Aucun élément</div>
   {:else}
-    <table id={`tableArticles${uuid}`} class="w3-table">
+    <table class="w3-table">
       <!-- En-têtes -->
       <tr class="w3-small">
         <th on:click={() => document.getElementById('searchRef').focus()}>

@@ -50,7 +50,7 @@
             bind:this={$trocsElement[troc._id]}
             on:click={() => clickTroc(troc)}
           >
-            <Card class="mb-6 pa-4" hover>
+            <Card class="mb-6 pa-4">
               <TrocInfo {troc} on:clickArticles />
             </Card>
           </div>
