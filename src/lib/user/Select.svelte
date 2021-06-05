@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte'
-  const dispatch = createEventDispatcher()
   import { fly } from 'svelte/transition'
   import { TextField, List, ListItem } from 'svelte-materialify'
   import debounce from 'debounce'
@@ -17,6 +16,7 @@
   let selectedIndex = 0
   let focus = false
 
+  const dispatch = createEventDispatcher()
   const querySearch = useSearchUser(searchValue)
   $: querySearch.setOptions(useSearchUserOptions(searchValue))
   $: items = $querySearch.data ? $querySearch.data.pages.flat() : []

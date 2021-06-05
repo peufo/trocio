@@ -72,7 +72,7 @@
             on:blur={handleBlur}
             style="
               transition: width 300ms;
-              width: {isSearchActive ? '240px' : '46px'};
+              width: {isSearchActive ? '240px' : '45px'};
             "
           >
             <div slot="prepend">
