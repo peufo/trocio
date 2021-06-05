@@ -1,4 +1,5 @@
 import { Article } from 'types'
+import { User } from 'types'
 
 export declare interface Troc {
   _id: string
@@ -25,16 +26,12 @@ export declare interface Troc {
   }
   description: string
   trader: {
-    _id: string
     prefix: string
     user: string
-    id: string
   }[]
   schedule: {
-    _id: string
     open: string
     close: string
-    id: string
   }[]
   tarif: []
   createdAt: string
@@ -45,6 +42,16 @@ export declare interface Troc {
   isAdmin: boolean
   isCashier: boolean
   isSubscribed: boolean
+}
+
+export declare interface TrocLookup extends Troc {
+  admin: User[]
+  cashier: User[]
+  trader: {
+    prefix: string
+    user: User
+  }[]
+  creator: User
 }
 
 export declare interface TrocUserResume {

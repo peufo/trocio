@@ -9,32 +9,34 @@
     CardActions,
   } from 'svelte-materialify'
   import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
+  import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 
-  import Loader from '$lib/util/Loader.svelte'
+  import { troc, useAddAdmin, useRemoveAdmin } from '$lib/troc/store'
+  import { user } from '$lib/user/store'
+  import UserSelect from '$lib/user/Select.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
-
-  import { user } from '$lib/user/store'
-  import { useTroc, useTrocOptions } from '$lib/troc/store'
-
-  const trocQuery = useTroc($params.trocId)
-  $: $params.trocId && trocQuery.setOptions(useTrocOptions($params.trocId))
-  $: troc = $trocQuery.data
+  import Loader from '$lib/util/Loader.svelte'
 
   // import { troc } from './stores'
-  // import { user } from './stores'
   // import { getHeader, updateTroc } from './utils'
-
-  import UserSelect from '$lib/user/Select.svelte'
-  import { faPlus } from '@fortawesome/free-solid-svg-icons'
-
-  let newCollaboratorDialogActive = false
+  const addAdmin = useAddAdmin()
+  const removeAdmin = useRemoveAdmin()
 
   let selectedTrader = -1
   let selectedTraderName = ''
   let selectedTraderPrefix = ''
   let traderDialogActive = false
   let changePrefixPromise
+
+  let open = [false, false, false]
+
+  let searchValueAdmin = ''
+  let searchValueCashier = ''
+  let searchValueTrader = ''
+
+  $: filterAdmin = (user) =>
+    !!user.name.match(new RegExp(searchValueAdmin, 'i'))
 
   function findNewPrefix() {
     let prefixs = troc.trader.map((t) => t.prefix)
@@ -89,13 +91,6 @@
     }
   }
 
-  function addAdmin(e) {
-    fetch(`/api/trocs/${troc._id}/admin`, getHeader({ admin: e.detail._id }))
-      .then((res) => res.json())
-      .then(updateTroc)
-      .catch(console.trace)
-  }
-
   function addCashier(e) {
     fetch(
       `/api/trocs/${troc._id}/cashier`,
@@ -111,13 +106,6 @@
       `/api/trocs/${troc._id}/trader`,
       getHeader({ trader: e.detail._id, prefix: findNewPrefix() })
     )
-      .then((res) => res.json())
-      .then(updateTroc)
-      .catch(console.trace)
-  }
-
-  function removeAdmin(userId) {
-    fetch(`/api/trocs/${troc._id}/admin/remove`, getHeader({ admin: userId }))
       .then((res) => res.json())
       .then(updateTroc)
       .catch(console.trace)
@@ -139,101 +127,138 @@
       .then(updateTroc)
       .catch(console.trace)
   }
+
+  function handleOpen(index) {
+    open = open.map((o, i) => i === index)
+  }
 </script>
 
 <!-- Administrateurs -->
-{#if $trocQuery.isLoading}
-  <div class="centered" style="height: 100px;">
-    <Loader />
-  </div>
-{:else if $trocQuery.isError}
-  <div class="centered" style="height: 100px;">
-    <span>Oups, une erreur c'est produite.</span>
-  </div>
-{:else}
-  <div class="pt-5" style="max-width: 800px; margin: auto;">
-    <ExpansionCard title="Administrateurs" open={true} hasSearchInput>
-      <List>
-        {#each troc.admin as admin}
-          <ListItem>
-            <span>{admin.name}</span>
-            <span slot="subtitle">{admin.mail}</span>
 
-            <div slot="append" on:click={() => removeCashier(admin._id)}>
-              {#if admin._id != troc.creator._id && admin._id != $user._id}
-                <IconLink icon={faTrashAlt} />
-              {/if}
-            </div>
-          </ListItem>
-        {/each}
-      </List>
-      <CardActions>
+<div class="pt-5" style="max-width: 800px; margin: auto;">
+  <ExpansionCard
+    title="Administrateurs"
+    open={open[0]}
+    on:open={() => handleOpen(0)}
+    hasSearchInput
+    bind:searchValue={searchValueAdmin}
+  >
+    <List>
+      {#each $troc.admin.filter(filterAdmin) as admin}
+        <ListItem selectable>
+          <span>{admin.name}</span>
+          <span slot="subtitle">{admin.mail}</span>
+          <div
+            slot="append"
+            class="trash"
+            on:click={() => {
+              if (!$removeAdmin.isLoading)
+                $removeAdmin.mutate({
+                  trocId: $params.trocId,
+                  userId: admin._id,
+                })
+            }}
+          >
+            {#if admin._id != $troc.creator._id && admin._id != $user._id}
+              <IconLink
+                icon={$removeAdmin.isLoading ? faSpinner : faTrashAlt}
+                clickable={!$removeAdmin.isLoading}
+                spin={$removeAdmin.isLoading}
+                opacity
+              />
+            {/if}
+          </div>
+        </ListItem>
+      {/each}
+    </List>
+
+    <div class="pa-4">
+      {#if $addAdmin.isLoading}
+        <Loader title="Ajout en cours" />
+      {:else}
         <UserSelect
           label="Nouvel administrateur"
-          exepted={troc.admin.map(({ _id }) => _id)}
-          on:select={console.log}
+          exepted={$troc.admin.map(({ _id }) => _id)}
+          on:select={(event) => {
+            $addAdmin.mutate({
+              trocId: $params.trocId,
+              userId: event.detail._id,
+            })
+          }}
         />
-      </CardActions>
-    </ExpansionCard>
+      {/if}
+    </div>
+  </ExpansionCard>
 
-    <br />
+  <br />
 
-    <ExpansionCard title="Caissiers">
-      <List>
-        {#each troc.cashier as cashier}
-          <ListItem>
-            <span>{cashier.name}</span>
-            <span slot="subtitle">{cashier.mail}</span>
-            <div slot="append" on:click={() => removeCashier(cashier._id)}>
+  <ExpansionCard
+    title="Caissiers"
+    hasSearchInput
+    open={open[1]}
+    on:open={() => handleOpen(1)}
+    bind:searchValue={searchValueCashier}
+  >
+    <List>
+      {#each $troc.cashier as cashier}
+        <ListItem>
+          <span>{cashier.name}</span>
+          <span slot="subtitle">{cashier.mail}</span>
+          <div
+            class="trash"
+            slot="append"
+            on:click={() => removeCashier(cashier._id)}
+          >
+            <IconLink icon={faTrashAlt} />
+          </div>
+        </ListItem>
+      {/each}
+    </List>
+
+    <CardActions>
+      <UserSelect
+        label="Nouveau caissier"
+        exepted={$troc.cashier.map((user) => user._id)}
+        on:select={addCashier}
+      />
+    </CardActions>
+  </ExpansionCard>
+
+  <br />
+
+  <ExpansionCard
+    title="Commerçants"
+    hasSearchInput
+    open={open[2]}
+    on:open={() => handleOpen(2)}
+    bind:searchValue={searchValueTrader}
+  >
+    <List twoLine style="width: 480px; min-width: 200px; margin: auto;">
+      {#if $troc.trader}
+        {#each $troc.trader as trader, i}
+          <ListItem on:click={(e) => clickTrader(e, i)}>
+            <span>
+              <b>{trader.prefix}</b>&nbsp;
+              <i class="fas fa-arrow-right w3-opacity" />&nbsp;
+              {trader.user.name}
+            </span>
+            <span slot="subtitle">{trader.user.mail}</span>
+            <div slot="append">
               <IconLink icon={faTrashAlt} />
             </div>
           </ListItem>
         {/each}
-      </List>
+      {/if}
+    </List>
 
-      <CardActions>
-        <UserSelect
-          label="Nouveau caissier"
-          exepted={troc.cashier}
-          on:select={addCashier}
-        />
-      </CardActions>
-    </ExpansionCard>
-
-    <br />
-
-    <ExpansionCard title="Commerçants" hasSearchInput>
-      <List twoLine style="width: 480px; min-width: 200px; margin: auto;">
-        {#if troc.trader}
-          {#each troc.trader as trader, i}
-            <ListItem on:click={(e) => clickTrader(e, i)}>
-              <span>
-                <b>{trader.prefix}</b>&nbsp;
-                <i class="fas fa-arrow-right w3-opacity" />&nbsp;
-                {trader.user.name}
-              </span>
-              <span slot="subtitle">{trader.user.mail}</span>
-              <div slot="append">
-                <IconLink icon={faTrashAlt} />
-              </div>
-            </ListItem>
-          {/each}
-        {/if}
-      </List>
-
-      <UserSelect
-        id="NewTrader"
-        label="Nouveau commerçant"
-        exepted={troc.trader.map((t) => t.user)}
-        on:select={addTrader}
-      />
-    </ExpansionCard>
-  </div>
-{/if}
-
-<Dialog bind:active={newCollaboratorDialogActive}>
-  <h6>Nouveau collab</h6>
-</Dialog>
+    <UserSelect
+      id="NewTrader"
+      label="Nouveau commerçant"
+      exepted={$troc.trader.map((t) => t.user._id)}
+      on:select={addTrader}
+    />
+  </ExpansionCard>
+</div>
 
 <Dialog bind:active={traderDialogActive}>
   <h4>Edition du préfixe utilisé par {selectedTraderName}</h4>
@@ -257,10 +282,22 @@
       variant="raised"
       style="color: white;"
       disabled={!selectedTraderPrefix ||
-        troc.trader.map((t) => t.prefix).indexOf(selectedTraderPrefix) != -1}
+        $troc.trader.map((t) => t.prefix).indexOf(selectedTraderPrefix) != -1}
       class="w3-right w3-margin-top"
     >
       Valider
     </Button>
   {/await}
 </Dialog>
+
+<style>
+  .trash {
+    transform: translateX(50px);
+    transition: transform 200ms;
+  }
+
+  :global(.s-list-item:hover .trash) {
+    transform: translateX(0);
+    transition-delay: 300ms;
+  }
+</style>

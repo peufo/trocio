@@ -309,20 +309,6 @@ function getTroc(req, res, next) {
   }
 }
 
-function computeSum(articles) {
-  let soldSum = 0
-  let feeSum = 0
-  if (articles.length) {
-    let arr = articles.filter((a) => a.sold).map((a) => a.price)
-    soldSum = arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
-    arr = articles.filter((a) => a.valided).map((a) => a.fee)
-    feeSum = arr.length ? -arr.reduce((acc, cur) => acc + cur) : 0
-    arr = articles.filter((a) => a.sold).map((a) => a.margin)
-    feeSum -= arr.length ? arr.reduce((acc, cur) => acc + cur) : 0
-  }
-  return { soldSum, feeSum }
-}
-
 module.exports = {
   getSpec,
   getResum,

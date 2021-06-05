@@ -1,6 +1,5 @@
 <script>
   import { params } from '@roxi/routify'
-  import { Card } from 'svelte-materialify'
 
   import { useTroc, useTrocOptions, trocs } from '$lib/troc/store'
   import Loader from '$lib/util/Loader.svelte'

@@ -1,6 +1,6 @@
 import { addIsClosed } from '$lib/utils.js'
 
-import type { Troc, TrocUserResume } from 'types'
+import type { Troc, TrocLookup, TrocUserResume } from 'types'
 import { api } from '$lib/api'
 
 export function getTroc({ queryKey }: { queryKey: ['troc', string] }) {
@@ -23,19 +23,30 @@ export function getTrocUserResum({ queryKey }) {
   return api<TrocUserResume>('/api/trocs/resum', { params })
 }
 
-async function taGrosseMere() {
-  const res = await fetch(`/api/trocs/details?user=${user}&troc=${troc}`)
-  let details = await res.json()
-  if (details.error) throw details.message
-  if (details.provided) details.provided = addStatutField(details.provided, '')
-  //select last giveback
-  details.givebacks = details.givebacks.map((art) => {
-    art.giveback = art.giveback
-      .filter((back) => (user === 'undefined' ? !back.user : back.user == user))
-      .reverse()[0]
-    if (art.giveback) art.giveback.back = new Date(art.giveback.back).getTime()
-    return art
+export function addAdmin({
+  trocId,
+  userId,
+}: {
+  trocId: string
+  userId: string
+}) {
+  return api<TrocLookup>(`/api/trocs/${trocId}/admin`, {
+    method: 'post',
+    data: { admin: userId },
+    success: 'Administrateur ajouté',
   })
+}
 
-  return details
+export function removeAdmin({
+  trocId,
+  userId,
+}: {
+  trocId: string
+  userId: string
+}) {
+  return api<TrocLookup>(`/api/trocs/${trocId}/admin/remove`, {
+    method: 'post',
+    data: { admin: userId },
+    success: 'Administrateur supprimé',
+  })
 }

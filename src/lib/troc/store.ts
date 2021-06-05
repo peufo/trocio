@@ -4,25 +4,31 @@ import {
   useQuery,
   useInfiniteQuery,
   UseInfiniteQueryOptions,
+  useMutation,
+  useQueryClient,
 } from '@sveltestack/svelte-query'
 
 import { getNextPageParam } from '$lib/store/util'
-import type { Troc } from 'types'
+import type { Troc, TrocLookup } from 'types'
 
 import {
   getTroc,
   searchTrocs,
   getSubscribedTrocs,
   getTrocUserResum,
+  addAdmin,
+  removeAdmin,
 } from '$lib/troc/api'
 
 /**
  * Get troc
- * Info de base d'un troc
+ * Info détaillé d'un troc
  */
+export const troc = writable<TrocLookup>(null)
 export const useTrocOptions = (trocId: string) => ({
   queryFn: getTroc,
   queryKey: ['troc', trocId],
+  onSuccess: (t) => troc.set(t),
 })
 export const useTroc = (trocId: string) =>
   useQuery<Troc, AxiosError>(useTrocOptions(trocId))
@@ -80,3 +86,13 @@ export function useTrocUserResumOptions(trocId: string, userId?: string) {
 }
 export const useTrocUserResum = (trocId: string, userId?: string) =>
   useQuery(useTrocUserResumOptions(trocId, userId))
+
+/**
+ * Collaborators
+ */
+export const useAddAdmin = () => useMutation(addAdmin, { onSuccess })
+export const useRemoveAdmin = () => useMutation(removeAdmin, { onSuccess })
+
+function onSuccess(newTroc: TrocLookup) {
+  troc.set(newTroc)
+}
