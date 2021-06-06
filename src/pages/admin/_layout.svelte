@@ -13,7 +13,6 @@
   let tipsWidth: string
 
   import { useTroc, useTrocOptions } from '$lib/troc/store'
-
   const trocQuery = $params.trocId && useTroc($params.trocId)
   $: $params.trocId && trocQuery.setOptions(useTrocOptions($params.trocId))
 </script>
