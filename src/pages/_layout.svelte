@@ -8,7 +8,6 @@
   import { isDarkTheme } from '$lib/stores.js'
   import { layout } from '$lib/store/layout'
 
-  import '$assets/Pnotify_Material.css'
   import '$assets/index.css'
   import icon from '$assets/favicon.ico'
 

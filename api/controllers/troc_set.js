@@ -39,7 +39,7 @@ function createTroc(req, res, next) {
       .then(() => {
         populateTrocUser(troc._id, (err, troc) => {
           if (err) return next(err)
-          res.json({ success: true, message: troc })
+          res.json(troc)
         })
       })
       .catch(next)

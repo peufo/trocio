@@ -284,7 +284,7 @@
         </Button>
       {:else}
         <Button
-          class="primary-color"
+          text
           on:click={() => {
             $setTraderPrefix.mutate(
               {
@@ -299,8 +299,7 @@
               }
             )
           }}
-          disabled={!selectedPrefix ||
-            $troc.trader.map((t) => t.prefix).includes(selectedPrefix)}
+          disabled={$troc.trader.map((t) => t.prefix).includes(selectedPrefix)}
         >
           Valider
         </Button>

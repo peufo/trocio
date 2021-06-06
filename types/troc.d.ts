@@ -1,7 +1,26 @@
 import { Article } from 'types'
 import { User } from 'types'
 
-export declare interface Troc {
+/** Information minimal pour la création d'un troc */
+export declare interface TrocBase {
+  name: string
+  description: string
+  is_try: boolean
+  address?: string
+  location?: {
+    lat: number
+    lng: number
+  }
+  schedule?: {
+    open: string
+    close: string
+  }[]
+  society?: string
+  societyweb?: string
+}
+
+/** Information complette d'un troc */
+export declare interface Troc extends TrocBase {
   _id: string
   tag: {
     width: number
@@ -13,25 +32,11 @@ export declare interface Troc {
   cashier: string[]
   articlelastref: number
   articles?: object[]
-  is_try: boolean
   subscriber: number
-  society: string
-  societyweb: string
   creator: string
-  name: string
-  address: string
-  location: {
-    lat: number
-    lng: number
-  }
-  description: string
   trader: {
     prefix: string
     user: string
-  }[]
-  schedule: {
-    open: string
-    close: string
   }[]
   tarif: []
   createdAt: string
@@ -44,6 +49,7 @@ export declare interface Troc {
   isSubscribed: boolean
 }
 
+/** Information complette avec les informations collaborateurs */
 export declare interface TrocLookup extends Troc {
   admin: User[]
   cashier: User[]
@@ -54,6 +60,7 @@ export declare interface TrocLookup extends Troc {
   creator: User
 }
 
+/** Résumé des interactions d'un utilisateur avec un troc */
 export declare interface TrocUserResume {
   troc: string
   user: string

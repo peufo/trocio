@@ -38,7 +38,7 @@
   padding-left: {navigationWidth};
   padding-right: {tipsActive ? tipsWidth : '0px'};"
   >
-    <main>
+    <main class="pa-4">
       <slot />
 
       {#if isTry}

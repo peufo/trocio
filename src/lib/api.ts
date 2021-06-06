@@ -11,7 +11,7 @@ export function api<TypeRequest, TypeResponse = TypeRequest>(
       /** Params passed to query of request */
       params: { skip?: number; limit?: number } & any
       /** Data passed on body of resquest*/
-      data: Partial<TypeRequest> | any
+      data: Partial<TypeRequest>
       /** Wrapper to format returned data */
       format: (data: TypeResponse) => TypeResponse
     } & ResponseNotifyOptions<TypeResponse>

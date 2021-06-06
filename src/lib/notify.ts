@@ -3,6 +3,7 @@ import * as PNotifyMobile from '@pnotify/mobile'
 import * as PNotifyFontAwesome5 from '@pnotify/font-awesome5'
 import * as PNotifyAnimate from '@pnotify/animate'
 import 'animate.css'
+import '$assets/Pnotify_Material.css'
 
 PNotify.defaultModules.set(PNotifyMobile, {})
 PNotify.defaultModules.set(PNotifyFontAwesome5, {})
