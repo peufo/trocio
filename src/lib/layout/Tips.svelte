@@ -3,7 +3,10 @@
   import { params } from '@roxi/routify'
   import { NavigationDrawer } from 'svelte-materialify'
 
+  import IconLink from '$lib/util/IconLink.svelte'
+
   import layout from '$lib/store/layout'
+  import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
   export let active = true
   export let isCashier = false
@@ -23,7 +26,7 @@
           $params[s.dataset.query] === s.dataset.value &&
           !$params[s.dataset.queryavoid]
       )
-      if (section) content.scrollTo({ top: section.offsetTop - 110 })
+      if (section) content.scrollTo({ top: section.offsetTop - 125 })
     }
   }
 </script>
@@ -43,16 +46,19 @@
     : $layout.headerHeight - scrollY}px;
   "
 >
-  <div class="tipsHeader">
-    <span class="title" style="color: #fff;">Aides</span>
-    <i
-      class="fa fa-times w3-right tipsCloseButton"
+  <div class="tipsHeader d-flex pa-2 pt-4 pb-4">
+    <div class="text-h5">Aide</div>
+    <div class="flex-grow-1" />
+    <IconLink
+      icon={faTimes}
+      clickable
+      opacity
       on:click={() => (active = false)}
     />
   </div>
 
   {#if active}
-    <div transition:fade|local class="content" bind:this={content}>
+    <div transition:fade|local class="content pl-2 " bind:this={content}>
       {#if !isCashier}
         <section data-query="tab_admin" data-value="info">
           <span class="title">Information</span>
@@ -369,48 +375,21 @@
 
 <style>
   .content {
-    padding: 0em calc(1em - 10px) 1em 1em;
-    height: calc(100% - 48px);
+    height: calc(100% - 68px);
+    margin-top: 68px;
     overflow-y: scroll;
     scroll-behavior: smooth;
-    background: linear-gradient(#bbb, #fff);
-  }
-
-  .tipsButton {
-    position: absolute;
-    z-index: 10;
-    left: 0px;
-    bottom: 40px;
-    background: rgb(32, 151, 243);
-    color: #fff;
-    padding: 0.3em 0.6em;
-    font-size: 1.5em;
-    border-radius: 0 2.1em 2.1em 0;
-    cursor: pointer;
-    transition: all 0.4s ease;
-  }
-
-  .tipsButton:hover {
-    padding: 0.3em 0.6em 0.3em 1em;
-  }
-
-  .tipsButton.active {
-    left: -100px;
+    background: linear-gradient(
+      var(--theme-tables-active),
+      var(--theme-surface)
+    );
   }
 
   .tipsHeader {
-    padding: 0.5em 0.5em 0.5em 1em;
-    color: #fff;
-    background: #bbb;
-  }
-  .tipsHeader .title {
-    font-size: 1.5em;
-  }
-
-  .tipsCloseButton {
-    font-size: 1.3em;
-    padding: 0.5em 1em;
-    cursor: pointer;
+    position: fixed;
+    width: 100%;
+    color: var(--theme-text-primary);
+    background: var(--theme-tables-active);
   }
 
   p {
@@ -426,7 +405,7 @@
 
   .shortcut {
     text-align: center;
-    background: #eee;
+    background: var(--theme-chips);
     border-radius: 4px;
     font-family: monospace;
     margin-bottom: 1em;
@@ -441,8 +420,8 @@
   }
 
   .button {
-    color: #444;
-    border: #444 solid 1px;
+    color: var(--theme-text-primary);
+    border: var(--theme-text-secondary) solid 1px;
     font-weight: 400;
     padding: 1px 10px;
   }
@@ -463,8 +442,7 @@
   section {
     padding: 0.5em;
     margin-bottom: 1em;
-    background: #fff;
-    border: 1px solid #eee;
+    background: var(--theme-surface);
     border-radius: 4px;
   }
 
