@@ -29,7 +29,7 @@
     </div>
 
     <div class="w3-col l6">
-      <a href="/search">
+      <a href="/trocs">
         <Button
           style="transform: translate(0px, 60px); z-index: 2;"
           class="w3-right w3-large w3-margin"
@@ -113,7 +113,7 @@
     <br /><br />
 
     <div class="w3-center">
-      <a href="/search">
+      <a href="/trocs">
         <Button class="w3-large">Trouver un troc</Button>
       </a>
     </div>
@@ -150,7 +150,7 @@
     <br /><br />
 
     <div class="w3-center">
-      <a href="/search">
+      <a href="/trocs">
         <Button class="w3-large">Trouver un troc</Button>
       </a>
     </div>
@@ -310,7 +310,7 @@
       </Card>
 
       <br /><br />
-      <a href="/activity/create">
+      <a href="/trocs/create">
         <Button class="w3-large">Organiser un troc</Button>
       </a>
     </div>
