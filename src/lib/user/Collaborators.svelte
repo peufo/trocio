@@ -4,30 +4,45 @@
     List,
     ListItem,
     Dialog,
-    TextField,
     Button,
+    Avatar,
+    Card,
+    CardTitle,
+    CardText,
     CardActions,
   } from 'svelte-materialify'
   import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
   import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 
-  import { troc, useAddAdmin, useRemoveAdmin } from '$lib/troc/store'
+  import {
+    troc,
+    useAddAdmin,
+    useRemoveAdmin,
+    useAddCashier,
+    useRemoveCashier,
+    useAddTrader,
+    useRemoveTrader,
+    useSetTraderPrefix,
+  } from '$lib/troc/store'
   import { user } from '$lib/user/store'
   import UserSelect from '$lib/user/Select.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import Loader from '$lib/util/Loader.svelte'
+  import Info from '$lib/troc/Info.svelte'
 
   // import { troc } from './stores'
   // import { getHeader, updateTroc } from './utils'
   const addAdmin = useAddAdmin()
   const removeAdmin = useRemoveAdmin()
-
-  let selectedTrader = -1
-  let selectedTraderName = ''
-  let selectedTraderPrefix = ''
+  const addCashier = useAddCashier()
+  const removeCashier = useRemoveCashier()
+  const addTrader = useAddTrader()
+  const removeTrader = useRemoveTrader()
+  const setTraderPrefix = useSetTraderPrefix()
+  let selectedTrader = null
   let traderDialogActive = false
-  let changePrefixPromise
+  let selectedPrefix = ''
 
   let open = [false, false, false]
 
@@ -37,95 +52,21 @@
 
   $: filterAdmin = (user) =>
     !!user.name.match(new RegExp(searchValueAdmin, 'i'))
+  $: filterCashier = (user) =>
+    !!user.name.match(new RegExp(searchValueCashier, 'i'))
+  $: filterTrader = (trader) =>
+    !!trader.user.name.match(new RegExp(searchValueTrader, 'i')) ||
+    trader.prefix === searchValueTrader.toUpperCase()
 
-  function findNewPrefix() {
-    let prefixs = troc.trader.map((t) => t.prefix)
-    let char = ''
-    for (let i = 65; i < 91; i++) {
-      char = String.fromCharCode(i)
-      if (prefixs.indexOf(char) == -1) break
-    }
-    return char
+  const prefixs = []
+  for (let index = 65; index < 91; index++) {
+    prefixs.push(String.fromCharCode(index))
   }
 
-  function normalizePrefix() {
-    selectedTraderPrefix = selectedTraderPrefix
-      .slice(selectedTraderPrefix.length - 1, selectedTraderPrefix.length)
-      .toLocaleUpperCase()
-    if (
-      selectedTraderPrefix.charCodeAt(0) < 65 ||
-      selectedTraderPrefix.charCodeAt(0) > 90
-    ) {
-      selectedTraderPrefix = findNewPrefix()
-    }
-  }
-
-  function clickTrader(e, index) {
-    if (e.target.classList.contains('remove-icon')) {
-      removeTrader(troc.trader[index].user._id)
-    } else {
-      selectedTrader = index
-      selectedTraderName = troc.trader[index].user.name
-      selectedTraderPrefix = troc.trader[index].prefix
-      traderDialogActive = true
-    }
-  }
-
-  async function changePrefix() {
-    try {
-      let res = await fetch(
-        `/api/trocs/${troc._id}/trader/prefix`,
-        getHeader({
-          trader: troc.trader[selectedTrader].user._id,
-          prefix: selectedTraderPrefix,
-        })
-      )
-      let json = await res.json()
-      if (json.success) {
-        troc.trader[selectedTrader].prefix = selectedTraderPrefix
-      } else alert(json.message)
-      setTimeout(() => (traderDialogActive = false), 0)
-      return
-    } catch (error) {
-      console.trace(error)
-    }
-  }
-
-  function addCashier(e) {
-    fetch(
-      `/api/trocs/${troc._id}/cashier`,
-      getHeader({ cashier: e.detail._id })
-    )
-      .then((res) => res.json())
-      .then(updateTroc)
-      .catch(console.trace)
-  }
-
-  function addTrader(e) {
-    fetch(
-      `/api/trocs/${troc._id}/trader`,
-      getHeader({ trader: e.detail._id, prefix: findNewPrefix() })
-    )
-      .then((res) => res.json())
-      .then(updateTroc)
-      .catch(console.trace)
-  }
-
-  function removeCashier(userId) {
-    fetch(
-      `/api/trocs/${troc._id}/cashier/remove`,
-      getHeader({ cashier: userId })
-    )
-      .then((res) => res.json())
-      .then(updateTroc)
-      .catch(console.trace)
-  }
-
-  function removeTrader(userId) {
-    fetch(`/api/trocs/${troc._id}/trader/remove`, getHeader({ trader: userId }))
-      .then((res) => res.json())
-      .then(updateTroc)
-      .catch(console.trace)
+  function handleClickTrader(index) {
+    selectedTrader = $troc.trader[index]
+    selectedPrefix = selectedTrader.prefix
+    traderDialogActive = true
   }
 
   function handleOpen(index) {
@@ -135,9 +76,11 @@
 
 <!-- Administrateurs -->
 
-<div class="pt-5" style="max-width: 800px; margin: auto;">
+<div class="pt-5" style="max-width: 700px; margin: auto;">
   <ExpansionCard
-    title="Administrateurs"
+    title="{$troc.admin.length} Administrateur{$troc.admin.length > 1
+      ? 's'
+      : ''}"
     open={open[0]}
     on:open={() => handleOpen(0)}
     hasSearchInput
@@ -162,7 +105,7 @@
             {#if admin._id != $troc.creator._id && admin._id != $user._id}
               <IconLink
                 icon={$removeAdmin.isLoading ? faSpinner : faTrashAlt}
-                clickable={!$removeAdmin.isLoading}
+                disabled={$removeAdmin.isLoading}
                 spin={$removeAdmin.isLoading}
                 opacity
               />
@@ -193,111 +136,220 @@
   <br />
 
   <ExpansionCard
-    title="Caissiers"
-    hasSearchInput
+    title="{$troc.cashier.length} Caissier{$troc.cashier.length > 1 ? 's' : ''}"
     open={open[1]}
     on:open={() => handleOpen(1)}
+    hasSearchInput
     bind:searchValue={searchValueCashier}
   >
     <List>
-      {#each $troc.cashier as cashier}
-        <ListItem>
+      {#each $troc.cashier.filter(filterCashier) as cashier}
+        <ListItem slecteable>
           <span>{cashier.name}</span>
           <span slot="subtitle">{cashier.mail}</span>
           <div
             class="trash"
             slot="append"
-            on:click={() => removeCashier(cashier._id)}
+            on:click={() => {
+              if (!$removeCashier.isLoading)
+                $removeCashier.mutate({
+                  trocId: $params.trocId,
+                  userId: cashier._id,
+                })
+            }}
           >
-            <IconLink icon={faTrashAlt} />
+            <IconLink
+              icon={$removeCashier.isLoading ? faSpinner : faTrashAlt}
+              disabled={$removeCashier.isLoading}
+              spin={$removeCashier.isLoading}
+              opacity
+            />
           </div>
         </ListItem>
       {/each}
     </List>
 
-    <CardActions>
-      <UserSelect
-        label="Nouveau caissier"
-        exepted={$troc.cashier.map((user) => user._id)}
-        on:select={addCashier}
-      />
-    </CardActions>
+    <div class="pa-4">
+      {#if $addCashier.isLoading}
+        <Loader title="Ajout en cours" />
+      {:else}
+        <UserSelect
+          label="Nouveau caissier"
+          exepted={$troc.cashier.map(({ _id }) => _id)}
+          on:select={(event) => {
+            $addCashier.mutate({
+              trocId: $params.trocId,
+              userId: event.detail._id,
+            })
+          }}
+        />
+      {/if}
+    </div>
   </ExpansionCard>
 
   <br />
 
   <ExpansionCard
-    title="Commerçants"
-    hasSearchInput
+    title="{$troc.trader.length} Commerçant{$troc.trader.length > 1 ? 's' : ''}"
     open={open[2]}
     on:open={() => handleOpen(2)}
+    hasSearchInput
     bind:searchValue={searchValueTrader}
   >
-    <List twoLine style="width: 480px; min-width: 200px; margin: auto;">
-      {#if $troc.trader}
-        {#each $troc.trader as trader, i}
-          <ListItem on:click={(e) => clickTrader(e, i)}>
-            <span>
-              <b>{trader.prefix}</b>&nbsp;
-              <i class="fas fa-arrow-right w3-opacity" />&nbsp;
-              {trader.user.name}
-            </span>
-            <span slot="subtitle">{trader.user.mail}</span>
-            <div slot="append">
-              <IconLink icon={faTrashAlt} />
-            </div>
-          </ListItem>
-        {/each}
-      {/if}
+    <List>
+      {#each $troc.trader.filter(filterTrader) as trader, index}
+        <ListItem on:click={(e) => handleClickTrader(index)}>
+          <div slot="prepend">
+            <Avatar class="secondary-color">
+              {trader.prefix}
+            </Avatar>
+          </div>
+
+          {trader.user.name}
+
+          <span slot="subtitle">{trader.user.mail}</span>
+
+          <div
+            class="trash"
+            slot="append"
+            on:click|stopPropagation={() => {
+              if (!$removeTrader.isLoading)
+                $removeTrader.mutate({
+                  trocId: $params.trocId,
+                  userId: trader.user._id,
+                })
+            }}
+          >
+            <IconLink
+              icon={$removeTrader.isLoading ? faSpinner : faTrashAlt}
+              disabled={$removeTrader.isLoading}
+              spin={$removeTrader.isLoading}
+              opacity
+            />
+          </div>
+        </ListItem>
+      {/each}
     </List>
 
-    <UserSelect
-      id="NewTrader"
-      label="Nouveau commerçant"
-      exepted={$troc.trader.map((t) => t.user._id)}
-      on:select={addTrader}
-    />
+    <div class="pa-4">
+      {#if $addTrader.isLoading}
+        <Loader title="Ajout en cours" />
+      {:else}
+        <UserSelect
+          label="Nouveau commerçant"
+          exepted={$troc.trader.map(({ user }) => user._id)}
+          on:select={(event) => {
+            $addTrader.mutate({
+              trocId: $params.trocId,
+              userId: event.detail._id,
+            })
+          }}
+        />
+      {/if}
+    </div>
   </ExpansionCard>
 </div>
 
 <Dialog bind:active={traderDialogActive}>
-  <h4>Edition du préfixe utilisé par {selectedTraderName}</h4>
+  <Card>
+    <CardTitle>
+      <h6>Choix du prefix de {selectedTrader.user.name}</h6>
+    </CardTitle>
 
-  <TextField
-    bind:value={selectedTraderPrefix}
-    on:input={normalizePrefix}
-    class="shaped-outlined w3-margin-top"
-    label="Nouveau préfixe"
-    variant="outlined"
-    style="width: 100%;"
-  />
+    <CardText>
+      {#each prefixs as prefix}
+        <div
+          class="prefix"
+          class:selected={selectedPrefix === prefix}
+          class:secondary-color={selectedPrefix === prefix}
+          class:disabled={$troc.trader.map((t) => t.prefix).includes(prefix) &&
+            selectedTrader.prefix !== prefix}
+          on:click={() => {
+            if (
+              !$troc.trader.map((t) => t.prefix).includes(prefix) ||
+              selectedTrader.prefix === prefix
+            )
+              selectedPrefix = prefix
+          }}
+        >
+          {prefix}
+        </div>
+      {/each}
+    </CardText>
 
-  {#await changePrefixPromise}
-    <Button variant="raised" color="secondary" class="w3-right w3-margin-top">
-      <i class="fas fa-circle-notch w3-spin" />&nbsp;Validation...
-    </Button>
-  {:then}
-    <Button
-      on:click={() => (changePrefixPromise = changePrefix())}
-      variant="raised"
-      style="color: white;"
-      disabled={!selectedTraderPrefix ||
-        $troc.trader.map((t) => t.prefix).indexOf(selectedTraderPrefix) != -1}
-      class="w3-right w3-margin-top"
-    >
-      Valider
-    </Button>
-  {/await}
+    <CardActions class="justify-end">
+      {#if $setTraderPrefix.isLoading}
+        <Button text disabled>
+          <Loader title="Validation" />
+        </Button>
+      {:else}
+        <Button
+          class="primary-color"
+          on:click={() => {
+            $setTraderPrefix.mutate(
+              {
+                trocId: $params.trocId,
+                userId: selectedTrader.user._id,
+                prefix: selectedPrefix,
+              },
+              {
+                onSuccess: () => {
+                  traderDialogActive = false
+                },
+              }
+            )
+          }}
+          disabled={!selectedPrefix ||
+            $troc.trader.map((t) => t.prefix).includes(selectedPrefix)}
+        >
+          Valider
+        </Button>
+      {/if}
+    </CardActions>
+  </Card>
 </Dialog>
 
 <style>
+  :global(.s-list-item:hover .trash) {
+    transform: translateX(0);
+    transition-delay: 250ms;
+  }
   .trash {
     transform: translateX(50px);
     transition: transform 200ms;
   }
 
-  :global(.s-list-item:hover .trash) {
-    transform: translateX(0);
-    transition-delay: 300ms;
+  .prefix {
+    height: 48px;
+    width: 48px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .prefix.selected {
+    color: #fff;
+  }
+
+  .prefix:not(.disabled):hover {
+    background-color: var(--theme-tables-hover);
+  }
+
+  .prefix.disabled {
+    color: var(--theme-text-disabled);
+    cursor: default;
+  }
+
+  .prefix.disabled::after {
+    content: '';
+    position: absolute;
+    width: 50%;
+    border-top: 2px var(--theme-text-secondary) solid;
+    border-bottom: 1px var(--theme-surface) solid;
+    transform-origin: 50% 0;
+    transform: rotate(45deg);
   }
 </style>

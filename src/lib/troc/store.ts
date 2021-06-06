@@ -18,6 +18,11 @@ import {
   getTrocUserResum,
   addAdmin,
   removeAdmin,
+  addCashier,
+  removeCashier,
+  addTrader,
+  removeTrader,
+  setTraderPrefix,
 } from '$lib/troc/api'
 
 /**
@@ -92,6 +97,12 @@ export const useTrocUserResum = (trocId: string, userId?: string) =>
  */
 export const useAddAdmin = () => useMutation(addAdmin, { onSuccess })
 export const useRemoveAdmin = () => useMutation(removeAdmin, { onSuccess })
+export const useAddCashier = () => useMutation(addCashier, { onSuccess })
+export const useRemoveCashier = () => useMutation(removeCashier, { onSuccess })
+export const useAddTrader = () => useMutation(addTrader, { onSuccess })
+export const useRemoveTrader = () => useMutation(removeTrader, { onSuccess })
+export const useSetTraderPrefix = () =>
+  useMutation(setTraderPrefix, { onSuccess })
 
 function onSuccess(newTroc: TrocLookup) {
   troc.set(newTroc)

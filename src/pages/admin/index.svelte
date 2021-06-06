@@ -15,4 +15,4 @@
   }
 </script>
 
-<svelte:component this={components[$params.tab_admin] || components[0]} />
+<svelte:component this={components[$params.tab_admin] || components.info} />

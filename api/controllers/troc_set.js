@@ -143,7 +143,7 @@ function addTrader(req, res, next) {
       if (!troc.trader) troc.trader = []
       troc.trader.push({
         user: req.body.trader,
-        prefix: req.body.prefix ? req.body.prefix : '',
+        prefix: req.body.prefix || findNewPrefix(troc.trader),
       })
       troc.save((err) => {
         if (err) return next(err)
@@ -151,6 +151,16 @@ function addTrader(req, res, next) {
       })
     })
   })
+
+  function findNewPrefix(traders) {
+    let prefixs = traders.map((t) => t.prefix)
+    let char = ''
+    for (let i = 65; i < 91; i++) {
+      char = String.fromCharCode(i)
+      if (prefixs.indexOf(char) == -1) break
+    }
+    return char
+  }
 }
 
 function removeAdmin(req, res, next) {
@@ -232,7 +242,7 @@ function editTraderPrefix(req, res, next) {
       troc.trader[index].prefix = req.body.prefix
       troc.save((err) => {
         if (err) return next(err)
-        res.json({ success: true, message: 'Prefix changed' })
+        resTrocUser(req, res, next)
       })
     })
   })

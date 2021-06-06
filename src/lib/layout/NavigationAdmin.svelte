@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { params, url } from '@roxi/routify'
+  import { params, url, page } from '@roxi/routify'
   import { createEventDispatcher } from 'svelte'
   import {
     NavigationDrawer,
@@ -21,10 +21,10 @@
 
   import type { Troc } from 'types'
   import { useQueryClient } from '@sveltestack/svelte-query'
-
   import layout from '$lib/store/layout'
   import logo from '$assets/logo'
   import IconLink from '$lib/util/IconLink.svelte'
+
   let width
   let mini = false
   /** width updated white according to props mini */
@@ -78,8 +78,11 @@
     <Divider />
     <List nav>
       {#each tabs as tab, i}
-        <a href={$url($url(), { ...$params, tab_admin: tab.ref })}>
-          <ListItem>
+        <a href={$url('/admin', { ...$params, tab_admin: tab.ref })}>
+          <ListItem
+            active={$params.tab_admin === tab.ref ||
+              (!$params.tab_admin && tab.ref === 'info')}
+          >
             <span slot="prepend">
               <IconLink icon={tab.icon} size="1.1em" />
             </span>
