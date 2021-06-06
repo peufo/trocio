@@ -1,7 +1,7 @@
-export { BaseResponse, ResponseNotifyOptions } from './api'
-export { User } from './user'
-export { Troc, TrocLookup, TrocUserResume } from './troc'
-export { Article, ArticleCreate } from './article'
+export * from './api'
+export * from './user'
+export * from './troc'
+export * from './article'
 
 export declare function createEventDispatcher<T>(
   type: string

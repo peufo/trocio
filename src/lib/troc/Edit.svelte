@@ -1,21 +1,21 @@
 <script>
   import { onMount } from 'svelte'
-  import { createEventDispatcher } from 'svelte'
-  const dispatch = createEventDispatcher()
+  import { slide } from 'svelte/transition'
   import dayjs from 'dayjs'
-
   import {
     Button,
     TextField,
     Textarea,
     Table,
     Checkbox,
-    Tooltip,
   } from 'svelte-materialify'
+  import { faInfo } from '@fortawesome/free-solid-svg-icons'
 
-  import notify from '$lib/notify'
+  import { troc, useCreateTroc } from '$lib/troc/store'
   import { user, userQuery } from '$lib/user/store'
-  import { troc } from '$lib/stores'
+  import IconLink from '$lib/util/IconLink.svelte'
+  import Loader from '$lib/util/Loader.svelte'
+  import notify from '$lib/notify'
   import { getHeader } from '$lib/utils'
   import AutoPatch from '$lib/AutoPatch.svelte'
   import SearchAddress from '$lib/control/SearchAddress.svelte'
@@ -24,14 +24,14 @@
   export let name = ''
   export let is_try = true
   export let address = ''
-  export let location = {}
+  export let location = { lng: 0, lat: 0 }
   export let description = ''
   export let schedule = []
   export let society = ''
   export let societyweb = ''
   export let mapDelay = 0
 
-  let createTrocPromise
+  const createTroc = useCreateTroc()
 
   let offsetWidth = 0
   let smallDisplay = false
@@ -94,16 +94,40 @@
   let invalid = ''
   $: {
     invalid = ''
-    if (!name) invalid = 'Pas de nom'
-    else if (!address) invalid = 'Adresse incomplette'
-    else if (!location.lat) invalid = 'Adresse non localisé'
-    else if (description.length < 10)
+    if (!is_try) {
+      if (!address) invalid = 'Adresse incomplette'
+      else if (!location.lat) invalid = 'Adresse non localisé'
+      else if (!scheduleIn.length) invalid = 'Pas de plage horaire'
+      else if (schedule.indexOf(undefined) != -1)
+        invalid = 'Plage horaire incomplette'
+    }
+    if (description.length < 10)
       invalid = `Déscription trop courte (${description.length}/10)`
-    else if (!scheduleIn.length) invalid = 'Pas de plage horaire'
-    else if (schedule.indexOf(undefined) != -1)
-      invalid = 'Plage horaire incomplette'
+    else if (!name) invalid = 'Pas de nom'
   }
 
+  function handleCreateTroc() {
+    if (invalid) return notify.warning(invalid)
+    $createTroc.mutate(
+      {
+        name,
+        address,
+        location,
+        description,
+        schedule,
+        society,
+        societyweb,
+        is_try,
+      },
+      {
+        onSuccess: () => {
+          if (!is_try)
+            userQuery.set({ ...$user, creditTroc: $user.creditTroc - 1 })
+        },
+      }
+    )
+  }
+  /*
   async function createTroc() {
     if (invalid) return notify.warning(invalid)
     try {
@@ -123,13 +147,13 @@
       let json = await res.json()
       if (json.error) return notify.error(json.message)
       notify.success('Nouveau troc créer !')
-      userQuery.set({ ...$user, creditTroc: $user.creditTroc - 1 })
+      
       dispatch('create', json.message)
     } catch (error) {
       console.trace(error)
     }
   }
-
+*/
   //For SearchLocation to Autopatch
   //Très bof bof, mais ca marche
   let changeFlag = false
@@ -138,16 +162,29 @@
 <div id="editForm" bind:offsetWidth>
   <div class="container" class:smallDisplay>
     <div class="item troc">
-      <h6>Mon troc</h6>
-      <Tooltip right raised>
-        <Checkbox bind:checked={is_try} title="Troc d'entrainement" style="">
+      <h6>Le troc</h6>
+      <div class="pb-3">
+        <Checkbox bind:checked={is_try} title="Troc d'entrainement">
           Troc d'entrainement
         </Checkbox>
-        <span slot="tip"
-          >Testez l'interface et préparez votre équipe sans risques</span
+      </div>
+      {#if is_try}
+        <div
+          transition:slide|local
+          class="text--disabled d-flex"
+          style="font-size: .8em;"
         >
-      </Tooltip>
-      <br /><br />
+          <div class="centered pb-3" style="width: 32px;">
+            <IconLink icon={faInfo} size="1em" />
+          </div>
+
+          <div class="pb-3">
+            Un troc d'entrainement n'est pas visible publiquement. <br />
+            Il permet de tester l'interface et de préparer une équipe.
+          </div>
+        </div>
+      {/if}
+
       <TextField bind:value={name} outlined>Nom de l'évènement</TextField>
       <br />
       <Textarea bind:value={description} autogrow rows={5} outlined>
@@ -194,7 +231,7 @@
             {#each scheduleIn as { day, open, close }, i}
               <tr>
                 <td>
-                  <input bind:value={day} type="date" solo dense />
+                  <input bind:value={day} type="date" />
                 </td>
                 <td
                   ><input
@@ -242,30 +279,30 @@
 
     <div class="item society">
       <h6>
-        Mon organisation <span class="w3-small w3-opacity">Pas obligatoire</span
-        >
+        Organisation <span class="w3-small w3-opacity">Optionnel</span>
       </h6>
       <br />
       <TextField bind:value={society} outlined>Nom de l'organisation</TextField>
       <br />
-      <TextField bind:value={societyweb} outlined
-        >Site internet de l'organisation</TextField
-      >
+      <TextField bind:value={societyweb} outlined>
+        Site internet de l'organisation
+      </TextField>
     </div>
     {#if !$troc}
       <div class="item buttons-container">
-        {#await createTrocPromise}
-          <Button>Création en cours...</Button>
-        {:then}
-          <Button
-            on:click={() => (createTrocPromise = createTroc())}
-            raised
-            title="Valider la création de mon troc"
-            class="green white-text"
-          >
+        <Button
+          on:click={handleCreateTroc}
+          text={$createTroc.isLoading}
+          disabled={$createTroc.isLoading}
+          title="Valider la création de mon troc"
+          class="green white-text"
+        >
+          {#if $createTroc.isLoading}
+            <Loader title="Création en cours" />
+          {:else}
             Créer un troc
-          </Button>
-        {/await}
+          {/if}
+        </Button>
       </div>
     {:else}
       <AutoPatch

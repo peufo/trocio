@@ -9,7 +9,7 @@ import {
 } from '@sveltestack/svelte-query'
 
 import { getNextPageParam } from '$lib/store/util'
-import type { Troc, TrocLookup } from 'types'
+import type { Troc, TrocBase, TrocLookup } from 'types'
 
 import {
   getTroc,
@@ -23,6 +23,7 @@ import {
   addTrader,
   removeTrader,
   setTraderPrefix,
+  createTroc,
 } from '$lib/troc/api'
 
 /**
@@ -91,6 +92,11 @@ export function useTrocUserResumOptions(trocId: string, userId?: string) {
 }
 export const useTrocUserResum = (trocId: string, userId?: string) =>
   useQuery(useTrocUserResumOptions(trocId, userId))
+
+/**
+ * Creation
+ */
+export const useCreateTroc = () => useMutation(createTroc, { onSuccess })
 
 /**
  * Collaborators
