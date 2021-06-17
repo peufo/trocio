@@ -3,8 +3,12 @@
    * Liste les trocs auxquels l'utilisateur est abonné
    */
 
-  import { List, ListItem } from 'svelte-materialify'
-  import { faCog, faCashRegister } from '@fortawesome/free-solid-svg-icons'
+  import { List, ListItem, Chip } from 'svelte-materialify'
+  import {
+    faCog,
+    faCashRegister,
+    faTableTennis,
+  } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
@@ -34,10 +38,14 @@
         >
           {troc.name}
           {#if troc.is_try}
-            <span class="warning">Entrainement</span>
+            <Chip size="x-small" label class="amber darken-3 white-text">
+              <span>Entrainement</span>
+            </Chip>
           {/if}
           {#if troc.isClosed}
-            <span class="warning">Terminé</span>
+            <Chip size="x-small" label class="deep-orange darken-3 white-text">
+              <span>Terminé</span>
+            </Chip>
           {/if}
           <span slot="subtitle">
             {dayjs(

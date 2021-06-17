@@ -45,8 +45,8 @@ function checkCashier(req, res, next) {
   )
 }
 
-function populateTrocUser(id, cb) {
-  Troc.findById(id)
+function populateTrocUser(trocId, cb) {
+  Troc.findById(trocId)
     .populate('creator', 'name mail')
     .populate('admin', 'name mail')
     .populate('trader.user', 'name mail')

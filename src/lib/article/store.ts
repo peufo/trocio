@@ -11,8 +11,8 @@ import {
   createArticle,
   createArticles,
   getProvidedArticles,
+  getNextPageParam,
 } from '$lib/article/api'
-import { getNextPageParam } from '$lib/store/util'
 
 export function useArticlesOptions(
   trocId: string,

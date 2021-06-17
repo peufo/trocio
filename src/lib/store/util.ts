@@ -23,6 +23,7 @@ export function setItemById(
   }
 }
 
+// TODO: Remove. replaced by $lib/api
 export function getNextPageParam(lastPage, allPages): GetNextPageParamFunction {
   return lastPage.length ? allPages.flat().length : undefined
 }

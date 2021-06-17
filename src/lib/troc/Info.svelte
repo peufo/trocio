@@ -58,7 +58,7 @@
     </Chip>
 
     {#if troc.is_try}
-      <Chip size="small" label class="deep-orange darken-3 white-text">
+      <Chip size="small" label class="amber darken-3 white-text">
         <IconLink icon={faTableTennis} size=".7em" />
         <span>Entrainement</span>
       </Chip>
@@ -208,7 +208,7 @@
     />
   </Button>
 
-  {#if displayGetActivity && (!troc.isClosed || troc.isSubscribed)}
+  {#if displayGetActivity}
     <Button
       on:click={() => {
         if ((activityOpen = !activityOpen)) articlesOpen = false
