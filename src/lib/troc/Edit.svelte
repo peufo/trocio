@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte'
   import { slide } from 'svelte/transition'
   import dayjs from 'dayjs'
@@ -11,16 +11,28 @@
   } from 'svelte-materialify'
   import { faInfo } from '@fortawesome/free-solid-svg-icons'
 
-  import { troc, useCreateTroc } from '$lib/troc/store'
+  import { troc, useCreateTroc, useUpdateTroc } from '$lib/troc/store'
   import { user, userQuery } from '$lib/user/store'
   import IconLink from '$lib/util/IconLink.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import notify from '$lib/notify'
   import { getHeader } from '$lib/utils'
-  import AutoPatch from '$lib/AutoPatch.svelte'
+  // import AutoPatch from '$lib/AutoPatch.svelte'
+  import autoPatch from '$lib/autoPatch'
   import SearchAddress from '$lib/control/SearchAddress.svelte'
 
-  export let _id = ''
+  export let newTroc = {
+    name: '',
+    is_try: true,
+    address: '',
+    location: { lng: 0, lat: 0 },
+    description: '',
+    schedule: [],
+    society: '',
+    societyweb: '',
+    mapDelay: 0,
+  }
+
   export let name = ''
   export let is_try = true
   export let address = ''
@@ -31,14 +43,17 @@
   export let societyweb = ''
   export let mapDelay = 0
 
+  export let updateMode = true
+
   const createTroc = useCreateTroc()
+  const updateTroc = useUpdateTroc()
 
   let offsetWidth = 0
   let smallDisplay = false
 
   $: smallDisplay = offsetWidth < 800
 
-  //Schedule conversion
+  // Schedule conversion
   if (!schedule.length) onMount(addSchedule)
   let scheduleIn = schedule.map((s) => {
     return {
@@ -71,6 +86,7 @@
       ]
     }
     convertSchedule()
+    return
   }
 
   function removeSchedule(i) {
@@ -108,52 +124,31 @@
 
   function handleCreateTroc() {
     if (invalid) return notify.warning(invalid)
-    $createTroc.mutate(
-      {
-        name,
-        address,
-        location,
-        description,
-        schedule,
-        society,
-        societyweb,
-        is_try,
+    $createTroc.mutate(newTroc, {
+      onSuccess: () => {
+        if (!is_try)
+          userQuery.set({ ...$user, creditTroc: $user.creditTroc - 1 })
       },
-      {
-        onSuccess: () => {
-          if (!is_try)
-            userQuery.set({ ...$user, creditTroc: $user.creditTroc - 1 })
-        },
+    })
+  }
+
+  function handleInput(event) {
+    const { type, name } = event.target
+    console.log(type, name, event)
+    if (type && newTroc[name] !== undefined) {
+      switch (type) {
+        case 'text':
+        case 'textarea':
+          newTroc[name] = event.target.value
+          break
+        case 'checkbox':
+          newTroc[name] = event.target.checked
+          break
       }
-    )
-  }
-  /*
-  async function createTroc() {
-    if (invalid) return notify.warning(invalid)
-    try {
-      let res = await fetch(
-        `/api/trocs`,
-        getHeader({
-          name,
-          address,
-          location,
-          description,
-          schedule,
-          society,
-          societyweb,
-          is_try,
-        })
-      )
-      let json = await res.json()
-      if (json.error) return notify.error(json.message)
-      notify.success('Nouveau troc créer !')
-      
-      dispatch('create', json.message)
-    } catch (error) {
-      console.trace(error)
     }
+    console.log(newTroc)
   }
-*/
+
   //For SearchLocation to Autopatch
   //Très bof bof, mais ca marche
   let changeFlag = false
@@ -164,7 +159,12 @@
     <div class="item troc">
       <h6>Le troc</h6>
       <div class="pb-3">
-        <Checkbox bind:checked={is_try} title="Troc d'entrainement">
+        <Checkbox
+          name="is_try"
+          bind:checked={is_try}
+          on:change={handleInput}
+          title="Troc d'entrainement"
+        >
           Troc d'entrainement
         </Checkbox>
       </div>
@@ -179,15 +179,24 @@
           </div>
 
           <div class="pb-3">
-            Un troc d'entrainement n'est pas visible publiquement. <br />
-            Il permet de tester l'interface et de préparer une équipe.
+            Les trocs d'entrainement ne sont pas visible publiquement. <br />
+            Ils permettent de tester l'interface et de préparer une équipe.
           </div>
         </div>
       {/if}
 
-      <TextField bind:value={name} outlined>Nom de l'évènement</TextField>
+      <TextField bind:value={name} on:input={handleInput} name="name" outlined>
+        Nom de l'évènement
+      </TextField>
       <br />
-      <Textarea bind:value={description} autogrow rows={5} outlined>
+      <Textarea
+        bind:value={description}
+        on:input={handleInput}
+        name="description"
+        autogrow
+        rows={5}
+        outlined
+      >
         Déscription
       </Textarea>
     </div>
@@ -197,9 +206,10 @@
       <br />
       {#if is_try || $troc?.is_try}
         <div class="icon-container">
-          <br /><span class="w3-text-orange"
-            >Les trocs d'entrainements n'ont pas de lieu</span
-          >
+          <br />
+          <span class="w3-text-orange">
+            Les trocs d'entrainements n'ont pas de lieu
+          </span>
           <i class="fas fa-map-marked-alt" />
         </div>
       {:else}
@@ -304,24 +314,27 @@
           {/if}
         </Button>
       </div>
-    {:else}
+    {/if}
+    <!--
+
       <AutoPatch
-        source="editForm"
-        path={`/trocs/${_id}`}
-        {invalid}
-        body={{
-          name,
-          address,
-          location,
-          description,
-          schedule,
+      source="editForm"
+      path={`/trocs/${$troc._id}`}
+      {invalid}
+      body={{
+        name,
+        address,
+        location,
+        description,
+        schedule,
           society,
           societyweb,
         }}
         trocRefresh
         bind:changeFlag
-      />
-    {/if}
+        />
+        {/if}
+      -->
   </div>
 </div>
 

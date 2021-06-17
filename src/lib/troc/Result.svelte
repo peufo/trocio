@@ -45,7 +45,7 @@
       <div class="centered" in:fade style="height: 200px;">Pas de résultat</div>
     {:else}
       <div in:fade>
-        {#each $trocs as troc (troc._id)}
+        {#each $trocs as troc (`nav-${troc._id}`)}
           <div
             bind:this={$trocsElement[troc._id]}
             on:click={() => clickTroc(troc)}

@@ -1,5 +1,9 @@
 import type { Article, ArticleCreate } from 'types'
-import { api } from '$lib/api'
+import { api, createGetNextPageParam } from '$lib/api'
+
+const FIRST_LIMIT = 10
+const NEXT_LIMIT = 20
+export const getNextPageParam = createGetNextPageParam(FIRST_LIMIT, NEXT_LIMIT)
 
 interface GetArticlesQuery {
   pageParam: number
@@ -7,11 +11,12 @@ interface GetArticlesQuery {
 }
 export function getArticles({ pageParam = 0, queryKey }: GetArticlesQuery) {
   const { trocId, search } = queryKey[1]
+  console.log({ pageParam })
   const params = {
     troc: trocId,
     search_name: search,
     skip: pageParam,
-    limit: pageParam ? 10 : 20,
+    limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
   }
   return api<Article[]>('/api/articles', { params })
 }
@@ -46,7 +51,7 @@ export function getProvidedArticles({ pageParam, queryKey }) {
     troc: trocId,
     provider,
     skip: pageParam,
-    limit: pageParam ? 10 : 20,
+    limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
   }
   if (!params.provider) delete params.provider
   return api<Article[]>('/api/articles/provided', { params })

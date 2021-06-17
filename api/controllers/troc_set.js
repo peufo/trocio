@@ -47,7 +47,6 @@ function createTroc(req, res, next) {
 }
 
 function patchTroc(req, res, next) {
-  if (!req.session.user) return next(Error('Login required'))
   Troc.findOne({ _id: req.params.id }).exec((err, troc) => {
     if (err || !troc) return next(err || Error('Not found'))
 
@@ -72,7 +71,7 @@ function patchTroc(req, res, next) {
 
       lookupIfAdmin(troc, req.session.user._id.toString(), (err, troc) => {
         if (err || !troc) return next(err || Error('Not found'))
-        res.json({ success: true, message: troc })
+        res.json(troc)
       })
     })
   })
@@ -85,11 +84,11 @@ function addAdmin(req, res, next) {
     Troc.findById(req.params.id, (err, troc) => {
       if (err || !troc) return next(err || Error('Troc not found'))
 
-      //Check if user is already admin
+      // Check if user is already admin
       var index = troc.admin.map((a) => a._id).indexOf(req.body.admin)
       if (index != -1) return next(Error('User is already admin'))
 
-      //Removed of cashiers
+      // Removed of cashiers
       index = troc.cashier.map((c) => c._id).indexOf(req.body.admin)
       if (index != -1) troc.cashier.splice(index, 1)
 

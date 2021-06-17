@@ -1,19 +1,30 @@
 import { addIsClosed } from '$lib/utils.js'
 
 import type { Troc, TrocBase, TrocLookup, TrocUserResume } from 'types'
-import { api } from '$lib/api'
+import { api, createGetNextPageParam } from '$lib/api'
+
+const FIRST_LIMIT = 4
+const NEXT_LIMIT = 4
+export const getNextPageParam = createGetNextPageParam(FIRST_LIMIT, NEXT_LIMIT)
 
 export function getTroc({ queryKey }: { queryKey: ['troc', string] }) {
   return api<Troc>(`/api/trocs/${queryKey[1]}`)
 }
 
 export function searchTrocs({ pageParam = 0, queryKey }) {
-  const params = { ...queryKey[1], skip: pageParam, limit: pageParam ? 2 : 6 }
+  const params = {
+    ...queryKey[1],
+    skip: pageParam,
+    limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
+  }
   return api<Troc[]>('/api/trocs/search', { params })
 }
 
 export function getSubscribedTrocs({ pageParam = 0 }) {
-  const params = { skip: pageParam, limit: 4 }
+  const params = {
+    skip: pageParam,
+    limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
+  }
   return api<Troc[]>('/api/subscribes/me', { params })
 }
 
@@ -27,7 +38,15 @@ export function createTroc(trocBase: TrocBase) {
   return api<TrocBase, TrocLookup>('/api/trocs', {
     method: 'post',
     data: trocBase,
-    success: 'Nouveau troc créer !',
+    success: 'Nouveau troc créer',
+  })
+}
+
+export function updateTroc(troc: Troc) {
+  return api<Troc, TrocLookup>(`/api/trocs/${troc._id}`, {
+    method: 'patch',
+    data: troc,
+    success: 'Troc mis à jour',
   })
 }
 

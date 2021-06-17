@@ -1,6 +1,10 @@
 <script>
-  import { Button, List, ListItem, Icon } from 'svelte-materialify'
-  import { faCog, faCashRegister } from '@fortawesome/free-solid-svg-icons'
+  import { Button, List, ListItem, Chip } from 'svelte-materialify'
+  import {
+    faCog,
+    faCashRegister,
+    faTableTennis,
+  } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
@@ -47,7 +51,13 @@
         >
           {troc.name}
           {#if troc.is_try}
+            <!--
             <span class="warning">Entrainement</span>
+            -->
+            <Chip size="small" label class="amber darken-2 white-text">
+              <IconLink icon={faTableTennis} size=".7em" />
+              <span>Entrainementsdfsdf</span>
+            </Chip>
           {/if}
           {#if troc.isClosed}
             <span class="warning">Terminé</span>

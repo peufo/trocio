@@ -2,6 +2,7 @@ import axios, { Method } from 'axios'
 import notify from '$lib/notify'
 
 import type { BaseResponse, ResponseNotifyOptions } from 'types'
+import type { GetNextPageParamFunction } from '@sveltestack/svelte-query'
 
 export function api<TypeRequest, TypeResponse = TypeRequest>(
   url: string,
@@ -49,4 +50,26 @@ export function api<TypeRequest, TypeResponse = TypeRequest>(
 
       throw requestError
     })
+}
+
+export function createGetNextPageParam<TQueryFnData>(
+  /** First limit  */
+  start: number,
+  /** Next limit */
+  next = start
+): GetNextPageParamFunction {
+  return function getNextPageParam(
+    lastPage: TQueryFnData,
+    allPages: TQueryFnData[]
+  ): unknown {
+    console.log({ lastPage, allPages, start, next })
+    if (!Array.isArray(lastPage)) return
+    if (allPages.length === 1) {
+      if (lastPage.length < start) return
+      return start
+    } else if (allPages.length > 1) {
+      if (lastPage.length < next) return
+      return allPages.flat().length
+    }
+  }
 }
