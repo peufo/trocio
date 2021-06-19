@@ -1,50 +1,60 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-
-  import { Textarea, TextField, Icon } from 'svelte-materialify'
+  import { Textarea, TextField, Icon, List, ListItem } from 'svelte-materialify'
   import L from 'leaflet'
   import debounce from 'debounce'
 
+  import markerIcon from '$assets/images/marker-icon.png'
+  import markerIcon2X from '$assets/images/marker-icon-2x.png'
+
   export let address = ''
   export let location = { lat: 0, lng: 0 }
-  export let changeFlag = false
   export let mapDelay = 0
 
-  let map,
-    icon,
-    marker,
-    fetchPromise,
-    markers = [],
-    results = [],
-    selected = -1,
-    addressTextarea
+  const dispatch = createEventDispatcher()
+
+  let mapElement: HTMLDivElement
+  let addressTextarea: HTMLTextAreaElement
+
+  let map: L.Map
+  let icon: L.Icon
+  let marker: L.Marker
+  let markers: L.Marker[] = []
+
+  let results: {
+    address: string
+    location: { lat: number; lng: number }
+    country_code: string
+    _type: string
+  }[] = []
+  let selectedResult = -1
+  let fetchPromise
 
   function setLocation(loc) {
     location = loc.location
     address = loc.address.split(', ').join('\n')
     marker.setLatLng(location).addTo(map)
     map.setView(location)
-    changeFlag = true
-    setTimeout(() => (changeFlag = false), 10) // Util pour l'autoPatch
+    dispatch('change', { location, address })
   }
 
   function removeResults() {
-    selected = -1
+    selectedResult = -1
     results = []
     markers.forEach((m) => m.remove())
   }
 
   onMount(() => {
     setTimeout(() => {
-      map = L.map('map', {
+      map = L.map(mapElement, {
         center: [47.4013048812248, 7.076493501663209],
         zoom: 4,
       })
 
       icon = L.icon({
-        iconUrl: '/images/marker-icon.png',
-        iconRetinaUrl: '/images/marker-icon-2x.png',
+        iconUrl: markerIcon,
+        iconRetinaUrl: markerIcon2X,
         iconSize: [28, 42],
         iconAnchor: [14, 42],
         popupAnchor: [-14, 40],
@@ -64,6 +74,7 @@
 
       map.on(
         'dblclick',
+        // @ts-ignore
         ({ latlng }) => (fetchPromise = selectLocation(latlng))
       )
     }, mapDelay)
@@ -76,6 +87,7 @@
       let res = await fetch(`/api/geocode/${latlng.lat}+${latlng.lng}`)
       let json = await res.json()
       setLocation({ location: latlng, address: json[0].address })
+      addressTextarea.focus()
       return
     } catch (error) {
       console.trace(error)
@@ -127,29 +139,19 @@
   }
 
   function searchKeyup(e) {
-    let elem, container, posY
     switch (e.key) {
       case 'ArrowDown':
-        selected++
-        if (selected >= results.length) selected = results.length - 1
-        if (selected > -1) {
-          elem = document.getElementById(`result${selected}`)
-          container = document.getElementById('results')
-          posY = elem.offsetTop - 244 + elem.clientHeight
-          if (container.scrollTop + container.clientHeight < posY) {
-            container.scrollTop = posY - container.clientHeight
-          }
-          setLocation(results[selected])
+        selectedResult++
+        if (selectedResult >= results.length)
+          selectedResult = results.length - 1
+        if (selectedResult > -1) {
+          setLocation(results[selectedResult])
         }
         break
       case 'ArrowUp':
-        selected--
-        if (selected < 0) selected = 0
-        elem = document.getElementById(`result${selected}`)
-        container = document.getElementById('results')
-        posY = elem.offsetTop - 244
-        if (container.scrollTop > posY) container.scrollTop = posY
-        setLocation(results[selected])
+        selectedResult--
+        if (selectedResult < 0) selectedResult = 0
+        setLocation(results[selectedResult])
         break
       default:
         searchLocationDebounce(e.target.value)
@@ -157,15 +159,17 @@
   }
 </script>
 
-<div id="container">
-
-  <div id="map" />
+<div class="container">
+  <div class="map" bind:this={mapElement} />
 
   <br />
 
   <TextField
     outlined
     on:keyup={searchKeyup}
+    on:input={() => {
+      dispatch('change', { location, address })
+    }}
     value={locationString(location)}
     hint="Chercher une ville ou double-cliquer sur la carte"
   >
@@ -178,28 +182,15 @@
     </div>
     Localisation
   </TextField>
-  <br />
-
-  <Textarea
-    rows={3}
-    noResize
-    outlined
-    autogrow
-    bind:textarea={addressTextarea}
-    bind:value={address}
-  >
-    Address, Ville, Pays
-  </Textarea>
 
   {#if results.length}
     <div in:slide>
-      <ul id="results" class="w3-ul">
+      <List class="results" dense>
         {#each results as res, i}
-          <li
-            id="result{i}"
-            class:selected={selected == i}
+          <ListItem
+            active={selectedResult == i}
             on:click={() => {
-              selected = i
+              selectedResult = i
               setLocation(res)
             }}
             on:dblclick={removeResults}
@@ -238,11 +229,27 @@
               class:fa-tractor={res._type == 'meadow'}
             />
             {res.address}
-          </li>
+          </ListItem>
         {/each}
-      </ul>
+      </List>
     </div>
   {/if}
+
+  <br />
+
+  <Textarea
+    rows={3}
+    noResize
+    outlined
+    autogrow
+    on:input={() => {
+      dispatch('change', { location, address })
+    }}
+    bind:textarea={addressTextarea}
+    bind:value={address}
+  >
+    Address, Ville, Pays
+  </Textarea>
 </div>
 
 <svelte:head>
@@ -253,64 +260,17 @@
 </svelte:head>
 
 <style>
-  #container {
+  .container {
     position: relative;
   }
 
-  #map {
+  .map {
     height: 200px;
     width: 100%;
     z-index: 0;
   }
 
-  /*
-	#searchInput {
-		width: calc(100% - 56px);
-		border-radius: 3px 0px 0px 0px;
-	}
-
-	#searchButton {
-		cursor: pointer;
-		height: 44px;
-	}
-	#searchButton:hover {
-		background: #d8d8d8;
-	}
-
-	#searchButton:hover i{
-		transform: scale(1.1);
-	}
-	*/
-
   i {
     transition: all 0.2s ease;
-  }
-
-  ul {
-    max-height: 200px;
-    overflow-y: scroll;
-    text-align: left;
-  }
-
-  ul li {
-    cursor: pointer;
-  }
-
-  #latlngInfo {
-    transform: translate(0, -15px);
-    position: absolute;
-    color: #000;
-    left: 0px;
-    background: rgba(255, 255, 255, 0.5);
-    padding-left: 4px;
-    padding-right: 4px;
-  }
-
-  .selected {
-    background: #d8d8d8;
-  }
-
-  #results {
-    scroll-behavior: smooth;
   }
 </style>

@@ -11,6 +11,7 @@
   } from 'svelte-materialify'
   import { faInfo } from '@fortawesome/free-solid-svg-icons'
 
+  import type { TrocBase } from 'types'
   import { troc, useCreateTroc, useUpdateTroc } from '$lib/troc/store'
   import { user, userQuery } from '$lib/user/store'
   import IconLink from '$lib/util/IconLink.svelte'
@@ -21,29 +22,17 @@
   import autoPatch from '$lib/autoPatch'
   import SearchAddress from '$lib/control/SearchAddress.svelte'
 
-  export let newTroc = {
+  export let updateMode = true
+  export const newTroc: TrocBase = {
     name: '',
-    is_try: true,
+    is_try: false,
     address: '',
     location: { lng: 0, lat: 0 },
     description: '',
     schedule: [],
     society: '',
     societyweb: '',
-    mapDelay: 0,
   }
-
-  export let name = ''
-  export let is_try = true
-  export let address = ''
-  export let location = { lng: 0, lat: 0 }
-  export let description = ''
-  export let schedule = []
-  export let society = ''
-  export let societyweb = ''
-  export let mapDelay = 0
-
-  export let updateMode = true
 
   const createTroc = useCreateTroc()
   const updateTroc = useUpdateTroc()
@@ -54,6 +43,7 @@
   $: smallDisplay = offsetWidth < 800
 
   // Schedule conversion
+  /*
   if (!schedule.length) onMount(addSchedule)
   let scheduleIn = schedule.map((s) => {
     return {
@@ -62,6 +52,7 @@
       close: dayjs(s.close).format('HH:mm'),
     }
   })
+
 
   function addSchedule(e) {
     if (!!e) e.preventDefault()
@@ -106,52 +97,53 @@
       }
     })
   }
+  */
 
   let invalid = ''
-  $: {
+  function validation() {
     invalid = ''
-    if (!is_try) {
-      if (!address) invalid = 'Adresse incomplette'
-      else if (!location.lat) invalid = 'Adresse non localisé'
-      else if (!scheduleIn.length) invalid = 'Pas de plage horaire'
-      else if (schedule.indexOf(undefined) != -1)
+    if (!newTroc.is_try) {
+      if (!newTroc.address) invalid = 'Adresse incomplette'
+      else if (!newTroc.location.lat) invalid = 'Adresse non localisé'
+      else if (!newTroc.schedule.length) invalid = 'Pas de plage horaire'
+      else if (newTroc.schedule.includes(undefined))
         invalid = 'Plage horaire incomplette'
     }
-    if (description.length < 10)
-      invalid = `Déscription trop courte (${description.length}/10)`
-    else if (!name) invalid = 'Pas de nom'
+    if (newTroc.description.length < 10)
+      invalid = `Déscription trop courte (${newTroc.description.length}/10)`
+    else if (!newTroc.name) invalid = 'Pas de nom'
   }
 
   function handleCreateTroc() {
     if (invalid) return notify.warning(invalid)
     $createTroc.mutate(newTroc, {
-      onSuccess: () => {
-        if (!is_try)
+      onSuccess: (createdTroc) => {
+        if (!createdTroc.is_try)
           userQuery.set({ ...$user, creditTroc: $user.creditTroc - 1 })
       },
     })
   }
 
-  function handleInput(event) {
-    const { type, name } = event.target
-    console.log(type, name, event)
-    if (type && newTroc[name] !== undefined) {
-      switch (type) {
-        case 'text':
-        case 'textarea':
-          newTroc[name] = event.target.value
-          break
-        case 'checkbox':
-          newTroc[name] = event.target.checked
-          break
+  function handleInput(event: any) {
+    const { detail } = event
+    if (detail) {
+      // Handle custom event
+      Object.keys(detail).forEach((key) => {
+        newTroc[key] = detail[key]
+      })
+    } else {
+      // Handle input event
+      const { type, name, value } = event.target
+      if (type === 'text' || type === 'textarea') {
+        newTroc[name] = value
+      } else if (type === 'checkbox') {
+        newTroc[value] = event.target.checked
       }
     }
-    console.log(newTroc)
-  }
 
-  //For SearchLocation to Autopatch
-  //Très bof bof, mais ca marche
-  let changeFlag = false
+    console.log(newTroc)
+    validation()
+  }
 </script>
 
 <div id="editForm" bind:offsetWidth>
@@ -160,15 +152,15 @@
       <h6>Le troc</h6>
       <div class="pb-3">
         <Checkbox
-          name="is_try"
-          bind:checked={is_try}
+          value="is_try"
+          checked={newTroc.is_try}
           on:change={handleInput}
           title="Troc d'entrainement"
         >
           Troc d'entrainement
         </Checkbox>
       </div>
-      {#if is_try}
+      {#if newTroc.is_try || $troc?.is_try}
         <div
           transition:slide|local
           class="text--disabled d-flex"
@@ -185,14 +177,19 @@
         </div>
       {/if}
 
-      <TextField bind:value={name} on:input={handleInput} name="name" outlined>
+      <TextField
+        name="name"
+        on:input={handleInput}
+        value={newTroc.name}
+        outlined
+      >
         Nom de l'évènement
       </TextField>
       <br />
       <Textarea
-        bind:value={description}
-        on:input={handleInput}
         name="description"
+        on:input={handleInput}
+        value={newTroc.description}
         autogrow
         rows={5}
         outlined
@@ -204,7 +201,7 @@
     <div class="item location">
       <h6>Lieu</h6>
       <br />
-      {#if is_try || $troc?.is_try}
+      {#if newTroc.is_try || $troc?.is_try}
         <div class="icon-container">
           <br />
           <span class="w3-text-orange">
@@ -213,14 +210,14 @@
           <i class="fas fa-map-marked-alt" />
         </div>
       {:else}
-        <SearchAddress {mapDelay} bind:address bind:location bind:changeFlag />
+        <SearchAddress mapDelay={200} on:change={handleInput} />
       {/if}
     </div>
 
     <div class="item schedule">
       <h6>Horaire</h6>
       <br />
-      {#if is_try || $troc?.is_try}
+      {#if newTroc.is_try || $troc?.is_try}
         <div class="icon-container">
           <br /><span class="w3-text-orange"
             >Les trocs d'entrainements n'ont pas d'horaire</span
@@ -238,7 +235,8 @@
             </tr>
           </thead>
           <tbody>
-            {#each scheduleIn as { day, open, close }, i}
+            <!--
+              {#each scheduleIn as { day, open, close }, i}
               <tr>
                 <td>
                   <input bind:value={day} type="date" />
@@ -268,17 +266,20 @@
                 </td>
               </tr>
             {/each}
+            -->
           </tbody>
         </Table>
+        <!--
 
-        <Button
-          on:click={addSchedule}
-          outlined
-          class="patchButton w3-right"
-          title="Ajouter un période"
-        >
-          +1 période
-        </Button>
+          <Button
+            on:click={addSchedule}
+            outlined
+            class="patchButton w3-right"
+            title="Ajouter un période"
+          >
+            +1 période
+          </Button>
+        -->
 
         <br />
         <span class="w3-opacity w3-text-orange">
@@ -292,9 +293,19 @@
         Organisation <span class="w3-small w3-opacity">Optionnel</span>
       </h6>
       <br />
-      <TextField bind:value={society} outlined>Nom de l'organisation</TextField>
+      <TextField
+        name="society"
+        on:input={handleInput}
+        value={newTroc.society}
+        outlined>Nom de l'organisation</TextField
+      >
       <br />
-      <TextField bind:value={societyweb} outlined>
+      <TextField
+        name="societyweb"
+        on:input={handleInput}
+        value={newTroc.societyweb}
+        outlined
+      >
         Site internet de l'organisation
       </TextField>
     </div>
@@ -315,26 +326,6 @@
         </Button>
       </div>
     {/if}
-    <!--
-
-      <AutoPatch
-      source="editForm"
-      path={`/trocs/${$troc._id}`}
-      {invalid}
-      body={{
-        name,
-        address,
-        location,
-        description,
-        schedule,
-          society,
-          societyweb,
-        }}
-        trocRefresh
-        bind:changeFlag
-        />
-        {/if}
-      -->
   </div>
 </div>
 
