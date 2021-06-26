@@ -42,7 +42,7 @@ export function createTroc(trocBase: TrocBase) {
   })
 }
 
-export function updateTroc(troc: Troc) {
+export function updateTroc(troc: Partial<Troc>) {
   return api<Troc, TrocLookup>(`/api/trocs/${troc._id}`, {
     method: 'patch',
     data: troc,

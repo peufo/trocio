@@ -41,7 +41,6 @@ function warning(options) {
 }
 
 function error(options: { stack: string; message: string } | string): string {
-  console.log('TYPE ERROR: ', typeof options)
   console.trace(options)
   const icon = 'fas fa-bug'
   if (typeof options === 'string') {

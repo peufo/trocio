@@ -84,7 +84,7 @@
   }
 </script>
 
-<div style="min-width: 340px;">
+<div>
   {#if state === REGISTER}
     <h5 class="w3-center" in:fade>Nouveau compte</h5>
   {:else if state === RECOVER}
@@ -135,7 +135,7 @@
         type="password"
         bind:value={password}
         on:input={checkForm}
-        on:keyup={(e) => e.key == 'Enter' && submit()}
+        on:keyup={(e) => e.key === 'Enter' && submit()}
       >
         <div slot="prepend">
           <Icon class="fas fa-key" />

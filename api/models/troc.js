@@ -30,7 +30,11 @@ let trocModel = new Schema(
     ],
     schedule: [
       {
-        name: { type: String, enum: ['deposit', 'recovery', 'sale'] },
+        name: {
+          type: String,
+          enum: ['open', 'deposit', 'recovery', 'sale'],
+          default: 'open',
+        },
         open: Date,
         close: Date,
       },
@@ -71,9 +75,8 @@ trocModel.set('timestamps', true)
 
 trocModel.virtual('isClosed').get(function () {
   return (
-    !!this.schedule[0] &&
-    this.schedule[this.schedule.length - 1].close.getTime() <
-      new Date().getTime()
+    this.schedule[this.schedule.length - 1]?.close?.getTime() <
+    new Date().getTime()
   )
 })
 

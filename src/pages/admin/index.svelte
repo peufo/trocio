@@ -3,16 +3,12 @@
 
   import TrocEdit from '$lib/troc/Edit.svelte'
   import Collaborators from '$lib/user/Collaborators.svelte'
-
-  let components = {
-    info: TrocEdit,
-    collab: Collaborators,
-    tarif: TrocEdit,
-    tag: TrocEdit,
-    statistic: TrocEdit,
-    managment: TrocEdit,
-    cashier: TrocEdit,
-  }
 </script>
 
-<svelte:component this={components[$params.tab_admin] || components.info} />
+{#if $params.tab_admin === 'info'}
+  <TrocEdit />
+{:else if $params.tab_admin === 'collab'}
+  <Collaborators />
+{:else}
+  <TrocEdit />
+{/if}

@@ -3,7 +3,7 @@ import { User } from 'types'
 
 /** Période dont est composé l'horaire */
 export declare interface Period {
-  name?: 'deposit' | 'recovery' | 'sale'
+  name?: 'open' | 'deposit' | 'recovery' | 'sale'
   open: string
   close: string
 }

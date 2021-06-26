@@ -116,6 +116,9 @@ export const useRemoveTrader = () => useMutation(removeTrader, { onSuccess })
 export const useSetTraderPrefix = () =>
   useMutation(setTraderPrefix, { onSuccess })
 
+/**
+ * Update troc on success
+ */
 function onSuccess(newTroc: TrocLookup) {
   troc.set(newTroc)
 }

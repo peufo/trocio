@@ -1,18 +1,15 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, createEventDispatcher } from 'svelte'
   import dayjs from 'dayjs'
-  import { Button, Select, Table } from 'svelte-materialify'
+  import { Button, Select, Table, TextField } from 'svelte-materialify'
 
   import type { Period } from 'types'
 
   export let schedule: Period[] = []
 
-  let offsetWidth = 0
-  $: smallDisplay = offsetWidth < 570
-
   /** Schedule formated for user input */
   let scheduleInput: {
-    name?: Period['name']
+    name?: Period['name'] | 'delete'
     day: string
     open: string
     close: string
@@ -26,61 +23,65 @@
     { name: '❌ Supprimer', value: 'delete' },
   ]
 
-  if (!schedule.length) onMount(addPeriod)
+  const dispatch = createEventDispatcher()
+  let offsetWidth = 0
+  $: smallDisplay = offsetWidth < 570
+
+  onMount(() => {
+    if (schedule.length) scheduleToScheduleInput()
+    else addPeriod()
+  })
+
+  function handleInput() {
+    setTimeout(() => {
+      // Remove deleted period
+      scheduleInput = scheduleInput.filter((period) => period.name !== 'delete')
+      sheduleInputToSchedule()
+    }, 0)
+  }
 
   /** Schedule conversion */
   function scheduleToScheduleInput() {
-    scheduleInput = schedule.map((s) => {
+    scheduleInput = schedule.map((period) => {
       return {
-        day: dayjs(s.open).format('YYYY-MM-DD'),
-        open: dayjs(s.open).format('HH:mm'),
-        close: dayjs(s.close).format('HH:mm'),
+        name: period.name || 'open',
+        day: dayjs(period.open).format('YYYY-MM-DD'),
+        open: dayjs(period.open).format('HH:mm'),
+        close: dayjs(period.close).format('HH:mm'),
       }
     })
   }
 
   function sheduleInputToSchedule() {
-    schedule = scheduleInput.map((s) => {
-      if (s.day && s.open && s.close) {
-        let dayForSafari = dayjs(s.day).format('YYYY/MM/DD')
+    schedule = scheduleInput.map((period) => {
+      if (
+        period.day &&
+        period.open &&
+        period.close &&
+        period.name !== 'delete'
+      ) {
+        let dayForSafari = dayjs(period.day).format('YYYY/MM/DD')
         return {
-          open: new Date(`${dayForSafari} ${s.open}`).toISOString(),
-          close: new Date(`${dayForSafari} ${s.close}`).toISOString(),
+          name: period.name,
+          open: new Date(`${dayForSafari} ${period.open}`).toISOString(),
+          close: new Date(`${dayForSafari} ${period.close}`).toISOString(),
         }
       }
     })
+    dispatch('change', { schedule })
   }
 
   function addPeriod(event: Event = null) {
     event?.preventDefault()
-
-    if (scheduleInput.length == 0) {
-      scheduleInput = [
-        ...scheduleInput,
-        {
-          day: dayjs().add(7, 'day').format('YYYY-MM-DD'),
-          open: dayjs().hour(8).minute(0).format('HH:mm'),
-          close: dayjs().hour(18).minute(0).format('HH:mm'),
-        },
-      ]
-    } else {
-      let lastPeriod = scheduleInput[scheduleInput.length - 1]
-      scheduleInput = [
-        ...scheduleInput,
-        {
-          day: dayjs(lastPeriod.day).add(1, 'day').format('YYYY-MM-DD'),
-          open: lastPeriod.open,
-          close: lastPeriod.close,
-        },
-      ]
+    const lastPeriod = scheduleInput[scheduleInput.length - 1] || undefined
+    const newPeriod = {
+      day: dayjs(lastPeriod?.day)
+        .add(lastPeriod ? 1 : 7, 'day')
+        .format('YYYY-MM-DD'),
+      open: lastPeriod?.open || dayjs().hour(8).minute(0).format('HH:mm'),
+      close: lastPeriod?.close || dayjs().hour(18).minute(0).format('HH:mm'),
     }
-    sheduleInputToSchedule()
-    return
-  }
-
-  function removeSchedule(index: number) {
-    scheduleInput.splice(index, 1)
-    scheduleInput = scheduleInput
+    scheduleInput = [...scheduleInput, { name: 'open', ...newPeriod }]
     sheduleInputToSchedule()
   }
 </script>
@@ -89,10 +90,32 @@
   {#if smallDisplay}
     <div>
       {#each scheduleInput as { name, day, open, close }, i}
-        <div class="simple-card">
-          <Select bind:value={name} solo dense items={nameItems} />
-
-          TODO
+        <div class="simple-card pt-6 mb-2">
+          <Select
+            bind:value={name}
+            on:change={handleInput}
+            solo
+            items={nameItems}
+          >
+            Période
+          </Select>
+          <div class="pa-3 d-flex">
+            <TextField type="date" bind:value={day} on:input={handleInput}>
+              Jour
+            </TextField>
+            <TextField
+              bind:value={open}
+              on:input={handleInput}
+              max={close}
+              type="time">Début</TextField
+            >
+            <TextField
+              bind:value={close}
+              on:input={handleInput}
+              min={open}
+              type="time">Fin</TextField
+            >
+          </div>
         </div>
       {/each}
     </div>
@@ -109,17 +132,27 @@
       <tbody>
         {#each scheduleInput as { name, day, open, close }, i}
           <tr>
-            <td>
-              <Select bind:value={name} solo dense items={nameItems} />
+            <td class="pt-2">
+              <Select
+                bind:value={name}
+                solo
+                items={nameItems}
+                on:change={handleInput}
+              />
             </td>
             <td>
-              <input bind:value={day} type="date" style="width: 120px;" />
+              <input
+                bind:value={day}
+                on:input={handleInput}
+                type="date"
+                style="width: 120px;"
+              />
             </td>
             <td>
               <input
                 bind:value={open}
                 max={close}
-                on:input={sheduleInputToSchedule}
+                on:input={handleInput}
                 type="time"
                 style="width: 70px;"
               />
@@ -128,7 +161,7 @@
               <input
                 bind:value={close}
                 min={open}
-                on:input={sheduleInputToSchedule}
+                on:input={handleInput}
                 type="time"
                 style="width: 70px;"
               />
@@ -142,14 +175,8 @@
 
 <Button on:click={addPeriod} text class="mt-3 mb-3">Ajouter une période</Button>
 
-<br />
-<span class="w3-opacity w3-text-orange">
-  L'horaire n'est plus modifiable une fois que l'évenement a débuté.
-</span>
-
 <style>
   :global(.s-select .s-text-field__wrapper.solo) {
     box-shadow: none;
-    min-width: 140px;
   }
 </style>
