@@ -83,4 +83,11 @@
     padding-left: 1em;
     padding-right: 1em;
   }
+
+  @media only screen and (max-width: 650px) {
+    .container {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
 </style>

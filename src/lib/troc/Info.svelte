@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fly, fade, slide } from 'svelte/transition'
+  import { slide } from 'svelte/transition'
   import {
     faChild,
     faCubes,
@@ -12,6 +12,11 @@
     faCog,
     faCashRegister,
     faChevronRight,
+    faMapMarkedAlt,
+    faSignInAlt,
+    faStoreAlt,
+    faSignOutAlt,
+    faShoppingBasket,
   } from '@fortawesome/free-solid-svg-icons'
   import { Button, Chip } from 'svelte-materialify'
   import dayjs from 'dayjs'
@@ -40,9 +45,16 @@
   let tabIndex = 0
   const DESCRIPTION_SIZE = 250
   let sliceDescription = DESCRIPTION_SIZE
+
+  const scheduleIcon = {
+    open: faStoreAlt,
+    deposit: faSignInAlt,
+    recovery: faSignOutAlt,
+    sale: faShoppingBasket,
+  }
 </script>
 
-<div class="d-flex flex-column flex-sm-row justify-space-between">
+<div class="container">
   <div>
     <h6>{troc.name}</h6>
 
@@ -94,43 +106,37 @@
     </p>
   </div>
 
-  <div class="info">
-    <div class="content-info w3-display-container">
-      {#if tabs[tabIndex].name === 'LOCATION' && !!troc.address}
-        <div
-          in:fly|local={{ x: 60, duration: 300, delay: 200 }}
-          out:fade|local={{ duration: 300 }}
-          class="w3-display-middle"
-        >
-          {#each troc.address.split(', ') as segment}
-            {segment}<br />
+  <div class="pl-5 pb-5">
+    {#if !troc.is_try}
+      <div class="d-flex pt-5">
+        <IconLink icon={faMapMarkerAlt} opacity />
+        <div class="pl-4">
+          {#each troc.address.split(', ') as segmentAddress}
+            {segmentAddress}<br />
           {/each}
-
+          <!--
+          TODO: Imprecis
           <a
             style="line-height: 2.5;"
             rel="noreferrer"
-            href={`https://www.google.ch/maps/place/${convertDMS(
-              troc.location
-            )}`}
+            href={`https://www.google.ch/maps/place/${convertDMS(troc.location)}`}
             target="_blank"
             title="Ouvrir dans Google Maps"
           >
-            Google Maps
             <IconLink
               class="ml-1"
-              icon={faExternalLinkAlt}
+              icon={faMapMarkedAlt}
               size="1em"
               style="color: var(--theme-text-link)"
             />
           </a>
+        -->
         </div>
-      {:else if tabs[tabIndex].name === 'SCHEDULE'}
-        <div
-          in:fly|local={{ x: 60, duration: 300, delay: 200 }}
-          out:fade|local={{ duration: 300 }}
-          style="width: 75%"
-          class="w3-display-middle w3-right-align"
-        >
+      </div>
+
+      <div class="d-flex pt-5">
+        <IconLink icon={faCalendarAlt} opacity />
+        <div class="pl-4">
           <b
             >{dayjs(
               troc.schedule && troc.schedule[0] && troc.schedule[0].open
@@ -139,19 +145,25 @@
 
           <br />
 
-          {#each troc.schedule as day}
-            {dayjs(day.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
-            {dayjs(day.close).format('H[h]mm')}
+          {#each troc.schedule as period}
+            <IconLink
+              icon={scheduleIcon[period.name] || scheduleIcon.open}
+              size="1em"
+              opacity
+            />
+            {dayjs(period.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
+            {dayjs(period.close).format('H[h]mm')}
             <br />
           {/each}
         </div>
-      {:else if tabs[tabIndex].name === 'SOCIETY'}
-        <div
-          in:fly|local={{ x: 60, duration: 300, delay: 200 }}
-          out:fade|local={{ duration: 300 }}
-          class="w3-display-middle"
-        >
-          <b>{troc.society}</b><br />
+      </div>
+    {/if}
+
+    {#if troc.society || troc.societyweb}
+      <div class="d-flex pt-5">
+        <IconLink icon={faUserAlt} opacity />
+        <div class="pl-4">
+          {#if troc.society}<b>{troc.society}</b>{/if}
 
           {#if !!troc.societyweb}
             <a
@@ -162,30 +174,11 @@
               title="Ouvrir le site internet de l'organisateur"
             >
               {troc.societyweb}
-              <IconLink
-                class="ml-1"
-                icon={faExternalLinkAlt}
-                size="1em"
-                style="color: var(--theme-text-link)"
-              />
             </a>
           {/if}
         </div>
-      {/if}
-    </div>
-    <div class="tabs">
-      {#each tabs as tab, i}
-        <div
-          class="tab"
-          on:click={() => (tabIndex = i)}
-          class:before-selected={tabIndex === i + 1}
-          class:selected={tabIndex === i}
-          class:after-selected={tabIndex === i - 1}
-        >
-          <IconLink icon={tab.icon} disabled={tabIndex !== i} />
-        </div>
-      {/each}
-    </div>
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -257,109 +250,18 @@
 {/if}
 
 <style>
+  .container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+  }
+  @media only screen and (max-width: 650px) {
+    .container {
+      display: block;
+    }
+  }
+
   .describe {
-    text-align: justify;
     word-wrap: break-word;
-  }
-
-  .info {
-    height: 220px;
-    min-width: 380px;
-    display: flex;
-  }
-
-  .content-info {
-    width: 100%;
-    padding: 20px;
-  }
-
-  .bar,
-  .tabs {
-    --border-width: 1px;
-    --border-width-negatif: -1px;
-    --border-width-double: 2px;
-  }
-
-  .bar {
-    min-height: 3em;
-    margin-right: 10px;
-    /*border-top: var(--border-width) solid var(--theme-tabs);*/
-    padding-top: 10px;
-  }
-
-  .tabs {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-content: stretch;
-  }
-
-  .tab {
-    flex-grow: 1;
-    font-size: x-large;
-    width: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-left: var(--border-width) solid transparent;
-    position: relative;
-    cursor: pointer;
-  }
-
-  .tab.selected {
-    z-index: 1;
-  }
-
-  .tab.selected:after {
-    content: '';
-    position: absolute;
-    width: calc(50% + var(--border-width));
-    height: calc(100% + var(--border-width-double));
-    right: 0px;
-    top: var(--border-width-negatif);
-    border-top: var(--border-width) solid var(--theme-tabs);
-    border-right: var(--border-width) solid var(--theme-tabs);
-    border-bottom: var(--border-width) solid var(--theme-tabs);
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-
-  .tab:first-child.selected:after {
-    border-top: transparent;
-    border-top-right-radius: 10px;
-  }
-
-  /*.tab:last-child.selected:after  {
-        border-bottom: var(--border-width)  solid #fff;
-        border-bottom-right-radius: 0px;
-    }*/
-
-  .tab.before-selected:after {
-    content: '';
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    left: var(--border-width-negatif);
-    bottom: 0px;
-    border-left: var(--border-width) solid var(--theme-tabs);
-    border-bottom: var(--border-width) solid var(--theme-tabs);
-    border-bottom-left-radius: 10px;
-  }
-
-  .tab.after-selected:after {
-    content: '';
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    left: var(--border-width-negatif);
-    top: 0px;
-    border-left: var(--border-width) solid var(--theme-tabs);
-    border-top: var(--border-width) solid var(--theme-tabs);
-    border-top-left-radius: 10px;
-  }
-
-  .tab:not(.selected):not(.before-selected):not(.after-selected) {
-    border-left: var(--border-width) solid var(--theme-tabs);
   }
 
   .showDescription {
