@@ -29,7 +29,6 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import Loader from '$lib/util/Loader.svelte'
-  import Info from '$lib/troc/Info.svelte'
 
   // import { troc } from './stores'
   // import { getHeader, updateTroc } from './utils'

@@ -9,8 +9,10 @@
   import markerIcon2X from '$assets/images/marker-icon-2x.png'
 
   export let address = ''
-  export let location = { lat: 0, lng: 0 }
+  export let location: { lat: number; lng: number } = null
   export let mapDelay = 0
+
+  let locationString = ''
 
   const dispatch = createEventDispatcher()
 
@@ -33,6 +35,7 @@
 
   function setLocation(loc) {
     location = loc.location
+    locationString = locationToString(location)
     address = loc.address.split(', ').join('\n')
     marker.setLatLng(location).addTo(map)
     map.setView(location)
@@ -46,6 +49,8 @@
   }
 
   onMount(() => {
+    if (location) locationString = locationToString(location)
+
     setTimeout(() => {
       map = L.map(mapElement, {
         center: [47.4013048812248, 7.076493501663209],
@@ -121,7 +126,7 @@
   const searchLocationDebounce = debounce(searchLocation, 300, false)
 
   /** Convertie un localisation {lat, lng} en string */
-  function locationString(loc) {
+  function locationToString(loc) {
     if (!loc.lat) return ''
     let lat = numberToString(loc.lat)
     lat += loc.lat >= 0 ? 'N' : 'S'
@@ -167,10 +172,8 @@
   <TextField
     outlined
     on:keyup={searchKeyup}
-    on:input={() => {
-      dispatch('change', { location, address })
-    }}
-    value={locationString(location)}
+    on:blur={removeResults}
+    value={locationString}
     hint="Chercher une ville ou double-cliquer sur la carte"
   >
     <div slot="append">

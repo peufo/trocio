@@ -55,7 +55,7 @@ function patchTroc(req, res, next) {
       req.body.schedule &&
       JSON.stringify(req.body.schedule) !== JSON.stringify(troc.schedule)
     ) {
-      if (troc.schedule[0].open.getTime() < new Date().getTime())
+      if (troc.schedule[0]?.open?.getTime() < new Date().getTime())
         return next(Error(`You cannot edit shedule of troc after he's started`))
       err = scheduleValidation(req.body)
       if (err) return next(err)
