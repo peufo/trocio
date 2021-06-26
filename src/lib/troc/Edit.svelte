@@ -48,8 +48,8 @@
               : { ...$troc[key] }
             : $troc[key]
       })
-      isNewTrocCloned = true
     }
+    isNewTrocCloned = true
     validation()
   })
 
@@ -90,7 +90,6 @@
 
   function handleInput(event: any) {
     const { detail } = event
-    console.log({ detail })
     if (detail) {
       // Handle custom event
       Object.keys(detail).forEach((key) => {
@@ -156,27 +155,31 @@
 <div class="container">
   <div class="troc">
     <h6>Le troc</h6>
-    <div class="pb-3">
-      <Checkbox
-        value="is_try"
-        checked={newTroc.is_try}
-        on:change={handleInput}
-        disabled={!createMode}
-      >
-        Troc d'entrainement
-      </Checkbox>
-    </div>
-    {#if newTroc.is_try}
+    <br />
+    {#if createMode || newTroc.is_try}
+      <div class="pb-3">
+        <Checkbox
+          value="is_try"
+          checked={newTroc.is_try}
+          on:change={handleInput}
+          disabled={!createMode}
+        >
+          Troc d'entrainement
+        </Checkbox>
+      </div>
+    {/if}
+
+    {#if isNewTrocCloned && newTroc.is_try}
       <div
         transition:slide|local
         class="text--disabled d-flex"
         style="font-size: .8em;"
       >
-        <div class="centered pb-3" style="width: 32px;">
+        <div class="centered pb-5" style="width: 32px;">
           <IconLink icon={faInfo} size="1em" />
         </div>
 
-        <div class="pb-3">
+        <div class="pb-5">
           Les trocs d'entrainement ne sont pas visible publiquement. <br />
           Ils permettent de tester l'interface et de préparer une équipe.
         </div>
