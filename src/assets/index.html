@@ -2,52 +2,69 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Trocio est un outil simple et efficace pour échanger vos objets." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Trocio est un outil simple et efficace pour échanger vos objets."
+    />
 
     <link rel="stylesheet" type="text/css" href="/index.css" />
-    
+
     <title>Trocio</title>
-    
+
     <!-- External import -->
-    <link rel='stylesheet' href="/Pnotify_Material.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"/>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
-    
+    <link rel="stylesheet" href="/Pnotify_Material.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto+Mono"
+    />
   </head>
   <body>
-    
     <script type="module" src="/dist/index.js"></script>
-    <!--Focus for materialify -->
+    <!-- Focus for materialify -->
     <script src="https://unpkg.com/focus-visible@latest/dist/focus-visible.min.js"></script>
 
     <noscript>Please enable Javascript.</noscript>
 
     <script>
-      history.pushState = ( f => function pushState(){
-        var ret = f.apply(this, arguments);
-        window.dispatchEvent(new Event('pushstate'));
-        window.dispatchEvent(new Event('locationchange'));
-        return ret;
-      })(history.pushState);
-  
-      history.replaceState = ( f => function replaceState(){
-        var ret = f.apply(this, arguments);
-        window.dispatchEvent(new Event('replacestate'));
-        window.dispatchEvent(new Event('locationchange'));
-        return ret;
-      })(history.replaceState);
-  
-      window.addEventListener('popstate',()=>{
-        window.dispatchEvent(new Event('locationchange'))
-      });
-    </script>
+      history.pushState = ((f) =>
+        function pushState() {
+          var ret = f.apply(this, arguments)
+          window.dispatchEvent(new Event('pushstate'))
+          window.dispatchEvent(new Event('locationchange'))
+          return ret
+        })(history.pushState)
 
+      history.replaceState = ((f) =>
+        function replaceState() {
+          var ret = f.apply(this, arguments)
+          window.dispatchEvent(new Event('replacestate'))
+          window.dispatchEvent(new Event('locationchange'))
+          return ret
+        })(history.replaceState)
+
+      window.addEventListener('popstate', () => {
+        window.dispatchEvent(new Event('locationchange'))
+      })
+    </script>
   </body>
 </html>

@@ -1,11 +1,12 @@
 <script lang="ts">
   import { AppBar, Button, Dialog, Icon } from 'svelte-materialify'
-  import { faUser } from '@fortawesome/free-regular-svg-icons'
+  import { faUser, faMoon } from '@fortawesome/free-regular-svg-icons'
+  import { faSun } from '@fortawesome/free-solid-svg-icons'
 
   // TODO: User Terme dialog
   import { troc } from '$lib/stores'
   import { user } from '$lib/user/store'
-  import { trocNavigationActive } from '$lib/store/layout'
+  import { trocNavigationActive, isDarkTheme } from '$lib/store/layout'
 
   import logo from '$assets/logo'
   import logoIco from '$assets/favicon.ico'
@@ -89,6 +90,10 @@
         {#if !mobileMode}&nbsp;&nbsp;Connexion{/if}
       </Button>
     {/if}
+
+    <Button text fab on:click={() => ($isDarkTheme = !$isDarkTheme)}>
+      <IconLink icon={$isDarkTheme ? faSun : faMoon} />
+    </Button>
   </AppBar>
 </div>
 

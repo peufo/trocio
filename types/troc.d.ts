@@ -1,6 +1,13 @@
 import { Article } from 'types'
 import { User } from 'types'
 
+/** Période dont est composé l'horaire */
+export declare interface Period {
+  name?: 'deposit' | 'recovery' | 'sale'
+  open: string
+  close: string
+}
+
 /** Information minimal pour la création d'un troc */
 export declare interface TrocBase {
   name: string
@@ -11,10 +18,7 @@ export declare interface TrocBase {
     lat: number
     lng: number
   }
-  schedule?: {
-    open: string
-    close: string
-  }[]
+  schedule?: Period[]
   society?: string
   societyweb?: string
 }

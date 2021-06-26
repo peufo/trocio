@@ -1,12 +1,11 @@
 <script lang="ts">
   import { page } from '@roxi/routify'
-  import { MaterialApp, Button } from 'svelte-materialify'
+  import { MaterialApp } from 'svelte-materialify'
 
   import Header from '$lib/layout/Header.svelte'
   import Footer from '$lib/layout/Footer.svelte'
   import FadeDecorator from '$lib/decorator/Fade.svelte'
-  import { isDarkTheme } from '$lib/stores.js'
-  import { layout } from '$lib/store/layout'
+  import { layout, isDarkTheme } from '$lib/store/layout'
 
   import '$assets/index.css'
   import icon from '$assets/favicon.ico'
@@ -40,18 +39,5 @@
     {#if $page.meta.isFooterDisplay}
       <Footer bind:offsetHeight={footerHeight} />
     {/if}
-
-    <!-- Theme Button-->
-    <Button
-      icon
-      style="position: fixed!important; right: 10px; bottom: 10px;"
-      on:click={() => ($isDarkTheme = !$isDarkTheme)}
-    >
-      {#if $isDarkTheme}
-        <i class="fas fa-sun" />
-      {:else}
-        <i class="fas fa-moon" />
-      {/if}
-    </Button>
   </MaterialApp>
 </div>

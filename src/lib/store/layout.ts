@@ -1,5 +1,7 @@
 import { writable } from 'svelte/store'
 
+export let isDarkTheme = writable(false)
+
 export const layout = writable({
   headerHeight: 0,
   footerHeight: 0,
