@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
 
-  import { isDarkTheme } from '$lib/stores.js'
+  import { isDarkTheme } from '$lib/store/layout'
 
   import marker from '$assets/images/marker-icon-2x.png'
 

@@ -1,5 +1,32 @@
+<script>
+  import { faUserAlt, faChild } from '@fortawesome/free-solid-svg-icons'
+
+  const RECT = {
+    width: 120,
+    height: 46,
+    rx: 6,
+    ry: 6,
+    fill: 'none',
+    'stroke-width': 2,
+  }
+  const TEXT = {
+    'text-anchor': 'middle',
+    'dominant-baseline': 'middle',
+  }
+
+  const rects = [
+    { x: 240, y: 24, text: 'Proposé', color: '#f2f2f2' },
+    { x: 240, y: 161, text: 'Validé', color: '#e3fcff' },
+    { x: 240, y: 297, text: 'Vendu', color: '#d9ffe0' },
+    { x: 120, y: 90, text: 'Refusé', color: '#ffe6e6' },
+    { x: 120, y: 225, text: 'Rendu', color: '#fff4e3' },
+  ]
+
+  console.log(faChild.icon[4])
+</script>
+
 <div class="container">
-  <svg>
+  <svg width="400" height="400" viewBox="0 0 400 400">
     <defs>
       <!-- Définit une pointe de flèche -->
       <marker
@@ -19,6 +46,27 @@
         />
       </marker>
     </defs>
+
+    <!-- Rectangles info -->
+    {#each rects as rect}
+      <rect
+        x={rect.x - RECT.width / 2}
+        y={rect.y - RECT.height / 2}
+        stroke={rect.color}
+        {...RECT}
+      />
+      <text x={rect.x} y={rect.y} {...TEXT}>{rect.text}</text>
+    {/each}
+
+    <!-- Icons -->
+    <path
+      d={typeof faUserAlt.icon[4] === 'string' ? faUserAlt.icon[4] : ''}
+      class="icon-provider"
+    />
+    <path
+      d={typeof faChild.icon[4] === 'string' ? faChild.icon[4] : ''}
+      class="icon-buyer"
+    />
 
     <!-- Provider - Proposé -->
     <line x1="50" y1="23" x2="170" y2="23" marker-end="url(#arrow)" />
@@ -48,47 +96,48 @@
 
     <!-- Refusé - Provider -->
     <path
-      d="M 120 116 L 120 122 Q 120 156 86 156 L 59 156 Q 25 156 25 122 L 25 62"
+      d="M 120 112 L 120 122 Q 120 156 86 156 L 59 156 Q 25 156 25 122 L 25 62"
       marker-end="url(#arrow)"
       class="w3-opacity"
     />
 
     <!-- Rendu - Provider -->
-    <path d="M 120 206 L 120 180 Q 120 156 86 156" class="w3-opacity" />
+    <path d="M 120 198 L 120 180 Q 120 156 86 156" class="w3-opacity" />
   </svg>
-
-  <i class="fas fa-user-alt" />
-
-  <div class="state proposed">Proposé</div>
-
-  <div class="state refused">Refusé</div>
-
-  <div class="state valided">Validé</div>
-
-  <div class="state giveback">Rendu</div>
-
-  <i class="fas fa-child" />
-
-  <div class="state sold">Vendu</div>
 </div>
 
 <style>
   .container {
-    width: 400px;
+    min-height: 400px;
+    max-width: 400px;
     margin: auto;
     position: relative;
   }
 
   svg {
-    position: absolute;
     width: 100%;
     height: 100%;
   }
 
-  line,
-  path {
+  .icon-provider,
+  .icon-buyer {
     fill: none;
-    stroke: rgb(200, 200, 200);
+    stroke: #888;
+    stroke-width: 20;
+  }
+
+  .icon-provider {
+    transform: translate(1.3%, 1%) scale(0.08);
+  }
+
+  .icon-buyer {
+    transform: translate(87%, 69%) scale(0.08);
+  }
+
+  line,
+  path:not(.icon-provider):not(.icon-buyer) {
+    fill: none;
+    stroke: #888;
     stroke-width: 2;
     stroke-dasharray: 6;
     animation: dash 0.8s linear infinite;
@@ -98,56 +147,5 @@
     to {
       stroke-dashoffset: -12;
     }
-  }
-
-  i {
-    font-size: 3em;
-    opacity: 0.6;
-    position: absolute;
-  }
-
-  .fa-child {
-    margin-top: 20px;
-    margin-left: 40px;
-    left: 300px;
-  }
-
-  .state {
-    margin-top: 20px;
-    margin-left: 60px;
-    padding: 10px;
-    text-align: center;
-    text-transform: uppercase;
-    font-weight: 400;
-    font-size: 1em;
-    width: 120px;
-    border-radius: 6px;
-    border: 2px solid;
-  }
-
-  .proposed,
-  .valided,
-  .sold {
-    transform: translateX(120px);
-  }
-
-  .proposed {
-    border-color: #f2f2f2;
-  }
-
-  .refused {
-    border-color: #ffe6e6;
-  }
-
-  .valided {
-    border-color: #e3fcff;
-  }
-
-  .giveback {
-    border-color: #fff4e3;
-  }
-
-  .sold {
-    border-color: #d9ffe0;
   }
 </style>

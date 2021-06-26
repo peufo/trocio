@@ -28,7 +28,13 @@ let trocModel = new Schema(
         prefix: { type: String, uppercase: true },
       },
     ],
-    schedule: [{ open: Date, close: Date }],
+    schedule: [
+      {
+        name: { type: String, enum: ['deposit', 'recovery', 'sale'] },
+        open: Date,
+        close: Date,
+      },
+    ],
     tarif: [
       {
         name: String,
