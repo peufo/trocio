@@ -1,14 +1,14 @@
-let express = require('express')
-let router = express.Router()
+const express = require('express')
+const router = express.Router()
 
-let {
+const {
   getSpec,
   getResum,
   getStats,
   search,
   getTroc,
 } = require('../controllers/troc_get')
-let {
+const {
   createTroc,
   patchTroc,
   addAdmin,
@@ -19,7 +19,7 @@ let {
   removeTrader,
   editTraderPrefix,
 } = require('../controllers/troc_set')
-let { checkAdmin } = require('../controllers/troc_utils')
+const { checkAdmin } = require('../controllers/troc_utils')
 
 router
   .get('/resum', getResum)

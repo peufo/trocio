@@ -42,7 +42,21 @@ export declare interface Troc extends TrocBase {
     prefix: string
     user: string
   }[]
-  tarif: []
+  tarif: [
+    {
+      name: string
+      bydefault: boolean
+      apply?: [string | User]
+      margin: number
+      fee: [
+        {
+          price: number
+          value: number
+        }
+      ]
+      maxarticles: number
+    }
+  ]
   createdAt: string
   updatedAt: string
   __v: 0

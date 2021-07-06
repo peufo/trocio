@@ -1,13 +1,14 @@
-var mongoose = require('mongoose'),
-  Schema = mongoose.Schema,
-  mail = require('../controllers/mail')
-;(bcrypt = require('bcrypt')),
-  (SALT_WORK_FACTOR = 10),
-  (MAX_LOGIN_ATTEMPTS = 10),
-  (LOCK_TIME = 2 * 60 * 60 * 1000) // 2h
-EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+const mongoose = require('mongoose')
+const mail = require('../controllers/mail')
+const bcrypt = require('bcrypt')
+const Schema = mongoose.Schema
+const SALT_WORK_FACTOR = 10
+const MAX_LOGIN_ATTEMPTS = 10
+const LOCK_TIME = 2 * 60 * 60 * 1000 // 2h
+const EMAIL_REGEX =
+  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-var userModel = new Schema({
+const userModel = new Schema({
   name: { type: String, required: true },
   ref: Number, //Old id
   birth: Date,

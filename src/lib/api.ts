@@ -62,7 +62,6 @@ export function createGetNextPageParam<TQueryFnData>(
     lastPage: TQueryFnData,
     allPages: TQueryFnData[]
   ): unknown {
-    console.log({ lastPage, allPages, start, next })
     if (!Array.isArray(lastPage)) return
     if (allPages.length === 1) {
       if (lastPage.length < start) return

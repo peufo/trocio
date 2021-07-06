@@ -12,9 +12,25 @@
   let navigationWidth: string
   let tipsWidth: string
 
-  import { useTroc, useTrocOptions } from '$lib/troc/store'
+  import {
+    useTroc,
+    useTrocOptions,
+    subscribes,
+    usesubscribes,
+    usesubscribesOptions,
+  } from '$lib/troc/store'
+
   const trocQuery = $params.trocId && useTroc($params.trocId)
-  $: $params.trocId && trocQuery.setOptions(useTrocOptions($params.trocId))
+  const subscribesQuery = $params.trocId && usesubscribes($params.trocId)
+
+  $: if ($params.trocId) {
+    trocQuery.setOptions(useTrocOptions($params.trocId))
+    subscribesQuery.setOptions(usesubscribesOptions($params.trocId))
+  }
+
+  $: $subscribes = $subscribesQuery.data
+    ? $subscribesQuery.data.pages.flat()
+    : []
 </script>
 
 {#if $trocQuery.isLoading}

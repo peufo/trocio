@@ -1,6 +1,11 @@
-import { addIsClosed } from '$lib/utils.js'
-
-import type { Troc, TrocBase, TrocLookup, TrocUserResume } from 'types'
+import type {
+  Subscribe,
+  Troc,
+  TrocBase,
+  TrocLookup,
+  TrocUserResume,
+  User,
+} from 'types'
 import { api, createGetNextPageParam } from '$lib/api'
 
 const FIRST_LIMIT = 4
@@ -26,6 +31,16 @@ export function getSubscribedTrocs({ pageParam = 0 }) {
     limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
   }
   return api<Troc[]>('/api/subscribes/me', { params })
+}
+
+export function getsubscribes({ pageParam = 0, queryKey }) {
+  const { trocId } = queryKey[1]
+  const params = {
+    troc: trocId,
+    skip: pageParam,
+    limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
+  }
+  return api<Subscribe[]>('/api/subscribes', { params })
 }
 
 export function getTrocUserResum({ queryKey }) {

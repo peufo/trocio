@@ -16,6 +16,7 @@
 
   import {
     troc,
+    subscribes,
     useAddAdmin,
     useRemoveAdmin,
     useAddCashier,
@@ -43,7 +44,7 @@
   let traderDialogActive = false
   let selectedPrefix = ''
 
-  let open = [false, false, false]
+  let open = [false, false, false, false]
 
   let searchValueAdmin = ''
   let searchValueCashier = ''
@@ -247,6 +248,29 @@
       {/if}
     </div>
   </ExpansionCard>
+
+  <br />
+
+  <ExpansionCard
+    title="{$troc.subscriber} Participant{$troc.subscriber > 1 ? 's' : ''}"
+    open={open[3]}
+    on:open={() => handleOpen(3)}
+    hasSearchInput
+    bind:searchValue={searchValueTrader}
+  >
+    <List>
+      {#each $subscribes as subscribe}
+        <ListItem>
+          {subscribe.user.name}
+
+          <span slot="subtitle">{subscribe.user.mail}</span>
+        </ListItem>
+      {/each}
+    </List>
+  </ExpansionCard>
+
+  <br />
+  <Button>Inviter une personne</Button>
 </div>
 
 <Dialog bind:active={traderDialogActive}>

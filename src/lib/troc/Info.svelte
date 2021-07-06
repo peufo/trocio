@@ -111,7 +111,7 @@
       <div class="d-flex pt-5">
         <IconLink icon={faMapMarkerAlt} opacity />
         <div class="pl-4">
-          {#each troc.address.split(', ') as segmentAddress}
+          {#each troc.address.split(/, |\n/) as segmentAddress}
             {segmentAddress}<br />
           {/each}
           <!--
@@ -137,11 +137,11 @@
       <div class="d-flex pt-5">
         <IconLink icon={faCalendarAlt} opacity />
         <div class="pl-4">
-          <b
-            >{dayjs(
+          <b>
+            {dayjs(
               troc.schedule && troc.schedule[0] && troc.schedule[0].open
-            ).fromNow()}</b
-          >
+            ).fromNow()}
+          </b>
 
           <br />
 
