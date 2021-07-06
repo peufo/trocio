@@ -1,18 +1,21 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import { Card, CardTitle, TextField } from 'svelte-materialify'
+  import { Card, CardTitle, CardSubtitle, TextField } from 'svelte-materialify'
   import { faChevronDown, faSearch } from '@fortawesome/free-solid-svg-icons'
 
   import IconLink from '$lib/util/IconLink.svelte'
 
   export let title = 'Title'
+  export let subtitle = ''
   /**
    * Si controlled === true,
    * open est controllé par le composant parent grâce aux évenements on:open et on:close
    */
   export let controlled = false
   export let open = false
+
+  export let titleEditable = false
 
   export let searchValue = ''
   export let hasSearchInput = false
@@ -41,13 +44,25 @@
   function handleBlur(event) {
     if (event.target.value === '') isSearchActive = false
   }
+
+  function handleTitleInput(event: any) {
+    if (!titleEditable) return
+    const { target } = event
+    dispath('inputTitle', target.innerText)
+  }
 </script>
 
 <Card outlined hover={!open}>
   <div on:click={handleOpen}>
     <CardTitle>
       <slot name="icon" />
-      <span class="ml-3 text-uppercase">
+
+      <span
+        class="text-uppercase"
+        contenteditable={titleEditable}
+        style={titleEditable ? 'min-width: 100px;' : ''}
+        on:input={handleTitleInput}
+      >
         {title}
       </span>
 
@@ -89,6 +104,11 @@
         on:click={handleClose}
       />
     </CardTitle>
+
+    {#if subtitle}
+      <CardSubtitle>{subtitle}</CardSubtitle>
+    {/if}
+
     {#if open}
       <div transition:slide|local>
         <div class="pa-4">

@@ -8,12 +8,13 @@ import {
   useQueryClient,
 } from '@sveltestack/svelte-query'
 
-import type { Troc, TrocBase, TrocLookup } from 'types'
+import type { Subscribe, Troc, TrocBase, TrocLookup, User } from 'types'
 
 import {
   getTroc,
   searchTrocs,
   getSubscribedTrocs,
+  getsubscribes,
   getTrocUserResum,
   addAdmin,
   removeAdmin,
@@ -29,7 +30,7 @@ import {
 
 /**
  * Get troc
- * Info détaillé d'un troc
+ * Info détaillé d'un troc + liste des participants
  */
 export const troc = writable<TrocLookup>(null)
 export const useTrocOptions = (trocId: string) => ({
@@ -39,6 +40,15 @@ export const useTrocOptions = (trocId: string) => ({
 })
 export const useTroc = (trocId: string) =>
   useQuery<Troc, AxiosError>(useTrocOptions(trocId))
+
+export const subscribes = writable<Subscribe[]>([])
+export const usesubscribesOptions = (trocId: string) => ({
+  queryFn: getsubscribes,
+  queryKey: ['subscribes', { trocId }],
+  getNextPageParam,
+})
+export const usesubscribes = (trocId: string) =>
+  useInfiniteQuery<Subscribe[], AxiosError>(usesubscribesOptions(trocId))
 
 /**
  * Search trocs

@@ -5,8 +5,6 @@ function getMySubscribedTrocs(req, res, next) {
   skip = Number(skip)
   limit = Number(limit)
 
-  console.log({ skip, limit })
-
   if (!req.session.user)
     return res.json({ error: true, message: 'Login required' })
   Subscribe.find({ user: req.session.user._id })
@@ -43,4 +41,21 @@ function getMySubscribedTrocs(req, res, next) {
     })
 }
 
-module.exports = { getMySubscribedTrocs }
+function getSubscriber(req, res, next) {
+  const { troc } = req.query
+  let { skip = 0, limit = 10 } = req.query
+  skip = Number(skip)
+  limit = Number(limit)
+  if (!troc) return next(Error('Query "troc" is required'))
+  Subscribe.find({ troc })
+    .skip(skip)
+    .limit(limit)
+    .populate('user', 'name mail')
+    .lean()
+    .exec(async (err, subscribes) => {
+      if (err) return next(err)
+      res.json(subscribes)
+    })
+}
+
+module.exports = { getMySubscribedTrocs, getSubscriber }
