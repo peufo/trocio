@@ -1,10 +1,18 @@
 import type { User } from './user'
 import type { Troc } from './troc'
 
-export declare interface Subscribe {
+export declare interface SubscribeBase {
+  troc: string
+}
+
+export declare interface Subscribe extends SubscribeBase {
   _id: string
-  troc: string | Partial<Troc>
-  user: Partial<User>
+  user: string
   createdAt: date
   updatedAt: date
+}
+
+export declare interface SubscribeLookup extends Subscribe {
+  troc: Partial<Troc>
+  user: Partial<User>
 }

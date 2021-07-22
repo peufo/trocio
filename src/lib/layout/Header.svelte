@@ -101,9 +101,10 @@
   bind:active={dialogLoginIsActive}
   on:introend={() => mailInput && mailInput.focus()}
   class="pa-6"
-  width=""
 >
-  <Login on:close={() => (dialogLoginIsActive = false)} bind:mailInput />
+  <div class="d-flex justify-center">
+    <Login on:close={() => (dialogLoginIsActive = false)} bind:mailInput />
+  </div>
 </Dialog>
 
 <!--

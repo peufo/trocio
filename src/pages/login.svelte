@@ -20,20 +20,26 @@
 </script>
 
 {#if !$user}
-  <div class="container" style="height: {scoped.mainHeight}px;">
-    <div class="half w3-center">
-      <a href="/">
+  <div
+    class="d-flex flex-wrap justify-space-around align-center"
+    style="height: {scoped.mainHeight}px;"
+  >
+    <div class="text-center">
+      <a href="/" class="mr-2">
         <Button>
-          <Icon class="fas fa-home" />&nbsp; Retour à l'acceuil
+          <Icon class="fas fa-home mr-2" />
+          acceuil
         </Button>
       </a>
-      <br /><br /><br />
-      <a href="/search">
+
+      <a href="/trocs">
         <Button>
-          <Icon class="fas fa-search" />&nbsp; Chercher des Trocs
+          <Icon class="fas fa-search mr-2" />
+          Trocs
         </Button>
       </a>
     </div>
+
     <div class="half">
       <Card class="pa-4">
         <Login on:done={handleLoginDone} />
@@ -43,12 +49,4 @@
 {/if}
 
 <style>
-  .container {
-    max-width: 1200px;
-    margin: auto;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-wrap: wrap-reverse;
-  }
 </style>

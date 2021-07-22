@@ -42,7 +42,7 @@
   const troc = queryClient.getQueryData<Troc>(['troc', $params.trocId])
 
   const tabs = [
-    { ref: 'info', label: 'Informations', icon: faInfoCircle },
+    { ref: 'info', label: 'Définition', icon: faInfoCircle },
     { ref: 'collab', label: 'Collaborateurs', icon: faUsersCog },
     {
       ref: 'tarif',

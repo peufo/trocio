@@ -52,7 +52,7 @@
               troc.schedule && troc.schedule[0] && troc.schedule[0].open
             ).fromNow()}
             <br />
-            {troc.description.slice(0, 124)}
+            {troc.address}
           </span>
           <span slot="append">
             {#if troc.isAdmin}

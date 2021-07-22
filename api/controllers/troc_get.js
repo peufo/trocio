@@ -247,7 +247,7 @@ function search(req, res, next) {
     .exec((err, trocs) => {
       if (err) return next(err)
 
-      //Admin and cashier becomes booleans + add subscribed boolean
+      // Admin and cashier becomes booleans + add subscribed boolean
       if (req.session.user) {
         Subscribe.find({
           user: req.session.user._id,
@@ -255,8 +255,8 @@ function search(req, res, next) {
         }).exec((err, subs) => {
           if (err) return next(err)
           subs = subs.map((s) => s.troc.toString())
-          let indexSubs = trocs.map((t) => subs.indexOf(t._id.toString()))
-          trocs.forEach((troc, i) => {
+          trocs.forEach((troc) => {
+            troc.isSubscribed = subs.includes(troc._id.toString())
             troc.isAdmin =
               troc.admin
                 .map((a) => a.toString())
@@ -265,7 +265,6 @@ function search(req, res, next) {
               troc.cashier
                 .map((c) => c.toString())
                 .indexOf(req.session.user._id.toString()) != -1
-            troc.isSubscribed = indexSubs[i] > -1
           })
           res.json(trocs)
         })

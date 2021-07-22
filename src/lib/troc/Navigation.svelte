@@ -108,7 +108,7 @@
       </div>
     {/if}
 
-    <a href="/trocs/create">
+    <a href="{!$user ? '/login?callback=' : ''}/trocs/create">
       <ListItem>
         <span slot="prepend"><IconLink icon={faPlus} /></span>
         Organiser un troc
@@ -135,7 +135,7 @@
           </ListItem>
         {:else}
           <TrocUserSubscribed
-            offset={72}
+            offset={22}
             on:click={() => mobileMode && (active = false)}
           />
         {/if}

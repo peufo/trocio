@@ -54,6 +54,7 @@ function getSubscriber(req, res, next) {
     .lean()
     .exec(async (err, subscribes) => {
       if (err) return next(err)
+      console.log({ subscribes })
       res.json(subscribes)
     })
 }

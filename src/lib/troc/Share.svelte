@@ -1,0 +1,63 @@
+<script lang="ts">
+  import type { Troc } from 'types'
+  import { Button } from 'svelte-materialify'
+  import { fly } from 'svelte/transition'
+  import notify from '$lib/notify'
+
+  import IconLink from '$lib/util/IconLink.svelte'
+  import { faFacebook, faWhatsapp } from '@fortawesome/free-brands-svg-icons'
+  import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
+  import { faBullhorn, faLink } from '@fortawesome/free-solid-svg-icons'
+
+  let klass = ''
+  export { klass as class }
+
+  export let troc: Troc
+  export let open = false
+
+  function copyLink() {
+    const url = `https:${document.location.host}/trocs/${troc._id}`
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        notify.success({ title: 'URL du troc copié', text: url })
+      })
+      .catch((error) => {
+        notify.error(error)
+      })
+  }
+</script>
+
+{#if !open}
+  <Button depressed on:click={() => (open = true)} class={klass}>
+    Partager
+    <IconLink
+      icon={faBullhorn}
+      target="_blank"
+      opacity
+      size="18px"
+      class="ml-3"
+    />
+  </Button>
+{:else}
+  <div class="mr-2" in:fly|local={{ x: 20 }}>
+    <IconLink
+      icon={faEnvelope}
+      href={`mailto://?subject=${troc.name}&body=https://trocio.ch/trocs/${troc._id}`}
+      opacity
+    />
+    <IconLink
+      icon={faWhatsapp}
+      target="_blank"
+      href="https://api.whatsapp.com/send/?phone&text=https://trocio.ch/trocs/{troc._id}"
+      opacity
+    />
+    <IconLink
+      icon={faFacebook}
+      target="_blank"
+      href="https://www.facebook.com/dialog/share?app_id=512391820023592&href=https://trocio.ch/trocs/{troc._id}&display=popup"
+      opacity
+    />
+    <IconLink icon={faLink} on:click={copyLink} opacity clickable />
+  </div>
+{/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto, url } from '@roxi/routify'
   import { slide } from 'svelte/transition'
   import {
     faChild,
@@ -8,17 +9,15 @@
     faMapMarkerAlt,
     faCalendarAlt,
     faUserAlt,
-    faExternalLinkAlt,
     faCog,
     faCashRegister,
     faChevronRight,
-    faMapMarkedAlt,
     faSignInAlt,
     faStoreAlt,
     faSignOutAlt,
     faShoppingBasket,
   } from '@fortawesome/free-solid-svg-icons'
-  import { Button, Chip } from 'svelte-materialify'
+  import { Button, Chip, Divider } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
@@ -27,22 +26,19 @@
 
   import IconLink from '$lib/util/IconLink.svelte'
   import { user } from '$lib/user/store'
-  import { convertDMS } from '$lib/utils.js'
   import ArticleList from '$lib/article/List.svelte'
+  import ArticleSearchTextField from '$lib/article/SearchTextField.svelte'
   import UserResum from '$lib/troc/UserResum.svelte'
+  import Share from '$lib/troc/Share.svelte'
+  import { useCreateSubscribe } from '$lib/troc/store'
   import type { Troc } from 'types'
 
   export let troc: Troc
   export let displayGetActivity = true
-  export let articlesOpen = false
+
+  export let articleSearch = ''
   export let activityOpen = false
 
-  let tabs = [
-    { name: 'LOCATION', icon: faMapMarkerAlt },
-    { name: 'SCHEDULE', icon: faCalendarAlt },
-    !!troc.society && { name: 'SOCIETY', icon: faUserAlt },
-  ].filter(Boolean)
-  let tabIndex = 0
   const DESCRIPTION_SIZE = 250
   let sliceDescription = DESCRIPTION_SIZE
 
@@ -51,6 +47,25 @@
     deposit: faSignInAlt,
     recovery: faSignOutAlt,
     sale: faShoppingBasket,
+  }
+  const createSubscribe = useCreateSubscribe()
+
+  function handleClickActivity() {
+    if (!$user)
+      return $goto('/login', {
+        callback: `/trocs/${troc._id}`,
+      })
+    activityOpen = !activityOpen
+    if (!troc.isSubscribed) {
+      $createSubscribe.mutate(
+        { troc: troc._id },
+        {
+          onSuccess: (subscribe) => {
+            if (subscribe._id) troc.isSubscribed = true
+          },
+        }
+      )
+    }
   }
 </script>
 
@@ -170,6 +185,7 @@
               class="w3-opacity"
               style="line-height: 2.5;"
               href={`http://${troc.societyweb}`}
+              rel="noreferrer"
               target="_blank"
               title="Ouvrir le site internet de l'organisateur"
             >
@@ -182,72 +198,63 @@
   </div>
 </div>
 
-<!-- Bar du fond -->
-<div class="bar">
-  <Button
-    on:click={() => {
-      if ((articlesOpen = !articlesOpen)) activityOpen = false
-    }}
-    text={!articlesOpen}
-    depressed={articlesOpen}
-  >
-    Les articles
+<Divider />
+
+<div
+  class="d-flex flex-wrap align-center justify-space-between"
+  style="min-height: 56px;"
+>
+  {#if !activityOpen}
+    <ArticleSearchTextField bind:search={articleSearch} class="mr-1 ml-1" />
+  {/if}
+
+  <div class="flex-grow-1" />
+  {#if !!$user && troc.isAdmin}
+    <a href={`/admin?trocId=${troc._id}`}>
+      <Button depressed class="mr-1 ml-1">
+        administration
+        <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
+      </Button>
+    </a>
+  {:else if !!$user && troc.isCashier}
+    <a href={`/cashier?trocId=${troc._id}`}>
+      <Button depressed class="ml-2">
+        Caisse
+        <IconLink
+          icon={faCashRegister}
+          class="mr-1 ml-1"
+          size="1.2em"
+          opacity
+        />
+      </Button>
+    </a>
+  {/if}
+  <Button on:click={handleClickActivity} depressed class="mr-1 ml-1">
+    {troc.isSubscribed ? 'Mon activité' : 'Participer au troc'}
     <IconLink
       icon={faChevronRight}
-      rotate={articlesOpen ? 90 : 0}
+      rotate={activityOpen ? 90 : 0}
       class="ml-2"
       opacity
       size="1.1em"
     />
   </Button>
 
-  {#if displayGetActivity}
-    <Button
-      on:click={() => {
-        if ((activityOpen = !activityOpen)) articlesOpen = false
-      }}
-      text={!activityOpen}
-      depressed={activityOpen}
-    >
-      {troc.isSubscribed ? 'Mon activité' : 'Participer au troc'}
-      <IconLink
-        icon={faChevronRight}
-        rotate={activityOpen ? 90 : 0}
-        class="ml-2"
-        opacity
-        size="1.1em"
-      />
-    </Button>
-  {/if}
-
-  {#if !!$user && troc.isAdmin}
-    <a href={`/admin?trocId=${troc._id}`}>
-      <Button text>
-        <IconLink icon={faCog} class="mr-2" size="1.2em" />
-        Page d'administration
-      </Button>
-    </a>
-  {:else if !!$user && troc.isCashier}
-    <a href={`/cashier?trocId=${troc._id}`}>
-      <Button text>
-        <IconLink icon={faCashRegister} class="mr-2" size="1.2em" />
-        Caisse
-      </Button>
-    </a>
-  {/if}
+  <Share {troc} class="mr-1 ml-1" />
 </div>
-
-{#if articlesOpen}
-  <div transition:slide|local>
-    <ArticleList trocId={troc._id} />
-  </div>
-{/if}
 
 {#if activityOpen}
   <div transition:slide|local>
     <UserResum trocId={troc._id} />
+    <Divider />
   </div>
 {/if}
+
+{#if activityOpen}
+  <ArticleSearchTextField bind:search={articleSearch} class="pt-4" />
+{/if}
+
+<ArticleList trocId={troc._id} search={articleSearch} />
 
 <style>
   .container {

@@ -21,7 +21,7 @@
   const queryTrocUserResum = useTrocUserResum(trocId, userId)
   $: queryTrocUserResum.setOptions(useTrocUserResumOptions(trocId, userId))
   $: trocUserResum = $queryTrocUserResum.data
-  $: console.log({ useTrocUserResum })
+  $: console.log({ trocUserResum })
 
   let articleCreateDialogActive = false
 
@@ -137,36 +137,6 @@
       </span>
     </div>
     <br /><br />
-
-    <DetailCard
-      title="Paiements"
-      count={trocUserResum.paymentsCount}
-      sum={trocUserResum.paymentsSum}
-      nonInteractive
-      show={paymentShow}
-      items={true ? [] : trocUserResum.payments.sort(sortByUpdatedAt)}
-      let:item={payment}
-    >
-      <span slot="col-1" />
-      <span slot="col-2"
-        >{payment.message} {dayjs(payment.createdAt).fromNow()}</span
-      >
-      <span slot="col-3">{payment.amount.toFixed(2)}</span>
-    </DetailCard><br />
-
-    <DetailCard
-      title="Achats"
-      count={trocUserResum.purchasesCount}
-      sum={trocUserResum.purchasesSum}
-      show={buyShow}
-      items={true ? [] : trocUserResum.purchases.sort(sortByUpdatedAt)}
-      let:item={article}
-    >
-      <span slot="col-1">#{article.ref}</span>
-      <span slot="col-2">{article.name}</span>
-      <span slot="col-3">{article.price.toFixed(2)}</span>
-    </DetailCard><br />
-
     <DetailCard
       title="Ventes"
       free
@@ -203,6 +173,37 @@
     </DetailCard>
 
     <br />
+
+    <DetailCard
+      title="Achats"
+      count={trocUserResum.purchasesCount}
+      sum={trocUserResum.purchasesSum}
+      show={buyShow}
+      items={true ? [] : trocUserResum.purchases.sort(sortByUpdatedAt)}
+      let:item={article}
+    >
+      <span slot="col-1">#{article.ref}</span>
+      <span slot="col-2">{article.name}</span>
+      <span slot="col-3">{article.price.toFixed(2)}</span>
+    </DetailCard>
+
+    <br />
+
+    <DetailCard
+      title="Paiements"
+      count={trocUserResum.paymentsCount}
+      sum={trocUserResum.paymentsSum}
+      nonInteractive
+      show={paymentShow}
+      items={true ? [] : trocUserResum.payments.sort(sortByUpdatedAt)}
+      let:item={payment}
+    >
+      <span slot="col-1" />
+      <span slot="col-2"
+        >{payment.message} {dayjs(payment.createdAt).fromNow()}</span
+      >
+      <span slot="col-3">{payment.amount.toFixed(2)}</span>
+    </DetailCard><br />
 
     <div
       on:click={print}

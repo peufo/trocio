@@ -1,5 +1,7 @@
 import type {
   Subscribe,
+  SubscribeBase,
+  SubscribeLookup,
   Troc,
   TrocBase,
   TrocLookup,
@@ -47,6 +49,16 @@ export function getTrocUserResum({ queryKey }) {
   const { trocId, userId } = queryKey[1]
   const params = userId ? { troc: trocId, user: userId } : { troc: trocId }
   return api<TrocUserResume>('/api/trocs/resum', { params })
+}
+
+export function createSubscribe(
+  subscribeBase: SubscribeBase
+): Promise<SubscribeLookup> {
+  return api<SubscribeBase, SubscribeLookup>('/api/subscribes', {
+    method: 'post',
+    data: subscribeBase,
+    success: 'Nouvelle participation',
+  })
 }
 
 export function createTroc(trocBase: TrocBase) {
