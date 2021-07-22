@@ -12,9 +12,7 @@
   import { user } from './stores.js'
   import { convertDMS } from './utils.js'
 
-  import Troc from '../types/troc'
-
-    import { useQuery, useMutation, useQueryClient } from '@sveltestack/svelte-query'
+  import type { Troc } from '../../types/troc'
 
   const dispatch = createEventDispatcher()
 
@@ -29,7 +27,8 @@
   const DESCRIPTION_SIZE = 250
   let sliceDescription = DESCRIPTION_SIZE
 
-  if (!!troc.society) tabs = [...tabs, {name: 'SOCIETY',icon: 'fas fa-user-tie'}]
+  if (!!troc.society)
+    tabs = [...tabs, { name: 'SOCIETY', icon: 'fas fa-user-tie' }]
 </script>
 
 <div class="w3-row">
@@ -181,7 +180,7 @@
 
   {#if !!$user && troc.isAdmin}
     <Button href={`/admin?troc=${troc._id}`} color="secondary">
-      <i class="fa fa-cog w3-large" />&nbsp; Page d'administration
+      <i class="fa fa-cog w3-large" />&nbsp; administration
     </Button>
   {:else if !!$user && troc.isCashier}
     <Button href={`/cashier?troc=${troc._id}`} color="secondary">
@@ -269,7 +268,6 @@
     border-top: transparent;
     border-top-right-radius: 10px;
   }
-
 
   /*.tab:last-child.selected:after  {
         border-bottom: var(--border-width)  solid #fff;

@@ -12,7 +12,7 @@
 
   //TODO: Gestion des création d'utilisateur par un caissier
 
-  export let mailInput // For focus
+  export let mailInput: HTMLInputElement = null // For focus
 
   let state = 1
   const LOGIN = 1
@@ -82,9 +82,13 @@
         break
     }
   }
+
+  let innerWidth
 </script>
 
-<div>
+<svelte:window bind:innerWidth />
+
+<div style={`width: ${innerWidth > 500 ? '360px' : 'auto'}`}>
   {#if state === REGISTER}
     <h5 class="w3-center" in:fade>Nouveau compte</h5>
   {:else if state === RECOVER}

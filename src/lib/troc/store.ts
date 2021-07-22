@@ -8,7 +8,7 @@ import {
   useQueryClient,
 } from '@sveltestack/svelte-query'
 
-import type { Subscribe, Troc, TrocBase, TrocLookup, User } from 'types'
+import type { SubscribeLookup, Troc, TrocBase, TrocLookup, User } from 'types'
 
 import {
   getTroc,
@@ -26,6 +26,7 @@ import {
   createTroc,
   updateTroc,
   getNextPageParam,
+  createSubscribe,
 } from '$lib/troc/api'
 
 /**
@@ -41,14 +42,14 @@ export const useTrocOptions = (trocId: string) => ({
 export const useTroc = (trocId: string) =>
   useQuery<Troc, AxiosError>(useTrocOptions(trocId))
 
-export const subscribes = writable<Subscribe[]>([])
+export const subscribes = writable<SubscribeLookup[]>([])
 export const usesubscribesOptions = (trocId: string) => ({
   queryFn: getsubscribes,
   queryKey: ['subscribes', { trocId }],
   getNextPageParam,
 })
 export const usesubscribes = (trocId: string) =>
-  useInfiniteQuery<Subscribe[], AxiosError>(usesubscribesOptions(trocId))
+  useInfiniteQuery<SubscribeLookup[], AxiosError>(usesubscribesOptions(trocId))
 
 /**
  * Search trocs
@@ -84,7 +85,7 @@ export const useSearchTrocs = (query: SearchTrocsQuery) =>
  * Liste des trocs auxquels l'utilisateur est abonné
  */
 export const useSubscribedTrocs = () =>
-  useInfiniteQuery({
+  useInfiniteQuery<Troc[], AxiosError>({
     queryKey: 'subscribedTrocs',
     queryFn: getSubscribedTrocs,
     getNextPageParam,
@@ -108,6 +109,7 @@ export const useTrocUserResum = (trocId: string, userId?: string) =>
  * Creation
  */
 export const useCreateTroc = () => useMutation(createTroc, { onSuccess })
+export const useCreateSubscribe = () => useMutation(createSubscribe)
 
 /**
  * Mise à jour

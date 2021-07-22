@@ -1,5 +1,5 @@
 <script>
-  import { params } from '@roxi/routify'
+  import { params, metatags } from '@roxi/routify'
 
   import { useTroc, useTrocOptions, trocs } from '$lib/troc/store'
   import Loader from '$lib/util/Loader.svelte'
@@ -10,6 +10,8 @@
 
   // TODO: not util ?
   $: $trocs = $trocQuery.data ? [$trocQuery.data] : []
+
+  $: metatags.title = $trocs[0]?.name || 'Trocio'
 </script>
 
 {#if $trocQuery.isLoading}

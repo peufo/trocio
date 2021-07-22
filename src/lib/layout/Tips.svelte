@@ -23,7 +23,7 @@
     if (active && content) {
       let section = Array.from(content.querySelectorAll('section')).find(
         (s) =>
-          $params[s.dataset.query] === s.dataset.value &&
+          $params[s.dataset.query].match(new RegExp(`^${s.dataset.value}`)) &&
           !$params[s.dataset.queryavoid]
       )
       if (section) content.scrollTo({ top: section.offsetTop - 125 })

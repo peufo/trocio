@@ -1,40 +1,21 @@
 <script>
   import { fade } from 'svelte/transition'
-  import { TextField, Icon } from 'svelte-materialify'
 
   import Loader from '$lib/util/Loader.svelte'
 
   import { useArticles, useArticlesOptions } from '$lib/article/store'
-  import { debounce } from 'debounce'
 
   export let trocId = ''
-  let search = ''
+  export let search = ''
 
   const queryArticles = useArticles(trocId, search)
   $: queryArticles.setOptions(useArticlesOptions(trocId, search))
   $: articles = $queryArticles.data ? $queryArticles.data.pages.flat() : []
-
-  const handleSearch = debounce((event) => {
-    search = event.target.value
-  }, 300)
 </script>
-
-<TextField
-  on:input={handleSearch}
-  on:change={handleSearch}
-  clearable
-  placeholder="Recherche d'article"
-  class="mt-3 mb-1 ml-1"
-  style="width: 35%; min-width: 200px;"
->
-  <div slot="prepend">
-    <Icon class="fas fa-search" />
-  </div>
-</TextField>
 
 {#if $queryArticles.isSuccess}
   {#if !articles.length}
-    <div in:fade|local={{ delay: 200 }} class="text-center text--secondary">
+    <div in:fade|local={{ delay: 200 }} class="text--secondary">
       <span>Aucun article trouvé</span>
     </div>
   {:else}
@@ -56,18 +37,18 @@
     </div>
   {/if}
 {:else if $queryArticles.isError}
-  <div in:fade|local class="centered mt-3">Oups, une erreur est survenue !</div>
+  <div in:fade|local class="mt-3">Oups, une erreur est survenue !</div>
 {/if}
 
 {#if $queryArticles.isFetching}
-  <div in:fade|local={{ delay: 200 }} class="centered mt-3">
+  <div in:fade|local={{ delay: 200 }} class="mt-3">
     <Loader />
   </div>
 {:else if $queryArticles.hasNextPage}
   <!-- Bonton pour plus de résultats-->
   <div
     in:fade|local
-    class="underline-div text-center text--secondary mt-3"
+    class="underline-div text--secondary mt-3 ml-2"
     on:click={() => $queryArticles.fetchNextPage()}
   >
     <span class="underline-span">Afficher plus</span>
