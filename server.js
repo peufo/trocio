@@ -1,8 +1,8 @@
-const { TROCIO_PORT } = require('./config.js')
+const { TROCIO_PORT } = require('./config')
 const express = require('express')
 const app = express()
 const logger = require('morgan')
-const api = require('./api/app.js')
+const api = require('./api/app')
 
 // Activation des logs TODO: sorti dans le file system ?
 app.use(logger('dev'))

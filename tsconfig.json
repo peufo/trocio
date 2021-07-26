@@ -1,4 +1,10 @@
 {
+  "extends": "ts-node/node14/tsconfig.json",
+
+  "ts-node": {
+    "transpileOnly": true
+  },
+
   "compilerOptions": {
     "paths": {
       "$lib/*": ["./src/lib/*"],
@@ -6,7 +12,7 @@
     },
 
     "moduleResolution": "node",
-    "target": "esnext",
+    "target": "es2019",
     "module": "esnext",
     /**
      * svelte-preprocess cannot figure out whether you have
@@ -32,7 +38,7 @@
      * of JS in `.svelte` files.
      */
     "allowJs": true,
-    "checkJs": true
+    "checkJs": false
   },
   /**
    * Use global.d.ts instead of compilerOptions.types

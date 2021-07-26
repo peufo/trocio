@@ -7,7 +7,7 @@ const {
   TROCIO_SMTP_PORT,
   TROCIO_SMTP_PASS,
   TROCIO_SMTP_USER,
-} = require('../../config.js')
+} = require('../../config')
 
 let transporter = nodemailer.createTransport({
   host: TROCIO_SMTP_HOST,

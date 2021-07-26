@@ -13,7 +13,6 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import { faCubes, faPercent } from '@fortawesome/free-solid-svg-icons'
   import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
-  // import UserLi from './UserLi.svelte'
 
   export let index = 0
   export let name = ''
