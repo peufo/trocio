@@ -1,7 +1,8 @@
 {
+  "name": "trocio",
   "scripts": {
     "dev": "run-p dev:*",
-    "dev:api": "nodemon ./api/server.js -w ./api",
+    "dev:api": "ts-node-dev -r esm ./api/server.ts",
     "dev:routify": "routify",
     "dev:vite": "vite",
     "build": "run-s build:*",
@@ -13,10 +14,17 @@
   "devDependencies": {
     "@roxi/routify": "^2.12.3",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.9",
+    "@types/compression": "^1.7.1",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/express": "^4.17.13",
+    "@types/express-session": "^1.17.4",
+    "@types/http-errors": "^1.8.1",
+    "@types/morgan": "^1.9.3",
     "npm-run-all": "^4.1.5",
     "svelte": "^3.37.0",
     "svelte-materialify": "^0.3.11",
     "svelte-preprocess": "^4.7.2",
+    "ts-node-dev": "^1.1.8",
     "typescript": "^4.2.3",
     "vite": "^2.2.3"
   },
@@ -36,11 +44,12 @@
     "cookie-parser": "^1.4.5",
     "dayjs": "^1.10.3",
     "debounce": "^1.2.1",
+    "esm": "^3.2.25",
     "express": "^4.17.1",
     "got": "^11.8.1",
     "http2-proxy": "^5.0.53",
     "leaflet": "^1.7.1",
-    "mongoose": "^5.11.12",
+    "mongoose": "^5.13.3",
     "mongoose-lean-virtuals": "^0.7.6",
     "morgan": "^1.10.0",
     "node-sass": "^5.0.0",
@@ -50,6 +59,8 @@
     "print-js": "^1.5.0",
     "qr-scanner": "^1.2.0",
     "randomatic": "^3.1.1",
-    "swiper": "^6.6.2"
+    "swagger-ui-express": "^4.1.6",
+    "swiper": "^6.6.2",
+    "ts-node": "^10.1.0"
   }
 }

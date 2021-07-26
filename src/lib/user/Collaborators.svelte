@@ -30,6 +30,7 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import Loader from '$lib/util/Loader.svelte'
+  import Share from '$lib/troc/Share.svelte'
 
   // import { troc } from './stores'
   // import { getHeader, updateTroc } from './utils'
@@ -49,6 +50,7 @@
   let searchValueAdmin = ''
   let searchValueCashier = ''
   let searchValueTrader = ''
+  let searchValueSubscriber = ''
 
   $: filterAdmin = (user) =>
     !!user.name.match(new RegExp(searchValueAdmin, 'i'))
@@ -256,7 +258,7 @@
     open={open[3]}
     on:open={() => handleOpen(3)}
     hasSearchInput
-    bind:searchValue={searchValueTrader}
+    bind:searchValue={searchValueSubscriber}
   >
     <List>
       {#each $subscribes as subscribe}
@@ -270,7 +272,7 @@
   </ExpansionCard>
 
   <br />
-  <Button>Inviter une personne</Button>
+  <Share troc={$troc} label="Inviter de nouveaux particiants" />
 </div>
 
 <Dialog bind:active={traderDialogActive}>

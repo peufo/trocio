@@ -4,7 +4,7 @@ const {
   TROCIO_ADMIN,
   VITE_TROCIO_GOOGLE_CLIENT_ID,
   TROCIO_GOOGLE_CLIENT_SECRET,
-} = require('../../config.js')
+} = require('../../config')
 const axios = require('axios')
 const qs = require('qs')
 const mail = require('./mail')

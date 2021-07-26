@@ -1,4 +1,4 @@
-const config = require('../../config.js')
+const config = require('../../config')
 let router = require('express').Router()
 let User = require('../models/user')
 let Troc = require('../models/troc')

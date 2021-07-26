@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Troc } from 'types'
+  import type { Troc, TrocLookup } from 'types'
   import { Button } from 'svelte-materialify'
   import { fly } from 'svelte/transition'
   import notify from '$lib/notify'
@@ -12,7 +12,8 @@
   let klass = ''
   export { klass as class }
 
-  export let troc: Troc
+  export let troc: { _id: string; name: string }
+  export let label = 'Partager'
   export let open = false
 
   function copyLink() {
@@ -30,7 +31,7 @@
 
 {#if !open}
   <Button depressed on:click={() => (open = true)} class={klass}>
-    Partager
+    {label}
     <IconLink
       icon={faBullhorn}
       target="_blank"
