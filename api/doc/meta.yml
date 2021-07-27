@@ -9,3 +9,10 @@ components:
         updatedAt:
           type: string
           format: date-time
+    DataBase:
+      type: object
+      properties:
+        _id:
+          type: string
+        _v:
+          type: number

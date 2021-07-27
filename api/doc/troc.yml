@@ -47,12 +47,10 @@ components:
     Troc:
       allOf:
         - $ref: 'meta.yml#/components/schemas/Timestamp'
+        - $ref: 'meta.yml#/components/schemas/DataBase'
+        - $ref: '#/components/schemas/TrocBase'
         - type: object
           properties:
-            _id:
-              type: string
-            __v:
-              type: number
             tag:
               type: object
               properties:
@@ -99,6 +97,7 @@ components:
                   bydefault:
                     type: boolean
                   apply:
+                    description: Participants sur lesquels le tarif est appliqué
                     type: array
                     items:
                       type: string
@@ -126,8 +125,7 @@ components:
               type: boolean
             isSubscribed:
               type: boolean
-      troc: string
-    TrocUserResume:
+    TrocUserResum:
       type: object
       properties:
         user:

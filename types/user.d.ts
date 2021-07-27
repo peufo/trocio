@@ -1,5 +1,5 @@
 export declare interface User {
-  _id: string
+  // _id?: string Pour le model mongoose
   name: string
   ref?: number
   birth?: Date

@@ -1,4 +1,4 @@
-import express, { RequestHandler } from 'express'
+import express, { ErrorRequestHandler, RequestHandler } from 'express'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import config from '../config'
@@ -13,7 +13,13 @@ import path from 'path'
 
 import type { User } from '../types'
 
+import routesArticle from './routes/article'
+import routesIndex from './routes/index'
+import routesPayment from './routes/payment'
+import routesRoot from './routes/root'
+import routesSubscribe from './routes/subscribe'
 import routesTroc from './routes/troc'
+import routesUser from './routes/user'
 
 declare module 'express-session' {
   interface SessionData {
@@ -57,29 +63,27 @@ app.use('/doc', express.static('api/doc'))
 app.use('/doc-swagger', swaggerUI.serve)
 app.use('/doc-swagger', swaggerUI.setup(null, { swaggerUrl: '/doc/index.yml' }))
 
-app.use('/', require('./routes/index'))
-app.use('/users', require('./routes/user'), catchError404)
-app.use('/articles', require('./routes/article'), catchError404)
+app.use('/', routesIndex)
+app.use('/users', routesUser, catchError404)
+app.use('/articles', routesArticle, catchError404)
 app.use('/trocs', routesTroc, catchError404)
-app.use('/payments', require('./routes/payment'), catchError404)
-app.use('/subscribes', require('./routes/subscribe'), catchError404)
-app.use(
-  '/superadmin',
-  checkSuperAdmin,
-  require('./routes/admin'),
-  catchError404
-)
+app.use('/payments', routesPayment, catchError404)
+app.use('/subscribes', routesSubscribe, catchError404)
+app.use('/root', checkSuperAdmin, routesRoot, catchError404)
 
 // error handler
-app.use(function (err, req, res, next) {
-  if (!err) return next()
 
-  if (req.app.get('env') === 'development' || err.name == 'Error') {
-    res.json({ error: true, message: err.message })
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  if (!err) return next()
+  if (req.app.get('env') === 'development' || err.message.match(/^public: /)) {
+    const message = err.message.replace(/^public: /, '')
+    res.json({ error: true, message })
     console.log(err)
   } else {
     res.json({ error: true })
   }
-})
+}
+
+app.use(errorHandler)
 
 export default app

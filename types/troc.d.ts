@@ -79,7 +79,7 @@ export declare interface TrocLookup extends Troc {
 }
 
 /** Résumé des interactions d'un utilisateur avec un troc */
-export declare interface TrocUserResume {
+export declare interface TrocUserResum {
   troc: string
   user: string
   balance: number
