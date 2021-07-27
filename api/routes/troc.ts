@@ -2,7 +2,7 @@ import express from 'express'
 const router = express.Router()
 
 import { getSpec, getStats, search, getTroc } from '../controllers/troc_get'
-const {
+import {
   createTroc,
   patchTroc,
   addAdmin,
@@ -12,15 +12,18 @@ const {
   removeCashier,
   removeTrader,
   editTraderPrefix,
-} = require('../controllers/troc_set').default
-
+} from '../controllers/troc_set'
 // import { checkAdmin } from '../controllers/troc_utils'
-import { ensureUserCanAccessResum } from '../middlewares/troc'
+import {
+  ensureUserIsAdmin,
+  ensureUserCanAccessResum,
+} from '../middlewares/troc'
 
 import { resUserResume } from '../res/troc'
 
-router.get('/resum', ensureUserCanAccessResum, resUserResume).get('/', search)
-/*
+router
+  .get('/', search)
+  .get('/resum', ensureUserCanAccessResum, resUserResume)
   .get('/spec', getSpec)
   .get('/:trocId/stats', ensureUserIsAdmin, getStats)
   .get('/:trocId', getTroc)
@@ -33,6 +36,5 @@ router.get('/resum', ensureUserCanAccessResum, resUserResume).get('/', search)
   .post('/:trocId/cashier/remove', ensureUserIsAdmin, removeCashier)
   .post('/:trocId/trader/remove', ensureUserIsAdmin, removeTrader)
   .post('/:trocId/trader/prefix', ensureUserIsAdmin, editTraderPrefix)
-  */
 
 export default router

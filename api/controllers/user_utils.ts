@@ -26,10 +26,10 @@ export function checkSuperAdmin(req, res, next) {
 }
 
 export async function login(req, res, next) {
-  if (!req.body.mail || !req.body.password)
-    return next(Error('mail and password required'))
-
-  UserModel.getAuthenticated(req.body.mail, req.body.password)
+  const { mail, password } = req.body
+  if (!mail || !password) return next(Error('mail and password required'))
+  console.log({ mail, password })
+  UserModel.getAuthenticated(mail, password)
     .then((user) => {
       console.log(`Nouvelle connection de ${user.name}`)
       req.session.user = user
@@ -102,6 +102,7 @@ export async function loginWithGoogle(req, res, next) {
 }
 
 export function logout(req, res, next) {
+  if (!req.session.user) return next(Error('No connected'))
   req.session.user = undefined
   res.json({ success: true, message: 'user logged out' })
 }

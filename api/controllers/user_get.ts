@@ -44,7 +44,7 @@ export function getUser(req, res, next) {
 }
 
 export function getUserName(req, res, next) {
-  UserModel.findOne({ _id: req.params.id }, 'name')
+  UserModel.findOne({ _id: req.params.userId }, 'name')
     .lean()
     .exec((err, user) => {
       if (err || !user) return next(err || Error('User not found'))

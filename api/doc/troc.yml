@@ -125,6 +125,13 @@ components:
               type: boolean
             isSubscribed:
               type: boolean
+    TrocUserSpec:
+      type: object
+      properties:
+        user:
+          type: string
+        troc:
+          type: string
     TrocUserResum:
       type: object
       properties:

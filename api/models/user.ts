@@ -1,7 +1,7 @@
 import mongoose, { model, Schema, Document, Model, VirtualType } from 'mongoose'
 import bcrypt from 'bcrypt'
 const SALT_WORK_FACTOR = 10
-const MAX_LOGIN_ATTEMPTS = 10
+const MAX_LOGIN_ATTEMPTS = 12
 const LOCK_TIME = 2 * 60 * 60 * 1000 // 2h
 const EMAIL_REGEX =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/

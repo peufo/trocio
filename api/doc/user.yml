@@ -1,32 +1,38 @@
 openapi: '3.0.2'
 components:
   schemas:
-    UserBase:
-      description: Information minimal pour la création d'un utilisateur
+    UserLogin:
       type: object
+      description: Information minimal pour la connection d'un utilisateur
       properties:
-        name:
-          type: string
         mail:
           type: string
         password:
           type: string
-    User:
+    UserCreation:
       allOf:
-        - $ref: 'meta.yml#/components/schemas/Timestamp'
-        - $ref: 'meta.yml#/components/schemas/DataBase'
-        - $ref: '#/components/schemas/UserBase'
+        - $ref: '#/components/schemas/UserLogin'
         - type: object
+          description: Information minimal pour la création d'un utilisateur
           properties:
-            ref:
-              type: number
-              nullable: true
+            name:
+              type: string
             birth:
               type: string
               format: date-time
               nullable: true
             phone:
               type: string
+              nullable: true
+    User:
+      allOf:
+        - $ref: 'meta.yml#/components/schemas/Timestamp'
+        - $ref: 'meta.yml#/components/schemas/DataBase'
+        - $ref: '#/components/schemas/UserCreation'
+        - type: object
+          properties:
+            ref:
+              type: number
               nullable: true
             mailvalided:
               type: boolean

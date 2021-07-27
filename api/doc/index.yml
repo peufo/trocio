@@ -12,8 +12,14 @@ servers:
     description: server local atteint à travers via proxy
 components:
   schemas:
-    UserBase:
-      $ref: 'user.yml#/components/schemas/UserBase'
+    Success:
+      $ref: 'meta.yml#/components/schemas/Success'
+    Error:
+      $ref: 'meta.yml#/components/schemas/Error'
+    UserLogin:
+      $ref: 'user.yml#/components/schemas/UserLogin'
+    UserCreation:
+      $ref: 'user.yml#/components/schemas/UserCreation'
     User:
       $ref: 'user.yml#/components/schemas/User'
     UserPublic:
@@ -26,6 +32,8 @@ components:
       $ref: 'troc.yml#/components/schemas/Troc'
     TrocUserResum:
       $ref: 'troc.yml#/components/schemas/TrocUserResum'
+    TrocUserSpec:
+      $ref: 'troc.yml#/components/schemas/TrocUserSpec'
 tags:
   - name: user
     description: Methodes relatives aux utilisateurs
@@ -34,8 +42,7 @@ tags:
 paths:
   /users:
     post:
-      tags:
-        - user
+      tags: [user]
       summary: Création d'un compte utilisateur
       operationId: createUser
       requestBody:
@@ -43,7 +50,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserBase'
+              $ref: '#/components/schemas/UserCreation'
       responses:
         200:
           description: Utilisateur nouvellement créé
@@ -51,12 +58,256 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+  /users/login:
+    post:
+      tags: [user]
+      summary: Connection d'un utilisateur
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        200:
+          description: Utilisateur connecté
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/logout:
+    get:
+      tags: [user]
+      summary: Déconnection de l'utilsateur
+      operationId: logout
+      responses:
+        200:
+          description: Message de succèes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /users/login-with-google:
+    get:
+      tags: [user]
+      summary: Connection avec Google
+      operationId: loginWithGoogle
+      parameters:
+        - in: query
+          name: code
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: error
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: state
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Utilisateur connecté
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/me:
+    get:
+      tags: [user]
+      summary: Accéder à mon profile
+      operationId: getMe
+      responses:
+        200:
+          description: Mon profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      tags: [user]
+      summary: Mise jour de mon profile
+      operationId: patchMe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreation'
+      responses:
+        200:
+          description: Mon profile mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/me/changepwd:
+    post:
+      tags: [user]
+      summary: Changement de mon mot de passe
+      operationId: changepwd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        200:
+          description: Message de success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /users/me/resetpwd:
+    post:
+      tags: [user]
+      summary: Récupèrer mon mot de passe oublié
+      operationId: resetpwd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mail:
+                  type: string
+      responses:
+        200:
+          description: Message de success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /users/me/validmail:
+    post:
+      tags: [user]
+      summary: Valider mon mail ( envoie du mail )
+      operationId: sendValidMail
+      responses:
+        200:
+          description: Message de success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /users/me/validmail/{validator}:
+    get:
+      tags: [user]
+      summary: Valider mon mail ( lien de validation )
+      operationId: validMail
+      parameters:
+        - name: validator
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: Message de success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /users/search:
+    get:
+      tags: [user]
+      summary: Chercher un utilisateur
+      operationId: searchUser
+      parameters:
+        - name: q
+          description: Recherche dans mail et name
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: number
+      responses:
+        200:
+          description: Message de success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserPublic'
+  /users/name/{userId}:
+    get:
+      tags: [user]
+      summary: Valider mon mail ( lien de validation )
+      operationId: getUserName
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: Message de success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
   /trocs:
     get:
-      tags:
-        - troc
+      tags: [troc]
       summary: Récupère des trocs
       operationId: getTrocs
+      parameters:
+        - name: _id
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: skip
+          in: query
+          schema:
+            type: number
+            default: 0
+        - name: limit
+          in: query
+          schema:
+            type: number
+            default: 20
+        - name: start
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: north
+          in: query
+          schema:
+            type: number
+        - name: east
+          in: query
+          schema:
+            type: number
+        - name: sud
+          in: query
+          schema:
+            type: number
+        - name: west
+          in: query
+          schema:
+            type: number
       responses:
         200:
           description: Liste de trocs
@@ -66,8 +317,7 @@ paths:
                 $ref: '#/components/schemas/TrocBase'
   /trocs/resum:
     get:
-      tags:
-        - troc
+      tags: [troc]
       summary: Récupère le résumé de l'activité d'un participant
       operationId: getTrocResum
       parameters:
@@ -88,3 +338,213 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TrocUserResum'
+  /trocs/spec:
+    get:
+      deprecated: true
+      tags: [troc]
+      summary: Retourne les spécifications d'un utilisateur sur un troc (tarif, prefix, role)
+      operationId: getSpec
+      parameters:
+        - in: query
+          name: troc
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Spécifications d'un utilisateur sur un troc
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrocUserSpec'
+  /trocs/{trocId}/stats:
+    get:
+      operationId: getStats
+      tags: [troc]
+      parameters:
+        - in: path
+          name: trocId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Troc mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
+  /trocs/{trocId}:
+    get:
+      operationId: getTroc
+      tags: [troc]
+      parameters:
+        - in: path
+          name: trocId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Troc mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
+    patch:
+      operationId: patchTroc
+      tags: [troc]
+      parameters:
+        - in: path
+          name: trocId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Troc mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
+  /trocs/:
+    post:
+      operationId: createTroc
+      tags: [troc]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrocBase'
+      responses:
+        200:
+          description: Troc nouvellement créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
+  /trocs/{trocId}/admin:
+    post:
+      operationId: addAdmin
+      tags: [troc]
+      parameters:
+        - in: path
+          name: trocId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Troc mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
+  /trocs/{trocId}/cashier:
+    post:
+      operationId: addCashier
+      tags: [troc]
+      parameters:
+        - in: path
+          name: trocId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Troc mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
+  /trocs/{trocId}/trader:
+    post:
+      operationId: addTrader
+      tags: [troc]
+      parameters:
+        - in: path
+          name: trocId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Troc mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
+  /trocs/{trocId}/admin/remove:
+    post:
+      operationId: removeAdmin
+      tags: [troc]
+      parameters:
+        - in: path
+          name: trocId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Troc mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
+  /trocs/{trocId}/cashier/remove:
+    post:
+      operationId: removeCashier
+      tags: [troc]
+      parameters:
+        - in: path
+          name: trocId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Troc mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
+  /trocs/{trocId}/trader/remove:
+    post:
+      operationId: removeTrader
+      tags: [troc]
+      parameters:
+        - in: path
+          name: trocId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Troc mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
+  /trocs/{trocId}/trader/prefix:
+    post:
+      operationId: editTraderPrfix)
+      tags: [troc]
+      parameters:
+        - in: path
+          name: trocId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Troc mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Troc'
