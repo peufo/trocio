@@ -26,36 +26,57 @@ PNotify.defaults.stack = new PNotify.Stack({
   maxOpen: 5,
 })
 
-function formatOptions(options, defaultIcon = '') {
+interface Options extends Parameters<typeof PNotify.success> {}
+
+let lastOptions: Options | {} = {}
+
+function isSameOptions(options: Options[1]): boolean {
+  const isSame =
+    ((typeof options === 'string' || typeof lastOptions === 'string') &&
+      options === lastOptions) ||
+    JSON.stringify(options) === JSON.stringify(lastOptions)
+  lastOptions = typeof options === 'string' ? options : { ...options }
+  return isSame
+}
+
+function formatOptions(
+  options: Options[1],
+  defaultIcon = '',
+  notify: typeof PNotify.success
+) {
   if (typeof options === 'string') options = { title: options }
   if (!options.icon) options.icon = defaultIcon
-  return options
+  if (isSameOptions(options)) return
+  notify(options)
 }
 
-function success(options) {
-  PNotify.success(formatOptions(options, 'fas fa-check'))
+function success(options: Options[1]) {
+  formatOptions(options, 'fas fa-check', PNotify.success)
 }
 
-function warning(options) {
-  PNotify.notice(formatOptions(options, 'fas fa-exclamation-triangle'))
+function warning(options: Options[1]) {
+  formatOptions(options, 'fas fa-exclamation-triangle', PNotify.notice)
 }
 
-function error(options: { stack: string; message: string } | string): string {
-  console.trace(options)
+function error(
+  options: (Options[1] & { stack: string; message: string }) | string
+): string {
   const icon = 'fas fa-bug'
   if (typeof options === 'string') {
-    PNotify.error(formatOptions(options, icon))
+    formatOptions(options, icon, PNotify.error)
     return options
   } else {
-    PNotify.error(
-      formatOptions({ title: options.message, text: options.stack }, icon)
+    formatOptions(
+      { title: options.message, text: options.stack },
+      icon,
+      PNotify.error
     )
     return options.message
   }
 }
 
-function info(options) {
-  PNotify.info(formatOptions(options, ''))
+function info(options: Options[1]) {
+  formatOptions(options, '', PNotify.info)
 }
 
 export default { success, warning, error, info }

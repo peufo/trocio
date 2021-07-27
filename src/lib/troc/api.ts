@@ -24,7 +24,7 @@ export function searchTrocs({ pageParam = 0, queryKey }) {
     skip: pageParam,
     limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
   }
-  return api<Troc[]>('/api/trocs/search', { params })
+  return api<Troc[]>('/api/trocs', { params })
 }
 
 export function getSubscribedTrocs({ pageParam = 0 }) {
