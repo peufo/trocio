@@ -5,7 +5,7 @@ import type {
   Troc,
   TrocBase,
   TrocLookup,
-  TrocUserResume,
+  TrocUserResum,
   User,
 } from 'types'
 import { api, createGetNextPageParam } from '$lib/api'
@@ -48,7 +48,7 @@ export function getsubscribes({ pageParam = 0, queryKey }) {
 export function getTrocUserResum({ queryKey }) {
   const { trocId, userId } = queryKey[1]
   const params = userId ? { troc: trocId, user: userId } : { troc: trocId }
-  return api<TrocUserResume>('/api/trocs/resum', { params })
+  return api<TrocUserResum>('/api/trocs/resum', { params })
 }
 
 export function createSubscribe(

@@ -1,4 +1,4 @@
-import type { Troc, TrocUserResume } from '../../types'
+import type { Troc, TrocUserResum } from '../../types'
 import TrocModel from '../models/troc'
 import Article from '../models/article'
 import Payment from '../models/payment'
@@ -31,7 +31,7 @@ export async function userIsCashierOfTroc(trocId: string, userId: string) {
 export async function userResume(
   trocId: string,
   userId: string
-): Promise<TrocUserResume> {
+): Promise<TrocUserResum> {
   // TODO : Adapter la requete pour les client anonymes + pour des groupe
 
   // const userQuery = userId ? userId : { $exists: false }

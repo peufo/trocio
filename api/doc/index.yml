@@ -12,16 +12,45 @@ servers:
     description: server local atteint à travers via proxy
 components:
   schemas:
+    UserBase:
+      $ref: 'user.yml#/components/schemas/UserBase'
+    User:
+      $ref: 'user.yml#/components/schemas/User'
+    UserPublic:
+      $ref: 'user.yml#/components/schemas/UserPublic'
+    UserParticipant:
+      $ref: 'user.yml#/components/schemas/UserParticipant'
     TrocBase:
       $ref: 'troc.yml#/components/schemas/TrocBase'
     Troc:
       $ref: 'troc.yml#/components/schemas/Troc'
-    TrocUserResume:
-      $ref: 'troc.yml#/components/schemas/TrocUserResume'
+    TrocUserResum:
+      $ref: 'troc.yml#/components/schemas/TrocUserResum'
 tags:
+  - name: user
+    description: Methodes relatives aux utilisateurs
   - name: troc
-    description: Methodes relatives au troc
+    description: Methodes relatives aux trocs
 paths:
+  /users:
+    post:
+      tags:
+        - user
+      summary: Création d'un compte utilisateur
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserBase'
+      responses:
+        200:
+          description: Utilisateur nouvellement créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /trocs:
     get:
       tags:
@@ -35,3 +64,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TrocBase'
+  /trocs/resum:
+    get:
+      tags:
+        - troc
+      summary: Récupère le résumé de l'activité d'un participant
+      operationId: getTrocResum
+      parameters:
+        - in: query
+          name: trocId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Résumé de l'activité d'un participant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrocUserResum'

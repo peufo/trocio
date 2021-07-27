@@ -1,0 +1,63 @@
+openapi: '3.0.2'
+components:
+  schemas:
+    UserBase:
+      description: Information minimal pour la création d'un utilisateur
+      type: object
+      properties:
+        name:
+          type: string
+        mail:
+          type: string
+        password:
+          type: string
+    User:
+      allOf:
+        - $ref: 'meta.yml#/components/schemas/Timestamp'
+        - $ref: 'meta.yml#/components/schemas/DataBase'
+        - $ref: '#/components/schemas/UserBase'
+        - type: object
+          properties:
+            ref:
+              type: number
+              nullable: true
+            birth:
+              type: string
+              format: date-time
+              nullable: true
+            phone:
+              type: string
+              nullable: true
+            mailvalided:
+              type: boolean
+            loginAttempts:
+              type: number
+            lockUntil:
+              type: number
+            creditTroc:
+              type: number
+            acceptTerms:
+              type: boolean
+    UserPublic:
+      allOf:
+        - $ref: 'meta.yml#/components/schemas/Timestamp'
+        - $ref: 'meta.yml#/components/schemas/DataBase'
+        - type: object
+          properties:
+            name:
+              type: string
+            mail:
+              description: Caché --> j***********d@gmail.com
+              type: string
+    UserParticipant:
+      description: Information sur un participant disponnible pour l'organisateur
+      allOf:
+        - $ref: 'meta.yml#/components/schemas/Timestamp'
+        - $ref: 'meta.yml#/components/schemas/DataBase'
+        - type: object
+          properties:
+            name:
+              type: string
+            mail:
+              description: En claire
+              type: string
