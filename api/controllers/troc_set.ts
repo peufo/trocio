@@ -1,4 +1,4 @@
-import { TROCIO_OPTION_FREE_TROC } from '../../config.js'
+import config from '../../config'
 import Troc from '../models/troc'
 import User from '../models/user'
 import Subscribe from '../models/subscribe'
@@ -32,7 +32,7 @@ export function createTroc(req, res, next) {
   User.findOne({ _id: req.session.user._id }, (err, user) => {
     if (err || !user) return next(err || Error('User not found !'))
     if (!troc.is_try) {
-      if (user.creditTroc <= -TROCIO_OPTION_FREE_TROC)
+      if (user.creditTroc <= -config.TROCIO_OPTION_FREE_TROC)
         return next(Error('No credit'))
       user.creditTroc--
     }

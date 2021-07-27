@@ -1,0 +1,154 @@
+openapi: '3.0.2'
+components:
+  schemas:
+    Period:
+      type: object
+      properties:
+        open:
+          type: string
+        close:
+          type: string
+        name:
+          type: string
+          enum:
+            - 'open'
+            - 'deposit'
+            - 'recovery'
+            - 'sale'
+    TrocBase:
+      type: object
+      properties:
+        creator:
+          description: A valider
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        is_try:
+          type: boolean
+        address:
+          type: string
+        location:
+          type: object
+          properties:
+            lat:
+              type: number
+            lng:
+              type: number
+        schedule:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        society:
+          type: string
+        societyweb:
+          type: string
+    Troc:
+      allOf:
+        - $ref: 'meta.yml#/components/schemas/Timestamp'
+        - type: object
+          properties:
+            _id:
+              type: string
+            __v:
+              type: number
+            tag:
+              type: object
+              properties:
+                width:
+                  type: number
+                height:
+                  type: number
+                padding:
+                  type: number
+                border:
+                  type: boolean
+            admin:
+              type: array
+              items:
+                type: string
+            cashier:
+              type: array
+              items:
+                type: string
+            articlelastref:
+              type: number
+            articles:
+              type: object
+            subscriber:
+              type: number
+            creator:
+              type: string
+            trader:
+              type: array
+              items:
+                type: object
+                properties:
+                  prefix:
+                    type: string
+                  user:
+                    type: string
+            tarif:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  bydefault:
+                    type: boolean
+                  apply:
+                    type: array
+                    items:
+                      type: string
+                  margin:
+                    type: number
+                  fee:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        price:
+                          type: number
+                        value:
+                          type: number
+                  maxarticles:
+                    type: number
+            isClosed:
+              type: boolean
+            id:
+              description: Todo ???
+              type: string
+            isAdmin:
+              type: boolean
+            isCashier:
+              type: boolean
+            isSubscribed:
+              type: boolean
+      troc: string
+    TrocUserResume:
+      type: object
+      properties:
+        user:
+          type: string
+        balance:
+          type: number
+        providedCount:
+          type: number
+        providedSum:
+          type: number
+        feeSum:
+          type: number
+        soldSum:
+          type: number
+        marginSum:
+          type: number
+        purchasesCount:
+          type: number
+        purchasesSum:
+          type: number
+        paymentsCount:
+          type: number
+        paymentsSum:
+          type: number

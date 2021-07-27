@@ -8,9 +8,12 @@ import mongoose from 'mongoose'
 import connectMongo from 'connect-mongo'
 import compression from 'compression'
 import createError from 'http-errors'
+import swaggerUI from 'swagger-ui-express'
+import path from 'path'
+
 import type { User } from '../types'
 
-// import routesTroc from './routes/troc'
+import routesTroc from './routes/troc'
 
 declare module 'express-session' {
   interface SessionData {
@@ -49,12 +52,15 @@ app.use(
   })
 )
 app.use(compression({ threshold: 0 }))
-app.use(express.static('../dist'))
+
+app.use('/doc', express.static('api/doc'))
+app.use('/doc-swagger', swaggerUI.serve)
+app.use('/doc-swagger', swaggerUI.setup(null, { swaggerUrl: '/doc/index.yml' }))
 
 app.use('/', require('./routes/index'))
 app.use('/users', require('./routes/user'), catchError404)
 app.use('/articles', require('./routes/article'), catchError404)
-// app.use('/trocs', routesTroc, catchError404)
+app.use('/trocs', routesTroc, catchError404)
 app.use('/payments', require('./routes/payment'), catchError404)
 app.use('/subscribes', require('./routes/subscribe'), catchError404)
 app.use(

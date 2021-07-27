@@ -1,13 +1,7 @@
 import express from 'express'
 const router = express.Router()
 
-/*
-import {
-  getSpec,
-  getStats,
-  search,
-  getTroc,
-} from '../controllers/troc_get'
+import { getSpec, getStats, search, getTroc } from '../controllers/troc_get'
 const {
   createTroc,
   patchTroc,
@@ -19,16 +13,15 @@ const {
   removeTrader,
   editTraderPrefix,
 } = require('../controllers/troc_set').default
-*/
+
 // import { checkAdmin } from '../controllers/troc_utils'
 import { ensureUserCanAccessResum } from '../middlewares/troc'
 
 import { resUserResume } from '../res/troc'
 
-router.get('/resum', ensureUserCanAccessResum, resUserResume)
+router.get('/resum', ensureUserCanAccessResum, resUserResume).get('/', search)
 /*
   .get('/spec', getSpec)
-  .get('/search', search)
   .get('/:trocId/stats', ensureUserIsAdmin, getStats)
   .get('/:trocId', getTroc)
   .post('/', createTroc)
