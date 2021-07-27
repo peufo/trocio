@@ -9,11 +9,13 @@ export const createUser: RequestHandler = async (req, res, next) => {
   // Dans le cas ou l'utilisateur est déjà connecté
   // Il sagit d'un cassier qui créer un compte pour un client
   // Un mot de passe est générer et returné
+  /*
   let genPwd = ''
   if (req.session.user) {
     genPwd = randomize('0', 6)
     req.body.password = genPwd
   }
+  */
 
   try {
     const user = new User(req.body)

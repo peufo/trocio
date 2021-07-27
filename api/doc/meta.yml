@@ -1,5 +1,19 @@
 components:
   schemas:
+    Success:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: boolean
+        message:
+          type: string
     Timestamp:
       type: object
       properties:

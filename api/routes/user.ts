@@ -24,16 +24,16 @@ import {
 router
   .post('/', createUser, login, getMe)
   .post('/login', login, getMe)
+  .get('/logout', logout)
   .get('/login-with-google', loginWithGoogle)
   .get('/me', getMe)
   .patch('/me', patchMe, getMe)
-  .get('/logout', logout)
-  .post('/changepwd', changepwd)
-  .post('/resetpwd', resetpwd)
-  .post('/validmail', sendValidMail)
-  .get('/validmail/:validator', validMail)
+  .post('/me/changepwd', changepwd)
+  .post('/me/resetpwd', resetpwd)
+  .post('/me/validmail', sendValidMail)
+  .get('/me/validmail/:validator', validMail)
   .get('/search', searchUser)
   //.get('/:id', checkSuperAdmin, getUser)
-  .get('/name/:id', getUserName)
+  .get('/name/:userId', getUserName)
 
 export default router
