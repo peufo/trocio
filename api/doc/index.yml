@@ -51,6 +51,8 @@ components:
       $ref: 'troc.yml#/components/schemas/TrocUserResum'
     TrocUserSpec:
       $ref: 'troc.yml#/components/schemas/TrocUserSpec'
+    TrocState:
+      $ref: 'troc.yml#/components/schemas/TrocState'
     ArticleCreate:
       $ref: 'article.yml#/components/schemas/ArticleCreate'
     Article:
@@ -406,7 +408,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc' # TODO
+                $ref: '#/components/schemas/TrocState'
   /trocs/{trocId}:
     get:
       operationId: getTroc
