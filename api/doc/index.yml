@@ -55,6 +55,10 @@ components:
       $ref: 'article.yml#/components/schemas/ArticleCreate'
     Article:
       $ref: 'article.yml#/components/schemas/Article'
+    PaymentCreate:
+      $ref: 'payment.yml#/components/schemas/PaymentCreate'
+    Payment:
+      $ref: 'payment.yml#/components/schemas/Payment'
 tags:
   - name: user
     description: Methodes relatives aux utilisateurs
@@ -62,6 +66,8 @@ tags:
     description: Methodes relatives aux trocs
   - name: article
     description: Methodes relatives aux articles
+  - name: payment
+    description: Methodes relatives aux paiements
 paths:
   #   ▢=====================================▢
   #   |               USER                   |
@@ -514,9 +520,9 @@ paths:
   #   |               ARTICLE                |
   #   ▢=====================================▢
 
-  /articles/:
+  /articles:
     post:
-      summary: Fonctionne également avec une list d'article
+      summary: Création d'article. Fonctionne également avec une list d'article.
       operationId: createArticle
       tags: [article]
       requestBody:
@@ -529,7 +535,7 @@ paths:
         200:
           $ref: 'article.yml#/components/responses/200_Article'
     get:
-      summary: Recherche d'un article
+      summary: Recherche d'articles
       operationId: searchArticle
       tags: [article]
       parameters:
@@ -537,14 +543,6 @@ paths:
           in: query
           schema:
             type: string
-        - name: limit
-          in: query
-          schema:
-            type: number
-        - name: skip
-          in: query
-          schema:
-            type: number
         - name: filter_statut
           in: query
           schema:
@@ -561,6 +559,8 @@ paths:
           in: query
           schema:
             type: string
+        - $ref: 'meta.yml#/components/parameters/querySkip'
+        - $ref: 'meta.yml#/components/parameters/queryLimit'
       responses:
         200:
           $ref: 'article.yml#/components/responses/200_Articles'
@@ -707,3 +707,42 @@ paths:
       responses:
         200:
           $ref: 'article.yml#/components/responses/200_Articles'
+
+  #   ▢=====================================▢
+  #   |               PAYMENT                |
+  #   ▢=====================================▢
+
+  /payements:
+    post:
+      summary: Nouveau paiement.
+      operationId: createPayment
+      tags: [payment]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/schemas/PaymentCreate'
+      responses:
+        200:
+          $ref: 'payment.yml#/components/responses/200_Payment'
+    get:
+      summary: Recherche de paiements
+      operationId: searchPayment
+      tags: [payment]
+      parameters:
+        - name: user
+          in: query
+          schema:
+            type: string
+        - name: acceptor
+          in: query
+          schema:
+            type: string
+        - name: troc
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          $ref: 'payment.yml#/components/responses/200_Payments'

@@ -15,61 +15,64 @@ components:
         price:
           type: number
     Article:
-      type: object
-      properties:
-        fee:
-          readOnly: true
-          description: Frais prise par l'organisation sur l'article lors de sa validation.Elle est calculé sur le prix en fonction du tarif décidé pour le fournisseur.
-          type: number
-        margin:
-          readOnly: true
-          description: Marge prise par l'organisation sur l'article lors de sa vente. Elle est calculé sur le prix en fonction du tarif décidé pour le fournisseur.
-          type: number
-        valided:
-          description: Date de validation de l'article par l'organisateur (validator)
-          type: string
-          format: date-time
-        refused:
-          description: Date du refus de l'article par l'organisateur (validator)
-          type: string
-          format: date-time
-        sold:
-          description: Date de la vente de l'article (seller) -> (buyer)
-          type: string
-          format: date-time
-        recover:
-          description: Date de la récupération de l'article par le fournisseur (seller) -> (provider)
-          type: string
-          format: date-time
-        giveback:
-          description: Listes des retours de l'article (si ils sont autorisés)
-          type: array
-          items:
-            type: object
-            properties:
-              sold:
-                description: Date de la vente qui à été annulé
-                type: string
-                format: date-time
-              back:
-                description: Date de retour de l'article
-                type: string
-                format: date-time
-              raison:
-                description: Raison du retour
-                type: string
-              user:
-                description: Client ayant effetué le retour
-                type: string
-        buyer:
-          description: ID du client ayant effectué l'achat
-          type: string
-        validator:
-          description: ID du membre de l'organisation ayant validé ou refusé l'article
-          type: string
-        seller:
-          description: ID du membre de l'organisation ayant vendu ou rendu l'article
-          type: string
+      allOf:
+        - $ref: 'meta.yml#/components/schemas/Timestamp'
+        - $ref: 'meta.yml#/components/schemas/DataBase'
+        - type: object
+          properties:
+            fee:
+              readOnly: true
+              description: Frais prise par l'organisation sur l'article lors de sa validation.Elle est calculé sur le prix en fonction du tarif décidé pour le fournisseur.
+              type: number
+            margin:
+              readOnly: true
+              description: Marge prise par l'organisation sur l'article lors de sa vente. Elle est calculé sur le prix en fonction du tarif décidé pour le fournisseur.
+              type: number
+            valided:
+              description: Date de validation de l'article par l'organisateur (validator)
+              type: string
+              format: date-time
+            refused:
+              description: Date du refus de l'article par l'organisateur (validator)
+              type: string
+              format: date-time
+            sold:
+              description: Date de la vente de l'article (seller) -> (buyer)
+              type: string
+              format: date-time
+            recover:
+              description: Date de la récupération de l'article par le fournisseur (seller) -> (provider)
+              type: string
+              format: date-time
+            giveback:
+              description: Listes des retours de l'article (si ils sont autorisés)
+              type: array
+              items:
+                type: object
+                properties:
+                  sold:
+                    description: Date de la vente qui à été annulé
+                    type: string
+                    format: date-time
+                  back:
+                    description: Date de retour de l'article
+                    type: string
+                    format: date-time
+                  raison:
+                    description: Raison du retour
+                    type: string
+                  user:
+                    description: Client ayant effetué le retour
+                    type: string
+            buyer:
+              description: ID du client ayant effectué l'achat
+              type: string
+            validator:
+              description: ID du membre de l'organisation ayant validé ou refusé l'article
+              type: string
+            seller:
+              description: ID du membre de l'organisation ayant vendu ou rendu l'article
+              type: string
   responses:
     200_Article:
       description: Un article
