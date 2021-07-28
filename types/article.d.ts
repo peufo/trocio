@@ -1,6 +1,4 @@
-export declare interface Article {
-  /** ID de l'article */
-  _id: string
+export declare interface ArticleCreate {
   /** ID du troc auquel l'article proposé */
   troc: string
   /** ID de l'utilisateur qui propose l'article */
@@ -11,6 +9,11 @@ export declare interface Article {
   name: string
   /** Prix de l'article */
   price: number
+}
+
+export declare interface Article extends ArticleCreate {
+  /** ID de l'article */
+  _id: string
   /**
    * Frais prise par l'organisation sur l'article lors de sa validation.
    * Elle est calculé sur le prix en fonction du tarif décidé pour le fournisseur.
@@ -46,12 +49,4 @@ export declare interface Article {
   validator: string
   /** ID du membre de l'organisation ayant vendu ou rendu l'article */
   seller: string
-}
-
-export declare interface ArticleCreate {
-  troc: string
-  provider: string
-  ref?: string
-  name: string
-  price: number
 }
