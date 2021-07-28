@@ -15,6 +15,31 @@ components:
             - 'deposit'
             - 'recovery'
             - 'sale'
+    Tarif:
+      type: object
+      properties:
+        name:
+          type: string
+        bydefault:
+          type: boolean
+        apply:
+          description: Participants sur lesquels le tarif est appliqué
+          type: array
+          items:
+            type: string
+        margin:
+          type: number
+        fee:
+          type: array
+          items:
+            type: object
+            properties:
+              price:
+                type: number
+              value:
+                type: number
+        maxarticles:
+          type: number
     TrocBase:
       type: object
       properties:
@@ -90,34 +115,11 @@ components:
             tarif:
               type: array
               items:
-                type: object
-                properties:
-                  name:
-                    type: string
-                  bydefault:
-                    type: boolean
-                  apply:
-                    description: Participants sur lesquels le tarif est appliqué
-                    type: array
-                    items:
-                      type: string
-                  margin:
-                    type: number
-                  fee:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        price:
-                          type: number
-                        value:
-                          type: number
-                  maxarticles:
-                    type: number
+                $ref: '#/components/schemas/Tarif'
             isClosed:
               type: boolean
             id:
-              description: Todo ???
+              description: Todo supprimer???
               type: string
             isAdmin:
               type: boolean
@@ -125,6 +127,41 @@ components:
               type: boolean
             isSubscribed:
               type: boolean
+    TrocLookupUser:
+      allOf:
+        - $ref: '#/components/schemas/Troc'
+        - type: object
+          properties:
+            creator:
+              $ref: 'user.yml#/components/schemas/UserParticipant'
+            admin:
+              type: array
+              items:
+                $ref: 'user.yml#/components/schemas/UserParticipant'
+            trader:
+              type: array
+              items:
+                type: object
+                properties:
+                  prefix:
+                    type: string
+                  user:
+                    $ref: 'user.yml#/components/schemas/UserParticipant'
+            cashier:
+              type: array
+              items:
+                $ref: 'user.yml#/components/schemas/UserParticipant'
+            tarif:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/Tarif'
+                  - type: object
+                    properties:
+                      apply:
+                        type: array
+                        items:
+                          $ref: 'user.yml#/components/schemas/UserParticipant'
     TrocUserSpec:
       type: object
       properties:

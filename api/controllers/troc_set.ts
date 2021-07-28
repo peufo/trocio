@@ -38,10 +38,9 @@ export function createTroc(req, res, next) {
     }
     Promise.all([troc.save(), user.save(), subscribe.save()])
       .then(() => {
-        populateTrocUser(troc._id, (err, troc) => {
-          if (err) return next(err)
-          res.json(troc)
-        })
+        populateTrocUser(troc._id)
+          .then((populatedTroc) => res.json(populatedTroc))
+          .catch(next)
       })
       .catch(next)
   })
@@ -96,10 +95,7 @@ export function addAdmin(req, res, next) {
       // Add Admin
       troc.admin.push(req.body.admin)
 
-      troc.save((err) => {
-        if (err) return next(err)
-        resTrocUser(req, res, next)
-      })
+      troc.save(next)
     })
   })
 }
@@ -126,10 +122,7 @@ export function addCashier(req, res, next) {
       }
 
       troc.cashier.push(req.body.cashier)
-      troc.save((err) => {
-        if (err) return next(err)
-        resTrocUser(req, res, next)
-      })
+      troc.save(next)
     })
   })
 }
@@ -146,10 +139,7 @@ export function addTrader(req, res, next) {
         user: req.body.trader,
         prefix: req.body.prefix || findNewPrefix(troc.trader),
       })
-      troc.save((err) => {
-        if (err) return next(err)
-        resTrocUser(req, res, next)
-      })
+      troc.save(next)
     })
   })
 
@@ -182,10 +172,7 @@ export function removeAdmin(req, res, next) {
 
       troc.admin.splice(adminIndex, 1)
 
-      troc.save((err) => {
-        if (err) return next(err)
-        resTrocUser(req, res, next)
-      })
+      troc.save(next)
     })
   })
 }
@@ -203,10 +190,7 @@ export function removeCashier(req, res, next) {
 
       troc.cashier.splice(cashierIndex, 1)
 
-      troc.save((err) => {
-        if (err) return next(err)
-        resTrocUser(req, res, next)
-      })
+      troc.save(next)
     })
   })
 }
@@ -226,10 +210,7 @@ export function removeTrader(req, res, next) {
 
       troc.trader.splice(traderIndex, 1)
 
-      troc.save((err) => {
-        if (err) return next(err)
-        resTrocUser(req, res, next)
-      })
+      troc.save(next)
     })
   })
 }
@@ -252,18 +233,8 @@ export function editTraderPrefix(req, res, next) {
 
       troc.trader[traderIndex].prefix = req.body.prefix
 
-      troc.save((err) => {
-        if (err) return next(err)
-        resTrocUser(req, res, next)
-      })
+      troc.save(next)
     })
-  })
-}
-
-export function resTrocUser(req, res, next) {
-  populateTrocUser(req.params.id, (err, troc) => {
-    if (err) return next(err)
-    res.json(troc)
   })
 }
 

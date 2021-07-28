@@ -47,15 +47,15 @@ export function checkCashier(req, res, next) {
   })
 }
 
-export function populateTrocUser(trocId, cb: Callback) {
-  Troc.findById(trocId)
+export async function populateTrocUser(trocId: string) {
+  return await Troc.findById(trocId)
     .populate('creator', 'name mail')
     .populate('admin', 'name mail')
     .populate('trader.user', 'name mail')
     .populate('cashier', 'name mail')
     .populate('tarif.apply', 'name mail')
     .lean({ virtuals: true })
-    .exec(cb)
+    .exec()
 }
 
 export async function findSpec(troc, user, cb: Callback = noop) {
@@ -94,12 +94,14 @@ export function getMargin(art, tarif) {
 export function lookupIfAdmin(troc, userId, cb: Callback) {
   let isAdmin = troc.admin.map((a) => a.toString()).indexOf(userId) != -1
   if (isAdmin) {
-    populateTrocUser(troc._id, (err, troc) => {
-      if (err || !troc) return cb(err || Error('Not found'))
-      troc.isAdmin = true
-      troc.isCashier = false
-      cb(null, troc)
-    })
+    populateTrocUser(troc._id)
+      .then((troc) => {
+        if (!troc) return cb(Error('Not found'))
+        troc.isAdmin = true
+        troc.isCashier = false
+        cb(null, troc)
+      })
+      .catch(cb)
   } else {
     troc.isAdmin = false
     troc.isCashier = troc.cashier.map((c) => c.toString()).indexOf(userId) != -1

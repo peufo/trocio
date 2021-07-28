@@ -17,14 +17,14 @@ export const getMe: RequestHandler = async (req, res, next) => {
 }
 
 export function searchUser(req, res, next) {
-  const { q = '', skip = 0 } = req.query
+  const { q = '', skip = 0, limit = 10 } = req.query
   let regexp = new RegExp(q, 'i')
   UserModel.find(
     { $or: [{ name: regexp }, { mail: regexp }] },
     { name: 1, mail: 1 }
   )
     .skip(skip)
-    .limit(10)
+    .limit(limit)
     .lean()
     .exec((err, users) => {
       if (err) return next(err)
