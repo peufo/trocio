@@ -9,11 +9,9 @@ import { FilterQuery, Schema } from 'mongoose'
 const { ObjectId } = Schema.Types
 
 export async function userIsAdminOfTroc(trocId: string, userId: string) {
-  const troc = await TrocModel.findOne(
-    { _id: trocId },
-    { isAdmin: { $in: [userId, '$admin'] } }
-  )
-  return troc.isAdmin
+  const troc = await TrocModel.findOne({ _id: trocId, admin: userId })
+  console.log({ admin: troc.admin })
+  return !!troc
 }
 
 export async function userIsCashierOfTroc(trocId: string, userId: string) {
@@ -138,7 +136,7 @@ export function getSpec(req, res, next) {
 }
 
 export function getStats(req, res, next) {
-  TrocModel.findOne({ _id: req.params.id }).exec((err, troc) => {
+  TrocModel.findOne({ _id: req.params.trocId }).exec((err, troc) => {
     if (err || !troc) return next(err || Error('Troc not found'))
 
     let query: FilterQuery<Troc & Document> = { troc: troc._id }
@@ -263,7 +261,7 @@ export function search(req, res, next) {
 
 export function getTroc(req, res, next) {
   if (req.session.user) {
-    TrocModel.findOne({ _id: req.params.id })
+    TrocModel.findOne({ _id: req.params.trocId })
       .lean({ virtuals: true })
       .exec((err, troc) => {
         if (err || !troc) return next(err || Error('Not found'))
@@ -280,7 +278,7 @@ export function getTroc(req, res, next) {
         })
       })
   } else {
-    TrocModel.findOne({ _id: req.params.id })
+    TrocModel.findOne({ _id: req.params.trocId })
       .lean({ virtuals: true })
       .exec((err, troc) => {
         if (err || !troc) return next(err || Error('Not found'))

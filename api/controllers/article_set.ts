@@ -78,7 +78,7 @@ export function deleteArticle(req, res, next) {
       if (err) return next(err)
       res.json({
         success: true,
-        message: `Article ${req.params.id} is removed`,
+        message: `Article ${req.params.articleId} is removed`,
       })
     })
   })

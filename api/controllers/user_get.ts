@@ -34,7 +34,7 @@ export function searchUser(req, res, next) {
 }
 
 export function getUser(req, res, next) {
-  UserModel.findById(req.params.id)
+  UserModel.findById(req.params.userId)
     .lean()
     .exec((err, user) => {
       if (err || !user) return next(err || Error('User not found'))

@@ -1,6 +1,6 @@
 import Subscribe from '../models/subscribe'
 
-function getMySubscribedTrocs(req, res, next) {
+export function getMySubscribedTrocs(req, res, next) {
   let { skip = 0, limit = 10 } = req.query
   skip = Number(skip)
   limit = Number(limit)
@@ -41,7 +41,7 @@ function getMySubscribedTrocs(req, res, next) {
     })
 }
 
-function getSubscriber(req, res, next) {
+export function getSubscriber(req, res, next) {
   const { troc } = req.query
   let { skip = 0, limit = 10 } = req.query
   skip = Number(skip)
