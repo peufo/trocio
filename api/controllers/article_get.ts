@@ -4,7 +4,7 @@ const { ObjectId } = Schema.Types
 
 export function getArticle(req, res, next) {
   Article.find({ _id: req.params.articleId }).exec((err, article) => {
-    if (err) return next(Error(err))
+    if (err) return next(err)
     res.json(article)
   })
 }
@@ -24,7 +24,7 @@ export function getProvidedArticles(req, res, next) {
     .skip(skip)
     .limit(limit)
     .exec((err, article) => {
-      if (err) return next(Error(err))
+      if (err) return next(err)
       res.json(article)
     })
 }
@@ -42,7 +42,7 @@ export function getPurchasesArticles(req, res, next) {
     .skip(skip)
     .limit(limit)
     .exec((err, article) => {
-      if (err) return next(Error(err))
+      if (err) return next(err)
       res.json(article)
     })
 }
@@ -53,21 +53,25 @@ export function getGivbacksArticles(req, res, next) {
     ? { troc, 'giveback.user': user }
     : {
         troc,
-        giveback: { $size: { $gt: 0 } },
-        giveback: { $elemMatch: { user: { $exists: false } } },
+        giveback: {
+          $and: [
+            { $size: { $gt: 0 } },
+            { $elemMatch: { user: { $exists: false } } },
+          ],
+        },
       }
 
   Article.find(query)
     .skip(skip)
     .limit(limit)
     .exec((err, article) => {
-      if (err) return next(Error(err))
+      if (err) return next(err)
       res.json(article)
     })
 }
 
 export function searchArticle(req, res, next) {
-  const {
+  let {
     troc,
     limit,
     skip,
@@ -77,29 +81,27 @@ export function searchArticle(req, res, next) {
     include_without_name,
   } = req.query
 
-  let match = {}
+  let match = { $or: [], $and: [] }
   let sort = {}
   const QUERY_SEARCH = 'search_'
   const QUERY_OR_SEARCH = 'or_search_'
   const QUERY_SORT = 'sort_'
   const QUERY_USER = 'user_'
 
-  //addMatch
-  match.$or = []
-  match.$and = include_without_name ? [] : [{ name: { $ne: '' } }]
+  // addMatch
+  if (!include_without_name) match.$and = [{ name: { $ne: '' } }]
 
-  if (troc) match.$and.push({ troc: ObjectId(troc) })
+  if (troc) match.$and.push({ troc })
 
-  //Filtre pour un groupe de founisseur
+  // Filtre pour un groupe de founisseur
   if (provider) match.$and.push({ provider: { $in: provider } })
   if (providernot) match.$and.push({ provider: { $ne: providernot } })
 
-  //Define skip
+  // Define skip
   skip = Number(skip)
   if (!skip) skip = 0
 
   //Define limit
-  //TODO: Créer un échec du calcul du solde chez le client
   limit = Number(limit)
   if (!limit) limit = 40
   else if (limit > 100) limit = 100

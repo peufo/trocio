@@ -29,9 +29,8 @@
   import layout from '$lib/store/layout'
   import logo from '$assets/logo'
   import IconLink from '$lib/util/IconLink.svelte'
-  import { each } from 'svelte/internal'
 
-  let width
+  let width: string | undefined
   let mini = false
   /** width updated white according to props mini */
   export let realWidth = mini ? '56px' : width
@@ -81,13 +80,14 @@
     {mini}
     transition={() => ({ duration: 0, css: (t) => '' })}
     bind:width
+    active
   >
     <ListItem class="mt-5 text-overline" style="height: 60px;">
       <span slot="prepend">
         <Icon {...logo} size="1.3em" />
       </span>
 
-      <span>{troc.name}</span>
+      <span>{troc?.name}</span>
 
       <span slot="subtitle">Administration</span>
     </ListItem>

@@ -41,11 +41,12 @@
   <div class="centered" style="height: 100px;">
     <span>Oups, une erreur c'est produite.</span>
   </div>
-{:else}
+{:else if $params.trocId}
   <NavigationAdmin
     bind:realWidth={navigationWidth}
     on:openTips={() => (tipsActive = !tipsActive)}
   />
+
   <Tips bind:width={tipsWidth} bind:active={tipsActive} />
 
   <div

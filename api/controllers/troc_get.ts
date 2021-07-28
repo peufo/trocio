@@ -10,20 +10,17 @@ const { ObjectId } = Schema.Types
 
 export async function userIsAdminOfTroc(trocId: string, userId: string) {
   const troc = await TrocModel.findOne({ _id: trocId, admin: userId })
-  console.log({ admin: troc.admin })
+  if (!troc) throw new Error('User is not admin of troc')
   return !!troc
 }
 
 export async function userIsCashierOfTroc(trocId: string, userId: string) {
-  const troc = await TrocModel.findOne(
-    { _id: trocId },
-    {
-      isCashier: {
-        $or: [{ $in: [userId, '$cashier'] }, { $in: [userId, '$admin'] }],
-      },
-    }
-  )
-  return troc.isCashier
+  const troc = await TrocModel.findOne({
+    _id: trocId,
+    $or: [{ admin: userId }, { cashier: userId }],
+  })
+  if (!troc) throw new Error('User is not cashier of troc')
+  return !!troc.isCashier
 }
 
 export async function userResume(
