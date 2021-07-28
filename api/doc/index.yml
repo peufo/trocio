@@ -11,6 +11,21 @@ servers:
   - url: https://localhost:3000/api
     description: server local atteint à travers via proxy
 components:
+  parameters:
+    querySkip:
+      $ref: 'meta.yml#/components/parameters/querySkip'
+    queryLimit:
+      $ref: 'meta.yml#/components/parameters/queryLimit'
+    queryTroc:
+      $ref: 'meta.yml#/components/parameters/queryTroc'
+    queryUser:
+      $ref: 'meta.yml#/components/parameters/queryUser'
+    pathTroc:
+      $ref: 'meta.yml#/components/parameters/pathTroc'
+    pathUser:
+      $ref: 'meta.yml#/components/parameters/pathUser'
+    pathArticle:
+      $ref: 'meta.yml#/components/parameters/pathArticle'
   schemas:
     Success:
       $ref: 'meta.yml#/components/schemas/Success'
@@ -30,16 +45,28 @@ components:
       $ref: 'troc.yml#/components/schemas/TrocBase'
     Troc:
       $ref: 'troc.yml#/components/schemas/Troc'
+    TrocLookupUser:
+      $ref: 'troc.yml#/components/schemas/TrocLookupUser'
     TrocUserResum:
       $ref: 'troc.yml#/components/schemas/TrocUserResum'
     TrocUserSpec:
       $ref: 'troc.yml#/components/schemas/TrocUserSpec'
+    ArticleCreate:
+      $ref: 'article.yml#/components/schemas/ArticleCreate'
+    Article:
+      $ref: 'article.yml#/components/schemas/Article'
 tags:
   - name: user
     description: Methodes relatives aux utilisateurs
   - name: troc
     description: Methodes relatives aux trocs
+  - name: article
+    description: Methodes relatives aux articles
 paths:
+  #   ▢=====================================▢
+  #   |               USER                   |
+  #   ▢=====================================▢
+
   /users:
     post:
       tags: [user]
@@ -83,7 +110,7 @@ paths:
       operationId: logout
       responses:
         200:
-          description: Message de succèes
+          description: Message de succès
           content:
             application/json:
               schema:
@@ -227,13 +254,11 @@ paths:
           in: query
           schema:
             type: string
-        - name: limit
-          in: query
-          schema:
-            type: number
+        - $ref: '#/components/parameters/querySkip'
+        - $ref: '#/components/parameters/queryLimit'
       responses:
         200:
-          description: Message de success
+          description: Liste d'utilisateur
           content:
             application/json:
               schema:
@@ -246,11 +271,7 @@ paths:
       summary: Valider mon mail ( lien de validation )
       operationId: getUserName
       parameters:
-        - name: userId
-          required: true
-          in: path
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathUser'
       responses:
         200:
           description: Message de success
@@ -258,12 +279,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserPublic'
+
+  #   ▢=====================================▢
+  #   |                 TROC                 |
+  #   ▢=====================================▢
+
   /trocs:
+    post:
+      operationId: createTroc
+      tags: [troc]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrocBase'
+      responses:
+        200:
+          description: Troc nouvellement créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrocLookupUser'
     get:
       tags: [troc]
       summary: Récupère des trocs
       operationId: getTrocs
       parameters:
+        - $ref: '#/components/parameters/querySkip'
+        - $ref: '#/components/parameters/queryLimit'
         - name: _id
           in: query
           schema:
@@ -272,16 +316,6 @@ paths:
           in: query
           schema:
             type: string
-        - name: skip
-          in: query
-          schema:
-            type: number
-            default: 0
-        - name: limit
-          in: query
-          schema:
-            type: number
-            default: 20
         - name: start
           in: query
           schema:
@@ -321,16 +355,8 @@ paths:
       summary: Récupère le résumé de l'activité d'un participant
       operationId: getTrocResum
       parameters:
-        - in: query
-          name: trocId
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: userId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/queryUser'
+        - $ref: '#/components/parameters/queryTroc'
       responses:
         200:
           description: Résumé de l'activité d'un participant
@@ -340,21 +366,13 @@ paths:
                 $ref: '#/components/schemas/TrocUserResum'
   /trocs/spec:
     get:
-      deprecated: true
       tags: [troc]
       summary: Retourne les spécifications d'un utilisateur sur un troc (tarif, prefix, role)
+      description: Les parametres troc et user sont remplacer par trocId et userId
       operationId: getSpec
       parameters:
-        - in: query
-          name: troc
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: user
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/queryUser'
+        - $ref: '#/components/parameters/queryTroc'
       responses:
         200:
           description: Spécifications d'un utilisateur sur un troc
@@ -367,184 +385,325 @@ paths:
       operationId: getStats
       tags: [troc]
       parameters:
-        - in: path
-          name: trocId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
           description: Troc mis à jour
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc'
+                $ref: '#/components/schemas/Troc' # TODO
   /trocs/{trocId}:
     get:
       operationId: getTroc
       tags: [troc]
       parameters:
-        - in: path
-          name: trocId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
-          description: Troc mis à jour
+          description: Troc
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc'
+                $ref: '#/components/schemas/TrocLookupUser'
     patch:
       operationId: patchTroc
       tags: [troc]
       parameters:
-        - in: path
-          name: trocId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
           description: Troc mis à jour
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc'
-  /trocs/:
-    post:
-      operationId: createTroc
-      tags: [troc]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TrocBase'
-      responses:
-        200:
-          description: Troc nouvellement créé
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Troc'
+                $ref: '#/components/schemas/TrocLookupUser'
   /trocs/{trocId}/admin:
     post:
       operationId: addAdmin
       tags: [troc]
       parameters:
-        - in: path
-          name: trocId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
           description: Troc mis à jour
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc'
+                $ref: '#/components/schemas/TrocLookupUser'
   /trocs/{trocId}/cashier:
     post:
       operationId: addCashier
       tags: [troc]
       parameters:
-        - in: path
-          name: trocId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
           description: Troc mis à jour
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc'
+                $ref: '#/components/schemas/TrocLookupUser'
   /trocs/{trocId}/trader:
     post:
       operationId: addTrader
       tags: [troc]
       parameters:
-        - in: path
-          name: trocId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
           description: Troc mis à jour
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc'
+                $ref: '#/components/schemas/TrocLookupUser'
   /trocs/{trocId}/admin/remove:
     post:
       operationId: removeAdmin
       tags: [troc]
       parameters:
-        - in: path
-          name: trocId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
           description: Troc mis à jour
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc'
+                $ref: '#/components/schemas/TrocLookupUser'
   /trocs/{trocId}/cashier/remove:
     post:
       operationId: removeCashier
       tags: [troc]
       parameters:
-        - in: path
-          name: trocId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
           description: Troc mis à jour
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc'
+                $ref: '#/components/schemas/TrocLookupUser'
   /trocs/{trocId}/trader/remove:
     post:
       operationId: removeTrader
       tags: [troc]
       parameters:
-        - in: path
-          name: trocId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
           description: Troc mis à jour
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc'
+                $ref: '#/components/schemas/TrocLookupUser'
   /trocs/{trocId}/trader/prefix:
     post:
-      operationId: editTraderPrfix)
+      operationId: editTraderPrefix
       tags: [troc]
       parameters:
-        - in: path
-          name: trocId
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
           description: Troc mis à jour
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Troc'
+                $ref: '#/components/schemas/TrocLookupUser'
+
+  #   ▢=====================================▢
+  #   |               ARTICLE                |
+  #   ▢=====================================▢
+
+  /articles/:
+    post:
+      summary: Fonctionne également avec une list d'article
+      operationId: createArticle
+      tags: [article]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/schemas/ArticleCreate'
+      responses:
+        200:
+          $ref: 'article.yml#/components/responses/200_Article'
+    get:
+      summary: Recherche d'un article
+      operationId: searchArticle
+      tags: [article]
+      parameters:
+        - name: troc
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: number
+        - name: skip
+          in: query
+          schema:
+            type: number
+        - name: filter_statut
+          in: query
+          schema:
+            type: string
+        - name: provider
+          in: query
+          schema:
+            type: string
+        - name: providernot
+          in: query
+          schema:
+            type: string
+        - name: include_without_name
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          $ref: 'article.yml#/components/responses/200_Articles'
+    patch:
+      operationId: patchArticle
+      tags: [article]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/schemas/Article'
+      responses:
+        200:
+          description: Article mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Article'
+  /articles/{articleId}:
+    get:
+      operationId: getArticle
+      tags: [article]
+      parameters:
+        - $ref: '#/components/parameters/pathArticle'
+      responses:
+        200:
+          $ref: 'article.yml#/components/responses/200_Article'
+    delete:
+      summary: Supprimer un article
+      operationId: deleteArticle
+      tags: [article]
+      parameters:
+        - $ref: '#/components/parameters/pathArticle'
+      responses:
+        200:
+          description: Message de succès
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Success'
+  /articles/edit:
+    post:
+      deprecated: true
+      operationId: editArticle
+      tags: [article]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                article:
+                  description: ID de l'article à éditer
+                  type: string
+                edits:
+                  description: Changement à appliqué à l'article
+                  type: object
+                  properties:
+                    allOf:
+                      $ref: '#components/schemas/Article'
+      responses:
+        200:
+          $ref: 'article.yml#/components/responses/200_Article'
+  /articles/giveback:
+    post:
+      deprecated: true
+      operationId: goBackArticle
+      tags: [article]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  _id:
+                    description: Id de l'article retourner
+                    type: string
+      responses:
+        200:
+          $ref: 'article.yml#/components/responses/200_Articles'
+  /articles/provided:
+    get:
+      operationId: getProvidedArticles
+      tags: [article]
+      parameters:
+        - in: query
+          required: true
+          name: troc
+          schema:
+            type: string
+        - in: query
+          required: true
+          name: provider
+          schema:
+            type: string
+        - $ref: '#/components/parameters/querySkip'
+        - $ref: '#/components/parameters/queryLimit'
+      responses:
+        200:
+          $ref: 'article.yml#/components/responses/200_Articles'
+  /articles/purschases:
+    get:
+      operationId: getPurchasesArticles
+      tags: [article]
+      parameters:
+        - in: query
+          required: true
+          name: troc
+          schema:
+            type: string
+        - in: query
+          name: buyer
+          schema:
+            type: string
+        - in: query
+          name: seller
+          schema:
+            type: string
+        - $ref: '#/components/parameters/querySkip'
+        - $ref: '#/components/parameters/queryLimit'
+      responses:
+        200:
+          $ref: 'article.yml#/components/responses/200_Articles'
+  /articles/givebacks:
+    get:
+      operationId: getGivbacksArticles
+      tags: [article]
+      parameters:
+        - in: query
+          required: true
+          name: troc
+          schema:
+            type: string
+        - in: query
+          name: user
+          schema:
+            type: string
+        - $ref: '#/components/parameters/querySkip'
+        - $ref: '#/components/parameters/queryLimit'
+      responses:
+        200:
+          $ref: 'article.yml#/components/responses/200_Articles'

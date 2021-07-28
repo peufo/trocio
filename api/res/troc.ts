@@ -1,6 +1,12 @@
 import type { RequestHandler } from 'express'
 import { userResume } from '../controllers/troc_get'
 
+import {
+  lookupIfAdmin,
+  populateTrocUser,
+  scheduleValidation,
+} from '../controllers/troc_utils'
+
 export const resUserResume: RequestHandler = async (req, res, next) => {
   try {
     const { trocId, userId } = req.query
@@ -10,6 +16,18 @@ export const resUserResume: RequestHandler = async (req, res, next) => {
       throw Error('userId query need to be a string')
     const resume = await userResume(trocId, userId)
     res.json(resume)
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Return poplated lists
+ */
+export const resTrocUser: RequestHandler = async (req, res, next) => {
+  try {
+    const troc = await populateTrocUser(req.params.id)
+    res.json(troc)
   } catch (error) {
     next(error)
   }

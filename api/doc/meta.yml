@@ -1,4 +1,45 @@
 components:
+  parameters:
+    queryUser:
+      in: query
+      name: userId
+      required: true
+      schema:
+        type: string
+    queryTroc:
+      in: query
+      name: trocId
+      required: true
+      schema:
+        type: string
+    pathTroc:
+      in: path
+      name: trocId
+      required: true
+      schema:
+        type: string
+    pathUser:
+      in: path
+      name: userId
+      required: true
+      schema:
+        type: string
+    pathArticle:
+      in: path
+      name: articleId
+      required: true
+      schema:
+        type: string
+    querySkip:
+      in: query
+      name: skip
+      schema:
+        type: number
+    queryLimit:
+      in: query
+      name: limit
+      schema:
+        type: number
   schemas:
     Success:
       type: object

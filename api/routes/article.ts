@@ -21,16 +21,16 @@ import { checkLogin } from '../controllers/user_utils'
 
 router
   .post('/', checkLogin, createArticle)
+  .get('/', searchArticle)
+  .patch('/', checkLogin, patchArticle)
   .post('/edit', checkLogin, editArticle)
   .post('/giveback', checkLogin, goBackArticle)
-  .post('/newprice', checkLogin, createNewPriceRequest)
-  .post('/acceptnewprice', checkLogin, acceptNewPriceRequest)
-  .delete('/:id', checkLogin, deleteArticle)
-  .patch('/', checkLogin, patchArticle)
-  .get('/', searchArticle)
+  // .post('/newprice', checkLogin, createNewPriceRequest)
+  // .post('/acceptnewprice', checkLogin, acceptNewPriceRequest)
   .get('/provided', getProvidedArticles)
   .get('/purschases', getPurchasesArticles)
   .get('/givebacks', getGivbacksArticles)
-  .get('/:id', getArticle)
+  .delete('/:articleId', checkLogin, deleteArticle)
+  .get('/:articleId', getArticle)
 
 export default router

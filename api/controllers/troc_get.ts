@@ -130,8 +130,8 @@ export async function userResume(
  * Retourne les spécifications d'un utilisateur sur un troc (tarif, prefix, role)
  */
 export function getSpec(req, res, next) {
-  let { troc, user } = req.query
-  findSpec(troc, user, (err, spec) => {
+  const { trocId, userId } = req.query
+  findSpec(trocId, userId, (err, spec) => {
     if (err) return next(err)
     res.json(spec)
   })
