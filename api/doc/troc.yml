@@ -194,3 +194,18 @@ components:
           type: number
         paymentsSum:
           type: number
+    TrocState:
+      type: object
+      properties:
+        articlesProposed:
+          type: array
+          items:
+            $ref: 'article.yml#/components/schemas/Article'
+        articlesBuyed:
+          type: array
+          items:
+            $ref: 'article.yml#/components/schemas/Article'
+        payments:
+          type: array
+          items:
+            $ref: 'payment.yml#/components/schemas/Payment'
