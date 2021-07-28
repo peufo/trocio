@@ -9,7 +9,7 @@ import { checkAdmin } from '../controllers/troc_utils'
 
 router
   .post('/', createSubscribe)
-  .get('/me', getMySubscribedTrocs)
   .get('/', checkAdmin, getSubscriber)
+  .get('/me', getMySubscribedTrocs)
 
 export default router

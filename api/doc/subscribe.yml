@@ -1,0 +1,39 @@
+openapi: '3.0.2'
+components:
+  schemas:
+    SubscribeCreate:
+      type: object
+      properties:
+        troc:
+          type: string
+    Subscribe:
+      allOf:
+        - type: object
+          properties:
+            user:
+              type: string
+        - $ref: '#/components/schemas/SubscribeCreate'
+        - $ref: 'meta.yml#/components/schemas/Timestamp'
+        - $ref: 'meta.yml#/components/schemas/DataBase'
+    SubscribeUser:
+      allOf:
+        - $ref: '#/components/schemas/Subscribe'
+        - type: object
+          properties:
+            user:
+              $ref: 'user.yml#/components/schemas/UserPublic'
+  responses:
+    200_Subscribe:
+      description: Un abonnement
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Subscribe'
+    200_Subscribes:
+      description: Liste de abonnements
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Subscribe'

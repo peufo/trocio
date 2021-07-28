@@ -59,6 +59,12 @@ components:
       $ref: 'payment.yml#/components/schemas/PaymentCreate'
     Payment:
       $ref: 'payment.yml#/components/schemas/Payment'
+    SubscribeCreate:
+      $ref: 'subscribe.yml#/components/schemas/SubscribeCreate'
+    Subscribe:
+      $ref: 'subscribe.yml#/components/schemas/Subscribe'
+    SubscribeUser:
+      $ref: 'subscribe.yml#/components/schemas/SubscribeUser'
 tags:
   - name: user
     description: Methodes relatives aux utilisateurs
@@ -68,6 +74,8 @@ tags:
     description: Methodes relatives aux articles
   - name: payment
     description: Methodes relatives aux paiements
+  - name: subscribe
+    description: Methodes relatives aux abonnements
 paths:
   #   ▢=====================================▢
   #   |               USER                   |
@@ -746,3 +754,48 @@ paths:
       responses:
         200:
           $ref: 'payment.yml#/components/responses/200_Payments'
+
+  #   ▢=====================================▢
+  #   |              SUBSCRIBE               |
+  #   ▢=====================================▢
+
+  /subscribes:
+    post:
+      description: S'abonner à un troc
+      operationId: createSubscribe
+      tags: [subscribe]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/schemas/SubscribeCreate'
+      responses:
+        200:
+          $ref: 'subscribe.yml#/components/responses/200_Subscribe'
+    get:
+      description: Chercher les abonnements d'un troc
+      operationId: getSubscriber
+      tags: [subscribe]
+      parameters:
+        - name: troc
+          required: true
+          in: query
+          schema:
+            type: string
+        - $ref: 'meta.yml#/components/parameters/querySkip'
+        - $ref: 'meta.yml#/components/parameters/queryLimit'
+      responses:
+        200:
+          $ref: 'subscribe.yml#/components/responses/200_Subscribes'
+  /subscribes/me:
+    get:
+      description: Récupère mes abonnements
+      operationId: getMySubscribedTrocs
+      tags: [subscribe]
+      parameters:
+        - $ref: 'meta.yml#/components/parameters/querySkip'
+        - $ref: 'meta.yml#/components/parameters/queryLimit'
+      responses:
+        200:
+          $ref: 'subscribe.yml#/components/responses/200_Subscribes'
