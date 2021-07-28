@@ -47,7 +47,7 @@ export function createTroc(req, res, next) {
 }
 
 export function patchTroc(req, res, next) {
-  Troc.findOne({ _id: req.params.id }).exec((err, troc) => {
+  Troc.findOne({ _id: req.params.trocId }).exec((err, troc) => {
     if (err || !troc) return next(err || Error('Not found'))
 
     //Verifie si l'horaire est modifier
@@ -81,7 +81,7 @@ export function addAdmin(req, res, next) {
   User.findById(req.body.admin, (err, user) => {
     if (err || !user) return next(err || Error('User not found'))
 
-    Troc.findById(req.params.id, (err, troc) => {
+    Troc.findById(req.params.trocId, (err, troc) => {
       if (err || !troc) return next(err || Error('Troc not found'))
 
       // Check if user is already admin
@@ -104,7 +104,7 @@ export function addCashier(req, res, next) {
   User.findById(req.body.cashier, (err, user) => {
     if (err || !user) return next(err || Error('User not found'))
 
-    Troc.findById(req.params.id, (err, troc) => {
+    Troc.findById(req.params.trocId, (err, troc) => {
       if (err || !troc) return next(err || Error('Troc not found'))
 
       //Check if user is already cashier
@@ -131,7 +131,7 @@ export function addTrader(req, res, next) {
   User.findById(req.body.trader, (err, user) => {
     if (err || !user) return next(err || Error('User not found'))
 
-    Troc.findById(req.params.id, (err, troc) => {
+    Troc.findById(req.params.trocId, (err, troc) => {
       if (err || !troc) return next(err || Error('Troc not found'))
 
       if (!troc.trader) troc.trader = []
@@ -158,7 +158,7 @@ export function removeAdmin(req, res, next) {
   User.findById(req.body.admin, (err, user) => {
     if (err || !user) return next(err || Error('User not found'))
 
-    Troc.findById(req.params.id, (err, troc) => {
+    Troc.findById(req.params.trocId, (err, troc) => {
       if (err || !troc) return next(err || Error('Troc not found'))
 
       const adminIndex = troc.admin.indexOf(req.body.admin)
@@ -181,7 +181,7 @@ export function removeCashier(req, res, next) {
   User.findById(req.body.cashier, (err, user) => {
     if (err || !user) return next(err || Error('User not found'))
 
-    Troc.findById(req.params.id, (err, troc) => {
+    Troc.findById(req.params.trocId, (err, troc) => {
       if (err || !troc) return next(err || Error('Troc not found'))
 
       const cashierIndex = troc.cashier.indexOf(req.body.cashier)
@@ -199,7 +199,7 @@ export function removeTrader(req, res, next) {
   User.findById(req.body.trader, (err, user) => {
     if (err || !user) return next(err || Error('User not found'))
 
-    Troc.findById(req.params.id, (err, troc) => {
+    Troc.findById(req.params.trocId, (err, troc) => {
       if (err || !troc) return next(err || Error('Troc not found'))
 
       const traderIndex = troc.trader
@@ -219,7 +219,7 @@ export function editTraderPrefix(req, res, next) {
   User.findById(req.body.trader, (err, user) => {
     if (err || !user) return next(err || Error('User not found'))
 
-    Troc.findById(req.params.id, (err, troc) => {
+    Troc.findById(req.params.trocId, (err, troc) => {
       if (err || !troc) return next(err || Error('Troc not found'))
 
       if (troc.trader.map((t) => t.prefix).indexOf(req.body.prefix) != -1)

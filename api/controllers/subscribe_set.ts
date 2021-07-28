@@ -1,7 +1,7 @@
 import Subscribe from '../models/subscribe'
 import Troc from '../models/troc'
 
-async function createSubscribe(req, res, next) {
+export async function createSubscribe(req, res, next) {
   let { troc } = req.body
   if (!req.session.user) return next(Error('Login is required'))
   if (!troc) return next(Error('Troc is required on body'))
