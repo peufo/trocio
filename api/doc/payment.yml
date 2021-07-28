@@ -25,7 +25,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#components/schemas/Payment'
+            $ref: '#/components/schemas/Payment'
     200_Payments:
       description: Liste de payements
       content:
@@ -33,4 +33,4 @@ components:
           schema:
             type: array
             items:
-              $ref: '#components/schemas/Payment'
+              $ref: '#/components/schemas/Payment'
