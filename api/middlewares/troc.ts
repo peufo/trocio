@@ -15,19 +15,25 @@ interface UserTroc {
 }
 
 export const ensureUserIsAdmin: RequestHandler = async (req, res, next) => {
-  if (!req.session.user._id) return next(Error('Login required'))
-  const { trocId } = parseRequest(req)
-  if (!(await userIsAdminOfTroc(trocId, req.session.user._id)))
-    return next(Error('User is not admin of troc'))
-  return next()
+  try {
+    if (!req.session.user._id) throw Error('Login required')
+    const { trocId } = parseRequest(req)
+    await userIsAdminOfTroc(trocId, req.session.user._id)
+    return next()
+  } catch (error) {
+    return next(error)
+  }
 }
 
 export const ensureUserIsCashier: RequestHandler = async (req, res, next) => {
-  if (!req.session.user._id) return next(Error('Login required'))
-  const { trocId } = parseRequest(req)
-  if (!(await userIsCashierOfTroc(trocId, req.session.user._id)))
-    return next(Error('User is not cashier of troc'))
-  return next()
+  try {
+    if (!req.session.user._id) return next(Error('Login required'))
+    const { trocId } = parseRequest(req)
+    await userIsCashierOfTroc(trocId, req.session.user._id)
+    return next()
+  } catch (error) {
+    return next(error)
+  }
 }
 
 /**
