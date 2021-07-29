@@ -6,7 +6,6 @@ type Callback = (err?: Error | null, returnValue?: any) => any
 
 export function checkAdmin(req, res, next) {
   if (!req.session.user) return next(Error('Login required'))
-  console.log({ _id: req.params.trocId || req.params.trocId || req.query.troc })
   Troc.findOne(
     { _id: req.params.trocId || req.params.trocId || req.query.troc },
     { admin: 1 }

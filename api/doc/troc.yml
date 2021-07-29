@@ -20,11 +20,6 @@ components:
       properties:
         name:
           type: string
-        apply:
-          description: Participants sur lesquels le tarif est appliqué
-          type: array
-          items:
-            type: string
         margin:
           type: number
         fee:
@@ -45,6 +40,11 @@ components:
           properties:
             bydefault:
               type: boolean
+            apply:
+              description: Participants sur lesquels le tarif est appliqué
+              type: array
+              items:
+                type: string
     TrocBase:
       type: object
       properties:
@@ -214,3 +214,10 @@ components:
           type: array
           items:
             $ref: 'payment.yml#/components/schemas/Payment'
+  responses:
+    200_TrocLookupUser:
+      description: Troc complet pour l'administrateur
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TrocLookupUser'

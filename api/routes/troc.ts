@@ -12,6 +12,9 @@ import {
   removeCashier,
   removeTrader,
   editTraderPrefix,
+  createTarif,
+  deleteTarif,
+  editTarif,
 } from '../controllers/troc_set'
 // import { checkAdmin } from '../controllers/troc_utils'
 import {
@@ -49,6 +52,14 @@ router
     '/:trocId/trader/:userId/prefix',
     ensureUserIsAdmin,
     editTraderPrefix,
+    resTrocUser
+  )
+  .post('/:trocId/tarif', ensureUserIsAdmin, createTarif, resTrocUser)
+  .patch('/:trocId/tarif/:tarifId', ensureUserIsAdmin, editTarif, resTrocUser)
+  .delete(
+    '/:trocId/tarif/:tarifId',
+    ensureUserIsAdmin,
+    deleteTarif,
     resTrocUser
   )
 
