@@ -435,11 +435,7 @@ paths:
         - $ref: '#/components/parameters/pathTroc'
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
   /trocs/{trocId}/admin/{userId}:
     post:
       operationId: addAdmin
@@ -449,11 +445,7 @@ paths:
         - $ref: '#/components/parameters/pathUser'
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
     delete:
       operationId: removeAdmin
       tags: [troc]
@@ -462,11 +454,7 @@ paths:
         - $ref: '#/components/parameters/pathUser'
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
   /trocs/{trocId}/cashier/{userId}:
     post:
       operationId: addCashier
@@ -476,11 +464,7 @@ paths:
         - $ref: '#/components/parameters/pathUser'
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
     delete:
       operationId: removeCashier
       tags: [troc]
@@ -489,11 +473,7 @@ paths:
         - $ref: '#/components/parameters/pathUser'
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
   /trocs/{trocId}/trader/{userId}:
     post:
       operationId: addTrader
@@ -504,11 +484,7 @@ paths:
 
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
     delete:
       operationId: removeTrader
       tags: [troc]
@@ -517,11 +493,7 @@ paths:
         - $ref: '#/components/parameters/pathUser'
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
   /trocs/{trocId}/trader/{userId}/prefix:
     post:
       summary: Met à jour le prefix
@@ -540,11 +512,7 @@ paths:
                   type: string
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
   /trocs/{trocId}/tarif:
     post:
       description: Creation d'un nouveau tarif
@@ -559,12 +527,23 @@ paths:
               $ref: '#/components/schemas/TrocTarifCreation'
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
   /trocs/{trocId}/tarif/{tarifId}:
+    patch:
+      description: Edition des infos de bases d'un tarif
+      operationId: editTarif
+      tags: [troc]
+      parameters:
+        - $ref: '#/components/parameters/pathTroc'
+        - $ref: '#/components/parameters/pathTarif'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrocTarifCreation'
+      responses:
+        200:
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
     delete:
       description: Suppression d'un tarif
       operationId: deleteTarif
@@ -574,11 +553,7 @@ paths:
         - $ref: '#/components/parameters/pathTarif'
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
   /trocs/{trocId}/tarif/{tarifId}/apply/{userId}:
     post:
       description: Attribution un tarif à un participant et supprime l'attribution en cours si elles existes
@@ -590,11 +565,7 @@ paths:
         - $ref: '#/components/parameters/pathUser'
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
     delete:
       description: Supprimer l'attribution d'un tarif à un participant
       operationId: removeApply
@@ -605,11 +576,7 @@ paths:
         - $ref: '#/components/parameters/pathUser'
       responses:
         200:
-          description: Troc mis à jour
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrocLookupUser'
+          $ref: 'troc.yml#/components/responses/200_TrocLookupUser'
 
   #   ▢=====================================▢
   #   |               ARTICLE                |

@@ -14,6 +14,7 @@
   import { faCubes, faPercent } from '@fortawesome/free-solid-svg-icons'
   import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 
+  export let open = false
   export let name = ''
   export let apply = []
   export let margin = 0
@@ -76,7 +77,7 @@
 </script>
 
 <ExpansionCard
-  open
+  {open}
   title={name}
   titleEditable={!bydefault}
   on:inputTitle={handleInputTitle}
