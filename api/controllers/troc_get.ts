@@ -6,8 +6,6 @@ import Subscribe from '../models/subscribe'
 import { findSpec, lookupIfAdmin } from './troc_utils'
 import { FilterQuery, Schema } from 'mongoose'
 
-const { ObjectId } = Schema.Types
-
 export async function userIsAdminOfTroc(trocId: string, userId: string) {
   const troc = await TrocModel.findOne({ _id: trocId, admin: userId })
   if (!troc) throw new Error('User is not admin of troc')
