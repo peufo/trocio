@@ -15,13 +15,11 @@ components:
             - 'deposit'
             - 'recovery'
             - 'sale'
-    Tarif:
+    TarifCreation:
       type: object
       properties:
         name:
           type: string
-        bydefault:
-          type: boolean
         apply:
           description: Participants sur lesquels le tarif est appliqué
           type: array
@@ -40,6 +38,13 @@ components:
                 type: number
         maxarticles:
           type: number
+    Tarif:
+      allOf:
+        - $ref: '#/components/schemas/TarifCreation'
+        - type: object
+          properties:
+            bydefault:
+              type: boolean
     TrocBase:
       type: object
       properties:

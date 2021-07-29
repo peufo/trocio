@@ -29,8 +29,15 @@ export function api<TypeRequest, TypeResponse = TypeRequest>(
   } = options
 
   return axios
-    .request<TypeResponse & BaseResponse>({ url, method, params, data })
+    .request<TypeResponse & BaseResponse>({
+      url,
+      method,
+      params,
+      data,
+      validateStatus: (httpStatus) => httpStatus <= 404,
+    })
     .then(({ data }) => {
+      console.log({ data })
       if (data.error) throw data.message
 
       if (success === true) notify.success(data.message)
