@@ -17,7 +17,6 @@
 <div class="container pt-5">
   {#each $troc.tarif as tarif, i}
     <Tarif
-      index={i}
       bind:name={tarif.name}
       bind:apply={tarif.apply}
       bind:margin={tarif.margin}

@@ -29,19 +29,24 @@ router
   .get('/spec', getSpec)
   .get('/:trocId/stats', ensureUserIsAdmin, getStats)
   .get('/:trocId', getTroc)
-  .post('/:trocId/admin', ensureUserIsAdmin, addAdmin, resTrocUser)
-  .post('/:trocId/cashier', ensureUserIsAdmin, addCashier, resTrocUser)
-  .post('/:trocId/trader', ensureUserIsAdmin, addTrader, resTrocUser)
-  .post('/:trocId/admin/remove', ensureUserIsAdmin, removeAdmin, resTrocUser)
-  .post(
-    '/:trocId/cashier/remove',
+  .post('/:trocId/admin/:userId', ensureUserIsAdmin, addAdmin, resTrocUser)
+  .delete('/:trocId/admin/:userId', ensureUserIsAdmin, removeAdmin, resTrocUser)
+  .post('/:trocId/cashier/:userId', ensureUserIsAdmin, addCashier, resTrocUser)
+  .delete(
+    '/:trocId/cashier/:userId',
     ensureUserIsAdmin,
     removeCashier,
     resTrocUser
   )
-  .post('/:trocId/trader/remove', ensureUserIsAdmin, removeTrader, resTrocUser)
+  .post('/:trocId/trader/:userId', ensureUserIsAdmin, addTrader, resTrocUser)
+  .delete(
+    '/:trocId/trader/:userId',
+    ensureUserIsAdmin,
+    removeTrader,
+    resTrocUser
+  )
   .post(
-    '/:trocId/trader/prefix',
+    '/:trocId/trader/:userId/prefix',
     ensureUserIsAdmin,
     editTraderPrefix,
     resTrocUser

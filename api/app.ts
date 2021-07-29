@@ -28,7 +28,6 @@ declare module 'express-session' {
 }
 
 const MongoStore = connectMongo(session)
-const catchError404: RequestHandler = (req, res, next) => next(createError(404))
 
 //Connection database
 try {
@@ -64,17 +63,18 @@ app.use('/doc-swagger', swaggerUI.serve)
 app.use('/doc-swagger', swaggerUI.setup(null, { swaggerUrl: '/doc/index.yml' }))
 
 app.use('/', routesIndex)
-app.use('/users', routesUser, catchError404)
-app.use('/articles', routesArticle, catchError404)
-app.use('/trocs', routesTroc, catchError404)
-app.use('/payments', routesPayment, catchError404)
-app.use('/subscribes', routesSubscribe, catchError404)
-app.use('/root', checkSuperAdmin, routesRoot, catchError404)
+app.use('/users', routesUser)
+app.use('/articles', routesArticle)
+app.use('/trocs', routesTroc)
+app.use('/payments', routesPayment)
+app.use('/subscribes', routesSubscribe)
+app.use('/root', checkSuperAdmin, routesRoot)
 
-// error handler
-
+const catchError404: RequestHandler = (req, res, next) => {
+  res.status(404)
+  next(createError(404, `Not found: ${req.path}`))
+}
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  if (!err) return next()
   if (req.app.get('env') === 'development' || err.message.match(/^public: /)) {
     const message = err.message.replace(/^public: /, '')
     res.json({ error: true, message })
@@ -84,6 +84,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   }
 }
 
+app.use(catchError404)
 app.use(errorHandler)
 
 export default app

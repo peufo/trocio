@@ -83,57 +83,60 @@ interface TrocUserQuery {
 }
 
 export function addAdmin({ trocId, userId }: TrocUserQuery) {
-  return api<{ admin: string }, TrocLookup>(`/api/trocs/${trocId}/admin`, {
-    method: 'post',
-    data: { admin: userId },
-    success: 'Administrateur ajouté',
-  })
+  return api<{ admin: string }, TrocLookup>(
+    `/api/trocs/${trocId}/admin/${userId}`,
+    {
+      method: 'post',
+      success: 'Administrateur ajouté',
+    }
+  )
 }
 
 export function removeAdmin({ trocId, userId }: TrocUserQuery) {
   return api<{ admin: string }, TrocLookup>(
-    `/api/trocs/${trocId}/admin/remove`,
+    `/api/trocs/${trocId}/admin/${userId}`,
     {
-      method: 'post',
-      data: { admin: userId },
+      method: 'delete',
       success: 'Administrateur supprimé',
     }
   )
 }
 
 export function addCashier({ trocId, userId }: TrocUserQuery) {
-  return api<{ cashier: string }, TrocLookup>(`/api/trocs/${trocId}/cashier`, {
-    method: 'post',
-    data: { cashier: userId },
-    success: 'Caisser ajouté',
-  })
+  return api<{ cashier: string }, TrocLookup>(
+    `/api/trocs/${trocId}/cashier/${userId}`,
+    {
+      method: 'post',
+      success: 'Caisser ajouté',
+    }
+  )
 }
 
 export function removeCashier({ trocId, userId }: TrocUserQuery) {
   return api<{ cashier: string }, TrocLookup>(
-    `/api/trocs/${trocId}/cashier/remove`,
+    `/api/trocs/${trocId}/cashier/${userId}`,
     {
-      method: 'post',
-      data: { cashier: userId },
+      method: 'delete',
       success: 'Caisser supprimé',
     }
   )
 }
 
 export function addTrader({ trocId, userId }: TrocUserQuery) {
-  return api<{ trader: string }, TrocLookup>(`/api/trocs/${trocId}/trader`, {
-    method: 'post',
-    data: { trader: userId },
-    success: 'Commerçant ajouté',
-  })
+  return api<{ trader: string }, TrocLookup>(
+    `/api/trocs/${trocId}/trader/${userId}`,
+    {
+      method: 'post',
+      success: 'Commerçant ajouté',
+    }
+  )
 }
 
 export function removeTrader({ trocId, userId }: TrocUserQuery) {
   return api<{ trader: string }, TrocLookup>(
-    `/api/trocs/${trocId}/trader/remove`,
+    `/api/trocs/${trocId}/trader/${userId}`,
     {
-      method: 'post',
-      data: { trader: userId },
+      method: 'delete',
       success: 'Commerçant supprimé',
     }
   )
@@ -145,10 +148,10 @@ export function setTraderPrefix({
   prefix,
 }: TrocUserQuery & { prefix: string }) {
   return api<{ trader: string; prefix: string }, TrocLookup>(
-    `/api/trocs/${trocId}/trader/prefix`,
+    `/api/trocs/${trocId}/trader/${userId}/prefix`,
     {
       method: 'post',
-      data: { trader: userId, prefix },
+      data: { prefix },
       success: 'Préfix mis à jour',
     }
   )
