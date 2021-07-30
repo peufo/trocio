@@ -7,3 +7,7 @@ export * from './subscribe'
 export declare function createEventDispatcher<T>(
   type: string
 ): (detail?: T) => void
+
+// Utils
+export type ArrayElement<ArrayType extends readonly unknown[]> =
+  ArrayType extends readonly (infer ElementType)[] ? ElementType : never

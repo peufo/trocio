@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
+  import { fade } from 'svelte/transition'
   import {
     TextField,
     Button,
@@ -8,186 +8,234 @@
     Table,
   } from 'svelte-materialify'
 
+  import type { Tarif } from 'types'
+
+  import { troc, useDeleteTarif, useEditTarif } from '$lib/troc/store'
+
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
-  import SelectUser from '$lib/user/Select.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import { faCubes, faPercent } from '@fortawesome/free-solid-svg-icons'
   import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
+  import notify from '$lib/notify'
+
+  let klass = ''
+  export { klass as class }
 
   export let open = false
-  export let name = ''
-  export let apply = []
-  export let margin = 0
-  export let fee = []
-  export let maxarticles = 0
-  export let bydefault = false
-  const dispatch = createEventDispatcher()
+  export let tarif: Tarif
+  const queryDeleteTarif = useDeleteTarif()
+  const queryEditTarif = useEditTarif()
 
-  function removeFee(i) {
-    fee.splice(i, 1)
-    fee = fee
+  // la copie tarif
+  let _tarif: Tarif = getClone()
+  $: isModified = JSON.stringify(tarif) !== JSON.stringify(_tarif)
+
+  function getClone(): Tarif {
+    return {
+      ...tarif,
+      fee: [...tarif.fee.map((fee) => ({ ...fee }))],
+    }
   }
-  function removeApply(i) {
-    apply.splice(i, 1)
-    dispatch('removeUser')
-    apply = apply
+
+  function handleDeleteTarif() {
+    if (tarif.bydefault)
+      return notify.warning('Le tarif par défaut ne peut pas être supprimé')
+    if (!confirm(`Etes-vous sur de vouloir supprimer le tarif "${tarif.name}"`))
+      return
+    $queryDeleteTarif.mutate({ trocId: $troc._id, tarifId: tarif._id })
+  }
+
+  function handleInputName(event: any) {
+    _tarif.name = event.target.value
+  }
+
+  function handleChangeTarif(event: any) {
+    _tarif.margin = Number(event.target.value) / 100
+  }
+
+  function handleChangeMax(event: any) {
+    _tarif.maxarticles = parseInt(event.target.value)
   }
 
   function addFee() {
-    let last = fee.length - 1
+    let last = _tarif.fee.length - 1
     if (last === -1) {
-      fee = [...fee, { price: 0, value: 0.5 }]
+      _tarif.fee = [..._tarif.fee, { price: 0, value: 0.5 }]
     } else {
-      fee = [...fee, { price: fee[last].price + 1, value: fee[last].value + 1 }]
+      _tarif.fee = [
+        ..._tarif.fee,
+        {
+          price: _tarif.fee[last].price + 1,
+          value: _tarif.fee[last].value + 1,
+        },
+      ]
     }
   }
 
-  let pourcent = margin * 100
-  //Pas util de calculé à chaque fois
-  $: margin = pourcent / 100
-
-  function checkRangePrice(e, i) {
-    if (e.target.min && fee[i].price < e.target.min)
-      fee[i].price = Number(e.target.min)
-    if (e.target.max && fee[i].price > e.target.max)
-      fee[i].price = Number(e.target.max)
+  function removeFee(index: number) {
+    _tarif.fee = [..._tarif.fee.slice(0, index), ..._tarif.fee.slice(index + 1)]
   }
 
-  function checkRangeValue(e, i) {
-    if (e.target.min && fee[i].value < e.target.min)
-      fee[i].value = Number(e.target.min)
-    if (e.target.max && fee[i].value > e.target.max)
-      fee[i].value = Number(e.target.max)
+  function handleChangeFeePrice(event: any, index: number) {
+    _tarif.fee[index].price = +event.target.value
+    console.log(tarif.fee[index].price)
   }
-
-  function remove() {
-    if (confirm(`Etes-vous sur de vouloir supprimer le tarif "${name}"`)) {
-      dispatch('remove')
-    }
-  }
-
-  function addApply(e) {
-    apply = [...apply, e.detail]
-    dispatch('selectUser')
-  }
-
-  function handleInputTitle(event: any) {
-    console.log('Input title', event.detail)
+  function handleChangeFeeValue(event: any, index: number) {
+    _tarif.fee[index].value = +event.target.value
   }
 </script>
 
 <ExpansionCard
   {open}
-  title={name}
-  titleEditable={!bydefault}
-  on:inputTitle={handleInputTitle}
-  subtitle="Attribué {bydefault ? 'par défaut' : 'pour 52 participants'}"
+  on:open
+  title={_tarif.name}
+  titleEditable
+  on:input={handleInputName}
+  subtitle="Attribué {_tarif.bydefault ? 'par défaut' : 'à 52 participants'}"
+  class={klass}
 >
-  <div class="d-flex align-start">
-    <TextField
-      type="number"
-      min="0"
-      max="40"
-      placeholder=" "
-      hint="Votre part sur les articles vendus"
-      bind:value={pourcent}
-      style="max-width: 50%;"
-      class="mr-2"
-    >
-      <span slot="append">
-        <IconLink icon={faPercent} size="1em" />
-      </span>
-      Marge
-    </TextField>
+  <div class="pa-4">
+    <div class="d-flex align-start">
+      <TextField
+        type="number"
+        value={(_tarif.margin * 100).toFixed(0)}
+        on:change={handleChangeTarif}
+        min="0"
+        max="40"
+        placeholder=" "
+        hint="Votre part sur les articles vendus"
+        style="max-width: 50%;"
+        class="mr-2"
+      >
+        <span slot="append">
+          <IconLink icon={faPercent} size="1em" />
+        </span>
+        Marge
+      </TextField>
 
-    <TextField
-      type="number"
-      min="1"
-      max="5000"
-      placeholder=" "
-      hint="Nombre maximum d'article pouvant être proposé par un participant"
-      bind:value={maxarticles}
-      style="max-width: 50%;"
-      class="ml-2"
-    >
-      <span slot="append">
-        <IconLink icon={faCubes} size="1em" />
-      </span>
-      Nombre maximum
-    </TextField>
-  </div>
-
-  <br />
-
-  <div style="width: 400px; margin: auto;">
-    <Table class="simple-card">
-      <thead>
-        <tr>
-          <th>A partir du prix</th>
-          <th>Les frais sont de</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {#each fee as f, i}
-          <tr>
-            <td>
-              <input
-                type="number"
-                class="pa-3"
-                style="width: 100px;"
-                bind:value={f.price}
-                on:keyup={(e) => checkRangePrice(e, i)}
-                min={i == 0 ? 0 : fee[i - 1].price}
-                max={i == fee.length - 1 ? '' : fee[i + 1].price}
-              />
-            </td>
-            <td>
-              <input
-                type="number"
-                class="pa-3"
-                style="width: 100px;"
-                bind:value={f.value}
-                on:keyup={(e) => checkRangeValue(e, i)}
-                min={i == 0 ? 0 : fee[i - 1].value}
-                max={i == fee.length - 1 ? '' : fee[i + 1].value}
-              />
-            </td>
-            <td>
-              <IconLink
-                icon={faTrashAlt}
-                size=".8em"
-                clickable
-                opacity
-                on:click={() => removeFee(i)}
-              />
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </Table>
-
-    <div class="d-flex mt-2">
-      <span class="text--secondary text-caption">
-        Frais que vous encaisser lors de la validation de l'article d'un
-        participant
-      </span>
-      <div class="flex-grow-1" />
-      <Button depressed on:click={addFee}>+1 règle</Button>
+      <TextField
+        type="number"
+        value={_tarif.maxarticles.toString()}
+        on:change={handleChangeMax}
+        min="1"
+        max="5000"
+        placeholder=" "
+        hint="Nombre maximum d'article pouvant être proposé par un participant"
+        style="max-width: 50%;"
+        class="ml-2"
+      >
+        <span slot="append">
+          <IconLink icon={faCubes} size="1em" />
+        </span>
+        Nombre maximum
+      </TextField>
     </div>
+
+    <br />
+    <br />
+
+    <div style="width: 400px; margin: auto;">
+      <Table class="simple-card">
+        <thead>
+          <tr>
+            <th>A partir du prix</th>
+            <th>Les frais sont de</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {#each _tarif.fee as fee, i}
+            <tr>
+              <td>
+                <input
+                  value={fee.price}
+                  on:change={(event) => handleChangeFeePrice(event, i)}
+                  type="number"
+                  class="pa-3"
+                  style="width: 100px;"
+                  min={i == 0 ? 0 : _tarif.fee[i - 1].price}
+                  max={i == _tarif.fee.length - 1
+                    ? ''
+                    : _tarif.fee[i + 1].price}
+                />
+              </td>
+              <td>
+                <input
+                  value={fee.value}
+                  on:change={(event) => handleChangeFeeValue(event, i)}
+                  type="number"
+                  class="pa-3"
+                  style="width: 100px;"
+                  min={i == 0 ? 0 : _tarif.fee[i - 1].value}
+                  max={i == _tarif.fee.length - 1
+                    ? ''
+                    : _tarif.fee[i + 1].value}
+                />
+              </td>
+              <td>
+                <IconLink
+                  icon={faTrashAlt}
+                  size=".8em"
+                  clickable
+                  opacity
+                  on:click={() => removeFee(i)}
+                />
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
+
+      <div class="d-flex mt-2">
+        <span class="text--secondary text-caption">
+          Frais que vous encaisser lors de la validation de l'article d'un
+          participant
+        </span>
+        <div class="flex-grow-1" />
+        <Button depressed on:click={addFee}>+1 règle</Button>
+      </div>
+    </div>
+
+    <br />
   </div>
 
-  <br />
-
-  {#if !bydefault || true}
-    <CardActions>
-      <Button text size="small" class="red-text mr-2" on:click={remove}>
+  <CardActions>
+    {#if !_tarif.bydefault}
+      <Button
+        disabled={$queryDeleteTarif.isLoading}
+        text
+        class="red-text mr-2"
+        on:click={handleDeleteTarif}
+      >
         Supprimer ce tarif
       </Button>
-      <div class="flex-grow-1" />
-      <Button>Valider la modification</Button>
-    </CardActions>
-  {/if}
+    {/if}
+    <div class="flex-grow-1" />
+    {#if isModified}
+      <div transition:fade|local>
+        <Button
+          class="primary-color"
+          disabled={$queryEditTarif.isLoading}
+          on:click={() => {
+            $queryEditTarif.mutate(
+              {
+                trocId: $troc._id,
+                tarifId: _tarif._id,
+                ..._tarif,
+              },
+              {
+                onSuccess: () => {
+                  _tarif = getClone()
+                },
+              }
+            )
+          }}
+        >
+          Valider la modification
+        </Button>
+      </div>
+    {/if}
+  </CardActions>
 </ExpansionCard>
 
 <style>

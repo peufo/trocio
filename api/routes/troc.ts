@@ -15,6 +15,8 @@ import {
   createTarif,
   deleteTarif,
   editTarif,
+  addApply,
+  removeApply,
 } from '../controllers/troc_set'
 // import { checkAdmin } from '../controllers/troc_utils'
 import {
@@ -60,6 +62,18 @@ router
     '/:trocId/tarif/:tarifId',
     ensureUserIsAdmin,
     deleteTarif,
+    resTrocUser
+  )
+  .post(
+    '/:trocId/tarif/:tarifId/apply/:userId',
+    ensureUserIsAdmin,
+    addApply,
+    resTrocUser
+  )
+  .delete(
+    '/:trocId/tarif/:tarifId/apply/:userId',
+    ensureUserIsAdmin,
+    removeApply,
     resTrocUser
   )
 

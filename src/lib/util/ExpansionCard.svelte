@@ -6,6 +6,9 @@
 
   import IconLink from '$lib/util/IconLink.svelte'
 
+  let klass = ''
+  export { klass as class }
+
   export let title = 'Title'
   export let subtitle = ''
   /**
@@ -19,7 +22,7 @@
 
   export let searchValue = ''
   export let hasSearchInput = false
-  export let inputElement: HTMLInputElement = null
+  export let inputElement: HTMLInputElement | undefined = undefined
   let isSearchActive = false
 
   const dispath = createEventDispatcher()
@@ -38,33 +41,31 @@
 
   function handleClickSearch() {
     isSearchActive = true
-    inputElement.focus()
+    inputElement?.focus()
   }
 
   function handleBlur(event) {
     if (event.target.value === '') isSearchActive = false
   }
-
-  function handleTitleInput(event: any) {
-    if (!titleEditable) return
-    const { target } = event
-    dispath('inputTitle', target.innerText)
-  }
 </script>
 
-<Card outlined hover={!open}>
+<Card outlined hover={!open} class={klass}>
   <div on:click={handleOpen}>
     <CardTitle>
       <slot name="icon" />
 
-      <span
-        class="text-uppercase"
-        contenteditable={titleEditable}
-        style={titleEditable ? 'min-width: 100px;' : ''}
-        on:input={handleTitleInput}
-      >
-        {title}
-      </span>
+      {#if titleEditable}
+        <input
+          value={title}
+          on:input
+          class="text-uppercase"
+          style="min-width: 100px;"
+        />
+      {:else}
+        <span class="text-uppercase">
+          {title}
+        </span>
+      {/if}
 
       <div style="flex-grow: 1;" />
 
@@ -111,9 +112,7 @@
 
     {#if open}
       <div transition:slide|local>
-        <div class="pa-4">
-          <slot />
-        </div>
+        <slot />
       </div>
     {/if}
   </div>

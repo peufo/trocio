@@ -269,16 +269,38 @@ export const deleteTarif: RequestHandler = (req, res, next) => {
     .catch(next)
 }
 
-export const editTarif: RequestHandler = async (req, res, next) => {
+export const editTarif: RequestHandler = (req, res, next) => {
   const { trocId, tarifId } = req.params
   const { name, margin, maxarticles, fee } = req.body
   Troc.findById(trocId, (err, troc) => {
-    if (err) return next(err)
+    if (err || !troc) return next(err || Error('Troc not found'))
     troc.tarif.id(tarifId).name = name
     troc.tarif.id(tarifId).margin = margin
     troc.tarif.id(tarifId).maxarticles = maxarticles
     troc.tarif.id(tarifId).fee = fee
     troc.vali
+    troc.save(next)
+  })
+}
+
+export const addApply: RequestHandler = (req, res, next) => {
+  const { trocId, tarifId, userId } = req.params
+  Troc.findById(trocId, (err, troc) => {
+    if (err || !troc) return next(err || Error('Troc not found'))
+    // Supprime les autres attribution
+    troc.tarif.forEach((tarif) => {
+      tarif.apply.pull(userId)
+    })
+    troc.tarif.id(tarifId).apply.push(userId)
+    troc.save(next)
+  })
+}
+
+export const removeApply: RequestHandler = (req, res, next) => {
+  const { trocId, tarifId, userId } = req.params
+  Troc.findById(trocId, (err, troc) => {
+    if (err || !troc) return next(err || Error('Troc not found'))
+    troc.tarif.id(tarifId).apply.pull(userId)
     troc.save(next)
   })
 }
