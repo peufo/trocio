@@ -38,13 +38,12 @@ export function getSubscribedTrocs({ pageParam = 0 }) {
 }
 
 export function getsubscribes({ pageParam = 0, queryKey }) {
-  const { trocId } = queryKey[1]
   const params = {
-    trocId,
+    ...queryKey[1],
     skip: pageParam,
     limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
   }
-  return api<Subscribe[]>('/api/subscribes', { params })
+  return api<SubscribeLookup[]>('/api/subscribes', { params })
 }
 
 export function getTrocUserResum({ queryKey }) {

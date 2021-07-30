@@ -37,7 +37,6 @@ export function api<TypeRequest, TypeResponse = TypeRequest>(
       validateStatus: (httpStatus) => httpStatus <= 404,
     })
     .then(({ data }) => {
-      console.log({ data })
       if (data.error) throw data.message
 
       if (success === true) notify.success(data.message)
