@@ -1,5 +1,6 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
+  import debounce from 'debounce'
   import {
     List,
     ListItem,
@@ -16,7 +17,6 @@
 
   import {
     troc,
-    subscribes,
     useAddAdmin,
     useRemoveAdmin,
     useAddCashier,
@@ -24,6 +24,8 @@
     useAddTrader,
     useRemoveTrader,
     useSetTraderPrefix,
+    useSubscribes,
+    useSubscribesOptions,
   } from '$lib/troc/store'
   import { user } from '$lib/user/store'
   import UserSelect from '$lib/user/Select.svelte'
@@ -31,6 +33,7 @@
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import Share from '$lib/troc/Share.svelte'
+  import type { SubscribeLookup } from 'types'
 
   // import { troc } from './stores'
   // import { getHeader, updateTroc } from './utils'
@@ -50,7 +53,6 @@
   let searchValueAdmin = ''
   let searchValueCashier = ''
   let searchValueTrader = ''
-  let searchValueSubscriber = ''
 
   $: filterAdmin = (user) =>
     !!user.name.match(new RegExp(searchValueAdmin, 'i'))
@@ -60,18 +62,30 @@
     !!trader.user.name.match(new RegExp(searchValueTrader, 'i')) ||
     trader.prefix === searchValueTrader.toUpperCase()
 
-  const prefixs = []
+  const subscribesQuery =
+    $params.trocId && useSubscribes({ trocId: $params.trocId, q: '' })
+  const handleSearchSubscriber = debounce((event: any) => {
+    subscribesQuery.setOptions(
+      useSubscribesOptions({ trocId: $params.trocId, q: event.target.value })
+    )
+  }, 200)
+  let subscribes: SubscribeLookup[] = []
+  $: subscribes = $subscribesQuery.data
+    ? $subscribesQuery.data.pages.flat()
+    : []
+
+  const prefixs: string[] = []
   for (let index = 65; index < 91; index++) {
     prefixs.push(String.fromCharCode(index))
   }
 
-  function handleClickTrader(index) {
+  function handleClickTrader(index: number) {
     selectedTrader = $troc.trader[index]
     selectedPrefix = selectedTrader.prefix
     traderDialogActive = true
   }
 
-  function handleOpen(index) {
+  function handleOpen(index: number) {
     open = open.map((o, i) => i === index)
   }
 </script>
@@ -256,13 +270,13 @@
     class="mb-3"
     on:open={() => handleOpen(3)}
     hasSearchInput
-    bind:searchValue={searchValueSubscriber}
+    on:change={handleSearchSubscriber}
+    on:input={handleSearchSubscriber}
   >
     <List>
-      {#each $subscribes as subscribe}
+      {#each subscribes as subscribe}
         <ListItem>
           {subscribe.user.name}
-
           <span slot="subtitle">{subscribe.user.mail}</span>
         </ListItem>
       {/each}

@@ -47,14 +47,25 @@ export const useTrocOptions = (trocId: string) => ({
 export const useTroc = (trocId: string) =>
   useQuery<Troc, AxiosError>(useTrocOptions(trocId))
 
+/**
+ * Search Subscribers
+ */
+interface SearchSubscribersQuery {
+  trocId: string
+  q: string
+}
 export const subscribes = writable<SubscribeLookup[]>([])
-export const usesubscribesOptions = (trocId: string) => ({
-  queryFn: getsubscribes,
-  queryKey: ['subscribes', { trocId }],
-  getNextPageParam,
-})
-export const usesubscribes = (trocId: string) =>
-  useInfiniteQuery<SubscribeLookup[], AxiosError>(usesubscribesOptions(trocId))
+export function useSubscribesOptions(
+  query: SearchSubscribersQuery
+): UseInfiniteQueryOptions<SubscribeLookup[], AxiosError> {
+  return {
+    queryFn: getsubscribes,
+    queryKey: ['subscribes', query],
+    getNextPageParam,
+  }
+}
+export const useSubscribes = (query: SearchSubscribersQuery) =>
+  useInfiniteQuery<SubscribeLookup[], AxiosError>(useSubscribesOptions(query))
 
 /**
  * Search trocs

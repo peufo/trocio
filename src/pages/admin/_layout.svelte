@@ -16,16 +16,21 @@
     useTroc,
     useTrocOptions,
     subscribes,
-    usesubscribes,
-    usesubscribesOptions,
+    useSubscribes,
+    useSubscribesOptions,
   } from '$lib/troc/store'
 
   const trocQuery = $params.trocId && useTroc($params.trocId)
-  const subscribesQuery = $params.trocId && usesubscribes($params.trocId)
+
+  // TODO: Peut être supprimer
+  const subscribesQuery =
+    $params.trocId && useSubscribes({ trocId: $params.trocId, q: '' })
 
   $: if ($params.trocId) {
     trocQuery.setOptions(useTrocOptions($params.trocId))
-    subscribesQuery.setOptions(usesubscribesOptions($params.trocId))
+    subscribesQuery.setOptions(
+      useSubscribesOptions({ trocId: $params.trocId, q: '' })
+    )
   }
 
   $: $subscribes = $subscribesQuery.data
