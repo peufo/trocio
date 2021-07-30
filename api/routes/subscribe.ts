@@ -5,11 +5,11 @@ import {
   getMySubscribedTrocs,
   getSubscriber,
 } from '../controllers/subscribe_get'
-import { checkAdmin } from '../controllers/troc_utils'
+import { ensureUserIsCashier } from '../middlewares/troc'
 
 router
   .post('/', createSubscribe)
-  .get('/', checkAdmin, getSubscriber)
+  .get('/', ensureUserIsCashier, getSubscriber)
   .get('/me', getMySubscribedTrocs)
 
 export default router

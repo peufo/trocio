@@ -1,4 +1,6 @@
 import Subscribe from '../models/subscribe'
+import mongoose from 'mongoose'
+const { ObjectId } = mongoose.Types
 
 export function getMySubscribedTrocs(req, res, next) {
   let { skip = 0, limit = 10 } = req.query
@@ -42,16 +44,35 @@ export function getMySubscribedTrocs(req, res, next) {
 }
 
 export function getSubscriber(req, res, next) {
-  const { troc } = req.query
-  let { skip = 0, limit = 10 } = req.query
+  let { trocId, skip = 0, limit = 10, q = '' } = req.query
+  const regexp = new RegExp(q, 'i')
   skip = Number(skip)
   limit = Number(limit)
-  if (!troc) return next(Error('Query "troc" is required'))
-  Subscribe.find({ troc })
+  if (!trocId) return next(Error('Query "trocId" is required'))
+
+  const PROJECT_FIELDS = { createdAt: 1, updatedAt: 1, troc: 1 }
+
+  Subscribe.aggregate()
+    .match({ troc: new ObjectId(trocId) })
+    .lookup({
+      from: 'users',
+      localField: 'user',
+      foreignField: '_id',
+      as: 'user',
+    })
+    .project({
+      'user._id': { $arrayElemAt: ['$user._id', 0] },
+      'user.name': { $arrayElemAt: ['$user.name', 0] },
+      'user.mail': { $arrayElemAt: ['$user.mail', 0] },
+      ...PROJECT_FIELDS,
+    })
+    .project({
+      user: { $arrayElemAt: ['$user', 0] },
+      ...PROJECT_FIELDS,
+    })
+    .match({ $or: [{ 'user.name': regexp }, { 'user.name': regexp }] })
     .skip(skip)
     .limit(limit)
-    .populate('user', 'name mail')
-    .lean()
     .exec(async (err, subscribes) => {
       if (err) return next(err)
       res.json(subscribes)

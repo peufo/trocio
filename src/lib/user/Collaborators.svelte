@@ -83,6 +83,7 @@
     title="{$troc.admin.length} Administrateur{$troc.admin.length > 1
       ? 's'
       : ''}"
+    class="mb-3"
     open={open[0]}
     on:open={() => handleOpen(0)}
     hasSearchInput
@@ -135,11 +136,10 @@
     </div>
   </ExpansionCard>
 
-  <br />
-
   <ExpansionCard
     title="{$troc.cashier.length} Caissier{$troc.cashier.length > 1 ? 's' : ''}"
     open={open[1]}
+    class="mb-3"
     on:open={() => handleOpen(1)}
     hasSearchInput
     bind:searchValue={searchValueCashier}
@@ -189,11 +189,10 @@
     </div>
   </ExpansionCard>
 
-  <br />
-
   <ExpansionCard
     title="{$troc.trader.length} Commerçant{$troc.trader.length > 1 ? 's' : ''}"
     open={open[2]}
+    class="mb-3"
     on:open={() => handleOpen(2)}
     hasSearchInput
     bind:searchValue={searchValueTrader}
@@ -251,11 +250,10 @@
     </div>
   </ExpansionCard>
 
-  <br />
-
   <ExpansionCard
     title="{$troc.subscriber} Participant{$troc.subscriber > 1 ? 's' : ''}"
     open={open[3]}
+    class="mb-3"
     on:open={() => handleOpen(3)}
     hasSearchInput
     bind:searchValue={searchValueSubscriber}
@@ -271,8 +269,10 @@
     </List>
   </ExpansionCard>
 
-  <br />
-  <Share troc={$troc} label="Inviter de nouveaux particiants" />
+  <div class="d-flex">
+    <div class="flex-grow-1" />
+    <Share troc={$troc} label="Inviter de nouveaux particiants" />
+  </div>
 </div>
 
 <Dialog bind:active={traderDialogActive}>

@@ -57,8 +57,9 @@ export const ensureUserCanAccessResum: RequestHandler = async (
   return next()
 }
 
+// TODO: S'assurer qu'il n'y a pas de diff entre les params
 function parseRequest(req: Request): UserTroc {
-  const trocId = req.params.trocId || req.body.trocId || req.body.trocId
-  const userId = req.params.userId || req.body.userId || req.body.userId
+  const trocId = req.params.trocId || req.body.trocId || req.query.trocId
+  const userId = req.params.userId || req.body.userId || req.query.userId
   return { trocId, userId }
 }

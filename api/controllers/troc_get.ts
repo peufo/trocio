@@ -18,7 +18,7 @@ export async function userIsCashierOfTroc(trocId: string, userId: string) {
     $or: [{ admin: userId }, { cashier: userId }],
   })
   if (!troc) throw new Error('User is not cashier of troc')
-  return !!troc.isCashier
+  return !!troc
 }
 
 export async function userResume(

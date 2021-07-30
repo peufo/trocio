@@ -40,7 +40,7 @@ export function getSubscribedTrocs({ pageParam = 0 }) {
 export function getsubscribes({ pageParam = 0, queryKey }) {
   const { trocId } = queryKey[1]
   const params = {
-    troc: trocId,
+    trocId,
     skip: pageParam,
     limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
   }
