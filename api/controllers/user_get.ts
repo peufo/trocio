@@ -18,7 +18,7 @@ export const getMe: RequestHandler = async (req, res, next) => {
 
 export function searchUser(req, res, next) {
   const { q = '', skip = 0, limit = 10 } = req.query
-  let regexp = new RegExp(q, 'i')
+  const regexp = new RegExp(q, 'i')
   UserModel.find(
     { $or: [{ name: regexp }, { mail: regexp }] },
     { name: 1, mail: 1 }

@@ -76,7 +76,7 @@
           class:clickable={!isSearchActive}
         >
           <TextField
-            placeholder="Recherche"
+            placeholder="Chercher"
             clearable
             solo
             dense

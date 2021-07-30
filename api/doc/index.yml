@@ -832,11 +832,12 @@ paths:
       operationId: getSubscriber
       tags: [subscribe]
       parameters:
-        - name: troc
-          required: true
+        - name: q
+          description: Recherche dans mail et name des participant
           in: query
           schema:
             type: string
+        - $ref: 'meta.yml#/components/parameters/queryTroc'
         - $ref: 'meta.yml#/components/parameters/querySkip'
         - $ref: 'meta.yml#/components/parameters/queryLimit'
       responses:
