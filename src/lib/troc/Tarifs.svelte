@@ -2,30 +2,21 @@
   import { Button } from 'svelte-materialify'
   import { url, params } from '@roxi/routify'
 
-  import { troc } from '$lib/troc/store'
+  import { troc, useCreateTarif } from '$lib/troc/store'
   import Tarif from '$lib/troc/Tarif.svelte'
 
-  function removeTarif(i) {
-    console.log('remove a tarif')
-    /*
-        $troc.tarif = [...$troc.tarif.slice(0, i), ...$troc.tarif.slice(i + 1)]
-        changeFlag = true
-        */
-  }
+  const queryCreateTarif = useCreateTarif()
+
+  let tarifOpen: string | null = null
 </script>
 
 <div class="container pt-5">
-  {#each $troc.tarif as tarif, i}
+  {#each $troc.tarif as tarif (tarif._id)}
     <Tarif
-      bind:name={tarif.name}
-      bind:apply={tarif.apply}
-      bind:margin={tarif.margin}
-      bind:fee={tarif.fee}
-      bind:maxarticles={tarif.maxarticles}
-      bind:bydefault={tarif.bydefault}
-      on:remove={() => removeTarif(i)}
-      on:selectUser={() => console.log('selectUser')}
-      on:removeUser={() => console.log('removeUser')}
+      {tarif}
+      class="mb-3"
+      open={tarifOpen === tarif._id}
+      on:open={() => (tarifOpen = tarif._id)}
     />
   {/each}
 
@@ -36,7 +27,22 @@
       <Button depressed>Gerer l'attribution des tarifs</Button>
     </a>
     <div class="flex-grow-1" />
-    <Button depressed on:click={() => console.log('add a tarif')}>
+    <Button
+      disabled={$queryCreateTarif.isLoading}
+      depressed
+      on:click={() =>
+        $queryCreateTarif.mutate(
+          {
+            trocId: $troc._id,
+            name: 'Nouveau tarif',
+          },
+          {
+            onSuccess: (newTroc) => {
+              tarifOpen = newTroc.tarif[newTroc.tarif.length - 1]._id
+            },
+          }
+        )}
+    >
       +1 tarif
     </Button>
   </div>

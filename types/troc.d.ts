@@ -8,6 +8,20 @@ export declare interface Period {
   close: string
 }
 
+/** Tarif */
+export declare interface Tarif {
+  _id: string
+  name: string
+  bydefault: boolean
+  apply?: string[] | User[]
+  margin: number
+  fee: {
+    price: number
+    value: number
+  }[]
+  maxarticles: number
+}
+
 /** Information minimal pour la création d'un troc */
 export declare interface TrocBase {
   name: string
@@ -42,21 +56,7 @@ export declare interface Troc extends TrocBase {
     prefix: string
     user: string
   }[]
-  tarif: [
-    {
-      name: string
-      bydefault: boolean
-      apply?: [string | User]
-      margin: number
-      fee: [
-        {
-          price: number
-          value: number
-        }
-      ]
-      maxarticles: number
-    }
-  ]
+  tarif: Tarif[]
   createdAt: string
   updatedAt: string
   __v: 0

@@ -26,7 +26,8 @@ export const resUserResume: RequestHandler = async (req, res, next) => {
  */
 export const resTrocUser: RequestHandler = async (req, res, next) => {
   try {
-    const troc = await populateTrocUser(req.params.trocId)
+    const { trocId } = req.params
+    const troc = await populateTrocUser(trocId)
     res.json(troc)
   } catch (error) {
     next(error)

@@ -27,6 +27,11 @@ import {
   updateTroc,
   getNextPageParam,
   createSubscribe,
+  createTarif,
+  deleteTarif,
+  editTarif,
+  addApply,
+  removeApply,
 } from '$lib/troc/api'
 
 /**
@@ -127,6 +132,15 @@ export const useAddTrader = () => useMutation(addTrader, { onSuccess })
 export const useRemoveTrader = () => useMutation(removeTrader, { onSuccess })
 export const useSetTraderPrefix = () =>
   useMutation(setTraderPrefix, { onSuccess })
+
+/**
+ * Tarif
+ */
+export const useCreateTarif = () => useMutation(createTarif, { onSuccess })
+export const useEditTarif = () => useMutation(editTarif, { onSuccess })
+export const useDeleteTarif = () => useMutation(deleteTarif, { onSuccess })
+export const useAddApply = () => useMutation(addApply, { onSuccess })
+export const useRemoveApply = () => useMutation(removeApply, { onSuccess })
 
 /**
  * Update troc on success
