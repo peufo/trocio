@@ -28,15 +28,18 @@ PNotify.defaults.stack = new PNotify.Stack({
 
 interface Options extends Parameters<typeof PNotify.success> {}
 
+// Empêche notification identiques d'apparaitre dans un court l'apse de temps
 let lastOptions: Options | {} = {}
-
-function isSameOptions(options: Options[1]): boolean {
+let lastTime = 0
+function isSameAndQuickOptions(options: Options[1]): boolean {
   const isSame =
     ((typeof options === 'string' || typeof lastOptions === 'string') &&
       options === lastOptions) ||
     JSON.stringify(options) === JSON.stringify(lastOptions)
   lastOptions = typeof options === 'string' ? options : { ...options }
-  return isSame
+  const isQuick = new Date().getTime() - lastTime < 2000
+  lastTime = new Date().getTime()
+  return isSame && isQuick
 }
 
 function formatOptions(
@@ -46,7 +49,7 @@ function formatOptions(
 ) {
   if (typeof options === 'string') options = { title: options }
   if (!options.icon) options.icon = defaultIcon
-  if (isSameOptions(options)) return
+  if (isSameAndQuickOptions(options)) return
   notify(options)
 }
 

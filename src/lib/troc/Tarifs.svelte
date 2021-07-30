@@ -20,8 +20,6 @@
     />
   {/each}
 
-  <br />
-
   <div class="d-flex">
     <a href={$url('/admin', { ...$params, tab_admin: 'tarif_attribution' })}>
       <Button depressed>Gerer l'attribution des tarifs</Button>

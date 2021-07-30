@@ -91,7 +91,9 @@
   title={_tarif.name}
   titleEditable
   on:input={handleInputName}
-  subtitle="Attribué {_tarif.bydefault ? 'par défaut' : 'à 52 participants'}"
+  subtitle={`Attribué ${
+    _tarif.bydefault ? 'par défaut' : `à ${_tarif.apply?.length} participants`
+  }`}
   class={klass}
 >
   <div class="pa-4">
