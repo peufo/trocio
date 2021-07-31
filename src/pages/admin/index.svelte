@@ -5,12 +5,14 @@
   import Collaborators from '$lib/user/Collaborators.svelte'
   import Tarifs from '$lib/troc/Tarifs.svelte'
   import TarifsAttribution from '$lib/troc/TarifsAttribution.svelte'
+  import TagEdit from '$lib/troc/TagEdit.svelte'
 
   const tabs = {
     info: TrocEdit,
     collab: Collaborators,
     tarif_edition: Tarifs,
     tarif_attribution: TarifsAttribution,
+    tag: TagEdit,
   }
 </script>
 
