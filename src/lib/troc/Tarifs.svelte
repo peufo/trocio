@@ -8,10 +8,12 @@
   const queryCreateTarif = useCreateTarif()
 
   // Nécéssaire pour la vitesse de réaction
-  $: tarif_selected = $params.tarif_selected
+  $: tarif_selected = $params.tarif_selected || ''
 </script>
 
-<div class="container pt-5">
+<div class="container">
+  <h6 class="mb-5">Edition des tarifs</h6>
+
   {#each $troc.tarif as tarif (tarif._id)}
     <Tarif
       {tarif}
@@ -19,6 +21,10 @@
       open={tarif_selected === tarif._id}
       on:open={() => {
         tarif_selected = tarif._id
+        $goto('/admin', { ...$params, tarif_selected })
+      }}
+      on:close={() => {
+        tarif_selected = ''
         $goto('/admin', { ...$params, tarif_selected })
       }}
     />

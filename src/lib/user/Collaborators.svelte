@@ -92,7 +92,9 @@
 
 <!-- Administrateurs -->
 
-<div class="pt-5" style="max-width: 700px; margin: auto;">
+<div style="max-width: 700px; margin: auto;">
+  <h6 class="mb-5">Gestion des collaborateurs</h6>
+
   <ExpansionCard
     title="{$troc.admin.length} Administrateur{$troc.admin.length > 1
       ? 's'

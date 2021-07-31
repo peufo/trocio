@@ -87,6 +87,7 @@
 <ExpansionCard
   {open}
   on:open
+  on:close
   title={_tarif.name}
   titleEditable
   on:input={handleInputName}
