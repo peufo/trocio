@@ -55,12 +55,7 @@
       <slot name="icon" />
 
       {#if titleEditable}
-        <input
-          value={title}
-          on:input
-          class="text-uppercase"
-          style="min-width: 100px;"
-        />
+        <input value={title} on:input style="min-width: 100px;" />
       {:else}
         <span class="text-uppercase">
           {title}

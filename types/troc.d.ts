@@ -22,6 +22,17 @@ export declare interface Tarif {
   maxarticles: number
 }
 
+/** Tag (config étiquettes) */
+export declare interface TagInterface {
+  width: number
+  height: number
+  padding: number
+  fontSize: 16
+  border: boolean
+  useTagPrinter: boolean
+  useScanner: boolean
+}
+
 /** Information minimal pour la création d'un troc */
 export declare interface TrocBase {
   name: string
@@ -40,12 +51,7 @@ export declare interface TrocBase {
 /** Information complette d'un troc */
 export declare interface Troc extends TrocBase {
   _id: string
-  tag: {
-    width: number
-    height: number
-    padding: number
-    border: boolean
-  }
+  tag: TagInterface
   admin: string[]
   cashier: string[]
   articlelastref: number

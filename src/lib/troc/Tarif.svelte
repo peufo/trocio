@@ -215,8 +215,8 @@
     {#if isModified}
       <div transition:fade|local>
         <Button
-          class="primary-color"
           disabled={$queryEditTarif.isLoading}
+          class={$queryEditTarif.isLoading ? '' : 'primary-color'}
           on:click={() => {
             $queryEditTarif.mutate(
               {

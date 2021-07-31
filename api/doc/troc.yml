@@ -90,7 +90,13 @@ components:
                   type: number
                 padding:
                   type: number
+                fontSize:
+                  type: number
                 border:
+                  type: boolean
+                useTagPrinter:
+                  type: boolean
+                useScanner:
                   type: boolean
             admin:
               type: array
