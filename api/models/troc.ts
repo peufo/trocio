@@ -46,14 +46,14 @@ const trocModel = new Schema(
         bydefault: { type: Boolean, default: false },
         // Non nécéssaire pour le standard
         apply: [{ type: ObjectId, ref: 'user' }],
-        margin: { type: Number, default: 0 },
+        margin: { type: Number, default: 0, min: 0, max: 0.4 },
         fee: [
           {
-            price: Number,
-            value: Number,
+            price: { type: Number, default: 0, min: 0, max: 100000 },
+            value: { type: Number, default: 0, min: 0, max: 100000 },
           },
         ],
-        maxarticles: { type: Number, default: 100 },
+        maxarticles: { type: Number, default: 100, min: 1, max: 10000 },
       },
     ],
     articlelastref: { type: Number, required: true, default: 0 },

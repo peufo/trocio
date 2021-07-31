@@ -1,13 +1,14 @@
 <script lang="ts">
   import { Button } from 'svelte-materialify'
-  import { url, params } from '@roxi/routify'
+  import { url, params, goto } from '@roxi/routify'
 
   import { troc, useCreateTarif } from '$lib/troc/store'
   import Tarif from '$lib/troc/Tarif.svelte'
 
   const queryCreateTarif = useCreateTarif()
 
-  let tarifOpen: string | null = null
+  // Nécéssaire pour la vitesse de réaction
+  $: tarif_selected = $params.tarif_selected
 </script>
 
 <div class="container pt-5">
@@ -15,8 +16,11 @@
     <Tarif
       {tarif}
       class="mb-3"
-      open={tarifOpen === tarif._id}
-      on:open={() => (tarifOpen = tarif._id)}
+      open={tarif_selected === tarif._id}
+      on:open={() => {
+        tarif_selected = tarif._id
+        $goto('/admin', { ...$params, tarif_selected })
+      }}
     />
   {/each}
 
@@ -36,7 +40,8 @@
           },
           {
             onSuccess: (newTroc) => {
-              tarifOpen = newTroc.tarif[newTroc.tarif.length - 1]._id
+              tarif_selected = newTroc.tarif[newTroc.tarif.length - 1]._id
+              $goto('/admin', { ...$params, tarif_selected })
             },
           }
         )}

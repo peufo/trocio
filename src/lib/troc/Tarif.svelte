@@ -78,7 +78,6 @@
 
   function handleChangeFeePrice(event: any, index: number) {
     _tarif.fee[index].price = +event.target.value
-    console.log(tarif.fee[index].price)
   }
   function handleChangeFeeValue(event: any, index: number) {
     _tarif.fee[index].value = +event.target.value
@@ -101,7 +100,7 @@
       <TextField
         type="number"
         value={(_tarif.margin * 100).toFixed(0)}
-        on:change={handleChangeTarif}
+        on:input={handleChangeTarif}
         min="0"
         max="40"
         placeholder=" "
@@ -118,7 +117,7 @@
       <TextField
         type="number"
         value={_tarif.maxarticles.toString()}
-        on:change={handleChangeMax}
+        on:input={handleChangeMax}
         min="1"
         max="5000"
         placeholder=" "
@@ -151,7 +150,7 @@
               <td>
                 <input
                   value={fee.price}
-                  on:change={(event) => handleChangeFeePrice(event, i)}
+                  on:input={(event) => handleChangeFeePrice(event, i)}
                   type="number"
                   class="pa-3"
                   style="width: 100px;"
@@ -164,7 +163,7 @@
               <td>
                 <input
                   value={fee.value}
-                  on:change={(event) => handleChangeFeeValue(event, i)}
+                  on:input={(event) => handleChangeFeeValue(event, i)}
                   type="number"
                   class="pa-3"
                   style="width: 100px;"
