@@ -39,85 +39,94 @@
   })
 </script>
 
-<Table class="simple-card">
-  <thead>
-    <tr>
-      <th style="padding-left: 0px; width: 340px;">
-        <TextField
-          placeholder="Chercher un participant"
-          clearable
-          solo
-          dense
-          flat
-          on:change={handleSearchSubscriber}
-          on:input={handleSearchSubscriber}
-          style="max-width: 400px;"
-        >
-          <div slot="prepend">
-            <IconLink icon={faSearch} size="1.1em" />
-          </div>
-        </TextField>
-      </th>
-      {#each $troc.tarif as tarif}
-        <th
-          class="clickable"
-          style="text-align: center;"
-          on:click={() => {
-            $goto('/admin', {
-              ...$params,
-              tarif_selected: tarif._id,
-              tab_admin: 'tarif_edition',
-            })
-          }}
-        >
-          {tarif.name}
-        </th>
-      {/each}
-    </tr>
-  </thead>
-  <tbody>
-    {#each subscribes as subscribe, subscribeIndex (subscribe._id)}
-      <tr class="row">
-        <td>
-          {subscribe.user.name}
-          <br />
-          <span class="text-caption text--disabled">
-            {subscribe.user.mail}
-          </span>
-        </td>
+<div class="container">
+  <h6 class="mb-5">Attribution des tarifs</h6>
 
-        {#each $troc.tarif as tarif (tarif._id)}
-          <td
+  <Table class="simple-card">
+    <thead>
+      <tr>
+        <th style="padding-left: 0px; width: 340px;">
+          <TextField
+            placeholder="Chercher un participant"
+            clearable
+            solo
+            dense
+            flat
+            on:change={handleSearchSubscriber}
+            on:input={handleSearchSubscriber}
+            style="max-width: 400px;"
+          >
+            <div slot="prepend">
+              <IconLink icon={faSearch} size="1.1em" />
+            </div>
+          </TextField>
+        </th>
+        {#each $troc.tarif as tarif}
+          <th
             class="clickable"
             style="text-align: center;"
-            use:Ripple={{ centered: true }}
-            on:click={() =>
-              $addApply.mutate(
-                {
-                  trocId: $troc._id,
-                  tarifId: tarif._id,
-                  userId: subscribe.user._id,
-                },
-                {
-                  onSuccess: () => {
-                    notify.success(
-                      `${tarif.name} attribué à ${subscribe.user.name}`
-                    )
-                  },
-                }
-              )}
+            on:click={() => {
+              $goto('/admin', {
+                ...$params,
+                tarif_selected: tarif._id,
+                tab_admin: 'tarif_edition',
+              })
+            }}
           >
-            {#if tarif._id === attributed[subscribeIndex]}
-              <IconLink icon={faCheck} />
-            {/if}
-          </td>
+            {tarif.name}
+          </th>
         {/each}
       </tr>
-    {/each}
-  </tbody>
-</Table>
+    </thead>
+    <tbody>
+      {#each subscribes as subscribe, subscribeIndex (subscribe._id)}
+        <tr class="row">
+          <td>
+            {subscribe.user.name}
+            <br />
+            <span class="text-caption text--disabled">
+              {subscribe.user.mail}
+            </span>
+          </td>
+
+          {#each $troc.tarif as tarif (tarif._id)}
+            <td
+              class="clickable"
+              style="text-align: center;"
+              use:Ripple={{ centered: true }}
+              on:click={() =>
+                $addApply.mutate(
+                  {
+                    trocId: $troc._id,
+                    tarifId: tarif._id,
+                    userId: subscribe.user._id,
+                  },
+                  {
+                    onSuccess: () => {
+                      notify.success(
+                        `${tarif.name} attribué à ${subscribe.user.name}`
+                      )
+                    },
+                  }
+                )}
+            >
+              {#if tarif._id === attributed[subscribeIndex]}
+                <IconLink icon={faCheck} />
+              {/if}
+            </td>
+          {/each}
+        </tr>
+      {/each}
+    </tbody>
+  </Table>
+</div>
 
 <style>
+  .container {
+    max-width: 1400px;
+    margin: auto;
+  }
+
   .row:hover {
     background: var(--theme-tables-active);
   }
