@@ -8,8 +8,8 @@
     "build": "run-s build:*",
     "build:routify": "routify --single-build",
     "build:vite": "vite build",
-    "serve": "nodemon server.js -w",
-    "serve:api": "nodemon ./api/server.js -w ./api"
+    "build:server": "tsc --project tsconfig.server.json",
+    "serve": "node ./server/server.js"
   },
   "devDependencies": {
     "@roxi/routify": "^2.12.3",

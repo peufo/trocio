@@ -2,6 +2,7 @@
 .env
 build
 dist
+server
 web_modules
 node_modules
 localhost.crt
