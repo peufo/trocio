@@ -1,5 +1,5 @@
-require('dotenv').config()
-// Edit your local configuration on .env file
+import dotenv from 'dotenv'
+dotenv.config()
 
 const dev = process.env.NODE_ENV == 'development'
 const TROCIO_PORT = process.env.TROCIO_PORT || 3000
