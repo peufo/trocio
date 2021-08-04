@@ -9,7 +9,7 @@ import {
 
 export const resUserResume: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId, userId } = req.query
+    const { trocId, userId = req.session.user._id } = req.query
     if (typeof trocId !== 'string')
       throw Error('trocId query need to be a string')
     if (typeof userId !== 'string')

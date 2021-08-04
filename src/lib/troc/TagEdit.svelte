@@ -31,8 +31,9 @@
   $: isModified = JSON.stringify(tag) !== JSON.stringify($troc.tag)
 </script>
 
-<div class="container mt-5">
-  <h6>Configuration des étiquettes</h6>
+<div class="container">
+  <h6 class="mb-5">Configuration des étiquettes</h6>
+
   <div class="pa-4 simple-card">
     <div class="d-flex pt-5">
       <TextField

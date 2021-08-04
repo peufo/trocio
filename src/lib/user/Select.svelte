@@ -126,4 +126,7 @@
     margin-top: 4px;
     z-index: 99;
   }
+  :global(.s-radio .s-text-field__input > label) {
+    padding-left: 0px;
+  }
 </style>
