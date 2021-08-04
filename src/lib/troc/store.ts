@@ -16,6 +16,7 @@ import {
   getSubscribedTrocs,
   getsubscribes,
   getTrocUserResum,
+  getTrocStats,
   addAdmin,
   removeAdmin,
   addCashier,
@@ -114,7 +115,7 @@ export const useSubscribedTrocs = () =>
 export function useTrocUserResumOptions(trocId: string, userId?: string) {
   const query = userId ? { trocId, userId } : { trocId }
   return {
-    queryKey: ['trocUserResum', query],
+    queryKey: ['trocsResum', query],
     queryFn: getTrocUserResum,
   }
 }

@@ -101,9 +101,11 @@
       />
     </CardTitle>
 
-    {#if subtitle}
-      <CardSubtitle>{subtitle}</CardSubtitle>
-    {/if}
+    <CardSubtitle>
+      <slot name="subtitle">
+        {subtitle ? subtitle : ''}
+      </slot>
+    </CardSubtitle>
 
     {#if open}
       <div transition:slide|local>

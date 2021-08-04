@@ -408,9 +408,18 @@ paths:
       tags: [troc]
       parameters:
         - $ref: '#/components/parameters/pathTroc'
+        - name: view
+          in: query
+          schema:
+            type: string
+            enum: [traders, privates, global]
+        - name: userId
+          in: query
+          schema:
+            type: string
       responses:
         200:
-          description: Troc mis à jour
+          description: Statistique complette du troc
           content:
             application/json:
               schema:

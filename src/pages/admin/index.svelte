@@ -6,6 +6,7 @@
   import Tarifs from '$lib/troc/Tarifs.svelte'
   import TarifsAttribution from '$lib/troc/TarifsAttribution.svelte'
   import TagEdit from '$lib/troc/TagEdit.svelte'
+  import Stats from '$lib/troc/stats/Stats.svelte'
 
   const tabs = {
     info: TrocEdit,
@@ -13,6 +14,7 @@
     tarif_edition: Tarifs,
     tarif_attribution: TarifsAttribution,
     tag: TagEdit,
+    statistic: Stats,
   }
 </script>
 

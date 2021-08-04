@@ -21,7 +21,6 @@
   const queryTrocUserResum = useTrocUserResum(trocId, userId)
   $: queryTrocUserResum.setOptions(useTrocUserResumOptions(trocId, userId))
   $: trocUserResum = $queryTrocUserResum.data
-  $: console.log({ trocUserResum })
 
   let articleCreateDialogActive = false
 

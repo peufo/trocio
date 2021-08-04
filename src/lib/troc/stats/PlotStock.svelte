@@ -1,0 +1,448 @@
+<script lang="ts">
+  import { onMount } from 'svelte'
+  // import type * as PlotlyInterface from 'plotly.js/lib/core'
+  // import Plotly as PlotlyInterface from 'plotly.js-dist'
+  import * as Plotly from 'plotly.js'
+
+  import { ButtonGroup, ButtonGroupItem } from 'svelte-materialify'
+
+  import { troc } from '$lib/troc/store'
+  import type { TrocStatsFormatted } from './formatStats'
+
+  export let stats: TrocStatsFormatted
+
+  let mode: 'sums' | 'numbers' = 'numbers'
+  let isLoading = true
+  let containerPlotStock: HTMLElement
+
+  onMount(() => {
+    setTimeout(() => load(), 200)
+  })
+
+  function load() {
+    loadPlotStock()
+
+    var data = [
+      {
+        values: [19, 26, 55],
+        labels: ['Residential', 'Non-Residential', 'Utility'],
+        type: 'pie',
+      },
+    ]
+
+    var layout = {
+      height: 400,
+      width: 500,
+    }
+
+    Plotly.newPlot('myDiv', data, layout)
+  }
+
+  function loadPlotStock() {
+    isLoading = true
+    const layout = getLayout()
+    const traces = getScatterTraces()
+    const pie = getPieTrace()
+    Plotly.newPlot(containerPlotStock, [...traces, pie], layout)
+    isLoading = false
+  }
+
+  function getPieTrace(): Partial<Plotly.PieData> {
+    return {
+      labels: ['Proposé', 'En vente', 'Vendu', 'Récupéré'],
+      marker: {
+        colors: [
+          'rgb(200, 200, 200)',
+          'rgb(33, 119, 181)',
+          'rgb(44, 160, 43)',
+          'rgb(255, 127, 14)',
+        ],
+      },
+      textinfo: 'value+percent',
+      hoverinfo: 'none',
+      type: 'pie',
+      hole: 0.2,
+      domain: { x: [0.5, 1], y: [0, 0.7] },
+      showlegend: false,
+      values: [
+        stats[mode].proposed,
+        stats[mode].provided - stats[mode].solded - stats[mode].recovered,
+        stats[mode].solded,
+        stats[mode].recovered,
+      ],
+    }
+  }
+
+  function getScatterTraces(): Partial<Plotly.ScatterData>[] {
+    const baseTrace = () => ({
+      stackgroup: 'one',
+      x: [] as Date[],
+      y: [] as number[],
+      text: [] as string[],
+      domain: { columns: 0 },
+    })
+
+    const proposed = {
+      ...baseTrace(),
+      name: 'Proposé',
+      marker: { color: 'rgb(200, 200, 200)' },
+    }
+
+    const available = {
+      ...baseTrace(),
+      name: 'En vente',
+      marker: { color: 'rgb(33, 119, 181)' },
+    }
+
+    const solded = {
+      ...baseTrace(),
+      name: 'Vendu',
+      marker: { color: 'rgb(44, 160, 43)' },
+    }
+
+    const recover = {
+      ...baseTrace(),
+      name: 'Récupéré',
+      marker: { color: 'rgb(255, 127, 14)' },
+    }
+
+    const fees = {
+      ...baseTrace(),
+      name: 'Frais',
+      yaxis: 'y2',
+      marker: { color: 'rgb(140, 86, 75)' },
+      stackgroup: 'two',
+    }
+
+    const margins = {
+      ...baseTrace(),
+      name: 'Marge',
+      yaxis: 'y2',
+      marker: { color: 'rgb(227, 119, 194)' },
+      stackgroup: 'two',
+    }
+
+    let cursorFees = 0
+    let cursorMargins = 0
+
+    let cursorNumberProposed = 0
+    let cursorSumProposed = 0
+
+    let cursorNumberAvailable = 0
+    let cursorSumAvailable = 0
+
+    let cursorNumberSolded = 0
+    let cursorSumSolded = 0
+
+    let cursorNumberRecover = 0
+    let cursorSumRecover = 0
+
+    stats.events
+      .filter(({ event }) =>
+        ['createdAt', 'valided', 'sold', 'recover'].includes(event)
+      )
+      .forEach((event) => {
+        if (!event.art) return
+        switch (event.event) {
+          case 'createdAt':
+            cursorNumberProposed++
+            cursorSumProposed += event.art.price
+
+            proposed.text.push(event.art.name)
+            available.text.push('')
+            solded.text.push('')
+            recover.text.push('')
+
+            fees.text.push(``)
+            margins.text.push(``)
+            break
+
+          case 'valided':
+            cursorNumberProposed--
+            cursorSumProposed -= event.art.price
+            cursorNumberAvailable++
+            cursorSumAvailable += event.art.price
+            cursorFees += event.art.fee
+
+            proposed.text.push('')
+            available.text.push(event.art.name)
+            solded.text.push('')
+            recover.text.push('')
+
+            fees.text.push(`Mise en vente de ${event.art.name}`)
+            margins.text.push(``)
+            break
+
+          case 'sold':
+            cursorNumberAvailable--
+            cursorSumAvailable -= event.art.price
+            cursorNumberSolded++
+            cursorSumSolded += event.art.price
+            cursorMargins += event.art.margin
+
+            proposed.text.push('')
+            available.text.push('')
+            solded.text.push(event.art.name)
+            recover.text.push('')
+
+            fees.text.push(``)
+            margins.text.push(`Vente de ${event.art.name}`)
+            break
+
+          case 'recover':
+            cursorNumberAvailable--
+            cursorSumAvailable -= event.art.price
+            cursorNumberRecover++
+            cursorSumRecover += event.art.price
+
+            proposed.text.push('')
+            available.text.push('')
+            solded.text.push('')
+            recover.text.push(event.art.name)
+
+            fees.text.push(``)
+            margins.text.push(``)
+            break
+        }
+
+        proposed.x.push(event.date)
+        proposed.y.push(
+          mode === 'sums' ? cursorSumProposed : cursorNumberProposed
+        )
+
+        available.x.push(event.date)
+        available.y.push(
+          mode === 'sums' ? cursorSumAvailable : cursorNumberAvailable
+        )
+
+        solded.x.push(event.date)
+        solded.y.push(mode === 'sums' ? cursorSumSolded : cursorNumberSolded)
+
+        recover.x.push(event.date)
+        recover.y.push(mode === 'sums' ? cursorSumRecover : cursorNumberRecover)
+
+        fees.x.push(event.date)
+        fees.y.push(cursorFees)
+
+        margins.x.push(event.date)
+        margins.y.push(cursorMargins)
+      })
+
+    if (mode === 'numbers') return [recover, solded, available, proposed]
+    return [recover, solded, available, proposed, fees, margins]
+  }
+
+  function getLayout(): Partial<Plotly.Layout> {
+    const layout: Partial<Plotly.Layout> = {
+      yaxis: { title: 'Nombre' },
+      legend: {
+        orientation: 'h',
+        xanchor: 'center',
+        x: 0.5,
+        yanchor: 'bottom',
+        y: 1.15,
+      },
+      grid: { columns: 2 },
+      xaxis: {
+        domain: [0, 0.7],
+        range: [],
+      },
+      margin: { t: 80 },
+      annotations: [],
+    }
+
+    if ($troc?.schedule?.length) {
+      layout.annotations = [
+        {
+          text: 'Ouverture',
+          x: $troc.schedule[0].open,
+        },
+        {
+          text: 'Fermeture',
+          x: $troc.schedule[$troc.schedule.length - 1].close,
+        },
+      ]
+      if (layout.xaxis)
+        layout.xaxis.range = [
+          new Date($troc.schedule[0].open).getTime() - 1000 * 60 * 60 * 24,
+          new Date($troc.schedule[$troc.schedule.length - 1].close).getTime() +
+            1000 * 60 * 60 * 6,
+        ]
+    }
+    if (mode === 'sums') {
+      layout.yaxis = { domain: [0, 0.7], title: 'Valeur' }
+      layout.yaxis2 = { domain: [0.75, 1] }
+      if (layout.annotations)
+        layout.annotations.push(
+          {
+            text: `Marge<br>Frais<br>Total`,
+            x: 0.9,
+            xref: 'paper',
+            xanchor: 'left',
+            y: 0.98,
+            yref: 'paper',
+            yanchor: 'middle',
+            align: 'left',
+            showarrow: false,
+          },
+          {
+            text: `
+              <b>${stats.sums.margin.toFixed(2)}<br>
+                ${stats.sums.fee.toFixed(2)}<br>
+                ${(stats.sums.fee + stats.sums.margin).toFixed(2)}
+              </b>`,
+            x: 0.9,
+            xref: 'paper',
+            xanchor: 'right',
+            y: 0.98,
+            yref: 'paper',
+            yanchor: 'middle',
+            align: 'right',
+            showarrow: false,
+          }
+        )
+    }
+    return layout
+  }
+
+  function loadHisto() {
+    //TODO: Limite price obligé pour éviter le rammage... Faire un avertissement ?
+    const LIMIT_PRICE = 1000
+
+    //Histogram
+    let proposedHisto = {
+      name: 'Proposé',
+      hoverinfo: 'y',
+      marker: { color: 'rgb(200, 200, 200)' },
+      x: articlesProposed
+        .filter((art) => !art.valided && art.price < LIMIT_PRICE)
+        .map((art) => art.price),
+      type: 'histogram',
+      xbins: { size: 10 },
+    }
+
+    let availableHisto = {
+      name: 'En vente',
+      hoverinfo: 'y',
+      marker: { color: 'rgb(33, 119, 181)' },
+      x: articlesProvided
+        .filter((art) => !art.solded && !art.recover && art.price < LIMIT_PRICE)
+        .map((art) => art.price),
+      type: 'histogram',
+      xbins: { size: 10 },
+    }
+
+    let soldedHisto = {
+      name: 'Vendu',
+      hoverinfo: 'y',
+      marker: { color: 'rgb(44, 160, 43)' },
+      x: articlesSolded
+        .filter((art) => art.price < LIMIT_PRICE)
+        .map((art) => art.price),
+      type: 'histogram',
+      xbins: { size: 10 },
+    }
+
+    let recoverHisto = {
+      name: 'Récupéré',
+      hoverinfo: 'y',
+      marker: { color: 'rgb(255, 127, 14)' },
+      x: articlesRecovered
+        .filter((art) => art.price < LIMIT_PRICE)
+        .map((art) => art.price),
+      type: 'histogram',
+      xbins: { size: 10 },
+    }
+
+    let layoutHisto = {
+      barmode: 'stack',
+      legend: {
+        orientation: 'h',
+        xanchor: 'center',
+        x: 0.5,
+        yanchor: 'bottom',
+        y: 1.15,
+      },
+      xaxis: {
+        title: 'Valeur',
+        range: [0, (sumProvided / numberProvided) * 3],
+      },
+      yaxis: { title: 'Nombre' },
+      margin: { t: 80 },
+      annotations: [
+        {
+          text: ` Moy. mis en vente: <b>${(
+            sumProvided / numberProvided
+          ).toFixed(2)}</b>`,
+          x: sumProvided / numberProvided,
+          y: 0,
+          arrowhead: 0,
+          textangle: -45,
+          xanchor: 'left',
+          ax: 30,
+          ay: -30,
+        },
+        {
+          text: ` Moy. vendu: <b>${(sumSolded / numberSolded).toFixed(2)}</b>`,
+          x: sumSolded / numberSolded,
+          y: 0,
+          arrowhead: 0,
+          textangle: -45,
+          xanchor: 'left',
+          ax: 30,
+          ay: -30,
+        },
+        {
+          text: ` Moy. récupéré: <b>${(sumRecovered / numberRecovered).toFixed(
+            2
+          )}</b>`,
+          x: sumRecovered / numberRecovered,
+          y: 0,
+          arrowhead: 0,
+          textangle: -45,
+          xanchor: 'left',
+          ax: 30,
+          ay: -30,
+        },
+      ],
+    }
+
+    let dataHisto = []
+    if (numberRecovered) dataHisto.push(recoverHisto)
+    if (numberSolded) dataHisto.push(soldedHisto)
+    if (numberProvided - numberSolded - numberRecovered)
+      dataHisto.push(availableHisto)
+    if (numberProposed) dataHisto.push(proposedHisto)
+
+    //Plotly.newPlot('stockGraphHisto', dataHisto, layoutHisto)
+    Plotly.newPlot('stockGraphHisto', dataHisto, layoutHisto)
+  }
+</script>
+
+<ButtonGroup
+  rounded
+  mandatory
+  bind:value={mode}
+  size="small"
+  class="ml-4"
+  on:change={load}
+>
+  <ButtonGroupItem value="numbers" style="z-index: 1;" active>
+    Nombre
+  </ButtonGroupItem>
+  <ButtonGroupItem value="sums" style="z-index: 1;">Valeur</ButtonGroupItem>
+</ButtonGroup>
+
+<div bind:this={containerPlotStock} />
+<div id="stockGraphHisto" />
+
+<div id="myDiv" />
+
+{#if isLoading}
+  <div class="centered" style="height: 450px;">
+    <i class="fas fa-chart-area w3-jumbo w3-opacity" />
+  </div>
+  <div class="centered" style="height: 450px;">
+    <i class="far fa-chart-bar w3-jumbo w3-opacity" />
+  </div>
+{/if}

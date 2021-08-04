@@ -57,9 +57,25 @@ export const ensureUserCanAccessResum: RequestHandler = async (
   return next()
 }
 
-// TODO: S'assurer qu'il n'y a pas de diff entre les params
+/** S'assure également qu'il n'y a pas de diff entre les params */
 function parseRequest(req: Request): UserTroc {
-  const trocId = req.params.trocId || req.body.trocId || req.query.trocId
-  const userId = req.params.userId || req.body.userId || req.query.userId
+  /** Parse trocId */
+  const trocIds = [req.params.trocId, req.body.trocId, req.query.trocId]
+  const trocIdsUnique = trocIds.filter(Boolean).filter(beUnique)
+  if (trocIdsUnique.length > 1)
+    throw Error('Different trocId param is detected')
+  const trocId = trocIdsUnique[0]
+
+  /** Parse userId */
+  const userIds = [req.params.userId, req.body.userId, req.query.userId]
+  const userIdsUnique = userIds.filter(Boolean).filter(beUnique)
+  if (userIdsUnique.length > 1)
+    throw Error('Different userId param is detected')
+  const userId = userIdsUnique[0]
+
   return { trocId, userId }
+}
+
+function beUnique(elem: any, index: number, self: any[]) {
+  return self.indexOf(elem) === index
 }

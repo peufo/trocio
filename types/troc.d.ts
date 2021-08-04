@@ -1,5 +1,6 @@
 import { Article } from 'types'
 import { User } from 'types'
+import type { PaymentInterface } from './payment'
 
 /** Période dont est composé l'horaire */
 export declare interface Period {
@@ -98,4 +99,11 @@ export declare interface TrocUserResum {
   purchasesSum: number
   paymentsCount: number
   paymentsSum: number
+}
+
+/** Statistique d'un troc */
+export declare interface TrocStats {
+  articlesProposed: Article[]
+  articlesBuyed: Article[]
+  payments: PaymentInterface[]
 }

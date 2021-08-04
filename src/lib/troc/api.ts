@@ -1,3 +1,4 @@
+import type { QueryKey } from '@sveltestack/svelte-query'
 import type {
   ArrayElement,
   Subscribe,
@@ -9,6 +10,7 @@ import type {
   TrocUserResum,
   User,
   Tarif,
+  TrocStats,
 } from 'types'
 import { api, createGetNextPageParam } from '$lib/api'
 
@@ -18,6 +20,15 @@ export const getNextPageParam = createGetNextPageParam(FIRST_LIMIT, NEXT_LIMIT)
 
 export function getTroc({ queryKey }: { queryKey: ['troc', string] }) {
   return api<Troc>(`/api/trocs/${queryKey[1]}`)
+}
+
+export function getTrocUserResum({ queryKey }) {
+  return api<TrocUserResum>('/api/trocs/resum', { params: queryKey[1] })
+}
+
+export function getTrocStats({ queryKey }) {
+  const { trocId = '' } = queryKey[1]
+  return api<TrocStats>(`/api/trocs/${trocId}/stats`, { params: queryKey[1] })
 }
 
 export function searchTrocs({ pageParam = 0, queryKey }) {
@@ -44,12 +55,6 @@ export function getsubscribes({ pageParam = 0, queryKey }) {
     limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
   }
   return api<SubscribeLookup[]>('/api/subscribes', { params })
-}
-
-export function getTrocUserResum({ queryKey }) {
-  const { trocId, userId } = queryKey[1]
-  const params = userId ? { troc: trocId, user: userId } : { troc: trocId }
-  return api<TrocUserResum>('/api/trocs/resum', { params })
 }
 
 export function createSubscribe(

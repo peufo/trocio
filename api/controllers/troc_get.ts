@@ -131,20 +131,23 @@ export function getSpec(req, res, next) {
 }
 
 export function getStats(req, res, next) {
-  TrocModel.findOne({ _id: req.params.trocId }).exec((err, troc) => {
+  const { trocId } = req.params
+  const { userId, view } = req.query
+
+  if (view === 'user' && !userId)
+    return next(Error('Query userId is required when view=user'))
+
+  TrocModel.findOne({ _id: trocId }).exec((err, troc) => {
     if (err || !troc) return next(err || Error('Troc not found'))
 
     let query: FilterQuery<Troc & Document> = { troc: troc._id }
-    let user = req.query.user
 
-    if (req.query.view == 'traders') {
-      user = { $in: troc.trader.map((t) => t.user) }
-    } else if (req.query.view == 'privates') {
-      user = { $nin: troc.trader.map((t) => t.user) }
-    }
-
-    if (req.query.view != 'global' || user) {
-      query.provider = user
+    if (view === 'traders') {
+      query.provider = { $in: troc.trader.map((t) => t.user) }
+    } else if (view === 'privates') {
+      query.provider = { $nin: troc.trader.map((t) => t.user) }
+    } else if (view === 'user') {
+      query.provider = userId
     }
 
     Article.find(query)
@@ -154,7 +157,7 @@ export function getStats(req, res, next) {
         if (err) return next(err)
 
         delete query.provider
-        if (user) query.buyer = user
+        if (view === 'user') query.buyer = userId
         query.sold = { $exists: true }
         Article.find(query)
           .sort({ createdAt: 1 })
@@ -164,7 +167,7 @@ export function getStats(req, res, next) {
 
             delete query.buyer
             delete query.sold
-            if (user) query.user = user
+            if (view === 'user') query.user = userId
             Payment.find(query)
               .sort({ createdAt: 1 })
               .lean()
