@@ -300,9 +300,15 @@
           },
           {
             text: `
-              <b>${stats.sums.margin.toFixed(2)}<br>
-                ${stats.sums.fee.toFixed(2)}<br>
-                ${(stats.sums.fee + stats.sums.margin).toFixed(2)}<br>
+              <b>${stats.sums.margin.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+              })}<br>
+              ${stats.sums.fee.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+              })}<br>
+              ${(stats.sums.fee + stats.sums.margin).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+              })}<br>
               </b>`,
             x: 0.9,
             xref: 'paper',
@@ -341,7 +347,7 @@
         {
           text: ` Moy. mis en vente: <b>${(
             stats.sums.provided / stats.numbers.provided
-          ).toFixed(2)}</b>`,
+          ).toLocaleString(undefined, { maximumFractionDigits: 1 })}</b>`,
           x: stats.sums.provided / stats.numbers.provided,
           y: 0,
           arrowhead: 0,
@@ -354,7 +360,7 @@
         {
           text: ` Moy. vendu: <b>${(
             stats.sums.solded / stats.numbers.solded
-          ).toFixed(2)}</b>`,
+          ).toLocaleString(undefined, { maximumFractionDigits: 1 })}</b>`,
           x: stats.sums.solded / stats.numbers.solded,
           y: 0,
           arrowhead: 0,
@@ -367,7 +373,7 @@
         {
           text: ` Moy. récupéré: <b>${(
             stats.sums.recovered / stats.numbers.recovered
-          ).toFixed(2)}</b>`,
+          ).toLocaleString(undefined, { maximumFractionDigits: 1 })}</b>`,
           x: stats.sums.recovered / stats.numbers.recovered,
           y: 0,
           arrowhead: 0,
