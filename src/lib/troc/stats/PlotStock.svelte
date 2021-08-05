@@ -8,17 +8,17 @@
   // For use typescript
   // import * as Plotly from 'plotly.js'
 
+  import IconLink from '$lib/util/IconLink.svelte'
   import { isDarkTheme } from '$lib/store/layout'
   import { troc } from '$lib/troc/store'
   import type { TrocStatsFormatted } from './formatStats'
-  import IconLink from '$lib/util/IconLink.svelte'
 
   export let stats: TrocStatsFormatted
 
   let mode: 'sums' | 'numbers' = 'numbers'
   let isLoading = true
-  let containerPlotStock: HTMLElement
-  let containerHisto: HTMLElement
+  let containerPlotStock: HTMLDivElement
+  let containerHisto: HTMLDivElement
 
   onMount(() => {
     setTimeout(() => load(), 300)
@@ -463,6 +463,6 @@
   </div>
 {/if}
 
-<div bind:this={containerPlotStock} />
+<div bind:this={containerPlotStock} class="plot" />
 <br />
-<div bind:this={containerHisto} />
+<div bind:this={containerHisto} class="plot" />

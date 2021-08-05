@@ -135,7 +135,7 @@
         {/if}
       </span>
 
-      <PlotConsommation />
+      <PlotConsommation {stats} />
     </ExpansionCard>
 
     <br />
@@ -188,5 +188,9 @@
     display: grid;
     justify-items: center;
     min-height: 800px;
+  }
+
+  :global(.plot .main-svg) {
+    border-radius: 4px;
   }
 </style>

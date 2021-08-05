@@ -1,41 +1,47 @@
 <script lang="ts">
-  function showConsommationPlot() {
-    consommationLoading = true
+  import { onMount } from 'svelte'
+  import { faChartBar, faChartArea } from '@fortawesome/free-solid-svg-icons'
+  import { grey } from 'svelte-materialify/src/utils/colors'
+  import Plotly from 'plotly.js-dist'
 
-    let buysNumber = {
-      name: `Nombre d'achats`,
-      hoverinfo: 'y+text',
-      x: [],
-      y: [],
-      text: [],
-    }
+  // For use typescript
+  // import * as Plotly from 'plotly.js'
 
-    let buysSum = {
-      name: `Valeur des achats`,
-      hoverinfo: 'y',
-      yaxis: 'y2',
-      x: [],
-      y: [],
-    }
+  import IconLink from '$lib/util/IconLink.svelte'
+  import { isDarkTheme } from '$lib/store/layout'
+  import { troc } from '$lib/troc/store'
+  import type { TrocStatsFormatted } from './formatStats'
 
-    let balanceNumberBuys = 0
-    let balanceSumBuys = 0
+  export let stats: TrocStatsFormatted
 
-    events
-      .filter((e) => e.event == 'buyed')
-      .forEach((event) => {
-        balanceNumberBuys++
-        balanceSumBuys += event.art.price
+  let isLoading = true
+  let containerPlot: HTMLDivElement
 
-        buysNumber.y.push(balanceNumberBuys)
-        buysNumber.x.push(event.date)
-        buysNumber.text.push(event.art.name)
+  onMount(() => {
+    setTimeout(() => load(), 300)
+  })
 
-        buysSum.y.push(balanceSumBuys)
-        buysSum.x.push(event.date)
-      })
+  $: if ($isDarkTheme || true) load()
 
-    let layout = {
+  function load() {
+    isLoading = true
+    loadPlot().then(() => (isLoading = false))
+  }
+
+  function loadPlot() {
+    return new Promise((resolve) => {
+      const layout = getLayout()
+      const traces = getTraces()
+      Plotly.newPlot(containerPlot, traces, layout)
+      resolve(true)
+    })
+  }
+
+  function getLayout(): Partial<Plotly.Layout> {
+    const layout: Partial<Plotly.Layout> = {
+      paper_bgcolor: grey[$isDarkTheme ? 'darken-3' : 'lighten-5'],
+      plot_bgcolor: grey[$isDarkTheme ? 'darken-2' : 'lighten-4'],
+      font: { color: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'] },
       xaxis: {},
       yaxis: { title: 'Nombre' },
       yaxis2: { title: 'Valeur', side: 'right', overlaying: 'y' },
@@ -51,36 +57,74 @@
     }
 
     //add shedule range and annotations
-    if ($troc.schedule.length) {
-      layout.xaxis.range = [
-        new Date($troc.schedule[0].open).getTime() - 1000 * 60 * 60 * 24,
-        new Date($troc.schedule[$troc.schedule.length - 1].close).getTime() +
-          1000 * 60 * 60 * 6,
-      ]
-      layout.annotations.push({
+    if ($troc?.schedule?.length) {
+      if (layout.xaxis) {
+        layout.xaxis.range = [
+          new Date($troc.schedule[0].open).getTime() - 1000 * 60 * 60 * 24,
+          new Date($troc.schedule[$troc.schedule.length - 1].close).getTime() +
+            1000 * 60 * 60 * 6,
+        ]
+      }
+      layout.annotations?.push({
         text: 'Ouverture',
+        arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
         x: $troc.schedule[0].open,
         y: 0,
       })
-      layout.annotations.push({
+      layout.annotations?.push({
         text: 'Fermeture',
+        arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
         x: $troc.schedule[$troc.schedule.length - 1].close,
         y: 0,
       })
     }
 
-    Plotly.newPlot('consommationGraph', [buysNumber, buysSum], layout)
+    return layout
+  }
 
-    consommationLoading = false
+  function getTraces(): Partial<Plotly.ScatterData>[] {
+    const buysNumber = {
+      name: `Nombre d'achats`,
+      hoverinfo: 'y+text' as Plotly.ScatterData['hoverinfo'],
+      x: [] as Date[],
+      y: [] as number[],
+      text: [] as string[],
+    }
+
+    const buysSum = {
+      name: `Valeur des achats`,
+      hoverinfo: 'y' as Plotly.ScatterData['hoverinfo'],
+      yaxis: 'y2',
+      x: [] as Date[],
+      y: [] as number[],
+    }
+
+    let cursorNumberBuys = 0
+    let cursorSumBuys = 0
+
+    stats.events
+      .filter(({ event }) => event === 'buyed')
+      .forEach((event) => {
+        if (!event.art) return
+        cursorNumberBuys++
+        cursorSumBuys += event.art.price
+
+        buysNumber.y.push(cursorNumberBuys)
+        buysNumber.x.push(event.date)
+        buysNumber.text.push(event.art.name)
+
+        buysSum.y.push(cursorSumBuys)
+        buysSum.x.push(event.date)
+      })
+
+    return [buysNumber, buysSum]
   }
 </script>
 
-<div id="consommationGraph" />
+<div bind:this={containerPlot} class="plot" />
 
-{#if consommationLoading}
-  <div class="w3-display-container" style="height: 450px;">
-    <div class="w3-display-middle">
-      <i class="far fa-chart-bar w3-jumbo w3-opacity" />
-    </div>
+{#if isLoading}
+  <div class="centered" style="height: 450px;">
+    <IconLink icon={faChartBar} size="2em" />
   </div>
 {/if}
