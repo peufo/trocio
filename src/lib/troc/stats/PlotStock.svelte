@@ -17,14 +17,14 @@
 
   let mode: 'sums' | 'numbers' = 'numbers'
   let isLoading = true
+  let isMounted = false
   let containerPlotStock: HTMLDivElement
   let containerHisto: HTMLDivElement
-
   onMount(() => {
-    setTimeout(() => load(), 300)
+    setTimeout(() => (isMounted = true), 300)
   })
 
-  $: if ($isDarkTheme || true) load()
+  $: if (isMounted && ($isDarkTheme || true)) load()
 
   function load() {
     isLoading = true
@@ -451,13 +451,12 @@
   rounded
   mandatory
   bind:value={mode}
-  size="small"
   class="ml-4 mt-4"
   on:change={load}
   style="position: absolute; z-index: 1;"
 >
-  <ButtonGroupItem value="numbers" size="small" active>Nombre</ButtonGroupItem>
-  <ButtonGroupItem value="sums" size="small">Valeur</ButtonGroupItem>
+  <ButtonGroupItem value="numbers">Nombre</ButtonGroupItem>
+  <ButtonGroupItem value="sums">Valeur</ButtonGroupItem>
 </ButtonGroup>
 
 {#if isLoading}

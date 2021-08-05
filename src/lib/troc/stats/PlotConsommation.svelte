@@ -15,13 +15,14 @@
   export let stats: TrocStatsFormatted
 
   let isLoading = true
+  let isMounted = false
   let containerPlot: HTMLDivElement
 
   onMount(() => {
-    setTimeout(() => load(), 300)
+    setTimeout(() => (isMounted = true), 300)
   })
 
-  $: if ($isDarkTheme || true) load()
+  $: if (isMounted && ($isDarkTheme || true)) load()
 
   function load() {
     isLoading = true
@@ -32,6 +33,7 @@
     return new Promise((resolve) => {
       const layout = getLayout()
       const traces = getTraces()
+
       Plotly.newPlot(containerPlot, traces, layout)
       resolve(true)
     })
