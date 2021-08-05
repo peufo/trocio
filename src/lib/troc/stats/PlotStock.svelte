@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { ButtonGroup, ButtonGroupItem } from 'svelte-materialify'
+  import { faChartBar, faChartArea } from '@fortawesome/free-solid-svg-icons'
   import { grey } from 'svelte-materialify/src/utils/colors'
   import Plotly from 'plotly.js-dist'
 
@@ -10,12 +11,14 @@
   import { isDarkTheme } from '$lib/store/layout'
   import { troc } from '$lib/troc/store'
   import type { TrocStatsFormatted } from './formatStats'
+  import IconLink from '$lib/util/IconLink.svelte'
 
   export let stats: TrocStatsFormatted
 
   let mode: 'sums' | 'numbers' = 'numbers'
   let isLoading = true
   let containerPlotStock: HTMLElement
+  let containerHisto: HTMLElement
 
   onMount(() => {
     setTimeout(() => load(), 300)
@@ -25,7 +28,7 @@
 
   function load() {
     isLoading = true
-    loadPlotStock().then(() => {
+    Promise.all([loadPlotStock(), loadHisto()]).then(() => {
       isLoading = false
     })
   }
@@ -36,6 +39,15 @@
       const traces = getScatterTraces()
       const pie = getPieTrace()
       Plotly.newPlot(containerPlotStock, [...traces, pie], layout)
+      resolve(true)
+    })
+  }
+
+  function loadHisto() {
+    return new Promise((resolve) => {
+      const layout = getLayoutHisto()
+      const traces = getHistoTraces()
+      Plotly.newPlot(containerHisto, traces, layout)
       resolve(true)
     })
   }
@@ -306,56 +318,11 @@
     return layout
   }
 
-  function loadHisto() {
-    //TODO: Limite price obligé pour éviter le rammage... Faire un avertissement ?
-    const LIMIT_PRICE = 1000
-
-    //Histogram
-    let proposedHisto = {
-      name: 'Proposé',
-      hoverinfo: 'y',
-      marker: { color: 'rgb(200, 200, 200)' },
-      x: articlesProposed
-        .filter((art) => !art.valided && art.price < LIMIT_PRICE)
-        .map((art) => art.price),
-      type: 'histogram',
-      xbins: { size: 10 },
-    }
-
-    let availableHisto = {
-      name: 'En vente',
-      hoverinfo: 'y',
-      marker: { color: 'rgb(33, 119, 181)' },
-      x: articlesProvided
-        .filter((art) => !art.solded && !art.recover && art.price < LIMIT_PRICE)
-        .map((art) => art.price),
-      type: 'histogram',
-      xbins: { size: 10 },
-    }
-
-    let soldedHisto = {
-      name: 'Vendu',
-      hoverinfo: 'y',
-      marker: { color: 'rgb(44, 160, 43)' },
-      x: articlesSolded
-        .filter((art) => art.price < LIMIT_PRICE)
-        .map((art) => art.price),
-      type: 'histogram',
-      xbins: { size: 10 },
-    }
-
-    let recoverHisto = {
-      name: 'Récupéré',
-      hoverinfo: 'y',
-      marker: { color: 'rgb(255, 127, 14)' },
-      x: articlesRecovered
-        .filter((art) => art.price < LIMIT_PRICE)
-        .map((art) => art.price),
-      type: 'histogram',
-      xbins: { size: 10 },
-    }
-
-    let layoutHisto = {
+  function getLayoutHisto(): Partial<Plotly.Layout> {
+    const layout: Partial<Plotly.Layout> = {
+      paper_bgcolor: grey[$isDarkTheme ? 'darken-3' : 'lighten-5'],
+      plot_bgcolor: grey[$isDarkTheme ? 'darken-2' : 'lighten-4'],
+      font: { color: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'] },
       barmode: 'stack',
       legend: {
         orientation: 'h',
@@ -366,57 +333,111 @@
       },
       xaxis: {
         title: 'Valeur',
-        range: [0, (sumProvided / numberProvided) * 3],
+        range: [0, (stats.sums.provided / stats.numbers.provided) * 3],
       },
       yaxis: { title: 'Nombre' },
       margin: { t: 80 },
       annotations: [
         {
           text: ` Moy. mis en vente: <b>${(
-            sumProvided / numberProvided
+            stats.sums.provided / stats.numbers.provided
           ).toFixed(2)}</b>`,
-          x: sumProvided / numberProvided,
+          x: stats.sums.provided / stats.numbers.provided,
           y: 0,
           arrowhead: 0,
-          textangle: -45,
+          arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
+          textangle: '-45',
           xanchor: 'left',
           ax: 30,
           ay: -30,
         },
         {
-          text: ` Moy. vendu: <b>${(sumSolded / numberSolded).toFixed(2)}</b>`,
-          x: sumSolded / numberSolded,
+          text: ` Moy. vendu: <b>${(
+            stats.sums.solded / stats.numbers.solded
+          ).toFixed(2)}</b>`,
+          x: stats.sums.solded / stats.numbers.solded,
           y: 0,
           arrowhead: 0,
-          textangle: -45,
+          arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
+          textangle: '-45',
           xanchor: 'left',
           ax: 30,
           ay: -30,
         },
         {
-          text: ` Moy. récupéré: <b>${(sumRecovered / numberRecovered).toFixed(
-            2
-          )}</b>`,
-          x: sumRecovered / numberRecovered,
+          text: ` Moy. récupéré: <b>${(
+            stats.sums.recovered / stats.numbers.recovered
+          ).toFixed(2)}</b>`,
+          x: stats.sums.recovered / stats.numbers.recovered,
           y: 0,
           arrowhead: 0,
-          textangle: -45,
+          arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
+          textangle: '-45',
           xanchor: 'left',
           ax: 30,
           ay: -30,
         },
       ],
     }
+    return layout
+  }
 
-    let dataHisto = []
-    if (numberRecovered) dataHisto.push(recoverHisto)
-    if (numberSolded) dataHisto.push(soldedHisto)
-    if (numberProvided - numberSolded - numberRecovered)
-      dataHisto.push(availableHisto)
-    if (numberProposed) dataHisto.push(proposedHisto)
+  function getHistoTraces(): Partial<Plotly.ScatterData>[] {
+    //TODO: Limite price obligé pour éviter que ca rame ... Faire un avertissement ?
+    const LIMIT_PRICE = 1000
 
-    //Plotly.newPlot('stockGraphHisto', dataHisto, layoutHisto)
-    Plotly.newPlot('stockGraphHisto', dataHisto, layoutHisto)
+    const proposed: Partial<Plotly.ScatterData> = {
+      name: 'Proposé',
+      hoverinfo: 'y',
+      marker: { color: 'rgb(200, 200, 200)' },
+      x: stats.articlesProposed
+        .filter((art) => !art.valided && art.price < LIMIT_PRICE)
+        .map((art) => art.price),
+      type: 'histogram',
+      xbins: { size: 10, start: 0, end: 1000 },
+    }
+
+    const available: Partial<Plotly.ScatterData> = {
+      name: 'En vente',
+      hoverinfo: 'y',
+      marker: { color: 'rgb(33, 119, 181)' },
+      x: stats.articlesProvided
+        .filter((art) => !art.sold && !art.recover && art.price < LIMIT_PRICE)
+        .map((art) => art.price),
+      type: 'histogram',
+      xbins: { size: 10, start: 0, end: 1000 },
+    }
+
+    const solded: Partial<Plotly.ScatterData> = {
+      name: 'Vendu',
+      hoverinfo: 'y',
+      marker: { color: 'rgb(44, 160, 43)' },
+      x: stats.articlesSolded
+        .filter((art) => art.price < LIMIT_PRICE)
+        .map((art) => art.price),
+      type: 'histogram',
+      xbins: { size: 10, start: 0, end: 1000 },
+    }
+
+    const recover: Partial<Plotly.ScatterData> = {
+      name: 'Récupéré',
+      hoverinfo: 'y',
+      marker: { color: 'rgb(255, 127, 14)' },
+      x: stats.articlesRecovered
+        .filter((art) => art.price < LIMIT_PRICE)
+        .map((art) => art.price),
+      type: 'histogram',
+      xbins: { size: 10, start: 0, end: 1000 },
+    }
+
+    const traces = []
+    if (stats.numbers.recovered) traces.push(recover)
+    if (stats.numbers.solded) traces.push(solded)
+    if (stats.numbers.provided - stats.numbers.solded - stats.numbers.recovered)
+      traces.push(available)
+    if (stats.numbers.proposed) traces.push(proposed)
+
+    return traces
   }
 </script>
 
@@ -433,13 +454,15 @@
   <ButtonGroupItem value="sums" size="small">Valeur</ButtonGroupItem>
 </ButtonGroup>
 
-<div bind:this={containerPlotStock} />
-
 {#if isLoading}
   <div class="centered" style="height: 450px;">
-    <i class="fas fa-chart-area w3-jumbo w3-opacity" />
+    <IconLink icon={faChartArea} size="2em" />
   </div>
   <div class="centered" style="height: 450px;">
-    <i class="far fa-chart-bar w3-jumbo w3-opacity" />
+    <IconLink icon={faChartBar} size="2em" />
   </div>
 {/if}
+
+<div bind:this={containerPlotStock} />
+<br />
+<div bind:this={containerHisto} />
