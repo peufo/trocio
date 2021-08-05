@@ -156,8 +156,8 @@ export function getStats(req, res, next) {
       .exec((err, articlesProposed) => {
         if (err) return next(err)
 
+        if (view !== 'global') query.buyer = query.provider
         delete query.provider
-        if (view === 'user') query.buyer = userId
         query.sold = { $exists: true }
         Article.find(query)
           .sort({ createdAt: 1 })
