@@ -178,7 +178,7 @@
         {/if}
       </span>
 
-      <PlotCash />
+      <PlotCash {stats} />
     </ExpansionCard>
   {/if}
 </div>
