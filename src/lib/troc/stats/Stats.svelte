@@ -103,12 +103,18 @@
       <span slot="subtitle">
         {#if stats.articlesProposed.length}
           <span>
-            <b>{stats.numbers.provided + stats.numbers.proposed}</b>
+            <b>
+              {(
+                stats.numbers.provided + stats.numbers.proposed
+              ).toLocaleString()}
+            </b>
             propositions pour une valeur total de
             <b>
-              {Math.round((stats.sums.provided + stats.sums.proposed) * 100) /
-                100}</b
-            >
+              {(stats.sums.provided + stats.sums.proposed).toLocaleString(
+                undefined,
+                { minimumFractionDigits: 2 }
+              )}
+            </b>
           </span>
         {:else}
           <span>Aucun article proposé</span>
@@ -127,8 +133,13 @@
       <span slot="subtitle">
         {#if stats?.articlesSolded.length}
           <span>
-            <b>{stats.numbers.buyed}</b> achats pour un valeur total de
-            <b>{Math.round(stats.sums.buyed * 100) / 100}</b>
+            <b>{stats.numbers.buyed.toLocaleString()}</b> achats pour un valeur
+            total de
+            <b>
+              {stats.sums.buyed.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+              })}
+            </b>
           </span>
         {:else}
           <span>Aucun article acheté</span>
@@ -147,30 +158,40 @@
       <span slot="subtitle">
         {#if stats.numbers.payment}
           <span>
-            <b>{stats.numbers.payment}</b>
+            <b>{stats.numbers.payment.toLocaleString()}</b>
             <span style="color: green;">
               <i class="fas fa-chevron-up" />
-              {stats.numbers.paymentPositif}
+              {stats.numbers.paymentPositif.toLocaleString()}
             </span>
             <span style="color: red;">
               <i class="fas fa-chevron-down" />
-              {stats.numbers.paymentNegatif}
+              {stats.numbers.paymentNegatif.toLocaleString()}
             </span>
             pour une valeur total de
-            <b>{stats.sums.payment.toFixed(2)}</b>
+            <b>
+              {stats.sums.payment.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+              })}
+            </b>
             <span style="color: green;">
               <i class="fas fa-chevron-up" />
-              {stats.sums.paymentPositif.toFixed(2)}
+              {stats.sums.paymentPositif.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+              })}
             </span>
             <span style="color: red;">
               <i class="fas fa-chevron-down" />
-              {stats.sums.paymentNegatif.toFixed(2)}
+              {stats.sums.paymentNegatif.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+              })}
             </span>
             <span style="color: blue;">
               <i class="fas fa-angle-right" />
-              {(stats.sums.paymentPositif - stats.sums.paymentNegatif).toFixed(
-                2
-              )}
+              {(
+                stats.sums.paymentPositif - stats.sums.paymentNegatif
+              ).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+              })}
             </span>
           </span>
         {:else}
