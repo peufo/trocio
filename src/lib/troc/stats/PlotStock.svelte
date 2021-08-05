@@ -1,11 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  // import type * as PlotlyInterface from 'plotly.js/lib/core'
-  // import Plotly as PlotlyInterface from 'plotly.js-dist'
-  import * as Plotly from 'plotly.js'
-
   import { ButtonGroup, ButtonGroupItem } from 'svelte-materialify'
+  import { grey } from 'svelte-materialify/src/utils/colors'
+  import Plotly from 'plotly.js-dist'
 
+  // For use typescript
+  // import * as Plotly from 'plotly.js'
+
+  import { isDarkTheme } from '$lib/store/layout'
   import { troc } from '$lib/troc/store'
   import type { TrocStatsFormatted } from './formatStats'
 
@@ -16,35 +18,26 @@
   let containerPlotStock: HTMLElement
 
   onMount(() => {
-    setTimeout(() => load(), 200)
+    setTimeout(() => load(), 300)
   })
 
+  $: if ($isDarkTheme || true) load()
+
   function load() {
-    loadPlotStock()
-
-    var data = [
-      {
-        values: [19, 26, 55],
-        labels: ['Residential', 'Non-Residential', 'Utility'],
-        type: 'pie',
-      },
-    ]
-
-    var layout = {
-      height: 400,
-      width: 500,
-    }
-
-    Plotly.newPlot('myDiv', data, layout)
+    isLoading = true
+    loadPlotStock().then(() => {
+      isLoading = false
+    })
   }
 
   function loadPlotStock() {
-    isLoading = true
-    const layout = getLayout()
-    const traces = getScatterTraces()
-    const pie = getPieTrace()
-    Plotly.newPlot(containerPlotStock, [...traces, pie], layout)
-    isLoading = false
+    return new Promise((resolve) => {
+      const layout = getLayout()
+      const traces = getScatterTraces()
+      const pie = getPieTrace()
+      Plotly.newPlot(containerPlotStock, [...traces, pie], layout)
+      resolve(true)
+    })
   }
 
   function getPieTrace(): Partial<Plotly.PieData> {
@@ -62,7 +55,10 @@
       hoverinfo: 'none',
       type: 'pie',
       hole: 0.2,
-      domain: { x: [0.5, 1], y: [0, 0.7] },
+      domain: {
+        x: [0.8, 1],
+        y: [0, mode === 'numbers' ? 1 : 0.7],
+      },
       showlegend: false,
       values: [
         stats[mode].proposed,
@@ -234,6 +230,9 @@
 
   function getLayout(): Partial<Plotly.Layout> {
     const layout: Partial<Plotly.Layout> = {
+      paper_bgcolor: grey[$isDarkTheme ? 'darken-3' : 'lighten-5'],
+      plot_bgcolor: grey[$isDarkTheme ? 'darken-2' : 'lighten-4'],
+      font: { color: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'] },
       yaxis: { title: 'Nombre' },
       legend: {
         orientation: 'h',
@@ -255,10 +254,12 @@
       layout.annotations = [
         {
           text: 'Ouverture',
+          arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
           x: $troc.schedule[0].open,
         },
         {
           text: 'Fermeture',
+          arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
           x: $troc.schedule[$troc.schedule.length - 1].close,
         },
       ]
@@ -275,7 +276,7 @@
       if (layout.annotations)
         layout.annotations.push(
           {
-            text: `Marge<br>Frais<br>Total`,
+            text: `<span>Marge<br>Frais<br>Total</span>`,
             x: 0.9,
             xref: 'paper',
             xanchor: 'left',
@@ -289,12 +290,12 @@
             text: `
               <b>${stats.sums.margin.toFixed(2)}<br>
                 ${stats.sums.fee.toFixed(2)}<br>
-                ${(stats.sums.fee + stats.sums.margin).toFixed(2)}
+                ${(stats.sums.fee + stats.sums.margin).toFixed(2)}<br>
               </b>`,
             x: 0.9,
             xref: 'paper',
             xanchor: 'right',
-            y: 0.98,
+            y: 0.95,
             yref: 'paper',
             yanchor: 'middle',
             align: 'right',
@@ -424,19 +425,15 @@
   mandatory
   bind:value={mode}
   size="small"
-  class="ml-4"
+  class="ml-4 mt-4"
   on:change={load}
+  style="position: absolute; z-index: 1;"
 >
-  <ButtonGroupItem value="numbers" style="z-index: 1;" active>
-    Nombre
-  </ButtonGroupItem>
-  <ButtonGroupItem value="sums" style="z-index: 1;">Valeur</ButtonGroupItem>
+  <ButtonGroupItem value="numbers" size="small" active>Nombre</ButtonGroupItem>
+  <ButtonGroupItem value="sums" size="small">Valeur</ButtonGroupItem>
 </ButtonGroup>
 
 <div bind:this={containerPlotStock} />
-<div id="stockGraphHisto" />
-
-<div id="myDiv" />
 
 {#if isLoading}
   <div class="centered" style="height: 450px;">
