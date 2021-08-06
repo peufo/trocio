@@ -1,8 +1,10 @@
 <script lang="ts">
   import { params, goto } from '@roxi/routify'
-  import { Table, TextField, Ripple } from 'svelte-materialify'
+  import { TextField, Ripple, Button } from 'svelte-materialify'
   import debounce from 'debounce'
+  import MagicTable from '$lib/util/MagicTable.svelte'
 
+  import { layout } from '$lib/store/layout'
   import type { SubscribeLookup } from 'types'
   import IconLink from '$lib/util/IconLink.svelte'
   import {
@@ -11,14 +13,19 @@
     useSubscribesOptions,
     useAddApply,
   } from '$lib/troc/store'
-  import { faCheck, faSearch } from '@fortawesome/free-solid-svg-icons'
-  import TarifInfoDialog from '$lib/info/TarifInfoDialog.svelte'
+  import {
+    faCheck,
+    faEyeSlash,
+    faEye,
+    faSearch,
+  } from '@fortawesome/free-solid-svg-icons'
   import notify from '$lib/notify'
+
+  let filtredTarifs: string[] = []
 
   const addApply = useAddApply()
 
-  const subscribesQuery =
-    $params.trocId && useSubscribes({ trocId: $params.trocId, q: '' })
+  const subscribesQuery = useSubscribes({ trocId: $params.trocId, q: '' })
   const handleSearchSubscriber = debounce((event: any) => {
     subscribesQuery.setOptions(
       useSubscribesOptions({ trocId: $params.trocId, q: event.target.value })
@@ -37,12 +44,27 @@
     if (attribution) return attribution._id
     return tarifByDefaultId
   })
+
+  function handleClickFilter(event: PointerEvent, tarifId: string) {
+    event.stopPropagation()
+    const index = filtredTarifs.indexOf(tarifId)
+    if (index === -1) filtredTarifs = [...filtredTarifs, tarifId]
+    else
+      filtredTarifs = [
+        ...filtredTarifs.slice(0, index),
+        ...filtredTarifs.slice(index + 1),
+      ]
+  }
 </script>
 
 <div class="container">
   <h6 class="mb-5">Attribution des tarifs</h6>
 
-  <Table class="simple-card">
+  <MagicTable
+    class="simple-card"
+    query={subscribesQuery}
+    style="max-height: {$layout.mainHeight - 94}px;"
+  >
     <thead>
       <tr>
         <th style="padding-left: 0px; width: 340px;">
@@ -74,6 +96,12 @@
             }}
           >
             {tarif.name}
+            <IconLink
+              icon={filtredTarifs.includes(tarif._id) ? faEyeSlash : faEye}
+              size=".8em"
+              clickable
+              on:click={(event) => handleClickFilter(event, tarif._id)}
+            />
           </th>
         {/each}
       </tr>
@@ -118,7 +146,7 @@
         </tr>
       {/each}
     </tbody>
-  </Table>
+  </MagicTable>
 </div>
 
 <style>
