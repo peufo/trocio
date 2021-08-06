@@ -14,8 +14,8 @@ import type {
 } from 'types'
 import { api, createGetNextPageParam } from '$lib/api'
 
-const FIRST_LIMIT = 4
-const NEXT_LIMIT = 4
+const FIRST_LIMIT = 10
+const NEXT_LIMIT = 5
 export const getNextPageParam = createGetNextPageParam(FIRST_LIMIT, NEXT_LIMIT)
 
 export function getTroc({ queryKey }: { queryKey: ['troc', string] }) {
