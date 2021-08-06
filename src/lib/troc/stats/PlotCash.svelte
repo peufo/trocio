@@ -40,8 +40,8 @@
 
   function getLayout(): Partial<Plotly.Layout> {
     const layout: Partial<Plotly.Layout> = {
-      paper_bgcolor: grey[$isDarkTheme ? 'darken-3' : 'lighten-5'],
-      plot_bgcolor: grey[$isDarkTheme ? 'darken-2' : 'lighten-4'],
+      paper_bgcolor: grey[$isDarkTheme ? 'darken-4' : 'lighten-5'],
+      plot_bgcolor: grey[$isDarkTheme ? 'darken-3' : 'lighten-4'],
       font: { color: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'] },
       xaxis: {},
       yaxis: { title: 'Montant', domain: [0, 0.7] },
