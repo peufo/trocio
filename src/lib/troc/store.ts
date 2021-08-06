@@ -63,6 +63,7 @@ export function useSubscribesOptions(
     queryFn: getsubscribes,
     queryKey: ['subscribes', query],
     getNextPageParam,
+    refetchOnWindowFocus: false,
   }
 }
 export const useSubscribes = (query: SearchSubscribersQuery) =>
