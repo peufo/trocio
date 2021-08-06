@@ -19,10 +19,8 @@
     const scrollButtom = offsetHeight + scrollTop
     const isInButtom = scrollButtom + 50 > scrollHeight
 
-    console.log({ isInButtom, offsetHeight, scrollTop, scrollHeight })
     if (isInButtom) {
       if (!$query.isFetching && $query.hasNextPage) {
-        console.log('FETCH MORE')
         $query.fetchNextPage().then(() => {
           testScrollPosition()
         })
