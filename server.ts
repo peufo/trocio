@@ -7,7 +7,8 @@ import api from './api/app'
 
 const app = express()
 
-// Activation des logs TODO: sorti dans le file system ?
+// Activation des logs
+// TODO: sorti dans le file system ?
 app.use(logger('dev'))
 
 // Sert l'API
