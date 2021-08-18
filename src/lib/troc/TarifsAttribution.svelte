@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { params, goto } from '@roxi/routify'
+  import { params, goto, url } from '@roxi/routify'
   import { TextField, Ripple, Button } from 'svelte-materialify'
   import debounce from 'debounce'
   import MagicTable from '$lib/util/MagicTable.svelte'
@@ -21,16 +21,25 @@
   } from '@fortawesome/free-solid-svg-icons'
   import notify from '$lib/notify'
 
-  let filtredTarifs: string[] = []
+  let searchUserDebounced = ''
 
   const addApply = useAddApply()
 
-  const subscribesQuery = useSubscribes({ trocId: $params.trocId, q: '' })
-  const handleSearchSubscriber = debounce((event: any) => {
+  const subscribesQuery = useSubscribes({
+    trocId: $params.trocId,
+    filtredTarifs: $params.filtredTarifs,
+    q: '',
+  })
+  $: {
     subscribesQuery.setOptions(
-      useSubscribesOptions({ trocId: $params.trocId, q: event.target.value })
+      useSubscribesOptions({
+        trocId: $params.trocId,
+        filtredTarifs: $params.filtredTarifs,
+        q: searchUserDebounced,
+      })
     )
-  }, 200)
+  }
+
   let subscribes: SubscribeLookup[] = []
   $: subscribes = $subscribesQuery.data
     ? $subscribesQuery.data.pages.flat()
@@ -45,15 +54,33 @@
     return tarifByDefaultId
   })
 
+  const handleSearchSubscriber = debounce((event: any) => {
+    searchUserDebounced = event.target.value
+  }, 200)
+
   function handleClickFilter(event: PointerEvent, tarifId: string) {
     event.stopPropagation()
+    let { filtredTarifs = '' } = $params
+    filtredTarifs = filtredTarifs.split(',')
+
     const index = filtredTarifs.indexOf(tarifId)
-    if (index === -1) filtredTarifs = [...filtredTarifs, tarifId]
-    else
-      filtredTarifs = [
-        ...filtredTarifs.slice(0, index),
-        ...filtredTarifs.slice(index + 1),
-      ]
+    const query = {
+      ...$params,
+      filtredTarifs:
+        index === -1
+          ? [...filtredTarifs, tarifId]
+          : [
+              ...filtredTarifs.slice(0, index),
+              ...filtredTarifs.slice(index + 1),
+            ],
+    }
+
+    if (query.filtredTarifs.length === 1 && query.filtredTarifs[0] === '') {
+      // @ts-ignore
+      delete query.filtredTarifs
+    }
+
+    $goto('/admin', query)
   }
 </script>
 
@@ -97,8 +124,13 @@
           >
             {tarif.name}
             <IconLink
-              icon={filtredTarifs.includes(tarif._id) ? faEyeSlash : faEye}
+              icon={$params.filtredTarifs?.includes(tarif._id)
+                ? faEyeSlash
+                : faEye}
               size=".8em"
+              class={$params.filtredTarifs?.includes(tarif._id)
+                ? 'primary-text'
+                : ''}
               clickable
               on:click={(event) => handleClickFilter(event, tarif._id)}
             />

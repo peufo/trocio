@@ -9,9 +9,7 @@
   } from 'svelte-materialify'
 
   import type { Tarif } from 'types'
-
   import { troc, useDeleteTarif, useEditTarif } from '$lib/troc/store'
-
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import { faCubes, faPercent } from '@fortawesome/free-solid-svg-icons'
@@ -20,9 +18,9 @@
 
   let klass = ''
   export { klass as class }
-
   export let open = false
   export let tarif: Tarif
+  export let urlAttribution: string = ''
   const queryDeleteTarif = useDeleteTarif()
   const queryEditTarif = useEditTarif()
 
@@ -91,11 +89,18 @@
   title={_tarif.name}
   titleEditable
   on:input={handleInputName}
-  subtitle={`Attribué ${
-    _tarif.bydefault ? 'par défaut' : `à ${_tarif.apply?.length} participants`
-  }`}
   class={klass}
 >
+  <div slot="subtitle">
+    <a href={urlAttribution}>
+      {`Attribué ${
+        _tarif.bydefault
+          ? 'par défaut'
+          : `à ${_tarif.apply?.length} participants`
+      }`}
+    </a>
+  </div>
+
   <div class="pa-4">
     <div class="d-flex align-start">
       <TextField
@@ -122,7 +127,7 @@
         min="1"
         max="5000"
         placeholder=" "
-        hint="Nombre maximum d'article pouvant être proposé par un participant"
+        hint="Nombre maximum d{`'`}article pouvant être proposé par un participant"
         style="max-width: 50%;"
         class="ml-2"
       >

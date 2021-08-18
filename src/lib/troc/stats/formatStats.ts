@@ -44,6 +44,12 @@ export function formatStats(statsBrut: TrocStats): TrocStatsFormatted {
   const articlesProvided = articlesProposed.filter((art) => art.valided)
   const articlesSolded = articlesProvided.filter((art) => art.sold)
   const articlesRecovered = articlesProvided.filter((art) => art.recover)
+  const sellers = articlesSolded
+    .map(({ provider }) => provider)
+    .filter(
+      // Be unique
+      (provider, index: number, self: any[]) => self.indexOf(provider) === index
+    )
 
   const numbers: StatsPropertiesNumber = {
     proposed: articlesProposed.filter((art) => !art.valided).length,
@@ -67,7 +73,7 @@ export function formatStats(statsBrut: TrocStats): TrocStatsFormatted {
     buyed: sumOf(articlesBuyed, 'price'),
     fee: sumOf(articlesProvided, 'fee'),
     margin: sumOf(articlesSolded, 'margin'),
-    payment: sumOf(payments, 'amount'),
+    payment: sumOf(payments.map((pay) => Math.abs(pay.amount))),
     paymentPositif: sumOf(
       payments.map((pay) => pay.amount).filter((p) => p > 0)
     ),

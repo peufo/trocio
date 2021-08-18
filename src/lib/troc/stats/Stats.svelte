@@ -65,7 +65,7 @@
   }
 </script>
 
-<div style="max-width: 1000px; margin: auto;">
+<div style="max-width: 1000px; margin: auto; padding-bottom: 250px;">
   <h6 class="mb-5">Statistique du troc</h6>
   <div class="d-flex">
     <Radio bind:group={selectedView} value="user">
@@ -161,7 +161,7 @@
               <i class="fas fa-chevron-down" />
               {stats.numbers.paymentNegatif.toLocaleString()}
             </span>
-            pour une valeur total de
+            paiements pour une valeur total de
             <b>
               {stats.sums.payment.toLocaleString(undefined, {
                 minimumFractionDigits: 2,

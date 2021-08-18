@@ -9,14 +9,25 @@
 
   // Nécéssaire pour la vitesse de réaction
   $: tarif_selected = $params.tarif_selected || ''
+
+  $: urlAttributions = $troc.tarif.map((tarif) => {
+    return $url('/admin', {
+      ...$params,
+      tab_admin: 'tarif_attribution',
+      filtredTarifs: $troc.tarif
+        .filter((_tarif) => _tarif !== tarif)
+        .map(({ _id }) => _id),
+    })
+  })
 </script>
 
 <div class="container">
   <h6 class="mb-5">Edition des tarifs</h6>
 
-  {#each $troc.tarif as tarif (tarif._id)}
+  {#each $troc.tarif as tarif, index (tarif._id)}
     <Tarif
       {tarif}
+      urlAttribution={urlAttributions[index]}
       class="mb-3"
       open={tarif_selected === tarif._id}
       on:open={() => {
@@ -31,7 +42,12 @@
   {/each}
 
   <div class="d-flex">
-    <a href={$url('/admin', { ...$params, tab_admin: 'tarif_attribution' })}>
+    <a
+      href={$url('/admin', {
+        trocId: $params.trocId,
+        tab_admin: 'tarif_attribution',
+      })}
+    >
       <Button depressed>Gerer l'attribution des tarifs</Button>
     </a>
     <div class="flex-grow-1" />
