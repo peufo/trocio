@@ -1,4 +1,5 @@
 import Subscribe from '../models/subscribe'
+import Troc from '../models/troc'
 import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Types
 
@@ -43,40 +44,75 @@ export function getMySubscribedTrocs(req, res, next) {
     })
 }
 
-export function getSubscriber(req, res, next) {
-  let { trocId, skip = 0, limit = 10, q = '' } = req.query
+export async function getSubscriber(req, res, next) {
+  let { trocId, skip = 0, limit = 10, q = '', filtredTarifs = [] } = req.query
   const regexp = new RegExp(q, 'i')
   skip = Number(skip)
   limit = Number(limit)
-  if (!trocId) return next(Error('Query "trocId" is required'))
+  try {
+    if (!trocId) return next(Error('Query "trocId" is required'))
 
-  const PROJECT_FIELDS = { createdAt: 1, updatedAt: 1, troc: 1 }
+    const PROJECT_FIELDS = { createdAt: 1, updatedAt: 1, troc: 1 }
+    const matchUsers: { $in?: string[]; $nin?: string[] } = {}
 
-  Subscribe.aggregate()
-    .match({ troc: new ObjectId(trocId) })
-    .lookup({
-      from: 'users',
-      localField: 'user',
-      foreignField: '_id',
-      as: 'user',
-    })
-    .project({
-      'user._id': { $arrayElemAt: ['$user._id', 0] },
-      'user.name': { $arrayElemAt: ['$user.name', 0] },
-      'user.mail': { $arrayElemAt: ['$user.mail', 0] },
-      ...PROJECT_FIELDS,
-    })
-    .project({
-      user: { $arrayElemAt: ['$user', 0] },
-      ...PROJECT_FIELDS,
-    })
-    .match({ $or: [{ 'user.name': regexp }, { 'user.name': regexp }] })
-    .skip(skip)
-    .limit(limit)
-    .exec(async (err, subscribes) => {
-      if (err) return next(err)
-      res.json(subscribes)
-    })
+    if (filtredTarifs) {
+      const tarifs = await Troc.aggregate()
+        .match({ _id: new ObjectId(trocId) })
+        .unwind('$tarif')
+        .project({
+          _id: '$tarif._id',
+          bydefault: '$tarif.bydefault',
+          apply: '$tarif.apply',
+        })
+        .exec()
+
+      matchUsers.$nin = tarifs
+        .filter(({ _id }) => filtredTarifs.includes(String(_id)))
+        .map(({ apply }) => apply.flat())
+        .flat()
+
+      // Selected users is useful for hide user without attribued tarif
+      if (
+        tarifs.find(
+          ({ bydefault, _id }) =>
+            bydefault && filtredTarifs.includes(String(_id))
+        )
+      ) {
+        matchUsers.$in = tarifs.map(({ apply }) => apply.flat()).flat()
+      }
+    }
+
+    Subscribe.aggregate()
+      .match({
+        troc: new ObjectId(trocId),
+        user: matchUsers,
+      })
+      .lookup({
+        from: 'users',
+        localField: 'user',
+        foreignField: '_id',
+        as: 'user',
+      })
+      .project({
+        'user._id': { $arrayElemAt: ['$user._id', 0] },
+        'user.name': { $arrayElemAt: ['$user.name', 0] },
+        'user.mail': { $arrayElemAt: ['$user.mail', 0] },
+        ...PROJECT_FIELDS,
+      })
+      .project({
+        user: { $arrayElemAt: ['$user', 0] },
+        ...PROJECT_FIELDS,
+      })
+      .match({ $or: [{ 'user.name': regexp }, { 'user.name': regexp }] })
+      .skip(skip)
+      .limit(limit)
+      .exec(async (err, subscribes) => {
+        if (err) return next(err)
+        res.json(subscribes)
+      })
+  } catch (error) {
+    next(error)
+  }
 }
 
 export default { getMySubscribedTrocs, getSubscriber }

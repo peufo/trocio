@@ -4,6 +4,7 @@ export * from './troc'
 export * from './article'
 export * from './subscribe'
 export * from './payment'
+export * from './params'
 
 export declare function createEventDispatcher<T>(
   type: string

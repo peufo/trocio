@@ -53,6 +53,7 @@ export const useTroc = (trocId: string) =>
  */
 interface SearchSubscribersQuery {
   trocId: string
+  filtredTarifs: string[]
   q: string
 }
 export const subscribes = writable<SubscribeLookup[]>([])
