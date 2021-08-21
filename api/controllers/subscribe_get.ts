@@ -54,8 +54,14 @@ export async function getSubscriber(req, res, next) {
 
     const PROJECT_FIELDS = { createdAt: 1, updatedAt: 1, troc: 1 }
     const matchUsers: { $in?: string[]; $nin?: string[] } = {}
+    const matchUsersIsActive =
+      Array.isArray(filtredTarifs) && filtredTarifs.length
 
-    if (filtredTarifs) {
+    console.log({ filtredTarifs })
+
+    if (matchUsersIsActive) {
+      console.log('FILTER')
+
       const tarifs = await Troc.aggregate()
         .match({ _id: new ObjectId(trocId) })
         .unwind('$tarif')
@@ -82,11 +88,15 @@ export async function getSubscriber(req, res, next) {
       }
     }
 
+    const matchSubscribes = matchUsersIsActive
+      ? {
+          troc: new ObjectId(trocId),
+          user: matchUsers,
+        }
+      : { troc: new ObjectId(trocId) }
+
     Subscribe.aggregate()
-      .match({
-        troc: new ObjectId(trocId),
-        user: matchUsers,
-      })
+      .match(matchSubscribes)
       .lookup({
         from: 'users',
         localField: 'user',
