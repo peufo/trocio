@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
   import { params } from '@roxi/routify'
-  import { NavigationDrawer } from 'svelte-materialify'
+  import NavigationDrawer from '$lib/util/NavigationDrawer.svelte'
 
   import IconLink from '$lib/util/IconLink.svelte'
 

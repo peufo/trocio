@@ -1,3 +1,5 @@
+import { User } from './user'
+
 export declare interface ArticleCreate {
   /** ID du troc auquel l'article proposé */
   troc: string
@@ -27,13 +29,13 @@ export declare interface Article extends ArticleCreate {
    */
   margin: number
   /** Date de validation de l'article par l'organisateur (validator) */
-  valided: Date
+  valided?: Date
   /** Date du refus de l'article par l'organisateur (validator) */
-  refused: Date
+  refused?: Date
   /** Date de la vente de l'article (seller) -> (buyer) */
-  sold: Date
+  sold?: Date
   /** Date de la récupération de l'article par le fournisseur (seller) -> (provider) */
-  recover: Date
+  recover?: Date
   /** giveback Listes des retours de l'article (si ils sont autorisés) */
   giveback: {
     /** Date de la vente qui à été annulé */
@@ -46,9 +48,16 @@ export declare interface Article extends ArticleCreate {
     user: string
   }[]
   /** ID du client ayant effectué l'achat */
-  buyer: string
+  buyer?: string
   /** ID du membre de l'organisation ayant validé ou refusé l'article */
-  validator: string
+  validator?: string
   /** ID du membre de l'organisation ayant vendu ou rendu l'article */
-  seller: string
+  seller?: string
+}
+
+export declare interface ArticleLookup extends Article {
+  provider?: User
+  buyer?: User
+  validator?: User
+  seller?: User
 }

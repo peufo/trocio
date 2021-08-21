@@ -5,14 +5,11 @@
   import MagicTable from '$lib/util/MagicTable.svelte'
 
   import { layout } from '$lib/store/layout'
-  import type { SubscribeLookup } from 'types'
+  import type { SubscribeLookup, ParamsAPI } from 'types'
   import IconLink from '$lib/util/IconLink.svelte'
-  import {
-    troc,
-    useSubscribes,
-    useSubscribesOptions,
-    useAddApply,
-  } from '$lib/troc/store'
+  import { useInfinitApi } from '$lib/api'
+  import SearchTextField from '$lib/util/SearchTextField.svelte'
+  import { troc, useAddApply } from '$lib/troc/store'
   import {
     faCheck,
     faEyeSlash,
@@ -26,22 +23,15 @@
 
   const addApply = useAddApply()
 
-  const subscribesQuery = useSubscribes({
-    trocId: $params.trocId,
-    filtredTarifs: $params.filtredTarifs,
-    q: '',
-  })
-  $: {
-    subscribesQuery.setOptions(
-      useSubscribesOptions({
-        trocId: $params.trocId,
-        filtredTarifs: $params.filtredTarifs,
-        q: searchUserDebounced,
-      })
-    )
-  }
+  $: subscribesQuery = useInfinitApi<ParamsAPI, SubscribeLookup[]>([
+    'subscribes',
+    {
+      trocId: $params.trocId,
+      filtredTarifs: $params.filtredTarifs,
+      q: searchUserDebounced,
+    },
+  ])
 
-  let subscribes: SubscribeLookup[] = []
   $: subscribes = $subscribesQuery.data
     ? $subscribesQuery.data.pages.flat()
     : []
@@ -94,20 +84,10 @@
     <thead>
       <tr>
         <th style="padding-left: 0px; width: 340px;">
-          <TextField
+          <SearchTextField
+            bind:search={searchUserDebounced}
             placeholder="Chercher un participant"
-            clearable
-            solo
-            dense
-            flat
-            on:change={handleSearchSubscriber}
-            on:input={handleSearchSubscriber}
-            style="max-width: 400px;"
-          >
-            <div slot="prepend">
-              <IconLink icon={faSearch} size="1.1em" />
-            </div>
-          </TextField>
+          />
         </th>
         {#each $troc.tarif as tarif}
           <th
@@ -137,6 +117,7 @@
         {/each}
       </tr>
     </thead>
+
     <tbody>
       {#each subscribes as subscribe, subscribeIndex (subscribe._id)}
         <tr class="row">

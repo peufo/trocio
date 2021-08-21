@@ -24,8 +24,6 @@
     useAddTrader,
     useRemoveTrader,
     useSetTraderPrefix,
-    useSubscribes,
-    useSubscribesOptions,
   } from '$lib/troc/store'
   import { user } from '$lib/user/store'
   import UserSelect from '$lib/user/Select.svelte'
@@ -33,7 +31,8 @@
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import Share from '$lib/troc/Share.svelte'
-  import type { SubscribeLookup } from 'types'
+  import type { SubscribeLookup, ParamsAPI } from 'types'
+  import { useInfinitApi } from '$lib/api'
 
   // import { troc } from './stores'
   // import { getHeader, updateTroc } from './utils'
@@ -62,14 +61,14 @@
     !!trader.user.name.match(new RegExp(searchValueTrader, 'i')) ||
     trader.prefix === searchValueTrader.toUpperCase()
 
-  const subscribesQuery =
-    $params.trocId && useSubscribes({ trocId: $params.trocId, q: '' })
+  let subscribesSearch = ''
   const handleSearchSubscriber = debounce((event: any) => {
-    subscribesQuery.setOptions(
-      useSubscribesOptions({ trocId: $params.trocId, q: event.target.value })
-    )
+    subscribesSearch = event.target.value
   }, 200)
-  let subscribes: SubscribeLookup[] = []
+  $: subscribesQuery = useInfinitApi<ParamsAPI, SubscribeLookup>([
+    'subscribes',
+    { trocId: $params.trocId, q: subscribesSearch },
+  ])
   $: subscribes = $subscribesQuery.data
     ? $subscribesQuery.data.pages.flat()
     : []

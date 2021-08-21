@@ -5,6 +5,7 @@ export * from './article'
 export * from './subscribe'
 export * from './payment'
 export * from './params'
+export * from './magic'
 
 export declare function createEventDispatcher<T>(
   type: string

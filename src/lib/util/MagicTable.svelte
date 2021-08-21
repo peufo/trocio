@@ -3,43 +3,66 @@
    * Table with automatique infinit scroll
    */
 
-  import { onMount, onDestroy } from 'svelte'
   import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
-  import type { AxiosError } from 'axios'
 
   import Loader from '$lib/util/Loader.svelte'
 
-  export let query: UseInfiniteQueryStoreResult<any[], AxiosError<any>, any[]>
+  export let query: UseInfiniteQueryStoreResult<any, any, any, any>
   export let dense = false
-  export let style: string | undefined
+  export let style = ''
   let klass = ''
   export { klass as class }
   let wrapper: HTMLDivElement
 
-  $: if ($query.isSuccess) setTimeout(testScrollPosition, 0)
+  query.updateOptions({
+    refetchOnWindowFocus: false,
+  })
 
-  function testScrollPosition() {
+  $: if ($query.isSuccess) setTimeout(() => testScrollPosition(true), 0)
+
+  /** Sécurité pour évité de fetchNextPage() à l'infini si le rendu n'augmente pas la taille du container */
+  const MAX_NO_GROW_OFFSET_HEIGHT = 5
+  let lastOffsetHeight = 0
+  let noGrowOffsetHeigthCount = 0
+  let error = ''
+
+  function testScrollPosition(isCallback: boolean = false) {
     const { offsetHeight, scrollTop, scrollHeight } = wrapper
     const scrollButtom = offsetHeight + scrollTop
     const isInButtom = scrollButtom + 50 > scrollHeight
 
+    if (isCallback) {
+      if (offsetHeight <= lastOffsetHeight) {
+        noGrowOffsetHeigthCount++
+      } else {
+        noGrowOffsetHeigthCount = 0
+        lastOffsetHeight = offsetHeight
+      }
+
+      if (noGrowOffsetHeigthCount > MAX_NO_GROW_OFFSET_HEIGHT) {
+        error = `Oups, le rendu ne s'effectue pas correctement et ne permet la gestion du scroll`
+        return
+      }
+    }
+
     if (isInButtom) {
       if (!$query.isFetching && $query.hasNextPage) {
-        $query.fetchNextPage().then(() => {
-          testScrollPosition()
-        })
+        $query.fetchNextPage()
       }
     }
   }
 </script>
 
-<svelte:window on:resize={testScrollPosition} />
+<!--
+
+  <svelte:window on:resize={() => testScrollPosition()} />
+-->
 
 <div
   class="s-table__wrapper {klass}"
   {style}
   bind:this={wrapper}
-  on:scroll={testScrollPosition}
+  on:scroll={() => testScrollPosition()}
 >
   <table class="s-table fixed-header" class:dense>
     <slot />
@@ -48,5 +71,8 @@
     <div class="centered" style="height: 300px;">
       <Loader />
     </div>
+  {/if}
+  {#if error}
+    {error}
   {/if}
 </div>

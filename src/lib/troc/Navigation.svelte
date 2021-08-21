@@ -1,12 +1,6 @@
 <script lang="ts">
   import { slide } from 'svelte/transition'
-  import {
-    NavigationDrawer,
-    ListItem,
-    TextField,
-    Icon,
-    List,
-  } from 'svelte-materialify'
+  import { ListItem, TextField, Icon, List } from 'svelte-materialify'
   import {
     faSearch,
     faChevronDown,
@@ -21,6 +15,7 @@
   import layout from '$lib/store/layout'
   import { user } from '$lib/user/store'
   import IconLink from '$lib/util/IconLink.svelte'
+  import NavigationDrawer from '$lib/util/NavigationDrawer.svelte'
   import TrocMap from '$lib/troc/Map.svelte'
   import TrocUserSubscribed from '$lib/troc/UserSubscribed.svelte'
 
