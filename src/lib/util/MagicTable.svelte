@@ -1,4 +1,8 @@
 <script lang="ts">
+  /**
+   * Table with automatique infinit scroll
+   */
+
   import { onMount, onDestroy } from 'svelte'
   import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
   import type { AxiosError } from 'axios'

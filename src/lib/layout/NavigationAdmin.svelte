@@ -21,6 +21,7 @@
     faUsersCog,
     faChevronDown,
     faAngleDoubleLeft,
+    faCubes,
   } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
 
@@ -49,13 +50,30 @@
       icon: faCoins,
       groupActive: false,
       group: [
-        { ref: 'tarif_edition', label: 'Edition', icon: faEdit },
         { ref: 'tarif_attribution', label: 'Attribution', icon: faUsers },
+        { ref: 'tarif_edition', label: 'Edition', icon: faEdit },
       ],
     },
     { ref: 'tag', label: 'Etiquetage', icon: faTag },
     { ref: 'statistic', label: 'Statistique', icon: faChartPie },
-    { ref: 'managment', label: 'Gestion', icon: faTasks },
+    {
+      ref: 'management',
+      label: 'Gestion',
+      icon: faTasks,
+      groupActive: false,
+      group: [
+        {
+          ref: 'management_users',
+          label: 'Participants',
+          icon: faUsers,
+        },
+        {
+          ref: 'management_articles',
+          label: 'Articles',
+          icon: faCubes,
+        },
+      ],
+    },
     { ref: 'cashier', label: 'Caisse', icon: faCashRegister },
   ]
 

@@ -1,22 +1,34 @@
-import axios, { Method } from 'axios'
+import axios, { AxiosError, Method } from 'axios'
 import notify from '$lib/notify'
 
 import type { BaseResponse, ResponseNotifyOptions } from 'types'
-import type { GetNextPageParamFunction } from '@sveltestack/svelte-query'
+import {
+  GetNextPageParamFunction,
+  InfiniteData,
+  QueryFunction,
+  QueryFunctionContext,
+  QueryKey,
+  useInfiniteQuery,
+  UseInfiniteQueryOptions,
+  useQuery,
+  UseQueryOptions,
+} from '@sveltestack/svelte-query'
 
-export function api<TypeRequest, TypeResponse = TypeRequest>(
+type ApiOptions<RequestQuery, RequestResult = RequestQuery> = Partial<
+  {
+    method: Method
+    /** Params passed to query of request */
+    params: { skip?: number; limit?: number } & any
+    /** Data passed on body of resquest*/
+    data: Partial<RequestQuery>
+    /** Wrapper to format returned data */
+    format: (data: RequestResult) => RequestResult
+  } & ResponseNotifyOptions<RequestResult>
+>
+
+export function api<RequestQuery, RequestResult = RequestQuery>(
   url: string,
-  options: Partial<
-    {
-      method: Method
-      /** Params passed to query of request */
-      params: { skip?: number; limit?: number } & any
-      /** Data passed on body of resquest*/
-      data: Partial<TypeRequest>
-      /** Wrapper to format returned data */
-      format: (data: TypeResponse) => TypeResponse
-    } & ResponseNotifyOptions<TypeResponse>
-  > = {}
+  options: ApiOptions<RequestQuery, RequestResult> = {}
 ) {
   let {
     method = 'get',
@@ -29,7 +41,7 @@ export function api<TypeRequest, TypeResponse = TypeRequest>(
   } = options
 
   return axios
-    .request<TypeResponse & BaseResponse>({
+    .request<RequestResult & BaseResponse>({
       url,
       method,
       params,
@@ -56,6 +68,88 @@ export function api<TypeRequest, TypeResponse = TypeRequest>(
 
       throw requestError
     })
+}
+
+export function useApi<RequestQuery, RequestResult>(
+  queryOptions:
+    | [string, RequestQuery]
+    | UseQueryOptions<
+        RequestResult,
+        AxiosError,
+        RequestResult,
+        [string, RequestQuery]
+      >,
+  apiOptions: ApiOptions<RequestQuery, RequestResult> = {}
+) {
+  const queryFn: QueryFunction<RequestResult, [string, RequestQuery]> = (
+    context
+  ) => {
+    return api<RequestQuery, RequestResult>(`/api/${context.queryKey[0]}`, {
+      params: context.queryKey[1],
+      ...apiOptions,
+    })
+  }
+
+  if (Array.isArray(queryOptions))
+    return useQuery({ queryFn, queryKey: queryOptions })
+  return useQuery({ queryFn, ...queryOptions })
+}
+
+interface UseInfiniteApiQueryOptions<RequestQuery, RequestResult>
+  extends UseInfiniteQueryOptions<
+    RequestResult,
+    AxiosError,
+    RequestResult,
+    RequestResult,
+    [string, RequestQuery]
+  > {}
+
+export function useInfinitApi<RequestQuery = any, RequestResult = RequestQuery>(
+  queryOptions:
+    | [string, RequestQuery]
+    | UseInfiniteApiQueryOptions<RequestQuery, RequestResult>,
+  apiOptions: ApiOptions<RequestQuery, RequestResult> = {},
+  firstLimit = 10,
+  nextLimit = firstLimit
+) {
+  const queryFn = (context: QueryFunctionContext<[string, RequestQuery]>) => {
+    const params = {
+      ...context.queryKey[1],
+      skip: context.pageParam,
+      limit: context.pageParam ? nextLimit : firstLimit,
+    }
+
+    return api<RequestQuery, RequestResult>(`/api/${context.queryKey[0]}`, {
+      params,
+      ...apiOptions,
+    })
+  }
+
+  const getNextPageParam: GetNextPageParamFunction<RequestResult> = (
+    lastPage,
+    allPages
+  ) => {
+    if (!Array.isArray(lastPage)) return
+    if (allPages.length === 1) {
+      if (lastPage.length < firstLimit) return
+      return firstLimit
+    } else if (allPages.length > 1) {
+      if (lastPage.length < nextLimit) return
+      return allPages.flat().length
+    }
+  }
+
+  if (Array.isArray(queryOptions))
+    return useInfiniteQuery({
+      queryFn,
+      getNextPageParam,
+      queryKey: queryOptions,
+    })
+  return useInfiniteQuery({
+    queryFn,
+    getNextPageParam,
+    ...queryOptions,
+  })
 }
 
 export function createGetNextPageParam<TQueryFnData>(
