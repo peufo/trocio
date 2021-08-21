@@ -21,25 +21,6 @@
   } from '$lib/troc/store'
 
   const trocQuery = $params.trocId && useTroc($params.trocId)
-
-  console.log({ params: $params, trocQuery: $trocQuery })
-
-  // TODO: Peut être supprimer
-  /*
-  const subscribesQuery =
-    $params.trocId && useSubscribes({ trocId: $params.trocId, q: '' })
-
-  $: if ($params.trocId) {
-    trocQuery.setOptions(useTrocOptions($params.trocId))
-    subscribesQuery.setOptions(
-      useSubscribesOptions({ trocId: $params.trocId, q: '' })
-    )
-  }
-
-  $: $subscribes = $subscribesQuery.data
-    ? $subscribesQuery.data.pages.flat()
-    : []
-  */
 </script>
 
 {#if $trocQuery?.isLoading}
@@ -61,8 +42,8 @@
   <div
     class="layout"
     style="
-  padding-left: {navigationWidth};
-  padding-right: {tipsActive ? tipsWidth : '0px'};"
+      padding-left: {navigationWidth};
+      padding-right: {tipsActive ? tipsWidth : '0px'};"
   >
     <main class="pa-4">
       <slot />

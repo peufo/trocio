@@ -1,12 +1,12 @@
 export declare interface ParamsAPI {
-  trocId: string
+  trocId?: string
   /**  */
-  filtredTarifs: string[]
+  filtredTarifs?: string[]
   /** query */
-  q: string
+  q?: string
 }
 
 export declare interface ParamsClient extends ParamsAPI {
-  tab_admin: string
-  tarif_selected: string
+  tab_admin?: string
+  tarif_selected?: string
 }
