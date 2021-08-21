@@ -86,7 +86,7 @@ export function searchArticle(req, res, next) {
   const QUERY_SEARCH = 'search_'
   const QUERY_OR_SEARCH = 'or_search_'
   const QUERY_SORT = 'sort_'
-  const QUERY_USER = 'user_'
+  const QUERY_EXACT = 'exact_'
 
   // addMatch
   if (!include_without_name) match.$and = [{ name: { $ne: '' } }]
@@ -143,8 +143,8 @@ export function searchArticle(req, res, next) {
       })
 
       //add matchUser
-    } else if (key.indexOf(QUERY_USER) === 0) {
-      match.$and.push({ [key.replace(QUERY_USER, '')]: req.query[key] })
+    } else if (key.indexOf(QUERY_EXACT) === 0) {
+      match.$and.push({ [key.replace(QUERY_EXACT, '')]: req.query[key] })
 
       //add sort
     } else if (key.indexOf(QUERY_SORT) != -1 && !isNaN(req.query[key])) {
