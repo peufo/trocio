@@ -22,7 +22,10 @@
 
   const trocQuery = $params.trocId && useTroc($params.trocId)
 
+  console.log({ params: $params, trocQuery: $trocQuery })
+
   // TODO: Peut être supprimer
+  /*
   const subscribesQuery =
     $params.trocId && useSubscribes({ trocId: $params.trocId, q: '' })
 
@@ -36,13 +39,14 @@
   $: $subscribes = $subscribesQuery.data
     ? $subscribesQuery.data.pages.flat()
     : []
+  */
 </script>
 
-{#if $trocQuery.isLoading}
+{#if $trocQuery?.isLoading}
   <div class="centered" style="height: 100px;">
     <Loader />
   </div>
-{:else if $trocQuery.isError}
+{:else if !$trocQuery || $trocQuery?.isError}
   <div class="centered" style="height: 100px;">
     <span>Oups, une erreur c'est produite.</span>
   </div>

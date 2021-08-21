@@ -20,6 +20,7 @@
     faSearch,
   } from '@fortawesome/free-solid-svg-icons'
   import notify from '$lib/notify'
+  import qs from 'qs'
 
   let searchUserDebounced = ''
 
@@ -60,9 +61,7 @@
 
   function handleClickFilter(event: PointerEvent, tarifId: string) {
     event.stopPropagation()
-    let { filtredTarifs = '' } = $params
-    filtredTarifs = filtredTarifs.split(',')
-
+    const { filtredTarifs = [] } = $params
     const index = filtredTarifs.indexOf(tarifId)
     const query = {
       ...$params,
@@ -75,7 +74,7 @@
             ],
     }
 
-    if (query.filtredTarifs.length === 1 && query.filtredTarifs[0] === '') {
+    if (!query.filtredTarifs.length) {
       // @ts-ignore
       delete query.filtredTarifs
     }
