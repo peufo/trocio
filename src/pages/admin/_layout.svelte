@@ -12,13 +12,7 @@
   let navigationWidth: string
   let tipsWidth: string
 
-  import {
-    useTroc,
-    useTrocOptions,
-    subscribes,
-    useSubscribes,
-    useSubscribesOptions,
-  } from '$lib/troc/store'
+  import { useTroc } from '$lib/troc/store'
 
   const trocQuery = $params.trocId && useTroc($params.trocId)
 </script>
