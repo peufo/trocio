@@ -99,7 +99,7 @@ jobs:
             cd trocio
             cat package.json
 
-      - name: Install npm dependencies
+      - name: Install node and npm dependencies
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -108,6 +108,8 @@ jobs:
           script: |
             . .profile
             cd trocio
+            nvm install --lts
+            nvm use --lts
             npm ci --production
 
       - name: Restart server
