@@ -15,7 +15,7 @@ app.use(logger('dev'))
 app.use('/api', api)
 
 // Sert le build
-app.use(express.static('./dist'))
+app.use(express.static(path.resolve('./dist')))
 
 // Par défault, sert la SPA
 app.get('*', (req, res) => {
