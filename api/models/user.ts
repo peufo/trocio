@@ -7,9 +7,9 @@ const EMAIL_REGEX =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 import mail from '../controllers/mail'
-import type { User } from '../../types'
+import type { UserWithoutId } from '../../types'
 
-export interface UserDocument extends User, Document {
+export interface UserDocument extends UserWithoutId, Document {
   isLocked: boolean
   comparePassword(candidatePassword: string): Promise<boolean>
   getAuthenticated(mail: string, password: string): Promise<UserDocument>

@@ -34,7 +34,6 @@
   import type { Troc } from 'types'
 
   export let troc: Troc
-  export let displayGetActivity = true
 
   export let articleSearch = ''
   export let activityOpen = false

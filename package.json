@@ -8,7 +8,7 @@
     "build": "run-s build:*",
     "build:routify": "routify --single-build",
     "build:vite": "vite build",
-    "build:server": "tsc --project tsconfig.server.json",
+    "build:server": "tsc --project tsconfig.server.json || exit 0",
     "serve": "node ./server/server.js"
   },
   "devDependencies": {

@@ -11,7 +11,7 @@
   let isRootUser = false
 
   onMount(() => {
-    fetch('/api/superadmin')
+    fetch('/api/root')
       .then((res) => res.json())
       .then((json) => {
         if (json.success) {
@@ -33,7 +33,7 @@
 
   async function selectUser(event) {
     try {
-      let res = await fetch(`/api/superadmin/users?_id=${event.detail._id}`)
+      let res = await fetch(`/api/root/users?_id=${event.detail._id}`)
       let json = await res.json()
       userSelected = json[0]
       return
@@ -45,7 +45,7 @@
   async function addCredit() {
     try {
       let res = await fetch(
-        `/api/superadmin/addcredit`,
+        `/api/root/addcredit`,
         getHeader({ user: userSelected._id })
       )
       let json = await res.json()
@@ -59,7 +59,7 @@
 
   async function getOptions() {
     try {
-      let res = await fetch('/api/superadmin/options')
+      let res = await fetch('/api/root/options')
       let json = await res.json()
       options = json
     } catch (error) {
@@ -69,7 +69,7 @@
 
   async function fetchTrocs() {
     try {
-      let res = await fetch(`/api/superadmin/trocs?${searchTroc}`)
+      let res = await fetch(`/api/root/trocs?${searchTroc}`)
       trocs = await res.json()
     } catch (error) {
       notify.error(error)
@@ -80,7 +80,7 @@
     if (confirm('Sur ?')) {
       try {
         let res = await fetch(
-          '/api/superadmin/subscribe-all-users',
+          '/api/root/subscribe-all-users',
           getHeader({ troc })
         )
         let json = await res.json()
@@ -95,10 +95,7 @@
   async function removeTroc(troc) {
     if (prompt(`Tapez "${troc.name}" pour le supprimer`) === troc.name) {
       try {
-        let res = await fetch(
-          '/api/superadmin/remove-troc',
-          getHeader({ troc })
-        )
+        let res = await fetch('/api/root/remove-troc', getHeader({ troc }))
         let json = await res.json()
         if (json.error) throw json.message
         notify.success(json.message)
@@ -112,10 +109,7 @@
 
   async function computeSubscriber(troc) {
     try {
-      let res = await fetch(
-        '/api/superadmin/compute-subscriber',
-        getHeader({ troc })
-      )
+      let res = await fetch('/api/root/compute-subscriber', getHeader({ troc }))
       let json = await res.json()
       if (json.error) throw json.message
       notify.success(json.message)
@@ -126,10 +120,7 @@
 
   async function computeArticles(troc) {
     try {
-      let res = await fetch(
-        '/api/superadmin/compute-articles',
-        getHeader({ troc })
-      )
+      let res = await fetch('/api/root/compute-articles', getHeader({ troc }))
       let json = await res.json()
       if (json.error) throw json.message
       notify.success(json.message)
