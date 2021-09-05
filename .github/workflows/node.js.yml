@@ -108,8 +108,6 @@ jobs:
           script: |
             . .profile
             cd trocio
-            nvm install --lts
-            nvm use --lts
             npm ci --production
 
       - name: Restart server
