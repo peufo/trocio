@@ -9,7 +9,6 @@ on:
 
 jobs:
   build-client:
-    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -61,6 +60,12 @@ jobs:
         with:
           name: server
           path: trocio
+
+      - name: Download artifact client
+        uses: actions/download-artifact@v2
+        with:
+          name: client
+          path: trocio/dist
 
       - name: Download artifact package
         uses: actions/download-artifact@v2
