@@ -58,11 +58,12 @@ jobs:
         with:
           name: server
           path: trocio
+
       - name: Download artifact package
         uses: actions/download-artifact@v2
         with:
           name: package
-          path: trocio/package.json
+          path: package.json
 
       - name: Display structure of downloaded files
         run: ls -R
