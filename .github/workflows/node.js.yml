@@ -66,6 +66,7 @@ jobs:
 
       - name: Display structure of downloaded files
         run: ls -R
+        working-directory: trocio
 
       - name: Remove folder /trocio
         uses: appleboy/ssh-action@master
@@ -84,7 +85,7 @@ jobs:
           source: 'trocio'
           target: './'
 
-      - name: Install npm dependencies
+      - name: Test package.json
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
