@@ -43,7 +43,7 @@ jobs:
           name: server
           path: server
   deploy:
-    needs: [build-client, build-server]
+    # needs: [build-client, build-server]
     runs-on: ubuntu-latest
     steps:
       - name: Connection ssh
