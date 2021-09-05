@@ -52,7 +52,9 @@ jobs:
         run: echo 🤷‍♂️
       - name: LOG-test
         shell: bash
-        run: echo ${{ secrets.SSH_HOST }}
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: echo "$SSH_HOST"
       - name: Connection ssh
         uses: appleboy/ssh-action@master
         with:
