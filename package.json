@@ -6,6 +6,7 @@
     "dev:routify": "routify",
     "dev:vite": "vite",
     "build": "run-s build:*",
+    "build:client": "run-s build:routify build:vite",
     "build:routify": "routify --single-build",
     "build:vite": "vite build",
     "build:server": "tsc --project tsconfig.server.json || exit 0",
