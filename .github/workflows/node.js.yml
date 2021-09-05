@@ -48,6 +48,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist
       - name: Connection ssh
         uses: appleboy/ssh-action@master
         env:
@@ -61,5 +64,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           envs: TROCIO_ADMIN,TROCIO_DB,TROCIO_SECRET_STRING_COOKIE,TROCIO_SMTP_PASS
           script: |
-            whoami
-            echo "$TROCIO_ADMIN"
+            rm -rf trocio
+            mkdir trocio
+            cd trocio
+            "$TROCIO_ADMIN" >> LOL.txt
