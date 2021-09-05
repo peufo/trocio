@@ -68,6 +68,10 @@ jobs:
         with:
           path: trocio
 
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: trocio
+
       - name: Copy artifacts
         uses: appleboy/scp-action@master
         with:
