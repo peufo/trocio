@@ -48,18 +48,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: LOG-test
-        shell: bash
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-        run: echo "$SSH_HOST"
       - name: Connection ssh
         uses: appleboy/ssh-action@master
+        env:
+          TROCIO_ADMIN: ${{ secrets }}
+          TROCIO_DB: ${{ secrets }}
+          TROCIO_SECRET_STRING_COOKIE: ${{ secrets }}
+          TROCIO_SMTP_PASS: ${{ secrets }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          # key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: TROCIO_ADMIN,TROCIO_DB,TROCIO_SECRET_STRING_COOKIE,TROCIO_SMTP_PASS
           script: |
             whoami
-            ls -al
+            echo "$TROCIO_ADMIN"
