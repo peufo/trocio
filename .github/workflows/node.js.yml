@@ -51,7 +51,27 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: server
-      - name: Connection ssh
+
+      - name: Reset folder /trocio
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            rm -rf trocio
+            mkdir trocio
+
+      - name: Copy artifacts
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          source: 'server'
+          target: 'trocio'
+
+      - name: Restart server
         uses: appleboy/ssh-action@master
         env:
           TROCIO_ADMIN: ${{ secrets.TROCIO_ADMIN }}
@@ -64,7 +84,4 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           envs: TROCIO_ADMIN,TROCIO_DB,TROCIO_SECRET_STRING_COOKIE,TROCIO_SMTP_PASS
           script: |
-            rm -rf trocio
-            mkdir trocio
-            cd trocio
-            echo "$TROCIO_ADMIN" >> LOL.txt
+            echo "START SERVER YOLO 🎆"
