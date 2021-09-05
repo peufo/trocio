@@ -19,6 +19,11 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build:client
+      - name: Upload client
+        uses: actions/upload-artifact@v2
+        with:
+          name: client
+          path: dist
   build-server:
     runs-on: ubuntu-latest
     steps:
@@ -30,6 +35,11 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build:server
+      - name: Upload server
+        uses: actions/upload-artifact@v2
+        with:
+          name: server
+          path: server
   deploy:
     needs: [build-client, build-server]
     runs-on: ubuntu-latest
