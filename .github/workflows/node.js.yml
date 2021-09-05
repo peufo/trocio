@@ -47,14 +47,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: LOG-GNNN
-        shell: bash
-        run: echo 🤷‍♂️
       - name: LOG-test
         shell: bash
         env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-        run: echo "$SSH_HOST"
+          SECRET_TEST: ${{ secrets.SECRET_TEST }}
+        run: echo "$SECRET_TEST"
       - name: Connection ssh
         uses: appleboy/ssh-action@master
         with:
