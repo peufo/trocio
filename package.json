@@ -55,6 +55,7 @@
     "debounce": "^1.2.1",
     "esm": "^3.2.25",
     "express": "^4.17.1",
+    "express-session": "^1.17.2",
     "got": "^11.8.1",
     "http2-proxy": "^5.0.53",
     "leaflet": "^1.7.1",
