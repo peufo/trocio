@@ -123,4 +123,6 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           envs: TROCIO_ADMIN,TROCIO_DB,TROCIO_SECRET_STRING_COOKIE,TROCIO_SMTP_PASS
           script: |
-            pm2 start trocio/server/server.js --update-env
+            . .profile
+            cd trocio
+            npm run serve
