@@ -85,6 +85,16 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
+            cd trocio
+            cat package.json
+
+      - name: Install npm dependencies
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
             [ -e ".nvm/.profile" ] && . ".nvm/.profile"
             cd trocio
             npm ci
