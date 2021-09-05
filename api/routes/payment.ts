@@ -7,13 +7,14 @@ router
   .get('/', (req, res, next) => {
     //TODO: Check if admin, cashier or simple user
     let { user, acceptor, troc } = req.query
+    let userQuery: typeof user | { $exists: boolean } = user
 
     if (!user || !troc) return next(Error('Query troc and user is required !'))
 
     //For anonyme user
     if (user === 'false' || user === 'undefined') {
-      user = { $exists: false }
-      if (!acceptor) acceptor = req.session.user._id
+      userQuery = { $exists: false }
+      if (!acceptor) acceptor = req.session.user?._id
     }
 
     const query = acceptor ? { user, acceptor, troc } : { user, troc }
@@ -31,13 +32,14 @@ router
     Troc.findOne(
       { _id: req.body.troc },
       { admin: 1, cashier: 1 },
+      {},
       (err, troc) => {
         if (err || !troc) return next(err || Error('Troc not found !'))
 
         //Contrôle le droit de fair un payment (admin ou caissier)
         if (
-          troc.admin.indexOf(req.session.user._id) == -1 &&
-          troc.cashier.indexOf(req.session.user._id) == -1
+          !troc.admin.includes(req.session.user._id) &&
+          !troc.cashier.includes(req.session.user._id)
         ) {
           return next(
             Error(`you are not allowed to make a payment on this troc`)

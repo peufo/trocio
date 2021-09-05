@@ -133,6 +133,7 @@
   class="map"
   id={mapId}
   on:mouseover={() => (isUserAction = true)}
+  on:focus={() => (isUserAction = true)}
   on:touchstart={() => (isUserAction = true)}
   on:mouseleave={() => (isUserAction = false)}
   on:touchend={() => (isUserAction = false)}

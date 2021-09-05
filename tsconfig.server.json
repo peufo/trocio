@@ -2,7 +2,8 @@
   "extends": "ts-node/node14/tsconfig.json",
   "files": ["server.ts"],
   "compilerOptions": {
-    "outDir": "server"
+    "outDir": "server",
+    "noImplicitAny": false
   },
   "include": ["api/**/*"]
 }

@@ -1,21 +1,23 @@
 import config from '../../config'
-const router = require('express').Router()
+import { Router } from 'express'
 import User from '../models/user'
 import Troc from '../models/troc'
 import Article from '../models/article'
 import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
 
+const router = Router()
+
 router
   .get('/', (req, res, next) => {
     res.json({ success: true, message: 'Yo root user' })
   })
   .get('/options', (req, res, next) => {
-    let options = []
+    const options: { name: string; value: string }[] = []
     for (const key in config) {
-      if (key.indexOf('TROCIO_OPTION_') === 0) {
+      if (key.match(/^TROCIO_OPTION_/)) {
         options.push({
-          name: key.replace('TROCIO_OPTIONS_', ''),
+          name: key.replace('TROCIO_OPTION_', ''),
           value: config[key],
         })
       }
@@ -24,7 +26,7 @@ router
   })
   .post('/addcredit', (req, res, next) => {
     let { user } = req.body
-    User.findOne({ _id: user }, { mail: 1, creditTroc: 1 }, (err, user) => {
+    User.findOne({ _id: user }, { mail: 1, creditTroc: 1 }, {}, (err, user) => {
       if (err || !user) return next(err || Error('User not found'))
       if (user.creditTroc) user.creditTroc++
       else user.creditTroc = 1
@@ -61,7 +63,7 @@ router
     })
   })
   .get('/mails', (req, res, next) => {
-    User.find(req.query, { mail: 1 }, (err, users) => {
+    User.find(req.query, { mail: 1 }).exec((err, users) => {
       if (err) return next(err)
       let str = users.map((user) => user.mail).join('<br>')
       res.send(str)
