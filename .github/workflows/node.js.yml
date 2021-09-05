@@ -47,6 +47,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: LOG-GNNN
+        shell: bash
+        run: echo 🤷‍♂️
       - name: LOG-test
         shell: bash
         run: echo ${{ secrets.SSH_HOST }}
