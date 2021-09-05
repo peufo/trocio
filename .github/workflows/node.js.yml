@@ -67,4 +67,4 @@ jobs:
             rm -rf trocio
             mkdir trocio
             cd trocio
-            "$TROCIO_ADMIN" >> LOL.txt
+            echo "$TROCIO_ADMIN" >> LOL.txt
