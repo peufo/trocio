@@ -108,7 +108,7 @@ jobs:
           script: |
             . .profile
             cd trocio
-            npm ci
+            npm ci --production
 
       - name: Restart server
         uses: appleboy/ssh-action@master
