@@ -24,7 +24,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: client
-          path: trocio/dist
+          path: dist
   build-server:
     runs-on: ubuntu-latest
     steps:
@@ -40,12 +40,12 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: server
-          path: trocio/dist
+          path: dist
       - name: Upload package artifact
         uses: actions/upload-artifact@v2
         with:
           name: package.json
-          path: trocio/package.json
+          path: package.json
   deploy:
     needs: build-server
     environment: 'Nestor - Labo'
@@ -60,7 +60,6 @@ jobs:
 
       - name: Display structure of downloaded files
         run: ls -R
-        working-directory: trocio
 
       - name: Reset folder /trocio
         uses: appleboy/ssh-action@master
