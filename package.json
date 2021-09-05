@@ -10,7 +10,7 @@
     "build:routify": "routify --single-build",
     "build:vite": "vite build",
     "build:server": "tsc --project tsconfig.server.json || exit 0",
-    "serve": "node ./server/server.js"
+    "serve": "pm2 start server.js --update-env"
   },
   "devDependencies": {
     "@roxi/routify": "^2.12.3",
@@ -67,6 +67,7 @@
     "nodemon": "^2.0.7",
     "plotly.js": "^2.3.1",
     "plotly.js-dist": "^2.3.1",
+    "pm2": "^5.1.1",
     "postcss": "^8.3.0",
     "print-js": "^1.5.0",
     "qr-scanner": "^1.2.0",
