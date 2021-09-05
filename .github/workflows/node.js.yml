@@ -9,10 +9,11 @@ on:
 
 jobs:
   build-client:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v2
         with:
           node-version: 14.x
@@ -25,10 +26,11 @@ jobs:
           name: client
           path: dist
   build-server:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v2
         with:
           node-version: 14.x
@@ -44,5 +46,12 @@ jobs:
     needs: [build-client, build-server]
     runs-on: ubuntu-latest
     steps:
-      - shell: bash
-        run: echo '😜'
+      - name: Connection ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            whoami
+            ls -al
