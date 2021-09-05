@@ -1,5 +1,6 @@
 {
   "name": "trocio",
+  "version": "2.0.0",
   "scripts": {
     "dev": "run-p dev:*",
     "dev:api": "ts-node-dev -r esm ./api/server.ts --watch ./api",
@@ -10,7 +11,7 @@
     "build:routify": "routify --single-build",
     "build:vite": "vite build",
     "build:server": "tsc --project tsconfig.server.json || exit 0",
-    "serve": "pm2 start server.js --update-env -f"
+    "serve": "pm2 startOrReload ecosystem.config.js --update-env"
   },
   "devDependencies": {
     "@roxi/routify": "^2.12.3",
