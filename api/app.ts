@@ -5,7 +5,7 @@ import config from '../config'
 import { checkSuperAdmin } from './controllers/user_utils'
 import session from 'express-session'
 import mongoose from 'mongoose'
-import connectMongo from 'connect-mongo'
+import MongoStore from 'connect-mongo'
 import compression from 'compression'
 import createError from 'http-errors'
 import swaggerUI from 'swagger-ui-express'
@@ -26,8 +26,6 @@ declare module 'express-session' {
     user: User
   }
 }
-
-const MongoStore = connectMongo(session)
 
 //Connection database
 try {
@@ -51,7 +49,7 @@ app.use(
     secret: config.TROCIO_SECRET_STRING_COOKIE,
     cookie: { maxAge: 72 * 60 * 60 * 1000 },
     // @ts-ignore
-    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    store: MongoStore.create({ mongoUrl: config.TROCIO_DB }),
     resave: false,
     saveUninitialized: true,
   })
