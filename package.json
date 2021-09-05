@@ -50,6 +50,7 @@
     "bcrypt": "^5.0.0",
     "bwip-js": "^2.0.11",
     "compression": "^1.7.4",
+    "connect-mongo": "^4.5.0",
     "cookie-parser": "^1.4.5",
     "dayjs": "^1.10.3",
     "debounce": "^1.2.1",
