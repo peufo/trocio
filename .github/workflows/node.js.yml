@@ -49,9 +49,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: LOG-test
         shell: bash
-        env:
-          SECRET_TEST: ${{ env.SSH_HOST }}
-        run: echo "$SECRET_TEST"
+        run: echo ${{ env.SSH_HOST }}
       - name: Connection ssh
         uses: appleboy/ssh-action@master
         with:
