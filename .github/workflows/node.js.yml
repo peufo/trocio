@@ -49,7 +49,7 @@ jobs:
             package-lock.json
 
   deploy:
-    needs: build-server
+    needs: [build-server, build-client]
     environment: 'Nestor - Labo'
     runs-on: ubuntu-latest
     steps:
