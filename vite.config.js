@@ -24,8 +24,12 @@ export default defineConfig({
       },
     },
     https: {
-      key: fs.readFileSync('localhost.key'),
-      cert: fs.readFileSync('localhost.crt'),
+      key: readIfExists('localhost.key'),
+      cert: readIfExists('localhost.crt'),
     },
   },
 })
+
+function readIfExists(path) {
+  return fs.existsSync(path) ? fs.readFileSync(path) : ''
+}
