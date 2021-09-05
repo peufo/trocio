@@ -46,6 +46,7 @@ jobs:
     # needs: [build-client, build-server]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: LOG-test
         shell: bash
         run: echo ${{ secrets.SSH_HOST }}
