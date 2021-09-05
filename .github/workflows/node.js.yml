@@ -53,18 +53,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
       - name: Display structure of downloaded files
         run: ls -R
 
-      - name: Reset folder /trocio
+      - name: Remove folder /trocio
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            rm -rf trocio
-            mkdir trocio
+          script: rm -rf trocio
 
       - name: Copy artifacts
         uses: appleboy/scp-action@master
