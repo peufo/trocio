@@ -46,6 +46,9 @@ jobs:
     # needs: [build-client, build-server]
     runs-on: ubuntu-latest
     steps:
+      - name: LOG-test
+        shell: bash
+        run: echo ${{ secrets.SSH_HOST }}
       - name: Connection ssh
         uses: appleboy/ssh-action@master
         with:
