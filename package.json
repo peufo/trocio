@@ -10,7 +10,7 @@
     "build:routify": "routify --single-build",
     "build:vite": "vite build",
     "build:server": "tsc --project tsconfig.server.json || exit 0",
-    "serve": "pm2 start server.js --update-env"
+    "serve": "pm2 start server.js --update-env -f"
   },
   "devDependencies": {
     "@roxi/routify": "^2.12.3",
