@@ -44,7 +44,8 @@ jobs:
       - name: Upload package artifact
         uses: actions/upload-artifact@v2
         with:
-          name: package.json
+          name: package
+          path: package.json
   deploy:
     needs: build-server
     environment: 'Nestor - Labo'
