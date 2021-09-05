@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: server
-          path: dist
+          path: server
       - name: Upload package artifact
         uses: actions/upload-artifact@v2
         with:
