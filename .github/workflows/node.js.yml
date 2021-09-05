@@ -99,10 +99,6 @@ jobs:
             cd trocio
             cat package.json
 
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
       - name: Install npm dependencies
         uses: appleboy/ssh-action@master
         with:
@@ -110,7 +106,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            [ -e ".nvm/.profile" ] && . ".nvm/.profile"
+            . .profile
             cd trocio
             npm ci
 
