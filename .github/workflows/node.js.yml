@@ -45,7 +45,10 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: package
-          path: package.json
+          path: |
+            package.json
+            package-lock.json
+
   deploy:
     needs: build-server
     environment: 'Nestor - Labo'
