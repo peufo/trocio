@@ -85,6 +85,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
+            [ -e ".nvm/.profile" ] && . ".nvm/.profile"
             cd trocio
             npm ci
 
