@@ -50,7 +50,7 @@ jobs:
       - name: LOG-test
         shell: bash
         env:
-          SECRET_TEST: ${{ secrets.SECRET_TEST }}
+          SECRET_TEST: ${{ env.SSH_HOST }}
         run: echo "$SECRET_TEST"
       - name: Connection ssh
         uses: appleboy/ssh-action@master
