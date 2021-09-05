@@ -43,6 +43,7 @@ jobs:
           name: server
           path: server
   deploy:
+    environment: 'Nestor - Labo'
     # needs: [build-client, build-server]
     runs-on: ubuntu-latest
     steps:
