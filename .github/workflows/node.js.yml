@@ -76,7 +76,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           source: 'trocio'
-          target: 'trocio'
 
       - name: Install npm dependencies
         uses: appleboy/ssh-action@master
