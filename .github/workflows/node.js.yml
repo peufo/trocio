@@ -8,14 +8,8 @@ on:
     branches: [dev-vite]
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
-
-    # strategy:
-    #  matrix:
-    #    node-version: [14.x]
-    # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
@@ -23,5 +17,9 @@ jobs:
         with:
           node-version: 14.x
           cache: 'npm'
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       - run: npm ci
       - run: npm run build
