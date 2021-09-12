@@ -108,6 +108,7 @@
             href={$url(`/admin/${tab.group[0].ref}`, {
               ...$params,
               tab_admin: tab.group[0].ref,
+              // Double ref a cause de Tips qui écoute dessus
             })}
           >
             <ListGroup
