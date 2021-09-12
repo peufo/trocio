@@ -18,7 +18,8 @@ jobs:
           node-version: 14.x
           cache: 'npm'
       - run: npm ci
-      - run: npm run build:client
+      - run: npm run build:routify
+      - run: npm run build:vite
       - name: Upload client artifact
         uses: actions/upload-artifact@v2
         with:

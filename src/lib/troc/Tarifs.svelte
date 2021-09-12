@@ -10,8 +10,9 @@
   // Nécéssaire pour la vitesse de réaction
   $: tarif_selected = $params.tarif_selected || ''
 
+  // Pre calcule les liens vers la pages attribution
   $: urlAttributions = $troc.tarif.map((tarif) => {
-    return $url('/admin', {
+    return $url('/admin/tarif_attribution', {
       ...$params,
       tab_admin: 'tarif_attribution',
       filtredTarifs: $troc.tarif
@@ -32,11 +33,11 @@
       open={tarif_selected === tarif._id}
       on:open={() => {
         tarif_selected = tarif._id
-        $goto('/admin', { ...$params, tarif_selected })
+        $goto('/admin/tarif_edition', { ...$params, tarif_selected })
       }}
       on:close={() => {
         tarif_selected = ''
-        $goto('/admin', { ...$params, tarif_selected })
+        $goto('/admin/tarif_edition', { ...$params, tarif_selected })
       }}
     />
   {/each}
@@ -63,7 +64,7 @@
           {
             onSuccess: (newTroc) => {
               tarif_selected = newTroc.tarif[newTroc.tarif.length - 1]._id
-              $goto('/admin', { ...$params, tarif_selected })
+              $goto('/admin/tarif_attribution', { ...$params, tarif_selected })
             },
           }
         )}
