@@ -1,57 +1,64 @@
 <script lang="ts">
-  import { leftover, params } from '@roxi/routify'
-  import { Button } from 'svelte-materialify'
-  import debounce from 'debounce'
+  import { params } from '@roxi/routify'
 
   import MagicTable from '$lib/util/MagicTable.svelte'
+  import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
+  import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import { useInfinitApi } from '$lib/api'
-  import type { ParamsAPI, ArticleLookup, FieldInteface } from 'types'
+  import type {
+    ParamsAPI,
+    ParamsArticleAPI,
+    ArticleLookup,
+    FieldInteface,
+  } from 'types'
   import { layout } from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
-  import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
+  import { getStatut } from '$lib/utils'
+  import { faDotCircle } from '@fortawesome/free-solid-svg-icons'
 
-  let searchValueDebounced = ''
+  let searchValue = ''
 
-  $: query = useInfinitApi<ParamsAPI, ArticleLookup[]>([
+  $: query = useInfinitApi<ParamsArticleAPI, ArticleLookup[]>([
     'articles',
     {
-      trocId: $params.trocId,
-      or_search_name: searchValueDebounced,
-      or_search_ref: searchValueDebounced,
+      troc: $params.trocId,
+      or_search_name: searchValue,
+      or_search_ref: searchValue,
     },
   ])
   $: articles = $query.data ? $query.data.pages.flat() : []
 
-  const handleSearchSubscriber = debounce((event: any) => {
-    searchValueDebounced = event.target.value
-  }, 200)
-
-  const statutFiltersOptions = [
-    { queryValue: '', label: 'Tous', icon: '' },
+  const statutFiltersOptions: FieldInteface['selectOptions'] = [
+    { queryValue: '', label: 'Tous' },
     {
       queryValue: 'proposed',
       label: 'Proposé',
-      icon: '<i class="fas fa-dot-circle w3-text-light-grey"></i>',
+      icon: faDotCircle,
+      iconStyle: 'color: rgb(158 158 158);',
     },
     {
       queryValue: 'valided',
       label: 'Validé',
-      icon: '<i class="fas fa-dot-circle w3-text-blue"></i>',
+      icon: faDotCircle,
+      iconStyle: 'color: rgb(33 150 243);',
     },
     {
       queryValue: 'refused',
       label: 'Refusé',
-      icon: '<i class="fas fa-dot-circle w3-text-red"></i>',
+      icon: faDotCircle,
+      iconStyle: 'color: rgb(244 67 54);',
     },
     {
       queryValue: 'sold',
       label: 'Vendu',
-      icon: '<i class="fas fa-dot-circle w3-text-green"></i>',
+      icon: faDotCircle,
+      iconStyle: 'color: rgb(76 175 80);',
     },
     {
       queryValue: 'recover',
       label: 'Récupéré',
-      icon: '<i class="fas fa-dot-circle w3-text-orange"></i>',
+      icon: faDotCircle,
+      iconStyle: 'color: rgb(255 152 0);',
     },
   ]
 
@@ -75,7 +82,6 @@
       checked: true,
       typeMenu: 'search',
       getValue: 'ref',
-      dataType: 'string',
       cellWidth: 50,
       disabled: true,
     },
@@ -84,25 +90,24 @@
       checked: true,
       typeMenu: 'search',
       getValue: 'name',
-      dataType: 'string',
       cellWidth: 300,
       disabled: true,
     },
     {
       label: 'Statut',
       checked: true,
-      typeMenu: 'filter',
-      getValue: 'statut',
-      dataType: 'string',
+      typeMenu: 'select',
+      queryKey: 'statut',
+      getValue: getStatut,
       cellWidth: 90,
-      options: statutFiltersOptions,
+      selectOptions: statutFiltersOptions,
     },
     {
       label: 'Création',
       checked: false,
       typeMenu: 'sort',
       getValue: 'createdAt',
-      dataType: 'date',
+      format: 'date',
       cellWidth: 170,
     },
     {
@@ -110,7 +115,6 @@
       checked: true,
       typeMenu: 'user',
       getValue: ({ provider }) => provider?.name,
-      dataType: 'string',
       cellWidth: 70,
     },
     {
@@ -118,7 +122,7 @@
       checked: false,
       typeMenu: 'sort',
       getValue: 'valided',
-      dataType: 'date',
+      format: 'date',
       cellWidth: 170,
     },
     {
@@ -126,7 +130,6 @@
       checked: false,
       typeMenu: 'user',
       getValue: ({ validator }) => validator?.name,
-      dataType: 'string',
       cellWidth: 50,
     },
     {
@@ -134,7 +137,7 @@
       checked: false,
       typeMenu: 'sort',
       getValue: 'sold',
-      dataType: 'date',
+      format: 'date',
       cellWidth: 170,
     },
     {
@@ -142,7 +145,7 @@
       checked: false,
       typeMenu: 'sort',
       getValue: 'recover',
-      dataType: 'date',
+      format: 'date',
       cellWidth: 170,
     },
     {
@@ -150,7 +153,6 @@
       checked: false,
       typeMenu: 'user',
       getValue: ({ seller }) => seller?.name,
-      dataType: 'string',
       cellWidth: 50,
     },
     {
@@ -158,7 +160,6 @@
       checked: false,
       typeMenu: 'user',
       getValue: ({ buyer }) => buyer?.name,
-      dataType: 'string',
       cellWidth: 50,
     },
     {
@@ -166,7 +167,7 @@
       checked: false,
       typeMenu: 'sort',
       getValue: 'fee',
-      dataType: 'number',
+      format: 'curency',
       cellWidth: 50,
     },
     {
@@ -174,7 +175,7 @@
       checked: false,
       typeMenu: 'sort',
       getValue: 'margin',
-      dataType: 'number',
+      format: 'curency',
       cellWidth: 50,
     },
     {
@@ -182,7 +183,7 @@
       checked: true,
       typeMenu: 'sort',
       getValue: 'price',
-      dataType: 'number',
+      format: 'curency',
       cellWidth: 50,
     },
   ]
@@ -216,13 +217,12 @@
       <tr>
         <th colspan="2" style="padding-left: 0px;">
           <SearchTextField
-            bind:search={searchValueDebounced}
+            bind:search={searchValue}
             placeholder="Chercher un article"
           />
         </th>
-        {#each fields.filter((f) => !f.disabled && f.checked) as field}
-          <th>{field.label}</th>
-        {/each}
+
+        <MagicTableHeaders {fields} />
       </tr>
     </thead>
     <tbody>

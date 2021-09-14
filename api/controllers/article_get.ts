@@ -75,7 +75,7 @@ export function searchArticle(req, res, next) {
     troc,
     limit,
     skip,
-    filter_statut,
+    select_statut,
     provider,
     providernot,
     include_without_name,
@@ -107,7 +107,7 @@ export function searchArticle(req, res, next) {
   else if (limit > 100) limit = 100
 
   //Add filter statut
-  switch (filter_statut) {
+  switch (select_statut) {
     case 'proposed':
       match.$and.push({ valided: { $exists: false } })
       match.$and.push({ refused: { $exists: false } })
@@ -128,25 +128,25 @@ export function searchArticle(req, res, next) {
       break
   }
 
-  //Dynamic query
+  // Dynamic query
   for (let key in req.query) {
-    //add matchSearch
+    // add matchSearch
     if (key.indexOf(QUERY_SEARCH) === 0) {
       match.$and.push({
         [key.replace(QUERY_SEARCH, '')]: new RegExp(req.query[key], 'i'),
       })
 
-      //add matchOrSearch
+      // add matchOrSearch
     } else if (key.indexOf(QUERY_OR_SEARCH) === 0) {
       match.$or.push({
         [key.replace(QUERY_OR_SEARCH, '')]: new RegExp(req.query[key], 'i'),
       })
 
-      //add matchUser
+      // add matchUser
     } else if (key.indexOf(QUERY_EXACT) === 0) {
       match.$and.push({ [key.replace(QUERY_EXACT, '')]: req.query[key] })
 
-      //add sort
+      // add sort
     } else if (key.indexOf(QUERY_SORT) != -1 && !isNaN(req.query[key])) {
       sort[key.replace(QUERY_SORT, '')] = Number(req.query[key])
     }
@@ -183,7 +183,7 @@ interface SearchArticleQuery {
   troc: string
   limit: number
   skip: number
-  filter_statut: ArticleState
+  select_statut: ArticleState
   provider: string[]
   providernot: string[]
   include_without_name: boolean
