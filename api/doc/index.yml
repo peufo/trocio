@@ -614,7 +614,7 @@ paths:
           in: query
           schema:
             type: string
-        - name: filter_statut
+        - name: select_statut
           in: query
           schema:
             type: string

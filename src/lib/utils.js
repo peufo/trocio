@@ -83,16 +83,16 @@ export const STATUTS = ['Proposé', 'Validé', 'Refusé', 'Vendu', 'Récupéré'
 export function addStatutField(articles, context = 'organisator') {
   let isArray = Array.isArray(articles)
   articles = isArray ? articles : [articles]
-  articles = articles.map((art) => {
-    art.statut = STATUTS[0]
-    if (art.valided) art.statut = STATUTS[1]
-    if (art.refused) art.statut = STATUTS[2]
-    if (art.sold) art.statut = STATUTS[3]
-    if (art.recover) art.statut = STATUTS[4]
-    return art
-  })
-
+  articles = articles.map(getStatut)
   return isArray ? articles : articles[0]
+}
+
+export function getStatut(article) {
+  if (article.recover) return STATUTS[4]
+  if (article.sold) return STATUTS[3]
+  if (article.refused) return STATUTS[2]
+  if (article.valided) return STATUTS[1]
+  return STATUTS[0]
 }
 
 //TODO: This is a copy from ../api/models/troc (virtual)
