@@ -14,14 +14,14 @@
     padding: 2,
     fontSize: 16,
     border: false,
-    tagPrinter: false,
+    useTagPrinter: false,
   }
 </script>
 
 <div
   class="tag"
   class:border={tag.border}
-  class:tagPrinter={tag.tagPrinter}
+  class:useTagPrinter={tag.useTagPrinter}
   style={`
     width: ${tag.width}mm;
     height: ${tag.height}mm;
@@ -46,7 +46,7 @@
 </div>
 
 <style>
-  .tag.tagPrinter {
+  .tag.useTagPrinter {
     page-break-before: always;
     overflow: hidden;
   }
