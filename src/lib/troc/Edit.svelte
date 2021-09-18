@@ -28,7 +28,7 @@
     is_try: true,
     currency: 'EUR',
     address: '',
-    location: { lng: 0, lat: 0 },
+    location: undefined,
     description: '',
     schedule: [],
     society: '',

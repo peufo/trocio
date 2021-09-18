@@ -78,6 +78,21 @@ export function formatPrice(node) {
   }
 }
 
+export function renderAmount(amount: number, currency?: string): string {
+  return amount.toLocaleString(
+    undefined,
+    currency
+      ? {
+          style: 'currency',
+          currency,
+        }
+      : {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 2,
+        }
+  )
+}
+
 export const STATUTS = ['Proposé', 'Validé', 'Refusé', 'Vendu', 'Récupéré']
 
 export function addStatutField(articles, context = 'organisator') {

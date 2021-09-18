@@ -253,7 +253,11 @@
   <ArticleSearchTextField bind:search={articleSearch} class="pt-4" />
 {/if}
 
-<ArticleList trocId={troc._id} search={articleSearch} />
+<ArticleList
+  trocId={troc._id}
+  currency={troc.currency}
+  search={articleSearch}
+/>
 
 <style>
   .container {

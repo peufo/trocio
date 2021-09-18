@@ -68,7 +68,7 @@ export function update(newValue: Partial<User>) {
  * Evoyer un mail de vaildation
  */
 export function sendValidationMail() {
-  return api('/api/users/validmail', {
+  return api('/api/users/me/validmail', {
     method: 'post',
     success: 'Un mail de validation vous à été envoyé',
   })
@@ -78,14 +78,14 @@ export function sendValidationMail() {
  * Validation du mail
  */
 export function validMail(validator: string) {
-  return api(`/api/users/validmail/${validator}`, {
+  return api(`/api/users/me/validmail/${validator}`, {
     success: 'Votre mail est vaildé',
     format: () => ({ mailvalided: true }),
   })
 }
 
 export function changePassword(oldPassword: string, newPassword: string) {
-  return api('/api/users/changepwd', {
+  return api('/api/users/me/changepwd', {
     method: 'post',
     data: { oldPassword, newPassword },
     success: 'Changement du mot de passe réussi',

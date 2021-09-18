@@ -6,7 +6,7 @@ export declare interface ArticleCreate {
   /** ID de l'utilisateur qui propose l'article */
   provider: string
   /** Reference lisible et unique de l'article TODO: rendre unique */
-  ref: string
+  ref?: string
   /** Nom ou désignation de l'article*/
   name: string
   /** Prix de l'article */

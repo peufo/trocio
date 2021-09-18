@@ -3,16 +3,13 @@
   import { Dialog, Button, Textarea, TextField } from 'svelte-materialify'
 
   import { useCreateArticle, useCreateArticles } from '$lib/article/store'
-  import { formatPrice } from '$lib/utils.js'
   import IconLink from '$lib/util/IconLink.svelte'
   import {
     faCircleNotch,
-    faEnvelopeSquare,
     faList,
     faPlus,
   } from '@fortawesome/free-solid-svg-icons'
   import type { ArticleCreate } from 'types'
-  import { isError } from '@sveltestack/svelte-query'
 
   export let trocId: string
   export let dialogActive = false
@@ -22,7 +19,7 @@
   export let client = ''
 
   let newName = ''
-  let newPrice
+  let newPrice: number
 
   let listArticles: ArticleCreate[] = []
   let listArticlesError = ''

@@ -2,10 +2,11 @@
   import { fade } from 'svelte/transition'
 
   import Loader from '$lib/util/Loader.svelte'
-
   import { useArticles, useArticlesOptions } from '$lib/article/store'
+  import { renderAmount } from '$lib/utils'
 
   export let trocId = ''
+  export let currency = ''
   export let search = ''
 
   const queryArticles = useArticles(trocId, search)
@@ -29,7 +30,7 @@
           <br />
           <div class="text-right">
             <b class="text-caption" style="line-height: 1;">
-              {!isNaN(article.price) && Number(article.price).toFixed(2)}
+              {renderAmount(article.price, currency)}
             </b>
           </div>
         </div>
