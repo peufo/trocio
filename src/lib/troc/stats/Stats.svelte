@@ -1,25 +1,25 @@
 <script lang="ts">
   import { Radio } from 'svelte-materialify'
   import { useQuery } from '@sveltestack/svelte-query'
-
-  import type { TrocStats, PaymentInterface, Article } from 'types'
-  import type { TrocStatsFormatted } from './formatStats'
-
-  import { getTrocStats } from '$lib/troc/api'
-  import ExpansionCard from '$lib/util/ExpansionCard.svelte'
-  import { troc } from '$lib/troc/store'
-  import UserSelect from '$lib/user/Select.svelte'
-  import { formatStats } from './formatStats'
-  import Loader from '$lib/util/Loader.svelte'
-  import PlotStock from './PlotStock.svelte'
-  import PlotConsommation from './PlotConsommation.svelte'
-  import PlotCash from './PlotCash.svelte'
-  import IconLink from '$lib/util/IconLink.svelte'
   import {
     faCashRegister,
     faShoppingCart,
     faTruck,
   } from '@fortawesome/free-solid-svg-icons'
+
+  import type { TrocStats, PaymentInterface, Article } from 'types'
+  import type { TrocStatsFormatted } from './formatStats'
+  import { getTrocStats } from '$lib/troc/api'
+  import ExpansionCard from '$lib/util/ExpansionCard.svelte'
+  import { troc } from '$lib/troc/store'
+  import UserSelect from '$lib/user/Select.svelte'
+  import Loader from '$lib/util/Loader.svelte'
+  import IconLink from '$lib/util/IconLink.svelte'
+  import PlotStock from './PlotStock.svelte'
+  import PlotConsommation from './PlotConsommation.svelte'
+  import PlotCash from './PlotCash.svelte'
+  import { formatStats } from './formatStats'
+  import { renderAmount } from '$lib/utils'
 
   // Selections
   let selectedView = 'global'
@@ -104,9 +104,9 @@
             </b>
             propositions pour une valeur total de
             <b>
-              {(stats.sums.provided + stats.sums.proposed).toLocaleString(
-                undefined,
-                { minimumFractionDigits: 2 }
+              {renderAmount(
+                stats.sums.provided + stats.sums.proposed,
+                $troc.currency
               )}
             </b>
           </span>
@@ -130,9 +130,7 @@
             <b>{stats.numbers.buyed.toLocaleString()}</b> achats pour un valeur
             total de
             <b>
-              {stats.sums.buyed.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}
+              {renderAmount(stats.sums.buyed, $troc.currency)}
             </b>
           </span>
         {:else}
@@ -153,39 +151,32 @@
         {#if stats.numbers.payment}
           <span>
             <b>{stats.numbers.payment.toLocaleString()}</b>
-            <span style="color: green;">
+            <span class="ml-2" style="color: green;">
               <i class="fas fa-chevron-up" />
               {stats.numbers.paymentPositif.toLocaleString()}
             </span>
-            <span style="color: red;">
+            <span class="ml-2 mr-2" style="color: red;">
               <i class="fas fa-chevron-down" />
               {stats.numbers.paymentNegatif.toLocaleString()}
             </span>
             paiements pour une valeur total de
             <b>
-              {stats.sums.payment.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}
+              {renderAmount(stats.sums.payment, $troc.currency)}
             </b>
-            <span style="color: green;">
+            <span class="ml-2" style="color: green;">
               <i class="fas fa-chevron-up" />
-              {stats.sums.paymentPositif.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}
+              {renderAmount(stats.sums.paymentPositif, $troc.currency)}
             </span>
-            <span style="color: red;">
+            <span class="ml-2" style="color: red;">
               <i class="fas fa-chevron-down" />
-              {stats.sums.paymentNegatif.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}
+              {renderAmount(stats.sums.paymentNegatif, $troc.currency)}
             </span>
-            <span style="color: blue;">
+            <span class="ml-2" style="color: blue;">
               <i class="fas fa-angle-right" />
-              {(
-                stats.sums.paymentPositif - stats.sums.paymentNegatif
-              ).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}
+              {renderAmount(
+                stats.sums.paymentPositif - stats.sums.paymentNegatif,
+                $troc.currency
+              )}
             </span>
           </span>
         {:else}

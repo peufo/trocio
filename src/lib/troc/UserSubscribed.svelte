@@ -4,11 +4,7 @@
    */
 
   import { List, ListItem, Chip } from 'svelte-materialify'
-  import {
-    faCog,
-    faCashRegister,
-    faTableTennis,
-  } from '@fortawesome/free-solid-svg-icons'
+  import { faCog, faCashRegister } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
@@ -48,10 +44,12 @@
             </Chip>
           {/if}
           <span slot="subtitle">
-            {dayjs(
-              troc.schedule && troc.schedule[0] && troc.schedule[0].open
-            ).fromNow()}
-            <br />
+            {#if !troc.is_try}
+              {dayjs(
+                troc.schedule && troc.schedule[0] && troc.schedule[0].open
+              ).fromNow()}
+              <br />
+            {/if}
             {troc.address}
           </span>
           <span slot="append">

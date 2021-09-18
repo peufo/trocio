@@ -2,14 +2,7 @@
   import { onMount, createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
   import cc from 'currency-codes'
-  import {
-    Textarea,
-    TextField,
-    Icon,
-    List,
-    ListItem,
-    Select,
-  } from 'svelte-materialify'
+  import { Textarea, TextField, Icon, List, ListItem } from 'svelte-materialify'
   import L from 'leaflet'
   import debounce from 'debounce'
 
@@ -143,6 +136,7 @@
 
   /** Convertie un localisation {lat, lng} en string */
   function locationToString(loc?: Location) {
+    console.log({ loc })
     if (!loc) return ''
     let lat = numberToString(loc.lat)
     lat += loc.lat >= 0 ? 'N' : 'S'

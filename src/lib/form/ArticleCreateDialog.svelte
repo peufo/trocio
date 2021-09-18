@@ -4,7 +4,7 @@
   import { Button, Dialog } from 'svelte-materialify'
 
   import { trocDetails as details } from '$lib/stores.js'
-  import { addStatutField, formatPrice, getHeader } from '$lib/utils.js'
+  import { addStatutField, formatPrice, getHeader } from '$lib/utils'
   import notify from '$lib/notify'
 
   export let dialogActive = false

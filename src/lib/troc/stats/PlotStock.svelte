@@ -12,6 +12,7 @@
   import { isDarkTheme } from '$lib/store/layout'
   import { troc } from '$lib/troc/store'
   import type { TrocStatsFormatted } from './formatStats'
+  import { renderAmount } from '$lib/utils'
 
   export let stats: TrocStatsFormatted
 
@@ -288,7 +289,7 @@
       if (layout.annotations)
         layout.annotations.push(
           {
-            text: `<span>Marge<br>Frais<br>Total</span>`,
+            text: `<span>Marge<br>Frais<br>Bénéfice total</span>`,
             x: 0.9,
             xref: 'paper',
             xanchor: 'left',
@@ -300,15 +301,12 @@
           },
           {
             text: `
-              <b>${stats.sums.margin.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}<br>
-              ${stats.sums.fee.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}<br>
-              ${(stats.sums.fee + stats.sums.margin).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}<br>
+              <b>${renderAmount(stats.sums.margin, $troc.currency)}<br>
+              ${renderAmount(stats.sums.fee, $troc.currency)}<br>
+              ${renderAmount(
+                stats.sums.fee + stats.sums.margin,
+                $troc.currency
+              )}<br>
               </b>`,
             x: 0.9,
             xref: 'paper',
@@ -356,17 +354,9 @@
       margin: { t: 80 },
       annotations: [
         {
-          text: ` Moy. mis en vente: <b>${averageProvided.toLocaleString(
-            undefined,
+          text: ` Moy. mis en vente: <b>${renderAmount(
+            averageProvided,
             $troc.currency
-              ? {
-                  style: 'currency',
-                  currency: $troc.currency,
-                }
-              : {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                }
           )}</b>`,
           x: averageProvided,
           y: 0,
@@ -378,17 +368,9 @@
           ay: -30,
         },
         {
-          text: ` Moy. vendu: <b>${averageSolded.toLocaleString(
-            undefined,
+          text: ` Moy. vendu: <b>${renderAmount(
+            averageSolded,
             $troc.currency
-              ? {
-                  style: 'currency',
-                  currency: $troc.currency,
-                }
-              : {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                }
           )}</b>`,
           x: averageSolded,
           y: 0,
@@ -400,17 +382,9 @@
           ay: -30,
         },
         {
-          text: ` Moy. récupéré: <b>${averageRecovered.toLocaleString(
-            undefined,
+          text: ` Moy. récupéré: <b>${renderAmount(
+            averageRecovered,
             $troc.currency
-              ? {
-                  style: 'currency',
-                  currency: $troc.currency,
-                }
-              : {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                }
           )}</b>`,
           x: averageRecovered,
           y: 0,

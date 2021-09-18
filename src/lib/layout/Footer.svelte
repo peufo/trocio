@@ -5,28 +5,29 @@
 </script>
 
 <footer
-  class="w3-center grey {$isDarkTheme ? 'darken-3' : 'lighten-3'}"
+  class="text-center grey {$isDarkTheme ? 'darken-3' : 'lighten-3'}"
   bind:offsetHeight
 >
   <div>
     <div class="underline-div">
-      <a class="underline-span" href="/about">À propos</a>
+      <a class="underline-span" href="/about"> À propos </a>
     </div>
     <div class="underline-div">
       <a class="underline-span" href="/contact">Contact</a>
     </div>
     <div class="underline-div">
-      <a class="underline-span" href="/terms-of-use">Conditions d'utilisation</a
-      >
+      <a class="underline-span" href="/terms-of-use">
+        Conditions d'utilisation
+      </a>
     </div>
     <div class="underline-div">
-      <a class="underline-span" href="/legal-notice">Mentions légales</a>
+      <a class="underline-span" href="/legal-notice"> Mentions légales </a>
     </div>
   </div>
 
   <span>
     <i class="far fa-copyright" />
-    2020 - Jonas Voisard
+    2018 - 2021 Jonas Voisard
   </span>
 </footer>
 
