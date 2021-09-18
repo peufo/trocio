@@ -11,6 +11,7 @@
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { getStatut } from '$lib/utils'
   import { faDotCircle } from '@fortawesome/free-solid-svg-icons'
+  import { troc } from '$lib/troc/store'
 
   let searchValue = ''
 
@@ -164,7 +165,7 @@
       checked: false,
       typeMenu: 'sort',
       getValue: 'fee',
-      format: 'curency',
+      format: 'currency',
       cellWidth: 50,
     },
     {
@@ -172,7 +173,7 @@
       checked: false,
       typeMenu: 'sort',
       getValue: 'margin',
-      format: 'curency',
+      format: 'currency',
       cellWidth: 50,
     },
     {
@@ -180,7 +181,7 @@
       checked: true,
       typeMenu: 'sort',
       getValue: 'price',
-      format: 'curency',
+      format: 'currency',
       cellWidth: 50,
     },
   ]
@@ -223,6 +224,6 @@
       </tr>
     </thead>
 
-    <MagicTableBody {fields} items={articles} />
+    <MagicTableBody {fields} items={articles} currency={$troc.currency} />
   </MagicTable>
 </div>
