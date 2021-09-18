@@ -12,8 +12,9 @@ import { RequestHandler } from 'express'
 export function createTroc(req, res, next) {
   if (!req.session.user) return next(Error('Login required'))
 
-  let err = scheduleValidation(req.body)
-  if (err) return next(err)
+  // TODO: Remplacer par un avertissement coté client
+  // let err = scheduleValidation(req.body)
+  // if (err) return next(err)
 
   let troc = new Troc(req.body)
   troc.creator = req.session.user._id
@@ -56,15 +57,18 @@ export function patchTroc(req, res, next) {
   Troc.findOne({ _id: trocId }).exec((err, troc) => {
     if (err || !troc) return next(err || Error('Not found'))
 
+    console.log(troc.schedule)
+
     //Verifie si l'horaire est modifier
     if (
       req.body.schedule &&
       JSON.stringify(req.body.schedule) !== JSON.stringify(troc.schedule)
     ) {
-      if (new Date(troc.schedule[0]?.open).getTime() < new Date().getTime())
-        return next(Error(`You cannot edit shedule of troc after he's started`))
-      err = scheduleValidation(req.body)
-      if (err) return next(err)
+      // TODO:remplacer par un avertissement coté client
+      // if (new Date(troc.schedule[0]?.open).getTime() < new Date().getTime())
+      //  return next(Error(`You cannot edit shedule of troc after he's started`))
+      // err = scheduleValidation(req.body)
+      // if (err) return next(err)
     }
 
     if (req.body._id) delete req.body._id

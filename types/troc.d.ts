@@ -4,14 +4,15 @@ import type { PaymentInterface } from './payment'
 
 /** Période dont est composé l'horaire */
 export declare interface Period {
-  name?: 'open' | 'deposit' | 'recovery' | 'sale'
+  _id?: string
+  name?: 'open' | 'deposit' | 'recovery' | 'sale' | 'delete'
   open: string
   close: string
 }
 
 /** Tarif */
 export declare interface Tarif {
-  _id: string
+  _id?: string
   name: string
   bydefault: boolean
   apply?: string[] | User[]
@@ -39,6 +40,7 @@ export declare interface TrocBase {
   name: string
   description: string
   is_try: boolean
+  currency: string
   address?: string
   location?: {
     lat: number

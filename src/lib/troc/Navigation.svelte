@@ -23,7 +23,6 @@
   export let width = '360px'
   export let mobileMode = false
 
-  let trocSubscribedShow = false
   let scrollY = 0
 
   let search = ''
@@ -110,31 +109,27 @@
       </ListItem>
     </a>
 
-    <ListItem on:click={() => (trocSubscribedShow = !trocSubscribedShow)}>
+    <ListItem
+      disabled
+      on:click={() => console.log('TODO: page with my trocs ?')}
+    >
       <span slot="prepend">
         <Icon {...logo} />
       </span>
       Mes trocs
-      <span slot="append">
-        <IconLink icon={faChevronDown} rotate={trocSubscribedShow ? 0 : -90} />
-      </span>
     </ListItem>
 
-    {#if trocSubscribedShow}
-      <div transition:slide|local>
-        {#if !$user}
-          <ListItem disabled>
-            <div class="text--disabled text-center">
-              Connectez-vous pour voir vos trocs.
-            </div>
-          </ListItem>
-        {:else}
-          <TrocUserSubscribed
-            offset={22}
-            on:click={() => mobileMode && (active = false)}
-          />
-        {/if}
-      </div>
+    {#if !$user}
+      <ListItem disabled>
+        <div class="text--disabled text-center">
+          Connectez-vous pour voir vos trocs.
+        </div>
+      </ListItem>
+    {:else}
+      <TrocUserSubscribed
+        offset={22}
+        on:click={() => mobileMode && (active = false)}
+      />
     {/if}
   </List>
 </NavigationDrawer>

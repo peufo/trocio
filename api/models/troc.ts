@@ -1,4 +1,5 @@
 import { model, Schema, Model, Document } from 'mongoose'
+import cc from 'currency-codes'
 
 const ObjectId = Schema.Types.ObjectId
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
@@ -10,6 +11,7 @@ const trocModel = new Schema(
     is_try: { type: Boolean, default: false },
     society: String,
     societyweb: String,
+    currency: { type: String, enum: cc.codes() },
     address: {
       type: String,
       required: notRequiredIfIsTry,
@@ -38,6 +40,7 @@ const trocModel = new Schema(
         },
         open: Date,
         close: Date,
+        id: false,
       },
     ],
     tarif: [

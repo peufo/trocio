@@ -10,6 +10,7 @@
   /** Schedule formated for user input */
   let scheduleInput: {
     name?: Period['name'] | 'delete'
+    _id?: string
     day: string
     open: string
     close: string
@@ -45,6 +46,7 @@
     scheduleInput = schedule.map((period) => {
       return {
         name: period.name || 'open',
+        _id: period._id,
         day: dayjs(period.open).format('YYYY-MM-DD'),
         open: dayjs(period.open).format('HH:mm'),
         close: dayjs(period.close).format('HH:mm'),
@@ -53,21 +55,20 @@
   }
 
   function sheduleInputToSchedule() {
-    schedule = scheduleInput.map((period) => {
-      if (
-        period.day &&
-        period.open &&
-        period.close &&
-        period.name !== 'delete'
-      ) {
+    schedule = scheduleInput
+      .filter(
+        (period) =>
+          period.day && period.open && period.close && period.name !== 'delete'
+      )
+      .map((period) => {
         let dayForSafari = dayjs(period.day).format('YYYY/MM/DD')
         return {
           name: period.name,
+          _id: period._id,
           open: new Date(`${dayForSafari} ${period.open}`).toISOString(),
           close: new Date(`${dayForSafari} ${period.close}`).toISOString(),
         }
-      }
-    })
+      })
     dispatch('change', { schedule })
   }
 

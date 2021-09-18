@@ -2,6 +2,8 @@
   import { onMount } from 'svelte'
   import { slide } from 'svelte/transition'
   import { goto } from '@roxi/routify'
+  import clone from 'clone'
+
   import { Button, TextField, Textarea, Checkbox } from 'svelte-materialify'
   import { faInfo } from '@fortawesome/free-solid-svg-icons'
 
@@ -21,9 +23,10 @@
    * Sinon, le troc du store est utilisé
    */
   export let createMode = false
-  export const newTroc: TrocBase = {
+  export let newTroc: TrocBase = {
     name: '',
     is_try: true,
+    currency: 'EUR',
     address: '',
     location: { lng: 0, lat: 0 },
     description: '',
@@ -39,15 +42,7 @@
 
   onMount(() => {
     if (!createMode) {
-      // Clone troc
-      Object.keys(newTroc).forEach((key) => {
-        newTroc[key] =
-          typeof $troc[key] === 'object'
-            ? Array.isArray($troc[key])
-              ? [...$troc[key]]
-              : { ...$troc[key] }
-            : $troc[key]
-      })
+      newTroc = clone($troc)
     }
     isNewTrocCloned = true
     validation()
@@ -59,9 +54,9 @@
       if (newTroc.description.length < 10)
         error = `Description trop courte (${newTroc.description.length}/10)`
       else if (!newTroc.address) error = 'Adresse incomplette'
-      else if (!newTroc.location.lat) error = 'Adresse non localisé'
-      else if (!newTroc.schedule.length) error = 'Pas de plage horaire'
-      else if (newTroc.schedule.includes(undefined))
+      else if (!newTroc.location?.lat) error = 'Adresse non localisé'
+      else if (!newTroc.schedule?.length) error = 'Pas de plage horaire'
+      else if (newTroc.schedule?.includes(undefined))
         error = 'Plage horaire incomplette'
     }
     if (!newTroc.name) error = 'Pas de nom'
@@ -118,23 +113,15 @@
     schedule: false,
     society: false,
   }
+
   type TrocBaseKey = keyof TrocBase
   function isModified(keys: TrocBaseKey[]): boolean {
     if (!$troc || !isNewTrocCloned) return false
     keys = Array.isArray(keys) ? keys : [keys]
+    console.log('new', JSON.stringify(newTroc.schedule))
+    console.log('old', JSON.stringify($troc.schedule))
     return (
       keys.filter((key) => {
-        // Le cas des horaire est super chiant a cause des id et _id
-        if (key === 'schedule')
-          return (
-            newTroc.schedule.length === $troc.schedule.length &&
-            newTroc.schedule.filter(
-              (period, i) =>
-                period.name === $troc.schedule[i]?.name &&
-                period.open === $troc.schedule[i]?.open &&
-                period.close === $troc.schedule[i]?.close
-            ).length === $troc.schedule.length
-          )
         return typeof newTroc[key] === 'object'
           ? JSON.stringify(newTroc[key]) === JSON.stringify($troc[key])
           : newTroc[key] === $troc[key]
@@ -145,7 +132,7 @@
   function testIsModifed() {
     blockIsModifed = {
       troc: isModified(['name', 'description']),
-      location: isModified(['address', 'location']),
+      location: isModified(['address', 'location', 'currency']),
       schedule: isModified(['schedule']),
       society: isModified(['society', 'societyweb']),
     }
@@ -212,27 +199,20 @@
   <div class="location">
     <h6>Lieu</h6>
     <br />
-    {#if newTroc.is_try}
-      <div class="icon-container">
-        <br />
-        <span class="w3-text-orange">
-          Les trocs d'entrainements n'ont pas de lieu
-        </span>
-        <i class="fas fa-map-marked-alt" />
-      </div>
-    {:else}
-      <EditAddress
-        on:change={handleInput}
-        address={newTroc.address}
-        location={newTroc.location}
-        mapDelay={200}
-      />
-      <UpdateButton
-        visible={blockIsModifed.location}
-        updateQuery={updateTroc}
-        clickHandler={handleUpdateTroc}
-      />
-    {/if}
+
+    <EditAddress
+      on:change={handleInput}
+      address={newTroc.address}
+      location={newTroc.location}
+      currency={newTroc.currency}
+      mapDelay={200}
+    />
+
+    <UpdateButton
+      visible={blockIsModifed.location}
+      updateQuery={updateTroc}
+      clickHandler={handleUpdateTroc}
+    />
   </div>
 
   <div class="schedule">
