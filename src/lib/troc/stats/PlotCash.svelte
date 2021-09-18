@@ -133,9 +133,12 @@
     let cursorPay = 0
 
     const frequenceTime = 1000 * 60 * 60 // one houre
+    const eventsValided = stats.events.filter(
+      ({ event }) => event === 'valided'
+    )
     const startTime =
       Math.round(
-        stats.events.filter(({ event }) => event === 'valided')[0].time /
+        (eventsValided.length ? eventsValided[0].time : stats.events[0].time) /
           frequenceTime
       ) * frequenceTime
     const endTime =

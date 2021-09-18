@@ -325,6 +325,17 @@
   }
 
   function getLayoutHisto(): Partial<Plotly.Layout> {
+    const averageProvided =
+      stats.numbers.provided > 0
+        ? stats.sums.provided / stats.numbers.provided
+        : 0
+    const averageSolded =
+      stats.numbers.solded > 0 ? stats.sums.solded / stats.numbers.solded : 0
+    const averageRecovered =
+      stats.numbers.recovered > 0
+        ? stats.sums.recovered / stats.numbers.recovered
+        : 0
+
     const layout: Partial<Plotly.Layout> = {
       paper_bgcolor: grey[$isDarkTheme ? 'darken-4' : 'lighten-5'],
       plot_bgcolor: grey[$isDarkTheme ? 'darken-3' : 'lighten-4'],
@@ -339,16 +350,25 @@
       },
       xaxis: {
         title: 'Valeur',
-        range: [0, (stats.sums.provided / stats.numbers.provided) * 3],
+        range: [0, averageProvided * 3 || 50],
       },
       yaxis: { title: 'Nombre' },
       margin: { t: 80 },
       annotations: [
         {
-          text: ` Moy. mis en vente: <b>${(
-            stats.sums.provided / stats.numbers.provided
-          ).toLocaleString(undefined, { maximumFractionDigits: 1 })}</b>`,
-          x: stats.sums.provided / stats.numbers.provided,
+          text: ` Moy. mis en vente: <b>${averageProvided.toLocaleString(
+            undefined,
+            $troc.currency
+              ? {
+                  style: 'currency',
+                  currency: $troc.currency,
+                }
+              : {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                }
+          )}</b>`,
+          x: averageProvided,
           y: 0,
           arrowhead: 0,
           arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
@@ -358,10 +378,19 @@
           ay: -30,
         },
         {
-          text: ` Moy. vendu: <b>${(
-            stats.sums.solded / stats.numbers.solded
-          ).toLocaleString(undefined, { maximumFractionDigits: 1 })}</b>`,
-          x: stats.sums.solded / stats.numbers.solded,
+          text: ` Moy. vendu: <b>${averageSolded.toLocaleString(
+            undefined,
+            $troc.currency
+              ? {
+                  style: 'currency',
+                  currency: $troc.currency,
+                }
+              : {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                }
+          )}</b>`,
+          x: averageSolded,
           y: 0,
           arrowhead: 0,
           arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
@@ -371,10 +400,19 @@
           ay: -30,
         },
         {
-          text: ` Moy. récupéré: <b>${(
-            stats.sums.recovered / stats.numbers.recovered
-          ).toLocaleString(undefined, { maximumFractionDigits: 1 })}</b>`,
-          x: stats.sums.recovered / stats.numbers.recovered,
+          text: ` Moy. récupéré: <b>${averageRecovered.toLocaleString(
+            undefined,
+            $troc.currency
+              ? {
+                  style: 'currency',
+                  currency: $troc.currency,
+                }
+              : {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                }
+          )}</b>`,
+          x: averageRecovered,
           y: 0,
           arrowhead: 0,
           arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
