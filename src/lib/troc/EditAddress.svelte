@@ -1,7 +1,15 @@
 <script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import { Textarea, TextField, Icon, List, ListItem } from 'svelte-materialify'
+  import cc from 'currency-codes'
+  import {
+    Textarea,
+    TextField,
+    Icon,
+    List,
+    ListItem,
+    Select,
+  } from 'svelte-materialify'
   import L from 'leaflet'
   import debounce from 'debounce'
 
@@ -9,10 +17,11 @@
   import markerIcon2X from '$assets/images/marker-icon-2x.png'
 
   export let address = ''
-  export let location: { lat: number; lng: number } = null
+  export let location: { lat: number; lng: number } | undefined = undefined
   export let mapDelay = 0
+  export let currency = ''
 
-  let locationString = ''
+  $: locationString = locationToString(location)
 
   const dispatch = createEventDispatcher()
 
@@ -24,22 +33,31 @@
   let marker: L.Marker
   let markers: L.Marker[] = []
 
-  let results: {
+  interface ResultLocation {
     address: string
-    location: { lat: number; lng: number }
+    location: Location
     country_code: string
+    currency: string
     _type: string
-  }[] = []
-  let selectedResult = -1
-  let fetchPromise
+  }
 
-  function setLocation(loc) {
+  interface Location {
+    lat: number
+    lng: number
+  }
+
+  let results: ResultLocation[] = []
+  let selectedResult = -1
+  let fetchPromise: Promise<ResultLocation[]>
+
+  function setLocation(loc: ResultLocation) {
+    console.log({ loc })
     location = loc.location
-    locationString = locationToString(location)
     address = loc.address.split(', ').join('\n')
+    currency = loc.currency
     marker.setLatLng(location).addTo(map)
     map.setView(location)
-    dispatch('change', { location, address })
+    dispatch('change', { location, address, currency })
   }
 
   function removeResults() {
@@ -49,8 +67,6 @@
   }
 
   onMount(() => {
-    if (location) locationString = locationToString(location)
-
     setTimeout(() => {
       map = L.map(mapElement, {
         center: [47.4013048812248, 7.076493501663209],
@@ -70,7 +86,7 @@
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map)
 
-      if (location.lat) {
+      if (location?.lat) {
         marker = L.marker(location, { icon }).addTo(map)
         map.setView(location)
       } else {
@@ -91,7 +107,7 @@
     try {
       let res = await fetch(`/api/geocode/${latlng.lat}+${latlng.lng}`)
       let json = await res.json()
-      setLocation({ location: latlng, address: json[0].address })
+      setLocation({ ...json[0], location: latlng })
       addressTextarea.focus()
       return
     } catch (error) {
@@ -111,10 +127,10 @@
           return json
         } else if (json.length > 1) {
           results = json
-          markers = json.map((j) =>
-            L.marker(j.location, { icon, opacity: 0.5 })
+          markers = results.map((result) =>
+            L.marker(result.location, { icon, opacity: 0.5 })
               .addTo(map)
-              .bindTooltip(j.address)
+              .bindTooltip(result.address)
           )
           return json
         }
@@ -126,8 +142,8 @@
   const searchLocationDebounce = debounce(searchLocation, 300, false)
 
   /** Convertie un localisation {lat, lng} en string */
-  function locationToString(loc) {
-    if (!loc.lat) return ''
+  function locationToString(loc?: Location) {
+    if (!loc) return ''
     let lat = numberToString(loc.lat)
     lat += loc.lat >= 0 ? 'N' : 'S'
     let lng = numberToString(loc.lng)
@@ -135,7 +151,7 @@
     return `${lat} ${lng}`
   }
 
-  function numberToString(num) {
+  function numberToString(num: number) {
     num = Math.abs(num)
     let deg = Math.floor(num)
     let min = Math.floor((num - deg) * 60)
@@ -143,7 +159,7 @@
     return `${deg}°${min}'${sec}''`
   }
 
-  function searchKeyup(e) {
+  function searchKeyup(e: KeyboardEvent) {
     switch (e.key) {
       case 'ArrowDown':
         selectedResult++
@@ -159,6 +175,7 @@
         setLocation(results[selectedResult])
         break
       default:
+        // @ts-ignore
         searchLocationDebounce(e.target.value)
     }
   }
@@ -172,9 +189,9 @@
   <TextField
     outlined
     on:keyup={searchKeyup}
-    on:blur={removeResults}
+    on:blur={() => setTimeout(() => removeResults(), 200)}
     value={locationString}
-    hint="Chercher une ville ou double-cliquer sur la carte"
+    hint="Chercher une ville et double-cliquer sur la carte"
   >
     <div slot="append">
       {#await fetchPromise}
@@ -195,6 +212,7 @@
             on:click={() => {
               selectedResult = i
               setLocation(res)
+              // searchLocation
             }}
             on:dblclick={removeResults}
           >
@@ -245,6 +263,7 @@
     noResize
     outlined
     autogrow
+    hint={currency ? `Devise: ${currency}` : ''}
     on:input={() => {
       dispatch('change', { location, address })
     }}

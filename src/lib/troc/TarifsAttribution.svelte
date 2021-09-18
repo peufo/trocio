@@ -10,12 +10,7 @@
   import { useInfinitApi } from '$lib/api'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc, useAddApply } from '$lib/troc/store'
-  import {
-    faCheck,
-    faEyeSlash,
-    faEye,
-    faSearch,
-  } from '@fortawesome/free-solid-svg-icons'
+  import { faCheck, faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons'
   import notify from '$lib/notify'
   import qs from 'qs'
 
@@ -69,7 +64,7 @@
       delete query.filtredTarifs
     }
 
-    $goto('/admin', query)
+    $goto($url(), query)
   }
 </script>
 
@@ -94,7 +89,7 @@
             class="clickable"
             style="text-align: center;"
             on:click={() => {
-              $goto('/admin/tarif_edition', {
+              $goto($url(), {
                 ...$params,
                 tarif_selected: tarif._id,
                 tab_admin: 'tarif_edition',

@@ -23,6 +23,7 @@ router
             location: r.geometry,
             _type: r.components._type,
             country_code: r.components.country_code,
+            currency: r.annotations?.currency?.iso_code,
           }
         })
         res.json(formatted)

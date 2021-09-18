@@ -4,13 +4,9 @@
   import MagicTable from '$lib/util/MagicTable.svelte'
   import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
+  import MagicTableBody from '$lib/util/MagicTableBody.svelte'
   import { useInfinitApi } from '$lib/api'
-  import type {
-    ParamsAPI,
-    ParamsArticleAPI,
-    ArticleLookup,
-    FieldInteface,
-  } from 'types'
+  import type { ParamsArticleAPI, ArticleLookup, FieldInteface } from 'types'
   import { layout } from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { getStatut } from '$lib/utils'
@@ -24,6 +20,7 @@
       troc: $params.trocId,
       or_search_name: searchValue,
       or_search_ref: searchValue,
+      ...$params,
     },
   ])
   $: articles = $query.data ? $query.data.pages.flat() : []
@@ -211,7 +208,7 @@
   <MagicTable
     {query}
     class="simple-card"
-    style="max-height: {$layout.mainHeight - 94}px;"
+    style="min-height: 400px; max-height: {$layout.mainHeight - 94}px;"
   >
     <thead>
       <tr>
@@ -225,18 +222,7 @@
         <MagicTableHeaders {fields} />
       </tr>
     </thead>
-    <tbody>
-      {#each articles as article}
-        <tr>
-          {#each fields.filter((f) => f.checked) as field}
-            <td>
-              {(typeof field.getValue === 'string'
-                ? article[field.getValue]
-                : field.getValue(article)) || ''}
-            </td>
-          {/each}
-        </tr>
-      {/each}
-    </tbody>
+
+    <MagicTableBody {fields} items={articles} />
   </MagicTable>
 </div>

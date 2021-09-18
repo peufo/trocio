@@ -7,10 +7,10 @@
   import type { FieldInteface, SelectOption } from 'types'
 
   export let field: Partial<FieldInteface>
+  $: key = `${field.typeMenu}_${field.queryKey}`
 
   function handleClick(option: SelectOption) {
     if (!field.queryKey) return
-    const key = `${field.typeMenu}_${field.queryKey}`
     const query = $params
     query[key] = option.queryValue
     if (!option.queryValue) delete query[key]
@@ -22,7 +22,7 @@
     TODO: regler la question des z-index
 -->
 
-<th style="z-index: 5;">
+<th>
   <Menu hover>
     <span slot="activator">
       {field.label}
@@ -44,4 +44,7 @@
       {/if}
     </List>
   </Menu>
+  {#if $params[key]}
+    <span class="text-caption">{$params[key]}</span>
+  {/if}
 </th>

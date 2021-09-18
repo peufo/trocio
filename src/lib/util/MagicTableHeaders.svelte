@@ -12,8 +12,6 @@
   const components = {
     select: MagicTableHeaderSelect,
   }
-
-  $: console.log('TAMERE', components['select'])
 </script>
 
 {#each fields.filter((f) => !f.disabled && f.checked) as field}
