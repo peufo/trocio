@@ -89,7 +89,7 @@
             class="clickable"
             style="text-align: center;"
             on:click={() => {
-              $goto($url(), {
+              $goto('/admin/tarif_edition', {
                 ...$params,
                 tarif_selected: tarif._id,
                 tab_admin: 'tarif_edition',

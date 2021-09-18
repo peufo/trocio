@@ -8,6 +8,7 @@
   const queryCreateTarif = useCreateTarif()
 
   // Nécéssaire pour la vitesse de réaction
+  let tarif_selected: string | undefined
   $: tarif_selected = $params.tarif_selected || ''
 
   // Pre calcule les liens vers la pages attribution
@@ -20,6 +21,16 @@
         .map(({ _id }) => _id),
     })
   })
+
+  function handleOpen(tarifId?: string) {
+    tarif_selected = tarifId
+    $goto($url(), { ...$params, tarif_selected })
+  }
+
+  function handleClose() {
+    tarif_selected = ''
+    $goto($url(), { ...$params, tarif_selected })
+  }
 </script>
 
 <div class="container">
@@ -31,20 +42,14 @@
       urlAttribution={urlAttributions[index]}
       class="mb-3"
       open={tarif_selected === tarif._id}
-      on:open={() => {
-        tarif_selected = tarif._id
-        $goto('/admin/tarif_edition', { ...$params, tarif_selected })
-      }}
-      on:close={() => {
-        tarif_selected = ''
-        $goto('/admin/tarif_edition', { ...$params, tarif_selected })
-      }}
+      on:open={() => handleOpen(tarif._id)}
+      on:close={handleClose}
     />
   {/each}
 
   <div class="d-flex">
     <a
-      href={$url('/admin', {
+      href={$url('/admin/tarif_attribution', {
         trocId: $params.trocId,
         tab_admin: 'tarif_attribution',
       })}
@@ -64,7 +69,7 @@
           {
             onSuccess: (newTroc) => {
               tarif_selected = newTroc.tarif[newTroc.tarif.length - 1]._id
-              $goto('/admin/tarif_attribution', { ...$params, tarif_selected })
+              $goto($url(), { ...$params, tarif_selected })
             },
           }
         )}
