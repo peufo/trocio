@@ -136,11 +136,12 @@
     const eventsValided = stats.events.filter(
       ({ event }) => event === 'valided'
     )
+
+    // No work if no chasher events
+    if (!eventsValided.length) return []
+
     const startTime =
-      Math.round(
-        (eventsValided.length ? eventsValided[0].time : stats.events[0].time) /
-          frequenceTime
-      ) * frequenceTime
+      Math.round(eventsValided[0].time / frequenceTime) * frequenceTime
     const endTime =
       Math.round(stats.events[stats.events.length - 1].time / frequenceTime) *
       frequenceTime
