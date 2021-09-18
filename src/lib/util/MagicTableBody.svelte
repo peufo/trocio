@@ -19,7 +19,7 @@
       case 'date':
         value = new Date(value).toLocaleString()
         break
-      case 'curency':
+      case 'currency':
         value = Number(value).toLocaleString(
           undefined,
           currency
@@ -43,7 +43,7 @@
   {#each items as item}
     <tr>
       {#each fields.filter((f) => f.checked) as field}
-        <td class:curency={field.format === 'curency'}>
+        <td class:currency={field.format === 'currency'}>
           {formatCell(item, field)}
         </td>
       {/each}
@@ -52,7 +52,7 @@
 </tbody>
 
 <style>
-  .curency {
+  .currency {
     text-align: right;
   }
 </style>

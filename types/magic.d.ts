@@ -26,7 +26,7 @@ export interface FieldInteface<Type = any> {
    */
   queryKey?: string
   /** Formate la valeur afficher. 'string' par défaut */
-  format?: 'string' | 'curency' | 'date' | ((value: Type) => string)
+  format?: 'string' | 'currency' | 'date' | ((value: Type) => string)
   /** Largeur de la colonne */
   cellWidth?: number
   /** Possibilité de caché le champs désactivé */
