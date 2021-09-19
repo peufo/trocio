@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import cc from 'currency-codes'
   import { Textarea, TextField, Icon, List, ListItem } from 'svelte-materialify'
   import L from 'leaflet'
   import debounce from 'debounce'

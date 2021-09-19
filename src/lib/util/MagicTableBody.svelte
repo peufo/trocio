@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { FieldInteface } from 'types'
+  import { renderAmount } from '$lib/utils'
 
   export let fields: FieldInteface[]
   export let items: any[]
@@ -20,18 +21,7 @@
         value = new Date(value).toLocaleString()
         break
       case 'currency':
-        value = Number(value).toLocaleString(
-          undefined,
-          currency
-            ? {
-                style: 'currency',
-                currency,
-              }
-            : {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }
-        )
+        value = renderAmount(value, currency)
         break
     }
 
