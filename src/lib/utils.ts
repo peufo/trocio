@@ -78,7 +78,13 @@ export function formatPrice(node) {
   }
 }
 
-export function renderAmount(amount: number, currency?: string): string {
+export function renderAmount(
+  amount: number | string,
+  currency?: string
+): string {
+  amount = +amount
+  if (isNaN(amount)) return '-'
+
   return amount.toLocaleString(
     undefined,
     currency
