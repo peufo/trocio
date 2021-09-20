@@ -256,6 +256,7 @@
     noResize
     outlined
     autogrow
+    placeholder=" "
     hint={currency ? `Devise: ${currency}` : ''}
     on:input={() => {
       dispatch('change', { location, address })

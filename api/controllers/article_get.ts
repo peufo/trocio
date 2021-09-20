@@ -75,7 +75,7 @@ export function searchArticle(req, res, next) {
     troc,
     limit,
     skip,
-    select_statut,
+    exact_statut,
     provider,
     providernot,
     include_without_name,
@@ -87,6 +87,8 @@ export function searchArticle(req, res, next) {
   const QUERY_OR_SEARCH = 'or_search_'
   const QUERY_SORT = 'sort_'
   const QUERY_EXACT = 'exact_'
+  const QUERY_FILTER_MIN = 'min_'
+  const QUERY_FILTER_MAX = 'max_'
 
   // addMatch
   if (!include_without_name) match.$and = [{ name: { $ne: '' } }]
@@ -107,7 +109,7 @@ export function searchArticle(req, res, next) {
   else if (limit > 100) limit = 100
 
   //Add filter statut
-  switch (select_statut) {
+  switch (exact_statut) {
     case 'proposed':
       match.$and.push({ valided: { $exists: false } })
       match.$and.push({ refused: { $exists: false } })
@@ -130,25 +132,41 @@ export function searchArticle(req, res, next) {
 
   // Dynamic query
   for (let key in req.query) {
+    // prevent key already managed
+    if (key === 'exact_statut') continue
+
     // add matchSearch
-    if (key.indexOf(QUERY_SEARCH) === 0) {
+    if (key.startsWith(QUERY_SEARCH)) {
       match.$and.push({
         [key.replace(QUERY_SEARCH, '')]: new RegExp(req.query[key], 'i'),
       })
 
       // add matchOrSearch
-    } else if (key.indexOf(QUERY_OR_SEARCH) === 0) {
+    } else if (key.startsWith(QUERY_OR_SEARCH)) {
       match.$or.push({
         [key.replace(QUERY_OR_SEARCH, '')]: new RegExp(req.query[key], 'i'),
       })
 
       // add matchUser
-    } else if (key.indexOf(QUERY_EXACT) === 0) {
+    } else if (key.startsWith(QUERY_EXACT)) {
       match.$and.push({ [key.replace(QUERY_EXACT, '')]: req.query[key] })
 
+      // Number test
+    } else if (!isNaN(req.query[key])) {
+      const num = Number(req.query[key])
+
       // add sort
-    } else if (key.indexOf(QUERY_SORT) != -1 && !isNaN(req.query[key])) {
-      sort[key.replace(QUERY_SORT, '')] = Number(req.query[key])
+      if (key.startsWith(QUERY_SORT)) {
+        sort[key.replace(QUERY_SORT, '')] = num
+
+        // add filter min
+      } else if (key.startsWith(QUERY_FILTER_MIN)) {
+        match.$and.push({ [key.replace(QUERY_FILTER_MIN, '')]: { $gte: num } })
+
+        // add filter max
+      } else if (key.startsWith(QUERY_FILTER_MAX)) {
+        match.$and.push({ [key.replace(QUERY_FILTER_MAX, '')]: { $lte: num } })
+      }
     }
   }
 
@@ -183,7 +201,7 @@ interface SearchArticleQuery {
   troc: string
   limit: number
   skip: number
-  select_statut: ArticleState
+  exact_statut: ArticleState
   provider: string[]
   providernot: string[]
   include_without_name: boolean

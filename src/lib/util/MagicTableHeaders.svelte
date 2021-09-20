@@ -4,19 +4,34 @@
    */
 
   import type { FieldInteface } from 'types'
-  import MagicTableHeaderSelect from '$lib/util/MagicTableHeaderSelect.svelte'
   import MagicTableHeaderDefault from '$lib/util/MagicTableHeaderDefault.svelte'
+  import MagicTableHeaderEnum from '$lib/util/MagicTableHeaderEnum.svelte'
+  import MagicTableHeaderNumber from '$lib/util/MagicTableHeaderNumber.svelte'
 
-  export let fields: Partial<FieldInteface>[]
+  export let fields: FieldInteface[]
 
-  const components = {
-    select: MagicTableHeaderSelect,
+  $: headers = fields.filter((f) => !f.disabled && f.checked)
+
+  const components: Partial<Record<FieldInteface['format'], any>> = {
+    enum: MagicTableHeaderEnum,
+    currency: MagicTableHeaderNumber,
   }
 </script>
 
-{#each fields.filter((f) => !f.disabled && f.checked) as field}
+{#each headers as field, index}
   <svelte:component
-    this={components[field.typeMenu] || MagicTableHeaderDefault}
+    this={components[field.format] || MagicTableHeaderDefault}
     {field}
+    isLast={headers.length - 1 === index}
   />
 {/each}
+
+<style global>
+  .s-table.fixed-header > thead > tr {
+    position: sticky;
+    top: 0;
+  }
+  .s-table.fixed-header > thead > tr > th {
+    position: initial;
+  }
+</style>
