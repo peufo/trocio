@@ -10,9 +10,9 @@
 
   function formatCell(item: any, field: FieldInteface) {
     let value: string =
-      typeof field.getValue === 'string'
-        ? item[field.getValue]
-        : field.getValue(item)
+      typeof field.getValue === 'function'
+        ? field.getValue(item)
+        : item[field.queryKey]
 
     if (!value) return '-'
 

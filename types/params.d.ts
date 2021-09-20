@@ -1,8 +1,14 @@
 import type { Article } from './article'
 
-export declare type DynamicQuery = 'search_' | 'or_search_' | 'sort_' | 'exact_'
+export declare type DynamicQuery =
+  | 'search'
+  | 'or_search'
+  | 'sort'
+  | 'exact'
+  | 'min'
+  | 'max'
 export declare type DynamicQueryArticle = Partial<
-  Record<`${DynamicQuery}${keyof Article}`, string | number>
+  Record<`${DynamicQuery}_${keyof Article}`, string | number>
 >
 
 export declare interface ParamsAPI {
