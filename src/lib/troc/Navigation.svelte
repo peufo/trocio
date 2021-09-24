@@ -1,11 +1,9 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte'
   import { slide } from 'svelte/transition'
   import { ListItem, TextField, Icon, List } from 'svelte-materialify'
-  import {
-    faSearch,
-    faChevronDown,
-    faPlus,
-  } from '@fortawesome/free-solid-svg-icons'
+  import Litepicker from 'litepicker'
+  import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
   import debounce from 'debounce'
   import { isActive, afterPageLoad } from '@roxi/routify'
@@ -29,20 +27,51 @@
   let searchElement: undefined | HTMLInputElement
   let mapFilter = {}
   let timeFilter: { start?: string; end?: string } = {}
-  let start = dayjs().add(-1, 'year').format('YYYY-MM-DD')
-  let end = dayjs().add(6, 'month').format('YYYY-MM-DD')
-
-  $: timeFilter = { start, end }
-  $: $query = { search, ...timeFilter, ...mapFilter }
-
-  const handleSearch = debounce((event) => {
-    search = event.target.value
-  }, 300)
+  const initialStart = dayjs().format('YYYY-MM-DD')
+  const initialEnd = dayjs().add(2, 'month').format('YYYY-MM-DD')
+  let startElement: HTMLInputElement
+  let endElement: HTMLInputElement
+  let picker: Litepicker
 
   $afterPageLoad(() => {
     if (!mobileMode && $isActive('/trocs/index'))
       setTimeout(() => searchElement?.focus(), 200)
+    if ($isActive('/trocs/index')) {
+      timeFilter = { start: initialStart, end: initialEnd }
+      initTimePicker()
+    }
   })
+
+  onDestroy(() => {
+    picker?.destroy()
+  })
+
+  function initTimePicker() {
+    picker?.destroy()
+    picker = new Litepicker({
+      element: startElement,
+      elementEnd: endElement,
+      singleMode: false,
+      allowRepick: true,
+      lang: navigator.language,
+      numberOfMonths: 3,
+      numberOfColumns: 3,
+      setup: (picker) => {
+        picker.on('selected', (date1, date2) => {
+          timeFilter = {
+            start: dayjs(date1.dateInstance).format('YYYY-MM-DD'),
+            end: dayjs(date2.dateInstance).format('YYYY-MM-DD'),
+          }
+        })
+      },
+    })
+  }
+
+  $: $query = { search, ...timeFilter, ...mapFilter }
+
+  const handleSearch = debounce((event: any) => {
+    search = event.target.value
+  }, 300)
 </script>
 
 <svelte:window bind:scrollY />
@@ -81,10 +110,10 @@
         </TextField>
 
         <div class="d-flex pa-2">
-          <TextField bind:value={start} type="date" placeholder=" ">
+          <TextField value={initialStart} bind:inputElement={startElement}>
             A partir du
           </TextField>
-          <TextField bind:value={end} type="date" placeholder=" ">
+          <TextField value={initialEnd} bind:inputElement={endElement}>
             Jusqu'au
           </TextField>
         </div>
