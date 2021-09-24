@@ -51,6 +51,8 @@
     picker = new Litepicker({
       element: startElement,
       elementEnd: endElement,
+      // Nécéssaire pour traquer le theme
+      parentEl: document.querySelector<HTMLDivElement>('#app .s-app'),
       singleMode: false,
       allowRepick: true,
       lang: navigator.language,
