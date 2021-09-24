@@ -233,3 +233,16 @@ input[type='time']::-webkit-calendar-picker-indicator,
 input[type='date']::-webkit-calendar-picker-indicator {
   filter: invert(0.5);
 }
+
+:root {
+  --litepicker-container-months-color-bg: #27262b;
+  --litepicker-month-header-color: #e6e1e8;
+  --litepicker-day-color: #e6e1e8;
+  --litepicker-is-in-range-color: #37474f;
+  --litepicker-is-start-color-bg: #e6e1e8;
+  --litepicker-is-end-color-bg: #e6e1e8;
+  --litepicker-is-start-color: #333;
+  --litepicker-is-end-color: #333;
+  --litepicker-day-color-hover: #fff;
+  --litepicker-tooltip-color-bg: #333;
+}

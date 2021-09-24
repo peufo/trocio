@@ -13,7 +13,6 @@ const defaultConfig = {
   TROCIO_SMTP_HOST: 'mail.infomaniak.com',
   TROCIO_SMTP_PORT: 587,
   TROCIO_PORT,
-  TROCIO_HOST: dev ? `http://localhost:${TROCIO_PORT}` : 'https://trocio.ch',
   TROCIO_API_PORT: 5001,
   TROCIO_DB: 'mongodb://localhost:27017/trocio',
   TROCIO_BACKUP: '../dump',
