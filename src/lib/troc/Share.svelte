@@ -16,8 +16,9 @@
   export let label = 'Partager'
   export let open = false
 
+  $: url = `https:${document.location.host}/trocs/${troc._id}`
+
   function copyLink() {
-    const url = `https:${document.location.host}/trocs/${troc._id}`
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -44,19 +45,19 @@
   <div class="mr-2" in:fly|local={{ x: 20 }}>
     <IconLink
       icon={faEnvelope}
-      href={`mailto://?subject=${troc.name}&body=https://trocio.ch/trocs/${troc._id}`}
+      href="mailto://?subject={troc.name}&body={url}"
       opacity
     />
     <IconLink
       icon={faWhatsapp}
       target="_blank"
-      href="https://api.whatsapp.com/send/?phone&text=https://trocio.ch/trocs/{troc._id}"
+      href="https://api.whatsapp.com/send/?phone&text=https://trocio.ch/trocs/{url}"
       opacity
     />
     <IconLink
       icon={faFacebook}
       target="_blank"
-      href="https://www.facebook.com/dialog/share?app_id=512391820023592&href=https://trocio.ch/trocs/{troc._id}&display=popup"
+      href="https://www.facebook.com/dialog/share?app_id=512391820023592&href=https://trocio.ch/trocs/{url}&display=popup"
       opacity
     />
     <IconLink icon={faLink} on:click={copyLink} opacity clickable />
