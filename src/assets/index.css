@@ -234,8 +234,9 @@ input[type='date']::-webkit-calendar-picker-indicator {
   filter: invert(0.5);
 }
 
-:root {
+.theme--dark .litepicker {
   --litepicker-container-months-color-bg: #27262b;
+  --litepicker-container-months-box-shadow-color: #111;
   --litepicker-month-header-color: #e6e1e8;
   --litepicker-day-color: #e6e1e8;
   --litepicker-is-in-range-color: #37474f;
