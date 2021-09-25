@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte'
   import debounce from 'debounce'
   import { TextField } from 'svelte-materialify'
   import { faSearch } from '@fortawesome/free-solid-svg-icons'
@@ -7,15 +8,21 @@
   export let search = ''
   export let placeholder = 'Chercher'
   export let style = ''
+  export let debounceTime = 200
+  export let clearable = true
+
+  const dispatch = createEventDispatcher()
 
   const handleSearch = debounce((event: any) => {
     search = event.target.value
-  }, 200)
+    // debounced event
+    dispatch('search', search)
+  }, debounceTime)
 </script>
 
 <TextField
   {placeholder}
-  clearable
+  {clearable}
   solo
   dense
   flat

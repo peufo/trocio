@@ -3,7 +3,7 @@
   export let title = 'Chargement'
 
   let dots = ''
-  let interval
+  let interval: NodeJS.Timer
 
   onMount(() => {
     interval = setInterval(() => {

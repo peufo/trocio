@@ -1,26 +1,29 @@
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte'
+  import { createEventDispatcher } from 'svelte'
   import { fly } from 'svelte/transition'
   import { TextField, List, ListItem } from 'svelte-materialify'
   import debounce from 'debounce'
 
   import Loader from '$lib/util/Loader.svelte'
-  import { useSearchUser, useSearchUserOptions } from '$lib/user/store'
+  import { useApi } from '$lib/api'
+  import type { User } from 'types'
 
   export let label = 'Chercher un utilisateur'
-  export let inputElement: HTMLInputElement = null
+  export let inputElement: HTMLInputElement
   export let searchValue = ''
   export let exepted: string[] = []
-  export let selectedItem = null
+  export let selectedItem: any = null
   export let modeSelect = false
   let selectedIndex = 0
   let focus = false
 
   const dispatch = createEventDispatcher()
-  const querySearch = useSearchUser(searchValue)
-  $: querySearch.setOptions(useSearchUserOptions(searchValue))
-  $: items = $querySearch.data ? $querySearch.data.pages.flat() : []
-  $: itemsFiltred = items.filter((item) => !exepted.includes(item._id))
+  $: querySearch = useApi<{ q: string }, User[]>([
+    '/users/search',
+    { q: searchValue },
+  ])
+  $: items = $querySearch.data ? $querySearch.data.flat() : []
+  $: itemsFiltred = items.filter((user) => !exepted.includes(user._id))
 
   const handleSearch = debounce(() => {
     searchValue = inputElement.value
@@ -31,14 +34,14 @@
   //2. remplacer user par item
   //3. Utilisé <slot> pour la représentation
 
-  function select(item) {
+  function select(item: any) {
     selectedItem = item
     dispatch('select', item)
     inputElement.value = modeSelect ? item.name : ''
     inputElement.blur()
   }
 
-  function handleKeydown(event) {
+  function handleKeydown(event: KeyboardEvent) {
     switch (event.key) {
       case 'Enter':
         if (selectedIndex > -1) {
