@@ -83,8 +83,23 @@
     if (min && max && +min > +max) max = `${+min}`
     handleChangeFilter()
   }
+  function handleChangeMinDate() {
+    const start = new Date(min).getTime()
+    const end = new Date(max).getTime()
+    if (start && end && start > end)
+      max = new Date(start + 1000 * 60 * 10).toISOString().slice(0, -5)
+    handleChangeFilter()
+  }
+
   function handleChangeMax() {
     if (min && max && +min > +max) min = `${+max}`
+    handleChangeFilter()
+  }
+  function handleChangeMaxDate() {
+    const start = new Date(min).getTime()
+    const end = new Date(max).getTime()
+    if (start && end && start > end)
+      min = new Date(end - 1000 * 60 * 10).toISOString().slice(0, -5)
     handleChangeFilter()
   }
 
@@ -119,32 +134,67 @@
 
       <Divider />
 
-      <TextField
-        class="ma-4"
-        bind:value={min}
-        type="number"
-        min={0}
-        step={5}
-        on:change={handleChangeMin}
-      >
-        <span slot="prepend">
-          <IconLink icon={faFilter} size="20px" />
-        </span>
-        Min
-      </TextField>
-      <TextField
-        class="ma-4"
-        bind:value={max}
-        type="number"
-        min={0}
-        step={5}
-        on:change={handleChangeMax}
-      >
-        <span slot="prepend">
-          <IconLink icon={faFilter} size="20px" />
-        </span>
-        Max
-      </TextField>
+      {#if field.format == 'currency'}
+        <TextField
+          class="ma-4"
+          bind:value={min}
+          type="number"
+          min={0}
+          step={5}
+          on:change={handleChangeMin}
+        >
+          <span slot="prepend">
+            <IconLink icon={faFilter} size="20px" />
+          </span>
+          Minimum
+        </TextField>
+        <TextField
+          class="ma-4"
+          bind:value={max}
+          type="number"
+          min={0}
+          step={5}
+          on:change={handleChangeMax}
+        >
+          <span slot="prepend">
+            <IconLink icon={faFilter} size="20px" />
+          </span>
+          Maximum
+        </TextField>
+      {:else if field.format === 'date'}
+        <TextField
+          class="ma-4"
+          bind:value={min}
+          type="datetime-local"
+          placeholder=" "
+          min={0}
+          step={5}
+          on:change={handleChangeMinDate}
+          on:input={handleChangeMinDate}
+        >
+          <span slot="prepend">
+            <IconLink icon={faFilter} size="20px" />
+          </span>
+          Début
+        </TextField>
+        <TextField
+          class="ma-4"
+          bind:value={max}
+          type="datetime-local"
+          placeholder=" "
+          min={0}
+          step={5}
+          on:change={handleChangeMaxDate}
+          on:input={handleChangeMaxDate}
+        >
+          <span slot="prepend">
+            <IconLink icon={faFilter} size="20px" />
+          </span>
+          Fin
+        </TextField>
+      {:else}
+        Invalid format
+      {/if}
       {#if min || max}
         <ListItem on:click={handleClearFilter}>
           <span slot="prepend">

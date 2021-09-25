@@ -15,6 +15,7 @@
     fontSize: 16,
     border: false,
     useTagPrinter: false,
+    useScanner: false,
   }
 </script>
 

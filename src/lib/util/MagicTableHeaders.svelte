@@ -10,15 +10,16 @@
 
   export let fields: FieldInteface[]
 
-  $: headers = fields.filter((f) => !f.disabled && f.checked)
+  $: headers = fields.filter((f) => !f.disabled && f.visible)
 
   const components: Partial<Record<FieldInteface['format'], any>> = {
     enum: MagicTableHeaderEnum,
     currency: MagicTableHeaderNumber,
+    date: MagicTableHeaderNumber,
   }
 </script>
 
-{#each headers as field, index}
+{#each headers as field, index (field.queryKey)}
   <svelte:component
     this={components[field.format] || MagicTableHeaderDefault}
     {field}

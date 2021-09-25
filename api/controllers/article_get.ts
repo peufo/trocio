@@ -151,21 +151,28 @@ export function searchArticle(req, res, next) {
     } else if (key.startsWith(QUERY_EXACT)) {
       match.$and.push({ [key.replace(QUERY_EXACT, '')]: req.query[key] })
 
-      // Number test
-    } else if (!isNaN(req.query[key])) {
-      const num = Number(req.query[key])
+      // Number and Date test
+    } else if (
+      !isNaN(req.query[key]) ||
+      !isNaN(new Date(req.query[key]).getTime())
+    ) {
+      const value = req.query[key]
 
       // add sort
       if (key.startsWith(QUERY_SORT)) {
-        sort[key.replace(QUERY_SORT, '')] = num
+        sort[key.replace(QUERY_SORT, '')] = value
 
         // add filter min
       } else if (key.startsWith(QUERY_FILTER_MIN)) {
-        match.$and.push({ [key.replace(QUERY_FILTER_MIN, '')]: { $gte: num } })
+        match.$and.push({
+          [key.replace(QUERY_FILTER_MIN, '')]: { $gte: value },
+        })
 
         // add filter max
       } else if (key.startsWith(QUERY_FILTER_MAX)) {
-        match.$and.push({ [key.replace(QUERY_FILTER_MAX, '')]: { $lte: num } })
+        match.$and.push({
+          [key.replace(QUERY_FILTER_MAX, '')]: { $lte: value },
+        })
       }
     }
   }
