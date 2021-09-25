@@ -1,41 +1,53 @@
 <script lang="ts">
-  import {
-    Button,
-    Menu,
-    List,
-    ListItem,
-    ListItemGroup,
-    Checkbox,
-  } from 'svelte-materialify'
+  import { params, goto, url } from '@roxi/routify'
+  import { onMount } from 'svelte'
+  import { Button, Menu, List, ListItem, Checkbox } from 'svelte-materialify'
   import type { FieldInteface } from 'types'
 
   export let fields: Partial<FieldInteface>[]
 
-  let fieldsCheckeds = fields.filter((f) => f.checked).map((f) => f.label)
-  $: fields = fields.map((field) => ({
-    ...field,
-    checked: fieldsCheckeds.includes(field.label),
-  }))
+  onMount(() => {
+    // show fields if query exist in url
+    const rexgexs = fields.map(({ queryKey }) => new RegExp(`${queryKey}$`))
+    for (const queryKey in $params) {
+      rexgexs.forEach((regex, index) => {
+        if (queryKey.match(regex)) fields[index].visible = true
+      })
+    }
+  })
+
+  function handleClick(index: number) {
+    const field = fields[index]
+    fields[index].visible = !field.visible
+
+    // Disable filters and sort if field is hidden
+    if (!field.visible) {
+      const query = $params
+      const regexp = new RegExp(`${field.queryKey}$`)
+      for (const queryKey in query) {
+        if (queryKey.match(regexp)) delete query[queryKey]
+      }
+      $goto($url(), query)
+    }
+  }
 </script>
 
-<Menu closeOnClick={false} hover style="max-height: none;">
+<Menu closeOnClick={false} hover active style="max-height: none;">
   <div slot="activator">
     <Button depressed>Choisir les champs visibles</Button>
   </div>
   <List>
-    <ListItemGroup multiple bind:value={fieldsCheckeds} activeClass="">
-      {#each fields as field}
-        <ListItem value={field.label} disabled={field.disabled}>
-          <span slot="prepend">
-            <Checkbox
-              style="margin-right: 0px;"
-              checked={fieldsCheckeds.includes(field.label)}
-              disabled={field.disabled}
-            />
-          </span>
-          {field.label}
-        </ListItem>
-      {/each}
-    </ListItemGroup>
+    {#each fields as field, index}
+      <ListItem disabled={field.disabled} on:click={() => handleClick(index)}>
+        <span slot="prepend">
+          <Checkbox
+            style="margin-right: 0px;"
+            disabled={field.disabled}
+            checked={field.visible}
+          />
+        </span>
+        {field.label}
+      </ListItem>
+    {/each}
   </List>
 </Menu>

@@ -16,7 +16,7 @@ export interface FieldInteface<Type = any> {
   /** Text visible dans l'entête */
   label: string
   /** Champs visible */
-  checked: boolean
+  visible: boolean
   /**
    * Formate la valeur afficher. 'string' par défaut
    * Adapte le menu de l'entête
