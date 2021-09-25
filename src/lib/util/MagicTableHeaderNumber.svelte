@@ -31,10 +31,14 @@
       label: 'Non trié',
       queryValue: '',
     },
-    { icon: faSortAmountDownAlt, label: 'Croissant', queryValue: 1 },
+    {
+      icon: faSortAmountDownAlt,
+      label: field.format === 'date' ? `Plus vieux d'abord` : `Croissant`,
+      queryValue: 1,
+    },
     {
       icon: faSortAmountDown,
-      label: 'Décroissant',
+      label: field.format === 'date' ? `Plus récent d'abord` : `Décroissant`,
       queryValue: -1,
     },
   ]
@@ -115,10 +119,15 @@
       {field.label}
 
       {#if sortIcon}
-        <IconLink icon={sortIcon} size="1.1em" />
+        <IconLink icon={sortIcon} size="1em" />
       {/if}
 
-      <span class="text-caption">{filterLabel}</span>
+      {#if filterLabel}
+        <span class="text-caption">
+          <IconLink icon={faFilter} size="1em" />
+          {filterLabel}
+        </span>
+      {/if}
     </span>
     <List dense>
       {#each sortOptions as option}

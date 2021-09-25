@@ -8,9 +8,11 @@
 
   onMount(() => {
     // show fields if query exist in url
-    const rexgexs = fields.map(({ queryKey }) => new RegExp(`${queryKey}$`))
+    const queryKeyRegexps = fields.map(
+      ({ queryKey }) => new RegExp(`${queryKey}$`)
+    )
     for (const queryKey in $params) {
-      rexgexs.forEach((regex, index) => {
+      queryKeyRegexps.forEach((regex, index) => {
         if (queryKey.match(regex)) fields[index].visible = true
       })
     }
@@ -32,7 +34,7 @@
   }
 </script>
 
-<Menu closeOnClick={false} hover active style="max-height: none;">
+<Menu closeOnClick={false} hover style="max-height: none;">
   <div slot="activator">
     <Button depressed>Choisir les champs visibles</Button>
   </div>

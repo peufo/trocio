@@ -26,21 +26,21 @@
   let noGrowOffsetHeigthCount = 0
   let error = ''
 
-  function testScrollPosition(isCallback: boolean = false) {
+  function testScrollPosition(isSuccessCallback = false) {
     const { offsetHeight, scrollTop, scrollHeight } = wrapper
     const scrollButtom = offsetHeight + scrollTop
     const isInButtom = scrollButtom + 50 > scrollHeight
 
-    if (isCallback) {
+    if (isSuccessCallback) {
       if (offsetHeight <= lastOffsetHeight) {
         noGrowOffsetHeigthCount++
       } else {
         noGrowOffsetHeigthCount = 0
-        lastOffsetHeight = offsetHeight
       }
+      lastOffsetHeight = offsetHeight
 
       if (noGrowOffsetHeigthCount > MAX_NO_GROW_OFFSET_HEIGHT) {
-        error = `Oups, le rendu ne s'effectue pas correctement et ne permet la gestion du scroll`
+        error = `Le rendu ne s'effectue pas correctement et ne permet la gestion du scroll`
         return
       }
     }

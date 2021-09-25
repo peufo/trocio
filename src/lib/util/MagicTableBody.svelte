@@ -5,7 +5,7 @@
   export let fields: FieldInteface[]
   export let items: any[]
 
-  /** Code ISO 4217*/
+  /** Code ISO 4217 */
   export let currency: string | undefined = undefined
 
   function formatCell(item: any, field: FieldInteface) {
@@ -32,7 +32,7 @@
 <tbody>
   {#each items as item}
     <tr>
-      {#each fields.filter((f) => f.checked) as field}
+      {#each fields.filter((f) => f.visible) as field}
         <td class:currency={field.format === 'currency'}>
           {formatCell(item, field)}
         </td>
