@@ -60,20 +60,6 @@
     },
   ]
 
-  const sortOptions = [
-    { queryValue: '', label: 'Non trié', icon: '<i class="fas fa-bars"></i>' },
-    {
-      queryValue: '1',
-      label: 'Croissant',
-      icon: '<i class="fas fa-sort-amount-down-alt"></i>',
-    },
-    {
-      queryValue: '-1',
-      label: 'Décroissant',
-      icon: '<i class="fas fa-sort-amount-down"></i>',
-    },
-  ]
-
   let fields: FieldInteface<ArticleLookup>[] = [
     {
       label: '#',
