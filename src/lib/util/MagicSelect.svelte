@@ -9,7 +9,7 @@
   import { useApi } from '$lib/api'
 
   export let label = 'Chercher un utilisateur'
-  export let inputElement: HTMLInputElement
+  export let inputElement: HTMLInputElement | null = null
   export let selectedItem: any = null
 
   export let searchValue = ''
@@ -31,7 +31,7 @@
   /** func used for obtain name from item */
   export let getValue: (item: any) => string = (item) => item.name
   /** func used for obtain the secoundary name from item */
-  export let getValue2: (item: any) => string | undefined
+  export let getValue2: ((item: any) => string) | undefined
 
   /** Si vrai, les choix sont en permanance visible */
   export let flatMode = false
@@ -51,6 +51,7 @@
 
     selectedItem = item
     dispatch('select', item)
+    if (!inputElement) return
     inputElement.value = keepValue ? getValue(item) : ''
     inputElement.blur()
   }
@@ -82,7 +83,7 @@
     focus = true
     if (keepValue) {
       selectedItem = null
-      inputElement.value = ''
+      if (inputElement) inputElement.value = ''
     }
   }
 
