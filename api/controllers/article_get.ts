@@ -1,4 +1,5 @@
 import Article from '../models/article'
+import User from '../models/user'
 import { Schema } from 'mongoose'
 const { ObjectId } = Schema.Types
 
@@ -70,7 +71,7 @@ export function getGivbacksArticles(req, res, next) {
     })
 }
 
-export function searchArticle(req, res, next) {
+export async function searchArticle(req, res, next) {
   let {
     troc,
     limit,
@@ -85,6 +86,7 @@ export function searchArticle(req, res, next) {
   let sort = {}
   const QUERY_SEARCH = 'search_'
   const QUERY_OR_SEARCH = 'or_search_'
+  const QUERY_USER_SEARCH = 'user_search_' // recherche dans les utilisateurs par nom ou par mail
   const QUERY_SORT = 'sort_'
   const QUERY_EXACT = 'exact_'
   const QUERY_FILTER_MIN = 'min_'
@@ -147,7 +149,22 @@ export function searchArticle(req, res, next) {
         [key.replace(QUERY_OR_SEARCH, '')]: new RegExp(req.query[key], 'i'),
       })
 
-      // add matchUser
+      // add match user
+    } else if (key.startsWith(QUERY_USER_SEARCH)) {
+      const regexp = new RegExp(req.query[key], 'i')
+      const users = await User.find(
+        { $or: [{ name: regexp }, { mail: regexp }] },
+        { _id: 1 }
+      )
+        .limit(40)
+        .exec()
+      match.$and.push({
+        [key.replace(QUERY_USER_SEARCH, '')]: {
+          $in: users.map((user) => user._id),
+        },
+      })
+
+      // add match exact
     } else if (key.startsWith(QUERY_EXACT)) {
       match.$and.push({ [key.replace(QUERY_EXACT, '')]: req.query[key] })
 

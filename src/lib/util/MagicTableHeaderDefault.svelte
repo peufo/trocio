@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Menu } from 'svelte-materialify'
+  import { onMount } from 'svelte'
+  import { Menu, ListItem } from 'svelte-materialify'
   import { params, goto, url } from '@roxi/routify'
-  import { faSearch } from '@fortawesome/free-solid-svg-icons'
+  import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons'
 
   import type { FieldInteface } from 'types'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
@@ -9,10 +10,21 @@
 
   export let field: Partial<FieldInteface>
   let search = ''
+  let queryKey =
+    field.format === 'string'
+      ? `or_search_${field.queryKey}`
+      : `user_search_${field.queryKey}`
 
-  function handleSearch(event: CustomEvent<string>) {
-    search = event.detail
-    const queryKey = `or_search_${field.queryKey}`
+  onMount(() => {
+    search = $params[queryKey] || ''
+  })
+
+  function handleSearchEvent(event: CustomEvent<string>) {
+    handleSearch(event.detail)
+  }
+
+  function handleSearch(value: string) {
+    search = value
     const query = $params
     if (!search) delete query[queryKey]
     else {
@@ -35,6 +47,15 @@
       {/if}
     </span>
 
-    <SearchTextField on:search={handleSearch} clearable={false} />
+    <SearchTextField on:search={handleSearchEvent} clearable={false} />
+
+    {#if search}
+      <ListItem on:click={() => handleSearch('')} dense>
+        <span slot="prepend">
+          <IconLink icon={faTimes} />
+        </span>
+        Pas de recherche
+      </ListItem>
+    {/if}
   </Menu>
 </th>

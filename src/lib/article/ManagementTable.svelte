@@ -6,7 +6,12 @@
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
   import { useInfinitApi } from '$lib/api'
-  import type { ParamsArticleAPI, ArticleLookup, FieldInteface } from 'types'
+  import type {
+    ParamsArticleAPI,
+    ArticleLookup,
+    FieldInteface,
+    Article,
+  } from 'types'
   import { layout } from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { getStatut } from '$lib/utils'
@@ -26,7 +31,7 @@
   ])
   $: articles = $query.data ? $query.data.pages.flat() : []
 
-  const statutEnumOptions: FieldInteface['enumOptions'] = [
+  const statutEnumOptions: FieldInteface<Article>['enumOptions'] = [
     { queryValue: '', label: 'Tous' },
     {
       queryValue: 'proposed',
@@ -96,7 +101,7 @@
     {
       label: 'Fournisseur',
       visible: true,
-      format: 'string',
+      format: 'user',
       queryKey: 'provider',
       getValue: ({ provider }) => provider?.name,
       cellWidth: 70,
@@ -122,7 +127,7 @@
       label: 'Validateur',
       visible: false,
       queryKey: 'validator',
-      format: 'string',
+      format: 'user',
       getValue: ({ validator }) => validator?.name,
       cellWidth: 50,
     },
@@ -144,7 +149,7 @@
       label: 'Caissier',
       visible: false,
       queryKey: 'seller',
-      format: 'string',
+      format: 'user',
       getValue: ({ seller }) => seller?.name,
       cellWidth: 50,
     },
@@ -152,7 +157,7 @@
       label: 'Client',
       visible: false,
       queryKey: 'buyer',
-      format: 'string',
+      format: 'user',
       getValue: ({ buyer }) => buyer?.name,
       cellWidth: 50,
     },

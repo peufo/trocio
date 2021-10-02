@@ -1,10 +1,11 @@
 import type { Article } from './article'
 
 export declare type DynamicQuery =
+  | 'exact'
   | 'search'
   | 'or_search'
+  | 'user_search'
   | 'sort'
-  | 'exact'
   | 'min'
   | 'max'
 export declare type DynamicQueryArticle = Partial<
