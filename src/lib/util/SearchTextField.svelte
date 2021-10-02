@@ -10,7 +10,7 @@
   export let placeholder = 'Chercher'
   export let style = ''
   export let debounceTime = 200
-  export let inputElement: HTMLInputElement
+  export let inputElement: HTMLInputElement | null = null
   // bind with url query
   export let searchKey = ''
   export const dispatch = createEventDispatcher()

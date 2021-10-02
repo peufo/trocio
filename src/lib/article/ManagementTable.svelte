@@ -100,6 +100,16 @@
       queryKey: 'provider',
       getValue: ({ provider }) => provider?.name,
       cellWidth: 70,
+      /**
+       TODO: NE FONCTIONNE PAS BIEN
+       format: 'select',
+       selectOption: {
+         path: '/users/search',
+         searchKey: 'q',
+         getValue2: (item) => item.mail,
+       },
+
+      */
     },
     {
       label: 'Validation',
