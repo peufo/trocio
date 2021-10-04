@@ -76,10 +76,10 @@ router
     })
   })
   .post('/subscribe-all-users', async (req, res, next) => {
-    let { troc } = req.body
-    if (!troc) return next(Error('troc query is required'))
+    const { trocId } = req.body
+    if (!trocId) return next(Error('trocId field is required in body'))
     try {
-      troc = await Troc.findById(troc).exec()
+      const troc = await Troc.findById(trocId).exec()
       if (!troc) throw 'Troc not found'
       let users = await User.find().exec()
       let nbNewSubscribe = 0
@@ -107,10 +107,10 @@ router
     }
   })
   .post('/remove-troc', async (req, res, next) => {
-    let { troc } = req.body
-    if (!troc) return next(Error('troc query is required'))
+    const { trocId } = req.body
+    if (!trocId) return next(Error('trocId field is required in body'))
     try {
-      troc = await Troc.findById(troc).exec()
+      const troc = await Troc.findById(trocId).exec()
       if (!troc) throw 'Troc not found'
 
       let { deletedCount: deletedSubscribes } = await Subscribe.deleteMany({
@@ -137,10 +137,10 @@ router
     }
   })
   .post('/compute-subscriber', async (req, res, next) => {
-    let { troc } = req.body
-    if (!troc) return next(Error('troc query is required'))
+    const { trocId } = req.body
+    if (!trocId) return next(Error('trocId field is required in body'))
     try {
-      troc = await Troc.findById(troc).exec()
+      const troc = await Troc.findById(trocId).exec()
       if (!troc) throw 'Troc not found'
 
       troc.subscriber = await Subscribe.countDocuments({
@@ -158,10 +158,10 @@ router
     }
   })
   .post('/compute-articles', async (req, res, next) => {
-    let { troc } = req.body
-    if (!troc) return next(Error('troc query is required'))
+    const { trocId } = req.body
+    if (!trocId) return next(Error('trocId field is required in body'))
     try {
-      troc = await Troc.findById(troc).exec()
+      const troc = await Troc.findById(trocId).exec()
       if (!troc) throw 'Troc not found'
 
       troc.articles = await Article.countDocuments({ troc: troc._id }).exec()
@@ -171,6 +171,38 @@ router
       res.json({
         success: true,
         message: `This troc have ${troc.articles} articles`,
+      })
+    } catch (error) {
+      next(error)
+    }
+  })
+  .post('/subscribes-migration', async (req, res, next) => {
+    /**
+     * - Ajoute le validedByUser à vrai
+     * - Ajoute le tarif appliqué dans l'abonnement
+     */
+    const { trocId } = req.body
+    if (!trocId) return next(Error('trocId field is required in body'))
+    try {
+      const troc = await Troc.findById(trocId).exec()
+      const subscribes = await Subscribe.find({ troc: trocId }).exec()
+      if (!troc) throw 'Troc not found'
+
+      const defaultTarifId = troc.tarif.find((tarif) => tarif.bydefault)._id
+
+      await Promise.all(
+        subscribes.map((sub) => {
+          sub.validedByUser = true
+          sub.tarifId =
+            troc.tarif.find((tarif) => tarif.apply.includes(sub.user))?._id ||
+            defaultTarifId
+          return sub.save()
+        })
+      )
+
+      res.json({
+        success: true,
+        message: `${subscribes.length} subscribes updated`,
       })
     } catch (error) {
       next(error)
