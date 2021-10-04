@@ -26,8 +26,9 @@ export async function userResume(
   userId: string
 ): Promise<TrocUserResum> {
   // TODO : Adapter la requete pour les client anonymes + pour des groupe
-
   // const userQuery = userId ? userId : { $exists: false }
+  // LOOK AT ./scubscribe_get
+
   const userQuery = userId
 
   const providedResumPromise = Article.aggregate()

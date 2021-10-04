@@ -45,81 +45,199 @@ export function getMySubscribedTrocs(req, res, next) {
 }
 
 export async function getSubscriber(req, res, next) {
-  let { trocId, skip = 0, limit = 10, q = '', filtredTarifs = [] } = req.query
+  let {
+    trocId,
+    skip = 0,
+    limit = 10,
+    q = '',
+    lookupTarif = false,
+    filtredTarifs = [],
+    exact_tarifId = '',
+    computeResum = false,
+  } = req.query
   const regexp = new RegExp(q, 'i')
   skip = Number(skip)
   limit = Number(limit)
   try {
     if (!trocId) return next(Error('Query "trocId" is required'))
 
-    const PROJECT_FIELDS = { createdAt: 1, updatedAt: 1, troc: 1 }
-    const matchUsers: { $in?: string[]; $nin?: string[] } = {}
-    const matchUsersIsActive =
-      Array.isArray(filtredTarifs) && filtredTarifs.length
+    const tarifMatch = exact_tarifId
+      ? ObjectId(exact_tarifId)
+      : { $nin: filtredTarifs.map(ObjectId) }
 
-    console.log({ filtredTarifs })
-
-    if (matchUsersIsActive) {
-      console.log('FILTER')
-
-      const tarifs = await Troc.aggregate()
-        .match({ _id: new ObjectId(trocId) })
-        .unwind('$tarif')
-        .project({
-          _id: '$tarif._id',
-          bydefault: '$tarif.bydefault',
-          apply: '$tarif.apply',
-        })
-        .exec()
-
-      matchUsers.$nin = tarifs
-        .filter(({ _id }) => filtredTarifs.includes(String(_id)))
-        .map(({ apply }) => apply.flat())
-        .flat()
-
-      // Selected users is useful for hide user without attribued tarif
-      if (
-        tarifs.find(
-          ({ bydefault, _id }) =>
-            bydefault && filtredTarifs.includes(String(_id))
-        )
-      ) {
-        matchUsers.$in = tarifs.map(({ apply }) => apply.flat()).flat()
-      }
-    }
-
-    const matchSubscribes = matchUsersIsActive
-      ? {
-          troc: new ObjectId(trocId),
-          user: matchUsers,
-        }
-      : { troc: new ObjectId(trocId) }
-
-    Subscribe.aggregate()
-      .match(matchSubscribes)
+    const aggregate = Subscribe.aggregate()
+      .match({
+        troc: new ObjectId(trocId),
+        tarifId: tarifMatch,
+      })
       .lookup({
         from: 'users',
-        localField: 'user',
-        foreignField: '_id',
+        let: { userId: '$user' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ['$_id', '$$userId'],
+              },
+            },
+          },
+          {
+            $project: {
+              name: 1,
+              mail: 1,
+            },
+          },
+        ],
         as: 'user',
       })
-      .project({
-        'user._id': { $arrayElemAt: ['$user._id', 0] },
-        'user.name': { $arrayElemAt: ['$user.name', 0] },
-        'user.mail': { $arrayElemAt: ['$user.mail', 0] },
-        ...PROJECT_FIELDS,
-      })
-      .project({
+      .addFields({
         user: { $arrayElemAt: ['$user', 0] },
-        ...PROJECT_FIELDS,
       })
-      .match({ $or: [{ 'user.name': regexp }, { 'user.name': regexp }] })
       .skip(skip)
       .limit(limit)
-      .exec(async (err, subscribes) => {
-        if (err) return next(err)
-        res.json(subscribes)
+      .match({ $or: [{ 'user.name': regexp }, { 'user.name': regexp }] })
+
+    if (lookupTarif) {
+      aggregate
+        .lookup({
+          from: 'trocs',
+          let: { tarifId: '$tarifId' },
+          pipeline: [
+            {
+              $unwind: {
+                path: '$tarif',
+              },
+            },
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$$tarifId', '$tarif._id'],
+                },
+              },
+            },
+            {
+              $replaceRoot: {
+                newRoot: '$tarif',
+              },
+            },
+          ],
+          as: 'tarif',
+        })
+        .addFields({
+          tarif: { $arrayElemAt: ['$tarif', 0] },
+        })
+    }
+
+    if (computeResum) {
+      let letTrocAndUser = { trocId: '$troc', userId: '$user._id' }
+      let matchWith = (userField: 'user' | 'provider' | 'buyer') => ({
+        $match: {
+          $expr: {
+            $and: [
+              { $eq: ['$troc', '$$trocId'] },
+              { $eq: [`$${userField}`, '$$userId'] },
+            ],
+          },
+        },
       })
+
+      aggregate
+        .lookup({
+          from: 'articles',
+          let: letTrocAndUser,
+          pipeline: [
+            matchWith('provider'),
+            {
+              $group: {
+                _id: null,
+                providedCount: { $sum: 1 },
+                providedSum: { $sum: '$price' },
+                feeSum: {
+                  $sum: {
+                    $cond: [{ $not: ['$valided'] }, 0, '$fee'],
+                  },
+                },
+                soldSum: {
+                  $sum: {
+                    $cond: [{ $not: ['$sold'] }, 0, '$price'],
+                  },
+                },
+                marginSum: {
+                  $sum: {
+                    $cond: [{ $not: ['$sold'] }, 0, '$margin'],
+                  },
+                },
+              },
+            },
+          ],
+          as: 'providedResum',
+        })
+        .lookup({
+          from: 'articles',
+          let: letTrocAndUser,
+          pipeline: [
+            matchWith('buyer'),
+            {
+              $group: {
+                _id: null,
+                purchasesCount: { $sum: 1 },
+                purchasesSum: { $sum: '$price' },
+              },
+            },
+          ],
+          as: 'purchasesResum',
+        })
+        .lookup({
+          from: 'payments',
+          let: letTrocAndUser,
+          pipeline: [
+            matchWith('user'),
+            {
+              $group: {
+                _id: null,
+                paymentsCount: { $sum: 1 },
+                paymentsSum: { $sum: '$amount' },
+              },
+            },
+          ],
+          as: 'paymentsResum',
+        })
+        .addFields({
+          resum: {
+            $mergeObjects: [
+              { $arrayElemAt: ['$providedResum', 0] },
+              { $arrayElemAt: ['$purchasesResum', 0] },
+              { $arrayElemAt: ['$paymentsResum', 0] },
+            ],
+          },
+        })
+        .addFields({
+          'resum.balance': {
+            $subtract: [
+              {
+                $sum: ['$resum.paymentsSum', '$resum.soldSum'],
+              },
+              {
+                $sum: [
+                  '$resum.feeSum',
+                  '$resum.marginSum',
+                  '$resum.purchasesSum',
+                ],
+              },
+            ],
+          },
+        })
+        .project({
+          providedResum: 0,
+          purchasesResum: 0,
+          paymentsResum: 0,
+        })
+    }
+
+    aggregate.exec(async (err, subscribes) => {
+      if (err) return next(err)
+      res.json(subscribes)
+    })
   } catch (error) {
     next(error)
   }

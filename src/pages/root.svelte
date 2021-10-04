@@ -7,6 +7,7 @@
   import notify from '$lib/notify'
   // import SearchUser from '$lib/SearchUser.svelte'
   import UserSelect from '$lib/user/Select.svelte'
+  import { api } from '$lib/api'
 
   let isRootUser = false
 
@@ -76,12 +77,12 @@
     }
   }
 
-  async function subcribeAllUsers(troc) {
+  async function subcribeAllUsers(trocId) {
     if (confirm('Sur ?')) {
       try {
         let res = await fetch(
           '/api/root/subscribe-all-users',
-          getHeader({ troc })
+          getHeader({ trocId })
         )
         let json = await res.json()
         if (json.error) throw json.message
@@ -92,10 +93,10 @@
     }
   }
 
-  async function removeTroc(troc) {
-    if (prompt(`Tapez "${troc.name}" pour le supprimer`) === troc.name) {
+  async function removeTroc(trocId) {
+    if (prompt(`Tapez "${trocId.name}" pour le supprimer`) === trocId.name) {
       try {
-        let res = await fetch('/api/root/remove-troc', getHeader({ troc }))
+        let res = await fetch('/api/root/remove-troc', getHeader({ trocId }))
         let json = await res.json()
         if (json.error) throw json.message
         notify.success(json.message)
@@ -107,9 +108,12 @@
     }
   }
 
-  async function computeSubscriber(troc) {
+  async function computeSubscriber(trocId) {
     try {
-      let res = await fetch('/api/root/compute-subscriber', getHeader({ troc }))
+      let res = await fetch(
+        '/api/root/compute-subscriber',
+        getHeader({ trocId })
+      )
       let json = await res.json()
       if (json.error) throw json.message
       notify.success(json.message)
@@ -118,15 +122,22 @@
     }
   }
 
-  async function computeArticles(troc) {
+  async function computeArticles(trocId) {
     try {
-      let res = await fetch('/api/root/compute-articles', getHeader({ troc }))
+      let res = await fetch('/api/root/compute-articles', getHeader({ trocId }))
       let json = await res.json()
       if (json.error) throw json.message
       notify.success(json.message)
     } catch (error) {
       notify.error(error)
     }
+  }
+
+  function subscirbesMigration(trocId) {
+    api('/api/root/subscribes-migration', {
+      method: 'post',
+      data: { trocId },
+    }).then((res) => notify.success(res.message))
   }
 </script>
 
@@ -211,6 +222,12 @@
               on:click={() => computeArticles(troc._id)}
             >
               Compter le nombre d'articles
+            </Button>
+            <Button
+              class="w3-margin-right"
+              on:click={() => subscirbesMigration(troc._id)}
+            >
+              Migration des subscribes
             </Button>
             <Button class="w3-red" on:click={() => removeTroc(troc._id)}>
               Supprimer

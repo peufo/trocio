@@ -47,7 +47,7 @@ const trocModel = new Schema(
       {
         name: { type: String, default: 'Tarif' },
         bydefault: { type: Boolean, default: false },
-        // Non nécéssaire pour le standard
+        /** PLUS UTILE, LE LIEN EST FAIT PAR SUBSCRIBE */
         apply: [{ type: ObjectId, ref: 'user' }],
         margin: { type: Number, default: 0, min: 0, max: 0.4 },
         fee: [

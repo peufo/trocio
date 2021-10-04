@@ -3,6 +3,8 @@ import User from '../models/user'
 import { Schema } from 'mongoose'
 const { ObjectId } = Schema.Types
 
+import { requestToQuery } from './utils'
+
 export function getArticle(req, res, next) {
   Article.find({ _id: req.params.articleId }).exec((err, article) => {
     if (err) return next(err)
