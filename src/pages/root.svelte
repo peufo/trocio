@@ -139,6 +139,13 @@
       data: { trocId },
     }).then((res) => notify.success(res.message))
   }
+
+  function subscirbesMigrationRole(trocId) {
+    api('/api/root/user-troc-to-subscribe', {
+      method: 'post',
+      data: { trocId },
+    }).then((res) => notify.success(res.message))
+  }
 </script>
 
 {#if !isRootUser}
@@ -228,6 +235,12 @@
               on:click={() => subscirbesMigration(troc._id)}
             >
               Migration des subscribes
+            </Button>
+            <Button
+              class="w3-margin-right"
+              on:click={() => subscirbesMigrationRole(troc._id)}
+            >
+              Migration des rôles dans les subscribes
             </Button>
             <Button class="w3-red" on:click={() => removeTroc(troc._id)}>
               Supprimer

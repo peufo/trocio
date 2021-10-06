@@ -208,5 +208,65 @@ router
       next(error)
     }
   })
+  .post('/user-troc-to-subscribe', async (req, res, next) => {
+    /**
+     * Transfert les listes des utilisateurs ayant un role sur le troc aux subscribes
+     */
+    const { trocId } = req.body
+    if (!trocId) return next(Error('trocId field is required in body'))
+    try {
+      const troc = await Troc.findById(trocId).exec()
+      const subscribes = await Subscribe.find({ troc: trocId }).exec()
+      if (!troc) throw 'Troc not found'
+
+      const [subAdmins, subCashiers, subTraders] = await Promise.all([
+        Subscribe.find({ troc: troc._id, user: { $in: troc.admin } }).exec(),
+        Subscribe.find({ troc: troc._id, user: { $in: troc.cashier } }).exec(),
+        Subscribe.find({
+          troc: troc._id,
+          user: { $in: troc.trader.map((trader) => trader.user) },
+        }).exec(),
+      ])
+
+      await Promise.all([
+        subAdmins.map((sub) => {
+          sub.role = 'admin'
+          return sub.save()
+        }),
+        subCashiers.map((sub) => {
+          sub.role = 'cashier'
+          return sub.save()
+        }),
+        subTraders.map((sub) => {
+          sub.role = 'trader'
+          sub.prefix = troc.trader.find(
+            (trader) => String(trader.user) === String(sub.user)
+          )?.prefix
+
+          return sub.save()
+        }),
+      ])
+
+      // Attribut le role 'basic' à tout les subs sans role
+
+      const subs = await Subscribe.find({
+        troc: troc._id,
+        role: { $exists: 0 },
+      }).exec()
+      await Promise.all(
+        subs.map((sub) => {
+          sub.role = 'basic'
+          return sub.save()
+        })
+      )
+
+      res.json({
+        success: true,
+        message: `Subscribes role updated: ${subAdmins.length} admins, ${subCashiers.length} cashiers, ${subTraders.length} traders, ${subs.length} basics`,
+      })
+    } catch (error) {
+      next(error)
+    }
+  })
 
 export default router
