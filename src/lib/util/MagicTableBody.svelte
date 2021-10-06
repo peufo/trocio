@@ -33,7 +33,10 @@
   {#each items as item}
     <tr>
       {#each fields.filter((f) => f.visible) as field}
-        <td class:currency={field.format === 'currency'}>
+        <td
+          class:currency={field.format === 'currency'}
+          class:number={field.format === 'number'}
+        >
           {formatCell(item, field)}
         </td>
       {/each}
@@ -42,7 +45,8 @@
 </tbody>
 
 <style>
-  .currency {
+  .currency,
+  .number {
     text-align: right;
   }
 </style>

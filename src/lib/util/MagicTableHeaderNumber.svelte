@@ -143,7 +143,7 @@
 
       <Divider />
 
-      {#if field.format == 'currency'}
+      {#if field.format == 'number' || field.format == 'currency'}
         <TextField
           class="ma-4"
           bind:value={min}
@@ -202,7 +202,7 @@
           Fin
         </TextField>
       {:else}
-        Invalid format
+        TODO 🥱
       {/if}
       {#if min || max}
         <ListItem on:click={handleClearFilter}>
