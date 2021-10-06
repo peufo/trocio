@@ -63,7 +63,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: server
-          path: trocio
+          path: trocio/server
 
       - name: Download artifact client
         uses: actions/download-artifact@v2
