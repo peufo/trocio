@@ -93,8 +93,6 @@ export async function getSubscriber(req, res, next) {
       .addFields({
         user: { $arrayElemAt: ['$user', 0] },
       })
-      .skip(skip)
-      .limit(limit)
       .match({ $or: [{ 'user.name': regexp }, { 'user.name': regexp }] })
 
     if (lookupTarif) {
@@ -160,6 +158,11 @@ export async function getSubscriber(req, res, next) {
                 soldSum: {
                   $sum: {
                     $cond: [{ $not: ['$sold'] }, 0, '$price'],
+                  },
+                },
+                soldCount: {
+                  $sum: {
+                    $cond: [{ $not: ['$sold'] }, 0, 1],
                   },
                 },
                 marginSum: {
@@ -234,10 +237,13 @@ export async function getSubscriber(req, res, next) {
         })
     }
 
-    aggregate.exec(async (err, subscribes) => {
-      if (err) return next(err)
-      res.json(subscribes)
-    })
+    aggregate
+      .skip(skip)
+      .limit(limit)
+      .exec(async (err, subscribes) => {
+        if (err) return next(err)
+        res.json(subscribes)
+      })
   } catch (error) {
     next(error)
   }

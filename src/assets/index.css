@@ -180,9 +180,7 @@ a {
 .string {
   color: green;
 }
-.number {
-  color: darkorange;
-}
+
 .boolean {
   color: blue;
 }

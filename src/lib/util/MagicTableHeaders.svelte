@@ -16,6 +16,7 @@
   const components: Partial<Record<FieldInteface['format'], any>> = {
     enum: MagicTableHeaderEnum,
     select: MagicTableHeaderSelect,
+    number: MagicTableHeaderNumber,
     currency: MagicTableHeaderNumber,
     date: MagicTableHeaderNumber,
   }

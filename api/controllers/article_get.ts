@@ -160,6 +160,8 @@ export async function searchArticle(req, res, next) {
       )
         .limit(40)
         .exec()
+
+      console.log({ users })
       match.$and.push({
         [key.replace(QUERY_USER_SEARCH, '')]: {
           $in: users.map((user) => user._id),

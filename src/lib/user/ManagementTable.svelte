@@ -54,6 +54,7 @@
         $troc.tarif.find((tarif) => tarif._id === sub.tarifId)?.name,
       enumOptions: [
         { queryValue: '', label: 'Tous' },
+        // @ts-ignore tarif._id can be undefined ...
         ...$troc.tarif.map((tarif) => ({
           label: tarif.name,
           queryValue: tarif._id,
@@ -63,9 +64,79 @@
     {
       label: 'Solde',
       visible: true,
-      queryKey: 'balance',
+      queryKey: 'resum.balance',
       format: 'currency',
       getValue: (sub) => sub.resum?.balance,
+    },
+    {
+      label: 'Frais',
+      visible: true,
+      queryKey: 'resum.feeSum',
+      format: 'currency',
+      getValue: (sub) => sub.resum?.feeSum,
+    },
+    {
+      label: 'Marge',
+      visible: true,
+      queryKey: 'resum.marginSum',
+      format: 'currency',
+      getValue: (sub) => sub.resum?.marginSum,
+    },
+    {
+      label: `Achats (nombre)`,
+      visible: false,
+      queryKey: 'resum.purchasesCount',
+      format: 'number',
+      getValue: (sub) => sub.resum?.purchasesCount,
+    },
+    {
+      label: 'Achats (somme)',
+      visible: true,
+      queryKey: 'resum.purchasesSum',
+      format: 'currency',
+      getValue: (sub) => sub.resum?.purchasesSum,
+    },
+    {
+      label: 'Paiements (nombre)',
+      visible: false,
+      queryKey: 'resum.paymentsCount',
+      format: 'number',
+      getValue: (sub) => sub.resum?.paymentsCount,
+    },
+    {
+      label: 'Paiements (somme)',
+      visible: true,
+      queryKey: 'resum.paymentsSum',
+      format: 'currency',
+      getValue: (sub) => sub.resum?.paymentsSum,
+    },
+    {
+      label: 'Fourni (nombre)',
+      visible: false,
+      queryKey: 'resum.providedCount',
+      format: 'number',
+      getValue: (sub) => sub.resum?.providedCount,
+    },
+    {
+      label: 'Fourni (somme)',
+      visible: true,
+      queryKey: 'resum.providedSum',
+      format: 'currency',
+      getValue: (sub) => sub.resum?.providedSum,
+    },
+    {
+      label: 'Vendu (nombre)',
+      visible: false,
+      queryKey: 'resum.soldCount',
+      format: 'number',
+      getValue: (sub) => sub.resum?.soldCount,
+    },
+    {
+      label: 'Vendu (somme)',
+      visible: true,
+      queryKey: 'resum.soldSum',
+      format: 'currency',
+      getValue: (sub) => sub.resum?.soldSum,
     },
   ]
 </script>
