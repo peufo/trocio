@@ -77,22 +77,6 @@
     }
   }
 
-  async function subcribeAllUsers(trocId) {
-    if (confirm('Sur ?')) {
-      try {
-        let res = await fetch(
-          '/api/root/subscribe-all-users',
-          getHeader({ trocId })
-        )
-        let json = await res.json()
-        if (json.error) throw json.message
-        notify.success(json.message)
-      } catch (error) {
-        notify.error(error)
-      }
-    }
-  }
-
   async function removeTroc(trocId) {
     if (prompt(`Tapez "${trocId.name}" pour le supprimer`) === trocId.name) {
       try {
@@ -135,13 +119,6 @@
 
   function subscirbesMigration(trocId) {
     api('/api/root/subscribes-migration', {
-      method: 'post',
-      data: { trocId },
-    }).then((res) => notify.success(res.message))
-  }
-
-  function subscirbesMigrationRole(trocId) {
-    api('/api/root/user-troc-to-subscribe', {
       method: 'post',
       data: { trocId },
     }).then((res) => notify.success(res.message))
@@ -236,12 +213,7 @@
             >
               Migration des subscribes
             </Button>
-            <Button
-              class="w3-margin-right"
-              on:click={() => subscirbesMigrationRole(troc._id)}
-            >
-              Migration des rôles dans les subscribes
-            </Button>
+
             <Button class="w3-red" on:click={() => removeTroc(troc._id)}>
               Supprimer
             </Button>

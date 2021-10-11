@@ -15,6 +15,7 @@
   import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
   import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 
+  import { useApi } from '$lib/api'
   import {
     troc,
     useAddAdmin,

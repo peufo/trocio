@@ -5,6 +5,8 @@ import Troc from '../models/troc'
 import Article from '../models/article'
 import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
+import type { Document } from 'mongoose'
+import type { Subscribe as SubscribeInterface } from '../../types'
 
 const router = Router()
 
@@ -75,37 +77,6 @@ router
       res.json(subscribes)
     })
   })
-  .post('/subscribe-all-users', async (req, res, next) => {
-    const { trocId } = req.body
-    if (!trocId) return next(Error('trocId field is required in body'))
-    try {
-      const troc = await Troc.findById(trocId).exec()
-      if (!troc) throw 'Troc not found'
-      let users = await User.find().exec()
-      let nbNewSubscribe = 0
-      let subscribes = await Promise.all(
-        users.map(async (user) => {
-          let sub = await Subscribe.findOne({
-            troc: troc._id,
-            user: user._id,
-          }).exec()
-          if (sub) return Promise.resolve()
-          nbNewSubscribe++
-          return new Subscribe({
-            troc: troc._id,
-            user: user._id,
-          }).save()
-        })
-      )
-
-      res.json({
-        success: true,
-        message: `${nbNewSubscribe} new users are subscribed to ${troc.name}`,
-      })
-    } catch (error) {
-      next(error)
-    }
-  })
   .post('/remove-troc', async (req, res, next) => {
     const { trocId } = req.body
     if (!trocId) return next(Error('trocId field is required in body'))
@@ -128,9 +99,9 @@ router
       res.json({
         success: true,
         message: `
-                    ${troc.name} is removed,
-                    ${deletedSubscribes} subscribes and ${deletedArticles} articles
-                `,
+            ${troc.name} is removed,
+            ${deletedSubscribes} subscribes and ${deletedArticles} articles
+        `,
       })
     } catch (error) {
       next(error)
@@ -178,6 +149,7 @@ router
   })
   .post('/subscribes-migration', async (req, res, next) => {
     /**
+     * - Récupère les liste admin, trader, cashier, et provider pour créer des subscribes
      * - Ajoute le validedByUser à vrai
      * - Ajoute le tarif appliqué dans l'abonnement
      */
@@ -185,74 +157,80 @@ router
     if (!trocId) return next(Error('trocId field is required in body'))
     try {
       const troc = await Troc.findById(trocId).exec()
-      const subscribes = await Subscribe.find({ troc: trocId }).exec()
       if (!troc) throw 'Troc not found'
 
       const defaultTarifId = troc.tarif.find((tarif) => tarif.bydefault)._id
 
+      /** ADMIN */
       await Promise.all(
-        subscribes.map((sub) => {
-          sub.validedByUser = true
-          sub.tarifId =
-            troc.tarif.find((tarif) => tarif.apply.includes(sub.user))?._id ||
-            defaultTarifId
-          return sub.save()
+        troc.admin.map(async (user) => {
+          const sub = await Subscribe.findOne({ troc: troc._id, user }).exec()
+          return updateOrCreateSub(sub, 'admin', user)
         })
       )
 
-      res.json({
-        success: true,
-        message: `${subscribes.length} subscribes updated`,
-      })
-    } catch (error) {
-      next(error)
-    }
-  })
-  .post('/user-troc-to-subscribe', async (req, res, next) => {
-    /**
-     * Transfert les listes des utilisateurs ayant un role sur le troc aux subscribes
-     */
-    const { trocId } = req.body
-    if (!trocId) return next(Error('trocId field is required in body'))
-    try {
-      const troc = await Troc.findById(trocId).exec()
-      const subscribes = await Subscribe.find({ troc: trocId }).exec()
-      if (!troc) throw 'Troc not found'
+      /** CASHIER */
+      await Promise.all(
+        troc.cashier.map(async (user) => {
+          const sub = await Subscribe.findOne({ troc: troc._id, user }).exec()
+          return updateOrCreateSub(sub, 'cashier', user)
+        })
+      )
 
-      const [subAdmins, subCashiers, subTraders] = await Promise.all([
-        Subscribe.find({ troc: troc._id, user: { $in: troc.admin } }).exec(),
-        Subscribe.find({ troc: troc._id, user: { $in: troc.cashier } }).exec(),
-        Subscribe.find({
+      /** PROVIDER */
+      await Promise.all(
+        troc.provider.map(async (user) => {
+          const sub = await Subscribe.findOne({ troc: troc._id, user }).exec()
+          return updateOrCreateSub(sub, 'basic', user)
+        })
+      )
+
+      /** TRADER */
+      await Promise.all(
+        troc.trader.map(async (trader) => {
+          const sub = await Subscribe.findOne({
+            troc: troc._id,
+            user: trader.user,
+          }).exec()
+          return updateOrCreateSub(sub, 'basic', trader.user, trader.prefix)
+        })
+      )
+
+      function updateOrCreateSub(
+        sub: SubscribeInterface & Document,
+        role: SubscribeInterface['role'],
+        user: string,
+        prefix?: string
+      ): Promise<any> {
+        const newSub = {
+          user,
           troc: troc._id,
-          user: { $in: troc.trader.map((trader) => trader.user) },
-        }).exec(),
-      ])
+          role,
+          prefix,
+          validedByUser: true,
+          tarifId:
+            troc.tarif.find((tarif) => tarif.apply?.includes(user))?._id ||
+            defaultTarifId,
+        }
 
-      await Promise.all([
-        subAdmins.map((sub) => {
-          sub.role = 'admin'
-          return sub.save()
-        }),
-        subCashiers.map((sub) => {
-          sub.role = 'cashier'
-          return sub.save()
-        }),
-        subTraders.map((sub) => {
-          sub.role = 'trader'
-          sub.prefix = troc.trader.find(
-            (trader) => String(trader.user) === String(sub.user)
-          )?.prefix
+        console.count(newSub.tarifId)
 
-          return sub.save()
-        }),
-      ])
+        if (sub) {
+          for (const key in newSub) {
+            sub[key] = newSub[key]
+          }
+        } else {
+          sub = new Subscribe(newSub)
+        }
+        return sub.save()
+      }
 
-      // Attribut le role 'basic' à tout les subs sans role
-
+      // @ts-ignore
       const subs = await Subscribe.find({
-        troc: troc._id,
+        troc: trocId,
         role: { $exists: 0 },
       }).exec()
+
       await Promise.all(
         subs.map((sub) => {
           sub.role = 'basic'
@@ -260,9 +238,19 @@ router
         })
       )
 
+      /** Supprime les champs dérpecier de troc */
+
+      troc.admin = undefined
+      troc.cashier = undefined
+      troc.trader = undefined
+      troc.provider = undefined
+      troc.tarif.forEach((tarif) => (tarif.apply = undefined))
+
+      await troc.save()
+
       res.json({
         success: true,
-        message: `Subscribes role updated: ${subAdmins.length} admins, ${subCashiers.length} cashiers, ${subTraders.length} traders, ${subs.length} basics`,
+        message: `subscribes updated (${subs.length} without role)`,
       })
     } catch (error) {
       next(error)

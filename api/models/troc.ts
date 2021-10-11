@@ -49,6 +49,7 @@ const trocModel = new Schema(
     ],
     tarif: [
       {
+        apply: [{ type: ObjectId, ref: 'user' }], // A supprimer après migration
         name: { type: String, default: 'Tarif' },
         bydefault: { type: Boolean, default: false },
         margin: { type: Number, default: 0, min: 0, max: 0.4 },
@@ -58,7 +59,7 @@ const trocModel = new Schema(
             value: { type: Number, default: 0, min: 0, max: 100000 },
           },
         ],
-        maxarticles: { type: Number, default: 100, min: 1, max: 10000 },
+        maxarticles: { type: Number, default: 100, min: 0, max: 10000 },
       },
     ],
     articlelastref: { type: Number, required: true, default: 0 },
