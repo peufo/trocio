@@ -5,17 +5,15 @@ import {
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   useMutation,
-  useQueryClient,
 } from '@sveltestack/svelte-query'
 
-import type { SubscribeLookup, Troc, TrocBase, TrocLookup, User } from 'types'
+import type { SubscribeLookup, Troc, TrocLookup } from 'types'
 
 import {
   getTroc,
   searchTrocs,
   getsubscribes,
   getTrocUserResum,
-  getTrocStats,
   addAdmin,
   removeAdmin,
   addCashier,

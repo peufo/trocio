@@ -6,7 +6,7 @@ import type { RequestHandler, Request } from 'express'
 import {
   userIsAdminOfTroc,
   userIsCashierOfTroc,
-  userResume,
+  userIsSubscriberOfTroc,
 } from '../controllers/troc_get'
 
 interface UserTroc {
@@ -30,6 +30,21 @@ export const ensureUserIsCashier: RequestHandler = async (req, res, next) => {
     if (!req.session.user._id) return next(Error('Login required'))
     const { trocId } = parseRequest(req)
     await userIsCashierOfTroc(trocId, req.session.user._id)
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+}
+
+export const ensureUserIsSubscriber: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    if (!req.session.user._id) return next(Error('Login required'))
+    const { trocId } = parseRequest(req)
+    await userIsSubscriberOfTroc(trocId, req.session.user._id)
     return next()
   } catch (error) {
     return next(error)
