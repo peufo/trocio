@@ -1,9 +1,10 @@
+import type { RequestHandler } from 'express'
+
 import Subscribe from '../models/subscribe'
-import Troc from '../models/troc'
 import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Types
 
-export function getMySubscribedTrocs(req, res, next) {
+export const getMySubscribes: RequestHandler = (req, res, next) => {
   let { skip = 0, limit = 10 } = req.query
   skip = Number(skip)
   limit = Number(limit)
@@ -16,34 +17,17 @@ export function getMySubscribedTrocs(req, res, next) {
     .limit(limit)
     .populate(
       'troc',
-      'name description address location admin cashier schedule society societyweb is_try subscriber'
+      'name description address location schedule society societyweb is_try subscriber'
     )
     .lean()
-    .exec(async (err, subs) => {
+    .exec(async (err, subscribes) => {
       if (err) return next(err)
 
-      //Admin and cashier becomes booleans
-      let trocs = subs
-        .map((sub) => {
-          let { troc } = sub
-          if (!troc) return null
-          troc.isAdmin = troc.admin
-            .map((a) => a.toString())
-            .includes(req.session.user._id)
-          troc.isCashier = troc.cashier
-            .map((c) => c.toString())
-            .includes(req.session.user._id)
-          if (!troc.isAdmin && !troc.isCashier)
-            troc.admin = troc.cashier = undefined
-          return troc
-        })
-        .filter(Boolean)
-
-      res.json(trocs)
+      res.json(subscribes)
     })
 }
 
-export async function getSubscriber(req, res, next) {
+export const getSubscriber: RequestHandler = async (req, res, next) => {
   let {
     trocId,
     skip = 0,
@@ -248,4 +232,4 @@ export async function getSubscriber(req, res, next) {
   }
 }
 
-export default { getMySubscribedTrocs, getSubscriber }
+export default { getMySubscribes, getSubscriber }

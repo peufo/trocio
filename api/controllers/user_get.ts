@@ -6,7 +6,10 @@ export const getMe: RequestHandler = async (req, res, next) => {
   try {
     if (!req.session.user) throw Error('public: Login required')
 
-    const user = await UserModel.findOne({ _id: req.session.user._id }).exec()
+    const user = await UserModel.findOne(
+      { _id: req.session.user._id },
+      { password: 0 }
+    ).exec()
 
     if (!user) throw Error('User not found !')
 
@@ -34,11 +37,10 @@ export function searchUser(req, res, next) {
 }
 
 export function getUser(req, res, next) {
-  UserModel.findById(req.params.userId)
+  UserModel.findById(req.params.userId, { password: 0 })
     .lean()
     .exec((err, user) => {
       if (err || !user) return next(err || Error('User not found'))
-      delete user.password
       res.json(user)
     })
 }

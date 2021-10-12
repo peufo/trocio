@@ -1,14 +1,10 @@
-import type { QueryKey } from '@sveltestack/svelte-query'
 import type {
-  ArrayElement,
-  Subscribe,
   SubscribeBase,
   SubscribeLookup,
   Troc,
   TrocBase,
   TrocLookup,
   TrocUserResum,
-  User,
   Tarif,
   TrocStats,
 } from 'types'
@@ -38,14 +34,6 @@ export function searchTrocs({ pageParam = 0, queryKey }) {
     limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
   }
   return api<Troc[]>('/api/trocs', { params })
-}
-
-export function getSubscribedTrocs({ pageParam = 0 }) {
-  const params = {
-    skip: pageParam,
-    limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
-  }
-  return api<Troc[]>('/api/subscribes/me', { params })
 }
 
 export function getsubscribes({ pageParam = 0, queryKey }) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto, url } from '@roxi/routify'
+  import { goto } from '@roxi/routify'
   import { slide } from 'svelte/transition'
   import {
     faChild,
@@ -100,16 +100,16 @@
     <br />
 
     <p class="describe pt-3">
-      {troc.description.slice(0, sliceDescription)}
+      {troc.description?.slice(0, sliceDescription)}
 
-      {#if troc.description.length > sliceDescription}
+      {#if troc.description?.length > sliceDescription}
         <span
           class="showDescription"
           on:click={() => (sliceDescription = Infinity)}
         >
           ...Afficher
         </span>
-      {:else if troc.description.length > DESCRIPTION_SIZE && sliceDescription == Infinity}
+      {:else if troc.description?.length > DESCRIPTION_SIZE && sliceDescription == Infinity}
         <span
           class="showDescription"
           on:click={() => (sliceDescription = DESCRIPTION_SIZE)}
@@ -121,7 +121,7 @@
   </div>
 
   <div class="pl-5 pb-5">
-    {#if !troc.is_try}
+    {#if troc.address}
       <div class="d-flex pt-5">
         <IconLink icon={faMapMarkerAlt} opacity />
         <div class="pl-4">
@@ -129,25 +129,27 @@
             {segmentAddress}<br />
           {/each}
           <!--
-          TODO: Imprecis
-          <a
-            style="line-height: 2.5;"
-            rel="noreferrer"
-            href={`https://www.google.ch/maps/place/${convertDMS(troc.location)}`}
-            target="_blank"
-            title="Ouvrir dans Google Maps"
-          >
-            <IconLink
+              TODO: Imprecis
+              <a
+              style="line-height: 2.5;"
+              rel="noreferrer"
+              href={`https://www.google.ch/maps/place/${convertDMS(troc.location)}`}
+              target="_blank"
+              title="Ouvrir dans Google Maps"
+              >
+              <IconLink
               class="ml-1"
               icon={faMapMarkedAlt}
               size="1em"
               style="color: var(--theme-text-link)"
-            />
-          </a>
-        -->
+              />
+            </a>
+          -->
         </div>
       </div>
+    {/if}
 
+    {#if troc.schedule}
       <div class="d-flex pt-5">
         <IconLink icon={faCalendarAlt} opacity />
         <div class="pl-4">
@@ -158,7 +160,6 @@
           </b>
 
           <br />
-
           {#each troc.schedule as period}
             <IconLink
               icon={scheduleIcon[period.name] || scheduleIcon.open}

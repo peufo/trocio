@@ -11,6 +11,8 @@
   // TODO: not util ?
   $: $trocs = $trocQuery.data ? [$trocQuery.data] : []
 
+  $: console.log($trocs[0])
+
   $: metatags.title = $trocs[0]?.name || 'Trocio'
 </script>
 

@@ -23,29 +23,6 @@ export function checkAdmin(req, res, next) {
   })
 }
 
-export function checkCashier(req, res, next) {
-  if (!req.session.user) return next(Error('Login required'))
-  Troc.findOne(
-    { _id: req.params.trocId || req.params.trocId || req.query.troc },
-    { admin: 1, cashier: 1 }
-  ).exec((err, troc) => {
-    if (err || !troc) return next(err || Error('troc not found !'))
-    let isAdmin =
-      troc.admin
-        .map((a) => a.toString())
-        .indexOf(req.session.user._id.toString()) != -1
-    let isCashier =
-      troc.cashier
-        .map((a) => a.toString())
-        .indexOf(req.session.user._id.toString()) != -1
-    if (isAdmin || isCashier) {
-      next()
-    } else {
-      return next(Error('Sorry, you are not a cashier of this troc'))
-    }
-  })
-}
-
 export async function populateTrocUser(trocId: string) {
   return await Troc.findById(trocId)
     .populate('creator', 'name mail')
@@ -90,6 +67,7 @@ export function getMargin(art, tarif) {
   }
 }
 
+/** A SUPPRIMER */
 export function lookupIfAdmin(troc, userId, cb: Callback) {
   let isAdmin = troc.admin.map((a) => a.toString()).indexOf(userId) != -1
   if (isAdmin) {
@@ -122,7 +100,6 @@ export function scheduleValidation({ schedule }) {
 
 export default {
   checkAdmin,
-  checkCashier,
   populateTrocUser,
   findSpec,
   getFee,
