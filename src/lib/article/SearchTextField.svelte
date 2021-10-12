@@ -9,8 +9,6 @@
   export let style = ''
   export let search = ''
 
-  $: console.log(search)
-
   const handleSearch = debounce((event) => {
     search = event.target.value
   }, 300)

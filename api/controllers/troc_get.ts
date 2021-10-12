@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import mongoose, { FilterQuery } from 'mongoose'
+import mongoose, { FilterQuery, Mongoose } from 'mongoose'
 
 import type { Troc, TrocUserResum } from '../../types'
 import TrocModel from '../models/troc'
@@ -27,6 +27,15 @@ export async function userIsCashierOfTroc(trocId: string, userId: string) {
     role: { $in: ['admin', 'cashier'] },
   })
   if (!subscribe) throw new Error('User is not cashier of troc')
+  return !!subscribe
+}
+
+export async function userIsSubscriberOfTroc(trocId: string, userId: string) {
+  const subscribe = await Subscribe.findOne({
+    troc: trocId,
+    user: userId,
+  })
+  if (!subscribe) throw new Error('User is not subscriber of troc')
   return !!subscribe
 }
 
@@ -190,7 +199,7 @@ export function getStats(req, res, next) {
   })
 }
 
-export function search(req, res, next) {
+export const search: RequestHandler = async (req, res, next) => {
   let {
     _id,
     search,
@@ -204,107 +213,82 @@ export function search(req, res, next) {
     west,
   } = req.query
 
-  let query: FilterQuery<Troc & Document> = {}
+  let matchQuery: FilterQuery<Troc & Document> = {}
 
-  if (_id) query = { _id }
+  if (_id) matchQuery = { _id }
   else {
-    query = { is_try: false }
+    matchQuery = { is_try: false }
 
     if (search && search.length) {
       let regexp = new RegExp(search, 'i')
-      query.$or = []
-      query.$or.push({ name: regexp })
-      query.$or.push({ description: regexp })
-      query.$or.push({ address: regexp })
-      query.$or.push({ society: regexp })
+      matchQuery.$or = []
+      matchQuery.$or.push({ name: regexp })
+      matchQuery.$or.push({ description: regexp })
+      matchQuery.$or.push({ address: regexp })
+      matchQuery.$or.push({ society: regexp })
     }
 
-    if (start || end || north || east || sud || west) query.$and = []
+    if (start || end || north || east || sud || west) matchQuery.$and = []
 
-    if (start) query.$and.push({ 'schedule.close': { $gte: start } })
-    if (end) query.$and.push({ 'schedule.open': { $lte: end } })
-    if (!isNaN(north)) query.$and.push({ 'location.lat': { $lt: north } })
-    if (!isNaN(east)) query.$and.push({ 'location.lng': { $lt: east } })
-    if (!isNaN(sud)) query.$and.push({ 'location.lat': { $gt: sud } })
-    if (!isNaN(west)) query.$and.push({ 'location.lng': { $gt: west } })
+    if (start)
+      matchQuery.$and.push({ 'schedule.close': { $gte: new Date(start) } })
+    if (end) matchQuery.$and.push({ 'schedule.open': { $lte: new Date(end) } })
+    if (!isNaN(north)) matchQuery.$and.push({ 'location.lat': { $lt: +north } })
+    if (!isNaN(east)) matchQuery.$and.push({ 'location.lng': { $lt: +east } })
+    if (!isNaN(sud)) matchQuery.$and.push({ 'location.lat': { $gt: +sud } })
+    if (!isNaN(west)) matchQuery.$and.push({ 'location.lng': { $gt: +west } })
   }
 
-  TrocModel.find(query)
+  const aggregate = TrocModel.aggregate()
+    .match(matchQuery)
     .skip(Number(skip))
     .limit(Number(limit))
-    .lean({ virtuals: true })
-    .exec((err, trocs) => {
-      if (err) return next(err)
-      res.json(trocs)
 
-      // Admin and cashier becomes booleans + add subscribed boolean
-      /*
-      if (req.session.user) {
-        Subscribe.find({
-          user: req.session.user._id,
-          troc: { $in: trocs.map((t) => t._id) },
-        }).exec((err, subs) => {
-          if (err) return next(err)
-          subs = subs.map((s) => s.troc.toString())
-          
-          res.json(trocs)
-        })
-      } else {
-        trocs.forEach((troc) => {
-          delete troc.admin
-          delete troc.cashier
-        })
-        
-      }
-      */
-    })
+  if (req.session.user) lookupRole(aggregate, req.session.user._id)
+
+  const trocs = await aggregate.exec()
+  res.json(trocs)
 }
 
 export const getTroc: RequestHandler = async (req, res, next) => {
   const { trocId } = req.params
-
   const aggregate = TrocModel.aggregate().match({ _id: ObjectId(trocId) })
-
-  /** Add user role */
-  if (req.session.user) {
-    aggregate
-      .lookup({
-        from: 'subscribes',
-        let: { trocId: '$_id' },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ['$troc', '$$trocId'] },
-                  { $eq: ['$user', ObjectId(req.session.user._id)] },
-                ],
-              },
-            },
-          },
-          {
-            $project: { role: 1 },
-          },
-        ],
-        as: 'subscribe',
-      })
-      .replaceRoot({
-        $mergeObjects: [{ $arrayElemAt: ['$subscribe', 0] }, '$$ROOT'],
-      })
-      .project({ subscribe: 0 })
-  }
-
+  if (req.session.user) lookupRole(aggregate, req.session.user._id)
   const trocs = await aggregate.exec()
   if (!trocs.length) return next(Error('Not found'))
-
   res.json(trocs[0])
+}
 
-  /**
-   * TODO: REMOVE USAGE
-   *
-   * troc.isAdmin
-   * troc.isCashier
-   * troc.isSubscribed
-   *
-   */
+/**
+ * Add user role from subscribe document
+ */
+function lookupRole(
+  aggregate: mongoose.Aggregate<Troc[]>,
+  userId?: string
+): void {
+  aggregate
+    .lookup({
+      from: 'subscribes',
+      let: { trocId: '$_id' },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ['$troc', '$$trocId'] },
+                { $eq: ['$user', ObjectId(userId)] },
+              ],
+            },
+          },
+        },
+        {
+          $project: { role: 1 },
+        },
+      ],
+      as: 'subscribe',
+    })
+    .replaceRoot({
+      $mergeObjects: [{ $arrayElemAt: ['$subscribe', 0] }, '$$ROOT'],
+    })
+    .project({ subscribe: 0 })
 }

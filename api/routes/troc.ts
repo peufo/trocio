@@ -19,10 +19,7 @@ import {
   removeApply,
 } from '../controllers/troc_set'
 // import { checkAdmin } from '../controllers/troc_utils'
-import {
-  ensureUserIsAdmin,
-  ensureUserCanAccessResum,
-} from '../middlewares/troc'
+import { ensureUserIsAdmin, ensureUserIsSubscriber } from '../middlewares/troc'
 
 import { resUserResume, resTrocUser } from '../res/troc'
 
@@ -30,7 +27,8 @@ router
   .get('/', search)
   .post('/', createTroc)
   .patch('/:trocId', ensureUserIsAdmin, patchTroc)
-  .get('/resum', ensureUserCanAccessResum, resUserResume)
+  /** @deprecated */
+  .get('/resum', ensureUserIsSubscriber, resUserResume)
   .get('/spec', getSpec)
   .get('/:trocId/stats', ensureUserIsAdmin, getStats)
   .get('/:trocId', getTroc)

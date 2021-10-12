@@ -31,9 +31,9 @@
   import UserResum from '$lib/troc/UserResum.svelte'
   import Share from '$lib/troc/Share.svelte'
   import { useCreateSubscribe } from '$lib/troc/store'
-  import type { Troc } from 'types'
+  import type { TrocLookup } from 'types'
 
-  export let troc: Troc
+  export let troc: TrocLookup
 
   export let articleSearch = ''
   export let activityOpen = false
@@ -55,12 +55,13 @@
         callback: `/trocs/${troc._id}`,
       })
     activityOpen = !activityOpen
-    if (!troc.isSubscribed) {
+    if (!troc.role) {
       $createSubscribe.mutate(
         { troc: troc._id },
         {
           onSuccess: (subscribe) => {
-            if (subscribe._id) troc.isSubscribed = true
+            // TODO: manage subscribe already exist
+            if (subscribe._id) troc.role = 'basic'
           },
         }
       )
@@ -209,14 +210,14 @@
   {/if}
 
   <div class="flex-grow-1" />
-  {#if !!$user && troc.isAdmin}
+  {#if !!$user && troc.role === 'admin'}
     <a href={`/admin?trocId=${troc._id}`}>
       <Button depressed class="mr-1 ml-1">
         administration
         <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
       </Button>
     </a>
-  {:else if !!$user && troc.isCashier}
+  {:else if !!$user && troc.role === 'cashier'}
     <a href={`/cashier?trocId=${troc._id}`}>
       <Button depressed class="ml-2">
         Caisse
@@ -230,7 +231,7 @@
     </a>
   {/if}
   <Button on:click={handleClickActivity} depressed class="mr-1 ml-1">
-    {troc.isSubscribed ? 'Mon activité' : 'Participer au troc'}
+    {troc.role ? 'Mon activité' : 'Participer au troc'}
     <IconLink
       icon={faChevronRight}
       rotate={activityOpen ? 90 : 0}
