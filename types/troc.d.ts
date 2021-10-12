@@ -1,6 +1,7 @@
 import { Article } from 'types'
 import { User } from 'types'
 import type { PaymentInterface } from './payment'
+import type { Subscribe } from './subscribe'
 
 /** Période dont est composé l'horaire */
 export declare interface Period {
@@ -15,7 +16,6 @@ export declare interface Tarif {
   _id?: string
   name: string
   bydefault: boolean
-  apply?: string[] | User[]
   margin: number
   fee: {
     price: number
@@ -55,8 +55,6 @@ export declare interface TrocBase {
 export declare interface Troc extends TrocBase {
   _id: string
   tag: TagInterface
-  admin: string[]
-  cashier: string[]
   articlelastref: number
   articles?: object[]
   subscriber: number
@@ -78,12 +76,8 @@ export declare interface Troc extends TrocBase {
 
 /** Information complette avec les informations collaborateurs */
 export declare interface TrocLookup extends Troc {
-  admin: User[]
-  cashier: User[]
-  trader: {
-    prefix: string
-    user: User
-  }[]
+  /** Role from subscribe */
+  role: Subscribe['role']
   creator: User
 }
 

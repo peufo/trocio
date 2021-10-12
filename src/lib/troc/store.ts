@@ -13,7 +13,6 @@ import type { SubscribeLookup, Troc, TrocBase, TrocLookup, User } from 'types'
 import {
   getTroc,
   searchTrocs,
-  getSubscribedTrocs,
   getsubscribes,
   getTrocUserResum,
   getTrocStats,
@@ -98,17 +97,6 @@ export function useSearchTrocsOptions(
 }
 export const useSearchTrocs = (query: SearchTrocsQuery) =>
   useInfiniteQuery<Troc[], AxiosError>(useSearchTrocsOptions(query))
-
-/**
- * Subscribed trocs
- * Liste des trocs auxquels l'utilisateur est abonné
- */
-export const useSubscribedTrocs = () =>
-  useInfiniteQuery<Troc[], AxiosError>({
-    queryKey: 'subscribedTrocs',
-    queryFn: getSubscribedTrocs,
-    getNextPageParam,
-  })
 
 /**
  * User resum

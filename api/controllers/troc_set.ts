@@ -2,50 +2,54 @@ import config from '../../config'
 import Troc from '../models/troc'
 import User from '../models/user'
 import Subscribe from '../models/subscribe'
-import {
-  lookupIfAdmin,
-  populateTrocUser,
-  scheduleValidation,
-} from '../controllers/troc_utils'
+import { lookupIfAdmin } from '../controllers/troc_utils'
 import { RequestHandler } from 'express'
 
-export function createTroc(req, res, next) {
+export const createTroc: RequestHandler = async (req, res, next) => {
   if (!req.session.user) return next(Error('Login required'))
+  try {
+    /** Create Troc from req.body */
+    const troc = new Troc(req.body)
+    troc.creator = req.session.user._id
+    troc.tarif = [
+      {
+        name: 'Standard',
+        bydefault: true,
+        margin: 0,
+        fee: [{ price: 0, value: 0 }],
+        maxarticles: 100,
+      },
+    ]
 
-  // TODO: Remplacer par un avertissement coté client
-  // let err = scheduleValidation(req.body)
-  // if (err) return next(err)
+    /** Check and consume user credit */
+    const user = await User.findOne({ _id: req.session.user._id }).exec()
+    if (!user) return next(Error('User not found !'))
 
-  let troc = new Troc(req.body)
-  troc.creator = req.session.user._id
-  troc.admin = [req.session.user._id]
-  troc.tarif = [
-    {
-      name: 'Standard',
-      bydefault: true,
-      margin: 0,
-      fee: [{ price: 0, value: 0 }],
-      maxarticles: 100,
-    },
-  ]
-
-  let subscribe = new Subscribe({ user: req.session.user._id, troc: troc._id })
-
-  User.findOne({ _id: req.session.user._id }, (err, user) => {
-    if (err || !user) return next(err || Error('User not found !'))
     if (!troc.is_try) {
       if (user.creditTroc <= -config.TROCIO_OPTION_FREE_TROC)
         return next(Error('No credit'))
       user.creditTroc--
     }
-    Promise.all([troc.save(), user.save(), subscribe.save()])
-      .then(() => {
-        populateTrocUser(troc._id)
-          .then((populatedTroc) => res.json(populatedTroc))
-          .catch(next)
-      })
-      .catch(next)
-  })
+
+    /** Save user an new troc */
+    await Promise.all([troc.save(), user.save()])
+
+    /** Create subscribe */
+    const subscribe = new Subscribe({
+      user: req.session.user._id,
+      troc: troc._id,
+      role: 'admin',
+      validedByUser: true,
+      validedByTroc: true,
+      tarifId: troc.tarif[0]._id,
+    })
+
+    await subscribe.save()
+
+    return res.json(troc)
+  } catch (error) {
+    return next(error)
+  }
 }
 
 // TODO: n'utlisé le patch que pour les infos de base.

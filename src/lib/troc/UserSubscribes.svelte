@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   /**
    * Liste les trocs auxquels l'utilisateur est abonné
    */
@@ -12,20 +12,27 @@
 
   import IconLink from '$lib/util/IconLink.svelte'
   import Loader from '$lib/util/Loader.svelte'
-  import { useSubscribedTrocs } from '$lib/troc/store'
+  import { useInfinitApi } from '$lib/api'
+  import type { SubscribeLookup } from 'types'
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
   export let offset = 0
 
-  const queryUserTrocs = useSubscribedTrocs()
-  $: userTrocs = $queryUserTrocs.data ? $queryUserTrocs.data.pages.flat() : []
+  // const querySubscribes = useSubscribedTrocs()
+  const querySubscribes = useInfinitApi<{}, SubscribeLookup[]>([
+    'subscribes/me',
+    {},
+  ])
+  $: subscribes = $querySubscribes.data
+    ? $querySubscribes.data.pages.flat()
+    : []
 </script>
 
-{#if $queryUserTrocs.isSuccess}
+{#if $querySubscribes.isSuccess}
   <List dense>
-    {#each userTrocs as troc}
+    {#each subscribes as { troc }}
       <a href={`/trocs/${troc._id}`}>
         <ListItem
           on:click
@@ -77,21 +84,21 @@
       </div>
     {/each}
   </List>
-{:else if $queryUserTrocs.isError}
+{:else if $querySubscribes.isError}
   <ListItem disabled>Oups, une erreur est survenue !</ListItem>
 {/if}
 
-{#if $queryUserTrocs.isFetching}
+{#if $querySubscribes.isFetching}
   <ListItem disabled class="pl-16">
     <Loader />
   </ListItem>
-{:else if $queryUserTrocs.hasNextPage}
+{:else if $querySubscribes.hasNextPage}
   <ListItem
     on:click={() =>
-      !$queryUserTrocs.isFetchingNextPage && $queryUserTrocs.fetchNextPage()}
+      !$querySubscribes.isFetchingNextPage && $querySubscribes.fetchNextPage()}
     style="padding-left: {offset}px;"
   >
-    {#if !$queryUserTrocs.isFetchingNextPage}
+    {#if !$querySubscribes.isFetchingNextPage}
       Afficher plus
     {:else}
       <Loader />

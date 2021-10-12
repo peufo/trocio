@@ -1,24 +1,33 @@
+import { RequestHandler } from 'express'
+import mongoose, { FilterQuery } from 'mongoose'
+
 import type { Troc, TrocUserResum } from '../../types'
 import TrocModel from '../models/troc'
 import Article from '../models/article'
 import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
 import { findSpec, lookupIfAdmin } from './troc_utils'
-import { FilterQuery, Schema } from 'mongoose'
+
+const { ObjectId } = mongoose.Types
 
 export async function userIsAdminOfTroc(trocId: string, userId: string) {
-  const troc = await TrocModel.findOne({ _id: trocId, admin: userId })
-  if (!troc) throw new Error('User is not admin of troc')
-  return !!troc
+  const subscribe = await Subscribe.findOne({
+    troc: trocId,
+    user: userId,
+    role: 'admin',
+  })
+  if (!subscribe) throw new Error('User is not admin of troc')
+  return !!subscribe
 }
 
 export async function userIsCashierOfTroc(trocId: string, userId: string) {
-  const troc = await TrocModel.findOne({
-    _id: trocId,
-    $or: [{ admin: userId }, { cashier: userId }],
+  const subscribe = await Subscribe.findOne({
+    troc: trocId,
+    user: userId,
+    role: { $in: ['admin', 'cashier'] },
   })
-  if (!troc) throw new Error('User is not cashier of troc')
-  return !!troc
+  if (!subscribe) throw new Error('User is not cashier of troc')
+  return !!subscribe
 }
 
 export async function userResume(
@@ -226,8 +235,10 @@ export function search(req, res, next) {
     .lean({ virtuals: true })
     .exec((err, trocs) => {
       if (err) return next(err)
+      res.json(trocs)
 
       // Admin and cashier becomes booleans + add subscribed boolean
+      /*
       if (req.session.user) {
         Subscribe.find({
           user: req.session.user._id,
@@ -235,17 +246,7 @@ export function search(req, res, next) {
         }).exec((err, subs) => {
           if (err) return next(err)
           subs = subs.map((s) => s.troc.toString())
-          trocs.forEach((troc) => {
-            troc.isSubscribed = subs.includes(troc._id.toString())
-            troc.isAdmin =
-              troc.admin
-                .map((a) => a.toString())
-                .indexOf(req.session.user._id.toString()) != -1
-            troc.isCashier =
-              troc.cashier
-                .map((c) => c.toString())
-                .indexOf(req.session.user._id.toString()) != -1
-          })
+          
           res.json(trocs)
         })
       } else {
@@ -253,37 +254,57 @@ export function search(req, res, next) {
           delete troc.admin
           delete troc.cashier
         })
-        res.json(trocs)
+        
       }
+      */
     })
 }
 
-export function getTroc(req, res, next) {
+export const getTroc: RequestHandler = async (req, res, next) => {
+  const { trocId } = req.params
+
+  const aggregate = TrocModel.aggregate().match({ _id: ObjectId(trocId) })
+
+  /** Add user role */
   if (req.session.user) {
-    TrocModel.findOne({ _id: req.params.trocId })
-      .lean({ virtuals: true })
-      .exec((err, troc) => {
-        if (err || !troc) return next(err || Error('Not found'))
-        lookupIfAdmin(troc, req.session.user._id.toString(), (err, troc) => {
-          if (err || !troc) return next(err || Error('Not found'))
-          Subscribe.findOne(
-            { user: req.session.user._id, troc: troc._id },
-            (err, subscribe) => {
-              if (err) return next(err)
-              troc.isSubscribed = !!subscribe
-              res.json(troc)
-            }
-          )
-        })
+    aggregate
+      .lookup({
+        from: 'subscribes',
+        let: { trocId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$troc', '$$trocId'] },
+                  { $eq: ['$user', ObjectId(req.session.user._id)] },
+                ],
+              },
+            },
+          },
+          {
+            $project: { role: 1 },
+          },
+        ],
+        as: 'subscribe',
       })
-  } else {
-    TrocModel.findOne({ _id: req.params.trocId })
-      .lean({ virtuals: true })
-      .exec((err, troc) => {
-        if (err || !troc) return next(err || Error('Not found'))
-        delete troc.admin
-        delete troc.cashier
-        res.json(troc)
+      .replaceRoot({
+        $mergeObjects: [{ $arrayElemAt: ['$subscribe', 0] }, '$$ROOT'],
       })
+      .project({ subscribe: 0 })
   }
+
+  const trocs = await aggregate.exec()
+  if (!trocs.length) return next(Error('Not found'))
+
+  res.json(trocs[0])
+
+  /**
+   * TODO: REMOVE USAGE
+   *
+   * troc.isAdmin
+   * troc.isCashier
+   * troc.isSubscribed
+   *
+   */
 }
