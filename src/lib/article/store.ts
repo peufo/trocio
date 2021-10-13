@@ -10,7 +10,6 @@ import {
   getArticles,
   createArticle,
   createArticles,
-  getProvidedArticles,
   getNextPageParam,
 } from '$lib/article/api'
 
@@ -28,6 +27,7 @@ export function useArticles(trocId: string, search: string) {
   return useInfiniteQuery(useArticlesOptions(trocId, search))
 }
 
+/** @deprecated */
 export function useCreateArticle() {
   return useMutation(createArticle, {
     onSuccess: (article) => {
@@ -36,25 +36,11 @@ export function useCreateArticle() {
   })
 }
 
+/** @deprecated */
 export function useCreateArticles() {
   return useMutation(createArticles, {
     onSuccess: (articles) => {
       //TODO: update provided list query
     },
   })
-}
-
-export function useProvidedArticlesOptions(
-  trocId: string,
-  provider?: string
-): UseInfiniteQueryOptions<Article[], AxiosError> {
-  const query = provider ? { trocId, provider } : { trocId }
-  return {
-    queryFn: getProvidedArticles,
-    queryKey: ['articlesProvided', query],
-    getNextPageParam,
-  }
-}
-export function useProvidedArticles(trocId: string, provider?: string) {
-  return useInfiniteQuery(useProvidedArticlesOptions(trocId, provider))
 }

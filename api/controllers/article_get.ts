@@ -12,18 +12,25 @@ export function getArticle(req, res, next) {
   })
 }
 
+/** @deprecated use searchArticle */
 export function getProvidedArticles(req, res, next) {
   let {
-    troc,
-    provider = req.session.user._id,
+    trocId,
+    providerId = req.session.user._id,
+    search = '',
     skip = 0,
     limit = 20,
   } = req.query
 
   skip = Number(skip)
   limit = Number(limit)
+  const reg = new RegExp(search, 'i')
 
-  Article.find({ troc, provider })
+  Article.find({
+    troc: trocId,
+    provider: providerId,
+    $or: [{ ref: reg }, { name: reg }],
+  })
     .skip(skip)
     .limit(limit)
     .exec((err, article) => {
@@ -32,14 +39,17 @@ export function getProvidedArticles(req, res, next) {
     })
 }
 
+/** @deprecated use searchArticle */
 export function getPurchasesArticles(req, res, next) {
-  let { troc, buyer, seller, skip = 0, limit = 20 } = req.query
-  if (!buyer) {
+  let { trocId, buyerId, sellerId, skip = 0, limit = 20 } = req.query
+  if (!buyerId) {
     // Client anonyme
-    buyer = { $exists: false }
-    if (!seller) seller = req.session.user._id
+    buyerId = { $exists: false }
+    if (!sellerId) sellerId = req.session.user._id
   }
-  const query = seller ? { troc, buyer, seller } : { troc, buyer }
+  const query = sellerId
+    ? { troc: trocId, buyer: buyerId, seller: sellerId }
+    : { troc: trocId, buyer: buyerId }
 
   Article.find(query)
     .skip(skip)
@@ -50,12 +60,13 @@ export function getPurchasesArticles(req, res, next) {
     })
 }
 
+/** @deprecated use searchArticle */
 export function getGivbacksArticles(req, res, next) {
-  const { troc, user, skip = 0, limit = 20 } = req.query
-  const query = user
-    ? { troc, 'giveback.user': user }
+  const { trocId, userId, skip = 0, limit = 20 } = req.query
+  const query = userId
+    ? { troc: trocId, 'giveback.user': userId }
     : {
-        troc,
+        troc: trocId,
         giveback: {
           $and: [
             { $size: { $gt: 0 } },
@@ -75,7 +86,7 @@ export function getGivbacksArticles(req, res, next) {
 
 export async function searchArticle(req, res, next) {
   let {
-    troc,
+    trocId,
     limit,
     skip,
     exact_statut,
@@ -97,7 +108,7 @@ export async function searchArticle(req, res, next) {
   // addMatch
   if (!include_without_name) match.$and = [{ name: { $ne: '' } }]
 
-  if (troc) match.$and.push({ troc })
+  if (trocId) match.$and.push({ troc: trocId })
 
   // Filtre pour un groupe de founisseur
   if (provider) match.$and.push({ provider: { $in: provider } })
@@ -161,7 +172,6 @@ export async function searchArticle(req, res, next) {
         .limit(40)
         .exec()
 
-      console.log({ users })
       match.$and.push({
         [key.replace(QUERY_USER_SEARCH, '')]: {
           $in: users.map((user) => user._id),

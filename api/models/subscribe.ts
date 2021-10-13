@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose'
 const { ObjectId } = Schema.Types
 
-import type { Subscribe } from '../../types'
+import type { ISubscribe } from '../../types'
 
 let subscribeModel = new Schema({
   troc: { type: ObjectId, ref: 'troc', required: true },
@@ -33,4 +33,7 @@ function requiredIfRoleIsTrader() {
   return this.role === 'trader'
 }
 
-export default mongoose.model<Subscribe & Document>('subscribe', subscribeModel)
+export default mongoose.model<ISubscribe & Document>(
+  'subscribe',
+  subscribeModel
+)

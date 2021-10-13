@@ -10,6 +10,9 @@ export let troc = trocBuilder()
 export let trocPromise = writable()
 
 //Troc's details related of an user
+/**
+ * @deprecated
+ */
 export let trocDetails = trocDetailsBuilder()
 export let trocDetailsPromise = writable()
 
@@ -87,6 +90,9 @@ async function loadTroc(set, { troc }) {
 // ------------------------------------------------------
 // 				       TROC DETAILS
 // ------------------------------------------------------
+/**
+ * @deprecated
+ */
 function trocDetailsBuilder() {
   const { subscribe, set } = writable(null, (set) =>
     buildListenQuery('troc client', trocDetailsPromise, loadTrocDetails, set)()
@@ -114,6 +120,9 @@ async function loadTrocDetails(set, { troc, client }) {
   return
 }
 
+/**
+ * @deprecated
+ */
 async function getDetail(troc, user) {
   try {
     const res = await fetch(`/api/trocs/details?user=${user}&troc=${troc}`)

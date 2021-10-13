@@ -9,6 +9,7 @@ export async function createSubscribe(req, res, next) {
     let subscribe = await Subscribe.findOne({
       troc,
       user: req.session.user._id,
+      validedByUser: true,
     }).exec()
     if (subscribe) throw Error('Subscription already exist')
     subscribe = new Subscribe({ troc, user: req.session.user._id })

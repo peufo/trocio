@@ -152,6 +152,7 @@ export function useInfinitApi<RequestQuery = any, RequestResult = RequestQuery>(
   })
 }
 
+/** @deprecated */
 export function createGetNextPageParam<TQueryFnData>(
   /** First limit  */
   start: number,

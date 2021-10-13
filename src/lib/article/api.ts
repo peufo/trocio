@@ -3,17 +3,19 @@ import { api, createGetNextPageParam } from '$lib/api'
 
 const FIRST_LIMIT = 10
 const NEXT_LIMIT = 20
+/** @deprecated */
 export const getNextPageParam = createGetNextPageParam(FIRST_LIMIT, NEXT_LIMIT)
 
 interface GetArticlesQuery {
   pageParam: number
   queryKey: ['article', { trocId: string; search: string }]
 }
+/** @deprecated */
 export function getArticles({ pageParam = 0, queryKey }: GetArticlesQuery) {
   const { trocId, search } = queryKey[1]
   console.log({ pageParam })
   const params = {
-    troc: trocId,
+    trocId,
     search_name: search,
     skip: pageParam,
     limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
@@ -23,6 +25,7 @@ export function getArticles({ pageParam = 0, queryKey }: GetArticlesQuery) {
 
 /**
  * Création d'un article
+ * @deprecated
  */
 export function createArticle(article: ArticleCreate) {
   return api<ArticleCreate, Article>('/api/articles', {
@@ -34,6 +37,7 @@ export function createArticle(article: ArticleCreate) {
 
 /**
  * Création d'articles
+ *  @deprecated
  */
 export function createArticles(article: ArticleCreate[]) {
   return api<ArticleCreate[], Article[]>('/api/articles', {
@@ -43,18 +47,6 @@ export function createArticles(article: ArticleCreate[]) {
       article.length > 1 ? 's' : ''
     }`,
   })
-}
-
-export function getProvidedArticles({ pageParam, queryKey }) {
-  const { trocId, provider } = queryKey[1]
-  const params = {
-    troc: trocId,
-    provider,
-    skip: pageParam,
-    limit: pageParam ? NEXT_LIMIT : FIRST_LIMIT,
-  }
-  if (!params.provider) delete params.provider
-  return api<Article[]>('/api/articles/provided', { params })
 }
 
 /*

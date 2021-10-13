@@ -97,20 +97,6 @@ export const useSearchTrocs = (query: SearchTrocsQuery) =>
   useInfiniteQuery<Troc[], AxiosError>(useSearchTrocsOptions(query))
 
 /**
- * User resum
- * Résumé des interactions de l'utilisateur ou d'un client sur un troc
- */
-export function useTrocUserResumOptions(trocId: string, userId?: string) {
-  const query = userId ? { trocId, userId } : { trocId }
-  return {
-    queryKey: ['trocsResum', query],
-    queryFn: getTrocUserResum,
-  }
-}
-export const useTrocUserResum = (trocId: string, userId?: string) =>
-  useQuery(useTrocUserResumOptions(trocId, userId))
-
-/**
  * Creation
  */
 export const useCreateTroc = () => useMutation(createTroc, { onSuccess })
