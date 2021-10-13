@@ -6,7 +6,9 @@
   import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
 
   import Loader from '$lib/util/Loader.svelte'
-
+  import { Button } from 'svelte-materialify'
+  /** Choose if the mode for fetch more items */
+  export let mode: 'button' | 'scroll' = 'scroll'
   export let query: UseInfiniteQueryStoreResult<any, any, any, any>
   export let dense = false
   export let style = ''
@@ -18,13 +20,18 @@
     refetchOnWindowFocus: false,
   })
 
-  $: if ($query.isSuccess) setTimeout(() => testScrollPosition(true), 0)
+  $: if (mode === 'scroll' && $query.isSuccess)
+    setTimeout(() => testScrollPosition(true), 0)
 
   /** Sécurité pour évité de fetchNextPage() à l'infini si le rendu n'augmente pas la taille du container */
   const MAX_NO_GROW_OFFSET_HEIGHT = 5
   let lastOffsetHeight = 0
   let noGrowOffsetHeigthCount = 0
   let error = ''
+
+  function handleScroll() {
+    if (mode === 'scroll') testScrollPosition()
+  }
 
   function testScrollPosition(isSuccessCallback = false) {
     const { offsetHeight, scrollTop, scrollHeight } = wrapper
@@ -62,7 +69,7 @@
   class="s-table__wrapper {klass}"
   {style}
   bind:this={wrapper}
-  on:scroll={() => testScrollPosition()}
+  on:scroll={handleScroll}
 >
   <table class="s-table fixed-header" class:dense>
     <slot />
@@ -70,6 +77,13 @@
   {#if $query.isFetchingNextPage || $query.isLoading}
     <div class="centered" style="height: 300px;">
       <Loader />
+    </div>
+  {:else if mode === 'button' && $query.hasNextPage}
+    <div class="d-flex">
+      <div class="flex-grow-1" />
+      <Button on:click={() => $query.fetchNextPage()} class="ma-2">
+        Afficher plus
+      </Button>
     </div>
   {/if}
   {#if error}

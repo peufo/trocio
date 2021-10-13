@@ -9,7 +9,6 @@ import MongoStore from 'connect-mongo'
 import compression from 'compression'
 import createError from 'http-errors'
 import swaggerUI from 'swagger-ui-express'
-import path from 'path'
 
 import type { User } from '../types'
 
@@ -74,7 +73,7 @@ const catchError404: RequestHandler = (req, res, next) => {
 }
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (req.app.get('env') === 'development' || err.message.match(/^public: /)) {
-    const message = err.message.replace(/^public: /, '')
+    const message = err.message?.replace(/^public: /, '') || err
     res.json({ error: true, message })
     console.log(err)
   } else {

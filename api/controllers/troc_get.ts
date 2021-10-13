@@ -1,154 +1,25 @@
 import { RequestHandler } from 'express'
 import mongoose, { FilterQuery, Mongoose } from 'mongoose'
 
-import type { Troc, TrocUserResum } from '../../types'
+import type { Troc } from '../../types'
 import TrocModel from '../models/troc'
 import Article from '../models/article'
 import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
-import { findSpec, lookupIfAdmin } from './troc_utils'
 
 const { ObjectId } = mongoose.Types
 
-export async function userIsAdminOfTroc(trocId: string, userId: string) {
-  const subscribe = await Subscribe.findOne({
-    troc: trocId,
-    user: userId,
-    role: 'admin',
-  })
-  if (!subscribe) throw new Error('User is not admin of troc')
-  return !!subscribe
-}
-
-export async function userIsCashierOfTroc(trocId: string, userId: string) {
-  const subscribe = await Subscribe.findOne({
-    troc: trocId,
-    user: userId,
-    role: { $in: ['admin', 'cashier'] },
-  })
-  if (!subscribe) throw new Error('User is not cashier of troc')
-  return !!subscribe
-}
-
-export async function userIsSubscriberOfTroc(trocId: string, userId: string) {
+export async function getRole(trocId: string, userId: string) {
   const subscribe = await Subscribe.findOne({
     troc: trocId,
     user: userId,
   })
-  if (!subscribe) throw new Error('User is not subscriber of troc')
-  return !!subscribe
-}
-
-export async function userResume(
-  trocId: string,
-  userId: string
-): Promise<TrocUserResum> {
-  // TODO : Adapter la requete pour les client anonymes + pour des groupe
-  // const userQuery = userId ? userId : { $exists: false }
-  // LOOK AT ./scubscribe_get
-
-  const userQuery = userId
-
-  const providedResumPromise = Article.aggregate()
-    .match({ troc: trocId, provider: userQuery })
-    .project({
-      price: true,
-      feeValided: {
-        valided: { $ifNull: ['$fee', 0] },
-      },
-      priceSold: {
-        sold: { $ifNull: ['$price', 0] },
-      },
-      marginSold: {
-        sold: { $ifNull: ['$margin', 0] },
-      },
-    })
-    .group({
-      _id: null,
-      providedCount: { $sum: 1 },
-      providedSum: { $sum: '$price' },
-      feeSum: { $sum: '$feeValided' },
-      soldSum: { $sum: '$priceSold' },
-      marginSum: { $sum: '$marginSold' },
-    })
-    .exec()
-
-  const purchasesResumPromise = Article.aggregate()
-    .match({
-      troc: trocId,
-      buyer: userQuery,
-    })
-    .group({
-      _id: null,
-      purchasesCount: { $sum: 1 },
-      purchasesSum: { $sum: '$price' },
-    })
-    .exec()
-
-  const paymentsResumPromise = Payment.aggregate()
-    .match({ troc: trocId, user: userQuery })
-    .group({
-      _id: null,
-      paymentsCount: { $sum: 1 },
-      paymentsSum: { $sum: '$amount' },
-    })
-    .exec()
-
-  const [providedResum, purchasesResum, paymentsResum] = await Promise.all([
-    providedResumPromise,
-    purchasesResumPromise,
-    paymentsResumPromise,
-  ])
-
-  /**
-   * Récupère les valeurs ou attribut par défault
-   */
-  const {
-    providedCount = 0,
-    providedSum = 0,
-    feeSum = 0,
-    soldSum = 0,
-    marginSum = 0,
-  } = providedResum[0] || {}
-  const { purchasesCount = 0, purchasesSum = 0 } = purchasesResum[0] || {}
-  const { paymentsCount = 0, paymentsSum = 0 } = paymentsResum[0] || {}
-
-  const balance =
-    Math.round(
-      (paymentsSum + soldSum - purchasesSum - feeSum - marginSum) * 100
-    ) / 100
-
-  return {
-    troc: trocId,
-    user: userId,
-    balance,
-    providedCount,
-    providedSum,
-    feeSum,
-    soldSum,
-    marginSum,
-    purchasesCount,
-    purchasesSum,
-    paymentsCount,
-    paymentsSum,
-  }
+  return subscribe.role || null
 }
 
 /**
- * -----------------------------------------------
+ * Return tous les infos nécéssaire au graphique
  */
-
-/**
- * Retourne les spécifications d'un utilisateur sur un troc (tarif, prefix, role)
- */
-export function getSpec(req, res, next) {
-  const { trocId, userId } = req.query
-  findSpec(trocId, userId, (err, spec) => {
-    if (err) return next(err)
-    res.json(spec)
-  })
-}
-
 export function getStats(req, res, next) {
   const { trocId } = req.params
   const { userId, view } = req.query

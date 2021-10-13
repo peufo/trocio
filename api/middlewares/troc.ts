@@ -3,11 +3,7 @@
  */
 
 import type { RequestHandler, Request } from 'express'
-import {
-  userIsAdminOfTroc,
-  userIsCashierOfTroc,
-  userIsSubscriberOfTroc,
-} from '../controllers/troc_get'
+import { getRole } from '../controllers/troc_get'
 
 interface UserTroc {
   trocId: string
@@ -18,8 +14,9 @@ export const ensureUserIsAdmin: RequestHandler = async (req, res, next) => {
   try {
     if (!req.session.user._id) throw Error('Login required')
     const { trocId } = parseRequest(req)
-    await userIsAdminOfTroc(trocId, req.session.user._id)
-    return next()
+    const role = await getRole(trocId, req.session.user._id)
+    if (role === 'admin' || role === 'cashier') return next()
+    throw 'User is not admin of troc'
   } catch (error) {
     return next(error)
   }
@@ -29,8 +26,9 @@ export const ensureUserIsCashier: RequestHandler = async (req, res, next) => {
   try {
     if (!req.session.user._id) return next(Error('Login required'))
     const { trocId } = parseRequest(req)
-    await userIsCashierOfTroc(trocId, req.session.user._id)
-    return next()
+    const role = await getRole(trocId, req.session.user._id)
+    if (role === 'cashier') return next()
+    throw 'User is not cashier of troc'
   } catch (error) {
     return next(error)
   }
@@ -44,7 +42,9 @@ export const ensureUserIsSubscriber: RequestHandler = async (
   try {
     if (!req.session.user._id) return next(Error('Login required'))
     const { trocId } = parseRequest(req)
-    await userIsSubscriberOfTroc(trocId, req.session.user._id)
+    /* getRole throw error if not subscribe */
+    const role = await getRole(trocId, req.session.user._id)
+    if (!role) throw 'User is not subscribe of troc'
     return next()
   } catch (error) {
     return next(error)
@@ -64,11 +64,16 @@ export const ensureUserCanAccessResum: RequestHandler = async (
   if (!req.session.user._id) return next(Error('Login required'))
 
   const { trocId, userId } = parseRequest(req)
+  const role = await getRole(trocId, userId)
+
   if (
     req.session.user?._id !== userId &&
-    !(await userIsCashierOfTroc(trocId, req.session.user._id))
-  )
+    role !== 'admin' &&
+    role !== 'cashier'
+  ) {
     return next(Error(`User can't access to resum`))
+  }
+
   return next()
 }
 

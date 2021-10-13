@@ -1,11 +1,11 @@
 import type { User } from './user'
 import type { Troc } from './troc'
 
-export declare interface SubscribeBase {
+export interface SubscribeBase {
   troc: string
 }
 
-export declare interface Subscribe extends SubscribeBase {
+export interface ISubscribe extends SubscribeBase {
   _id: string
   user: string
   createdAt: date
@@ -27,7 +27,21 @@ export declare interface Subscribe extends SubscribeBase {
   prefix?: string
 }
 
-export declare interface SubscribeLookup extends Subscribe {
+export interface SubscribeLookup extends ISubscribe {
   troc: Partial<Troc>
   user: Partial<User>
+}
+
+/** Résumé des interactions d'un utilisateur avec un troc */
+export interface SubscribeResum extends ISubscribe {
+  balance: number
+  providedCount?: number
+  providedSum?: number
+  feeSum?: number
+  soldSum?: number
+  marginSum?: number
+  purchasesCount?: number
+  purchasesSum?: number
+  paymentsCount?: number
+  paymentsSum?: number
 }

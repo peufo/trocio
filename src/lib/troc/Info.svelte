@@ -246,7 +246,7 @@
 
 {#if activityOpen}
   <div transition:slide|local>
-    <UserResum trocId={troc._id} />
+    <UserResum trocId={troc._id} userId={$user._id} />
     <Divider />
   </div>
 {/if}

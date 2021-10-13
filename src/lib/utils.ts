@@ -1,7 +1,9 @@
 import { quintOut, cubicOut } from 'svelte/easing'
 import printJS from 'print-js'
 import { troc } from './stores.js'
+import type { Article } from 'types'
 
+/** @deprecated */
 export function getHeader(body, verb = 'POST') {
   return {
     method: verb,
@@ -101,14 +103,15 @@ export function renderAmount(
 
 export const STATUTS = ['Proposé', 'Validé', 'Refusé', 'Vendu', 'Récupéré']
 
-export function addStatutField(articles, context = 'organisator') {
-  let isArray = Array.isArray(articles)
-  articles = isArray ? articles : [articles]
-  articles = articles.map(getStatut)
-  return isArray ? articles : articles[0]
+export function addStatutField(articles: Article | Article[]) {
+  if (Array.isArray(articles)) {
+    return articles.map(getStatut)
+  } else {
+    return getStatut(articles)
+  }
 }
 
-export function getStatut(article) {
+export function getStatut(article: Article) {
   if (article.recover) return STATUTS[4]
   if (article.sold) return STATUTS[3]
   if (article.refused) return STATUTS[2]

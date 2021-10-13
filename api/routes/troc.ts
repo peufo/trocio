@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router()
 
-import { getSpec, getStats, search, getTroc } from '../controllers/troc_get'
+import { getStats, search, getTroc } from '../controllers/troc_get'
 import {
   createTroc,
   patchTroc,
@@ -19,17 +19,15 @@ import {
   removeApply,
 } from '../controllers/troc_set'
 // import { checkAdmin } from '../controllers/troc_utils'
-import { ensureUserIsAdmin, ensureUserIsSubscriber } from '../middlewares/troc'
+import { ensureUserIsAdmin } from '../middlewares/troc'
 
-import { resUserResume, resTrocUser } from '../res/troc'
+import { resTrocUser } from '../res/troc'
 
 router
   .get('/', search)
   .post('/', createTroc)
   .patch('/:trocId', ensureUserIsAdmin, patchTroc)
-  /** @deprecated */
-  .get('/resum', ensureUserIsSubscriber, resUserResume)
-  .get('/spec', getSpec)
+
   .get('/:trocId/stats', ensureUserIsAdmin, getStats)
   .get('/:trocId', getTroc)
   .post('/:trocId/admin/:userId', ensureUserIsAdmin, addAdmin, resTrocUser)

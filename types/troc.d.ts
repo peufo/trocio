@@ -1,7 +1,7 @@
 import { Article } from 'types'
 import { User } from 'types'
 import type { PaymentInterface } from './payment'
-import type { Subscribe } from './subscribe'
+import type { ISubscribe } from './subscribe'
 
 /** Période dont est composé l'horaire */
 export declare interface Period {
@@ -77,11 +77,14 @@ export declare interface Troc extends TrocBase {
 /** Information complette avec les informations collaborateurs */
 export declare interface TrocLookup extends Troc {
   /** Role from subscribe */
-  role: Subscribe['role']
+  role: ISubscribe['role']
   creator: User
 }
 
-/** Résumé des interactions d'un utilisateur avec un troc */
+/**
+ * Résumé des interactions d'un utilisateur avec un troc
+ * @deprecated Please, use SubscribeResum
+ */
 export declare interface TrocUserResum {
   troc: string
   user: string
