@@ -3,7 +3,7 @@
   import { Button, Icon, Card } from 'svelte-materialify'
   import { redirect, params, afterPageLoad } from '@roxi/routify'
 
-  import Login from '$lib/form/Login.svelte'
+  import Login from '$lib/user/Login.svelte'
   import { user } from '$lib/user/store'
 
   export let scoped

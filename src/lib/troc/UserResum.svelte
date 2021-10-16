@@ -19,7 +19,7 @@
   export let userId = ''
 
   $: queryResum = useApi<{ trocId: string; userId: string }, SubscribeResum>([
-    '/subscribes/resum',
+    'subscribes/resum',
     { trocId, userId },
   ])
   $: resum = $queryResum.data
@@ -49,7 +49,11 @@
   }
 </script>
 
-<ArticleCreateDialog {trocId} bind:dialogActive={articleCreateDialogActive} />
+<ArticleCreateDialog
+  {trocId}
+  bind:dialogActive={articleCreateDialogActive}
+  {queryResum}
+/>
 
 {#if $queryResum.isLoading}
   <div in:fade|local class="centered" style="height: 160px;">
@@ -62,14 +66,15 @@
 {:else if $queryResum.isSuccess && resum}
   <div in:fade|local>
     <br />
-    <div class="w3-row w3-xlarge" style="padding-left: 7px;">
-      <div class="w3-col s1">&nbsp;</div>
-      <span class="w3-col s8">Solde actuel </span>
-      <span id="balance" class="w3-col s3 w3-right-align">
+    <div class="d-flex">
+      <div class="flex-grow-1" />
+      <h6 class="mr-1">
+        Solde actuel &nbsp;&nbsp;
         {resum.balance.toFixed(2)}
-      </span>
+      </h6>
     </div>
-    <br /><br />
+
+    <br />
     <DetailCard
       title="Ventes"
       free

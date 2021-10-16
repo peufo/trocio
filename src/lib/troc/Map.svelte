@@ -29,7 +29,7 @@
   const dispatch = createEventDispatcher()
 
   let mapId = 'map' + Math.random()
-  let markers = []
+  let markers: L.Marker[] = []
   const icon = L.icon({
     iconUrl: markerIcon,
     iconRetinaUrl: markerIcon2X,

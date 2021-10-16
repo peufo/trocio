@@ -11,7 +11,7 @@
   import logo from '$assets/logo'
   import logoIco from '$assets/favicon.ico'
   import IconLink from '$lib/util/IconLink.svelte'
-  import Login from '$lib/form/Login.svelte'
+  import Login from '$lib/user/Login.svelte'
   import notify from '$lib/notify'
   import { getHeader } from '$lib/utils'
 
