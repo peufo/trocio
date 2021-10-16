@@ -17,7 +17,7 @@
   export let trocId: string
   /** Si le client n'est pas définit, c'est l'utilisateur connecté qui est le fournisseur*/
   export let clientId = ''
-  export let dialogActive = false
+  export let active = false
   export let listMode = false
   export let prefix = ''
 
@@ -157,7 +157,7 @@
   }
 </script>
 
-<Dialog bind:active={dialogActive} class="pa-4">
+<Dialog bind:active class="pa-4">
   <div class="d-flex justify-space-between mb-3">
     <div class="text-h6">
       Proposer {listMode ? `une liste d'` : 'un '}article

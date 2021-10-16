@@ -1,48 +1,49 @@
 <script lang="ts">
   import { Dialog } from 'svelte-materialify'
+  import type { Tarif } from 'types'
+  import { renderAmount } from '$lib/utils'
 
-  import { Tarif } from 'types'
-  import { trocDetails as details } from '$lib/stores.js'
-
-  export let dialogActive
-  export let tarif: Tarif = 
-
+  export let active = false
+  export let tarif: Tarif | undefined
 </script>
 
-<Dialog bind:active={dialogActive} class="pa-4">
-  {#if $details && $details.tarif}
-    <h4>Vous êtes soumis au tarif <b>{$details.tarif.name}</b>:</h4>
+<Dialog bind:active class="pa-4">
+  {#if tarif}
+    <div>
+      <h6>
+        Le tarif <b>{tarif.name}</b> vous est attirbué
+      </h6>
 
-    <h5>Nombre maximum d'article proposés</h5>
-    <br />
-    <div style="text-align: center;">
-      <b>{$details.tarif.maxarticles}</b> <i class="fas fa-cube" />
-    </div>
-    <br /><br />
+      <br />
+      <div class="mb-4">
+        Nombre maximum d'article proposés :
+        <b>{tarif.maxarticles}</b>
+      </div>
 
-    <h5>
-      Frais de traitement
-      <span class="w3-small w3-opacity">Appliqué au dépot de l'article</span>
-    </h5>
-    <br />
-    <div style="text-align: center;">
-      {#each $details.tarif.fee.sort((a, b) => a.price - b.price) as fee}
-        A partir de <b>{fee.price.toFixed(2)} </b><i
-          class="fas fa-arrow-right"
-        /> <b>{fee.value.toFixed(2)}</b>
-        <br />
-      {/each}
-    </div>
-    <br /><br />
+      <div>
+        Frais de traitement
+        <span class="text-caption">( Appliqué au dépot de l'article )</span>
+        :
+      </div>
 
-    <h5>
-      Marge
-      <span class="w3-small w3-opacity">Appliquée à la vente de l'article</span>
-    </h5>
-    <br />
-    <div style="text-align: center;">
-      <b>{$details.tarif.margin * 100}</b> <i class="fas fa-percent" />
+      <div class="mb-4 ml-4">
+        {#each tarif.fee.sort((a, b) => a.price - b.price) as fee}
+          A partir de <b>{renderAmount(fee.price)} </b>
+          <i class="fas fa-arrow-right" />
+          <b>{renderAmount(fee.value)}</b>
+          <br />
+        {/each}
+      </div>
+
+      <div>
+        Marge de l'organisateur
+        <span class="text-caption">( Appliquée à la vente de l'article )</span>
+        :
+        <b>{tarif.margin * 100}</b>%
+      </div>
+
+      <div />
+      <br />
     </div>
-    <br />
   {/if}
 </Dialog>

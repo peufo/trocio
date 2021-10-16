@@ -10,7 +10,6 @@
 
   import { getFields } from '$lib/article/fields'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
-  import { getHeader } from '$lib/utils'
 
   export let trocId: string
   export let userId: string

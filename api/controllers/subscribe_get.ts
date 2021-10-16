@@ -138,7 +138,7 @@ function lookupUser(
  */
 function lookupTarif(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
-  tarifId = '$tarif'
+  tarifId = '$tarifId'
 ): void {
   aggregate
     .lookup({
@@ -171,7 +171,7 @@ function lookupTarif(
 }
 
 /**
- * Add user resum from articles documents
+ * Add user's resum from articles documents
  */
 function lookupResum(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
