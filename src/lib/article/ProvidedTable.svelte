@@ -6,7 +6,8 @@
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import { useInfinitApi } from '$lib/api'
   import notify from '$lib/notify'
-  import type { Article, ParamsArticleAPI } from 'types'
+  import type { ArticleLookup, ParamsArticleAPI } from 'types'
+  import ArticleDetailDialog from '$lib/article/DetailDialog.svelte'
 
   import { getFields } from '$lib/article/fields'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
@@ -16,8 +17,10 @@
 
   let searchValue = ''
   let fields = getFields()
+  let articleSelected: ArticleLookup | undefined = undefined
+  let detailDialogActive = false
 
-  $: queryArticles = useInfinitApi<ParamsArticleAPI, Article[]>([
+  $: queryArticles = useInfinitApi<ParamsArticleAPI, ArticleLookup[]>([
     'articles',
     {
       trocId,
@@ -29,16 +32,16 @@
   ])
   $: articles = $queryArticles.data?.pages.flat() || []
 
-  async function deleteArticle(artId: string) {
-    try {
-      let res = await fetch(`/api/articles/${artId}`, getHeader({}, 'DELETE'))
-      notify.success({ title: 'Article supprimé', icon: 'far fa-trash-alt' })
-      return
-    } catch (error) {
-      console.trace(error)
-    }
+  function handleClick(event: { detail: ArticleLookup }) {
+    articleSelected = event.detail
+    detailDialogActive = true
   }
 </script>
+
+<ArticleDetailDialog
+  bind:active={detailDialogActive}
+  article={articleSelected}
+/>
 
 {#if articles.length}
   <MagicTable
@@ -59,7 +62,7 @@
         <MagicTableHeaders {fields} />
       </tr>
     </thead>
-    <MagicTableBody {fields} items={articles} />
+    <MagicTableBody {fields} items={articles} on:click={handleClick} />
   </MagicTable>
 {:else}
   <div class="text-center text--secondary pa-5">Aucun article proposé</div>

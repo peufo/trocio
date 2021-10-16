@@ -1,7 +1,7 @@
 import { quintOut, cubicOut } from 'svelte/easing'
 import printJS from 'print-js'
 import { troc } from './stores.js'
-import type { Article } from 'types'
+import type { Article, ArticleLookup } from 'types'
 
 /** @deprecated */
 export function getHeader(body, verb = 'POST') {
@@ -111,7 +111,7 @@ export function addStatutField(articles: Article | Article[]) {
   }
 }
 
-export function getStatut(article: Article) {
+export function getStatut(article: Article | ArticleLookup) {
   if (article.recover) return STATUTS[4]
   if (article.sold) return STATUTS[3]
   if (article.refused) return STATUTS[2]

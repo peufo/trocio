@@ -20,8 +20,9 @@ import {
 import { checkLogin } from '../controllers/user_utils'
 
 router
-  .post('/', checkLogin, createArticle)
   .get('/', searchArticle)
+  .post('/', checkLogin, createArticle)
+  .delete('/', deleteArticle)
   .patch('/', checkLogin, patchArticle)
   .post('/edit', checkLogin, editArticle)
   .post('/giveback', checkLogin, goBackArticle)
@@ -30,7 +31,6 @@ router
   .get('/provided', getProvidedArticles)
   .get('/purschases', getPurchasesArticles)
   .get('/givebacks', getGivbacksArticles)
-  .delete('/:articleId', checkLogin, deleteArticle)
   .get('/:articleId', getArticle)
 
 export default router
