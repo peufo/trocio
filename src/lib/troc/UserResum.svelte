@@ -3,16 +3,16 @@
   import { Button } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
-  import { faFileDownload, faPlus } from '@fortawesome/free-solid-svg-icons'
+  import { faPlus } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
   import 'dayjs/locale/fr'
 
+  import { renderAmount } from '$lib/utils'
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
-
   import IconLink from '$lib/util/IconLink.svelte'
   import { useApi } from '$lib/api'
   import type { SubscribeResum } from 'types'
@@ -78,7 +78,7 @@
       <div class="flex-grow-1" />
       <h6 class="mr-1">
         Solde actuel &nbsp;&nbsp;
-        {resum.balance.toFixed(2)}
+        {renderAmount(resum.balance)}
       </h6>
     </div>
 

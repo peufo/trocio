@@ -7,6 +7,8 @@
   import { slide } from 'svelte/transition'
   import { List, ListItem, Icon } from 'svelte-materialify'
 
+  import { renderAmount } from '$lib/utils'
+
   export let count = 0
   export let title = ''
   export let sum = 0
@@ -39,9 +41,9 @@
 
       <slot name="head" />
     </div>
-    <span class="w3-col s2 w3-right-align w3-large clickHandler"
-      >{sum.toFixed(2)}</span
-    >
+    <span class="w3-col s2 w3-right-align w3-large clickHandler">
+      {renderAmount(sum)}
+    </span>
   </div>
 
   {#if show}
