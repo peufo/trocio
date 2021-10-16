@@ -10,7 +10,7 @@
   import notify from '$lib/notify'
   import RULES from '$lib/rules'
 
-  //TODO: Gestion des création d'utilisateur par un caissier
+  // TODO: Gestion des création d'utilisateur par un caissier
 
   export let mailInput: HTMLInputElement = null // For focus
 

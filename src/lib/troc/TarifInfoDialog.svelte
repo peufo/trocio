@@ -1,9 +1,12 @@
-<script>
+<script lang="ts">
   import { Dialog } from 'svelte-materialify'
 
+  import { Tarif } from 'types'
   import { trocDetails as details } from '$lib/stores.js'
 
   export let dialogActive
+  export let tarif: Tarif = 
+
 </script>
 
 <Dialog bind:active={dialogActive} class="pa-4">

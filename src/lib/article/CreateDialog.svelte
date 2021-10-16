@@ -9,14 +9,17 @@
     faList,
     faPlus,
   } from '@fortawesome/free-solid-svg-icons'
-  import type { ArticleCreate } from 'types'
+  import type { Article, ArticleCreate } from 'types'
+  import { api, useApi } from '$lib/api'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
+  const queryClient = useQueryClient()
   export let trocId: string
+  /** Si le client n'est pas définit, c'est l'utilisateur connecté qui est le fournisseur*/
+  export let clientId = ''
   export let dialogActive = false
   export let listMode = false
   export let prefix = ''
-  /** Si le client n'est pas définit, c'est l'utilisateur connecté qui est le fournisseur*/
-  export let client = ''
 
   let newName = ''
   let newPrice: number
@@ -34,8 +37,37 @@
     prefix ? `${prefix}3 ; ` : ''
   } Mon troisième article ; 5,40\n ...`
 
-  const createArticle = useCreateArticle()
-  const createArticles = useCreateArticles()
+  const createArticle = useMutation(
+    (article: ArticleCreate) =>
+      api<ArticleCreate, Article>('/api/articles', {
+        method: 'post',
+        data: article,
+        success: 'Article ajouté',
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('articles')
+        queryClient.invalidateQueries('subscribes/resum')
+      },
+    }
+  )
+
+  const createArticles = useMutation(
+    (articles: ArticleCreate[]) =>
+      api<ArticleCreate[], Article[]>('/api/articles', {
+        method: 'post',
+        data: articles,
+        success: `${articles.length} article${
+          articles.length > 1 ? 's' : ''
+        } ajouté${articles.length > 1 ? 's' : ''}`,
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('articles')
+        queryClient.invalidateQueries('subscribes/resum')
+      },
+    }
+  )
 
   /**
    * Parse la chaîne de la textarea en liste d'articles.
@@ -78,7 +110,7 @@
       name,
       price,
       troc: trocId,
-      provider: client,
+      provider: clientId,
     })
   }
 
@@ -120,7 +152,7 @@
       name,
       price,
       troc: trocId,
-      provider: client,
+      provider: clientId,
     })
   }
 </script>
@@ -212,7 +244,7 @@
                 name: newName,
                 price: newPrice,
                 troc: trocId,
-                provider: client,
+                provider: clientId,
               })}
           >
             Valider

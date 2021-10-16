@@ -10,6 +10,7 @@
 
   import { getFields } from '$lib/article/fields'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
+  import { getHeader } from '$lib/utils'
 
   export let trocId: string
   export let userId: string
@@ -29,30 +30,38 @@
   ])
   $: articles = $queryArticles.data?.pages.flat() || []
 
-  async function deleteArticle(artId) {
+  async function deleteArticle(artId: string) {
     try {
       let res = await fetch(`/api/articles/${artId}`, getHeader({}, 'DELETE'))
       notify.success({ title: 'Article supprimé', icon: 'far fa-trash-alt' })
       return
     } catch (error) {
-      notify.error(error)
       console.trace(error)
     }
   }
 </script>
 
-<MagicTable query={queryArticles} mode="button">
-  <thead>
-    <tr>
-      <th colspan="2" style="padding-left: 0px;">
-        <SearchTextField
-          bind:search={searchValue}
-          placeholder="Chercher un article"
-        />
-      </th>
+{#if articles.length}
+  <MagicTable
+    query={queryArticles}
+    mode="button"
+    class="mb-2"
+    style="min-height: 330px;"
+  >
+    <thead>
+      <tr>
+        <th colspan="2" style="padding-left: 0px;">
+          <SearchTextField
+            bind:search={searchValue}
+            placeholder="Chercher un article"
+          />
+        </th>
 
-      <MagicTableHeaders {fields} />
-    </tr>
-  </thead>
-  <MagicTableBody {fields} items={articles} />
-</MagicTable>
+        <MagicTableHeaders {fields} />
+      </tr>
+    </thead>
+    <MagicTableBody {fields} items={articles} />
+  </MagicTable>
+{:else}
+  <div class="text-center text--secondary pa-5">Aucun article proposé</div>
+{/if}
