@@ -45,10 +45,48 @@
     }
   )
 
+  const queryEditName = useMutation(
+    (data: { articleId: string; newName: string }) =>
+      api('/api/articles/edit-name', {
+        method: 'post',
+        data,
+        success: 'Nom modifé',
+      }),
+    {
+      onSuccess: (newArticle) => {
+        // @ts-ignore
+        article.name = newArticle.name
+        queryClient.invalidateQueries('articles')
+      },
+    }
+  )
+
+  const queryEditPrice = useMutation(
+    (data: { articleId: string; newPrice: string }) =>
+      api('/api/articles/edit-price', {
+        method: 'post',
+        data,
+        success: 'Prix mis à jour',
+      }),
+    {
+      onSuccess: (newArticle) => {
+        // @ts-ignore
+        article.price = newArticle.price
+        queryClient.invalidateQueries('articles')
+      },
+    }
+  )
+
   function handleEditName() {
     const newName = prompt('Nouveau nom', article?.name)
-    if (!newName) return
-    notify.info('TODO')
+    if (!newName || !article) return
+    $queryEditName.mutate({ articleId: article._id, newName })
+  }
+
+  function handleEditPrice() {
+    const newPrice = prompt('Nouveau prix', article?.price)
+    if (!newPrice || !article) return
+    $queryEditPrice.mutate({ articleId: article._id, newPrice })
   }
 </script>
 
@@ -90,7 +128,7 @@
           Supprimer
         </Button>
         <Button text on:click={handleEditName}>Modifier le nom</Button>
-        <Button text>Modifier le prix</Button>
+        <Button text on:click={handleEditPrice}>Modifier le prix</Button>
       </div>
     {/if}
   </Dialog>
