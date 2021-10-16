@@ -3,36 +3,47 @@ import User from '../models/user'
 import Troc from '../models/troc'
 
 import { getRoles, createArticleContext } from './article_utils'
-import { findSpec, getFee, getMargin } from './troc_utils'
+import { findSpec, getTarif, getFee, getMargin } from './troc_utils'
 import { RequestHandler } from 'express'
 import { getRole } from './troc_get'
 
-export async function createArticle(req, res, next) {
+/**
+ * Création d'article permise
+ * - Dans la limite du tarif attribué
+ * - L'utilisateur est le fournisseur de l'article ou un cassier du troc
+ */
+export const createArticle: RequestHandler = async (req, res, next) => {
   const isArray = Array.isArray(req.body)
   const articles = isArray ? req.body : [req.body]
   const providerId = articles[0].provider || req.session.user._id
   const trocId = articles[0].troc
 
-  console.log({ providerId })
-
   try {
+    if (!req.session.user) throw 'Login is required'
+
+    // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
+    if (providerId !== req.session.user._id) {
+      const role = await getRole(trocId, req.session.user._id)
+      if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
+    }
+
     // Trouve le troc et le tarif correspondant
-    const [troc, { tarif }] = await Promise.all([
-      Troc.findById(trocId).then((troc) => {
-        if (!troc) throw Error('Troc is not found !')
-        if (troc.isClosed) throw Error('Troc is closed')
-        return troc
-      }),
-      findSpec(trocId, providerId),
-    ])
+    const troc = await Troc.findById(trocId).exec()
+    if (!troc) throw 'Troc is not found !'
+    const tarif = await getTarif(trocId, providerId)
+    if (!tarif) throw 'Tarif is not found !'
 
-    console.log({ troc, tarif })
-
-    //TODO: Verifier la limite du nombre d'article
+    // Controle la limite du nombre d'article
+    const articlesCount = await Article.countDocuments({
+      troc: trocId,
+      provider: providerId,
+    })
+    if (articlesCount + articles.length > tarif.maxarticles)
+      throw `The limit of ${tarif.maxarticles} articles is reached`
 
     // Attribution d'une ref
     // Met a jour les state du troc
-    let newRef = troc.articlelastref + 1
+    const newRef = troc.articlelastref + 1
     troc.articlelastref += articles.filter((art) => !art.ref).length
     troc.articles += articles.length
     troc.save()
@@ -44,37 +55,31 @@ export async function createArticle(req, res, next) {
     })
 
     let nbAttributedRef = 0
-    Promise.all(
+    await Promise.all(
       articles.map((art) => {
-        return new Promise((resolve, reject) => {
-          art = new Article(art)
-          if (!art.ref) art.ref = newRef + nbAttributedRef++
-          if (art.price === null) art.price = 0
-          else {
-            art.fee = getFee(art, tarif)
-            art.margin = getMargin(art, tarif)
-          }
-          art.save((err) => {
-            if (err) return reject(err)
-            else return resolve(art)
-          })
-        })
+        art = new Article(art)
+        if (!art.ref) art.ref = newRef + nbAttributedRef++
+        if (art.price === null) art.price = 0
+        else {
+          art.fee = getFee(art, tarif)
+          // TODO: bizard de caclulé la marge maintenant
+          art.margin = getMargin(art, tarif)
+        }
+        return art.save()
       })
     )
-      .catch(next)
-      .then((articles) => {
-        if (isArray) res.json(articles)
-        else res.json(articles[0])
-      })
+
+    if (isArray) res.json(articles)
+    else res.json(articles[0])
   } catch (error) {
     next(error)
   }
 }
 
 /**
- * Suppression d'un article permise si:
- * L'article n'est pas validé
- * L'utilisateur est le fournisseur de l'article ou un cassier du troc
+ * Suppression d'un article permise si
+ * - L'article n'est pas validé
+ * - L'utilisateur est le fournisseur de l'article ou un cassier du troc
  */
 export const deleteArticle: RequestHandler = async (req, res, next) => {
   try {
@@ -82,7 +87,7 @@ export const deleteArticle: RequestHandler = async (req, res, next) => {
     if (!req.session.user) throw 'Login is required'
     if (!articleId) throw 'articleId query is required'
 
-    const article = await Article.findOne({ _id: articleId }).exec()
+    const article = await Article.findById(articleId).exec()
     if (!article) throw 'Article not found'
     if (article.valided) throw `Valided article can't be delete`
 
@@ -103,6 +108,76 @@ export const deleteArticle: RequestHandler = async (req, res, next) => {
   }
 }
 
+/**
+ * Modification du nom d'un article permis si
+ * - L'utilisateur est le fournisseur de l'article ou un cassier du troc
+ */
+export const editName: RequestHandler<
+  void,
+  void,
+  { articleId: string; newName: string }
+> = async (req, res, next) => {
+  let { articleId, newName } = req.body
+  try {
+    if (!articleId) throw 'articleId string is required in body'
+    if (!newName) throw 'newName number is required in body'
+
+    const article = await Article.findById(articleId).exec()
+
+    // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
+    if (article.provider !== req.session.user._id) {
+      const role = await getRole(article.troc, req.session.user._id)
+      if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
+    }
+
+    article.name = newName
+    await article.save()
+    res.json(article)
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Modification du prix d'un article permis si
+ * - L'article n'est pas vendu
+ * - L'utilisateur est le fournisseur de l'article ou un cassier du troc
+ * TODO: ne permetre qu'un baisse du prix si l'article est validé ?
+ */
+export const editPrice: RequestHandler<
+  void,
+  void,
+  { articleId: string; newPrice: number }
+> = async (req, res, next) => {
+  let { articleId, newPrice } = req.body
+  try {
+    if (!articleId) throw 'articleId string is required in body'
+    if (!newPrice) throw 'newPrice number is required in body'
+
+    const article = await Article.findById(articleId).exec()
+    if (article.sold) throw `Solded article's price can't be edited`
+
+    // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
+    if (article.provider !== req.session.user._id) {
+      const role = await getRole(article.troc, req.session.user._id)
+      if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
+    }
+
+    // TODO: Avertir l'organisateur si ce n'est pas lui qui la fait la demande et inversément
+
+    article.price = newPrice
+    await article.save()
+    res.json(article)
+  } catch (error) {
+    next(error)
+  }
+}
+
+// TODO: A REVOIRE à partir d'ici
+// ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
+
 export const goBackArticle: RequestHandler = async (req, res, next) => {
   const errors = []
   const ids = req.body.map((a) => a._id)
@@ -119,37 +194,6 @@ export const goBackArticle: RequestHandler = async (req, res, next) => {
     })
     if (errors.length) return next(errors[0])
     res.json(articles)
-  })
-}
-
-export function createNewPriceRequest(req, res, next) {
-  let { _id, price } = req.body
-  if (!_id || !price) return next(Error('_id and price are request'))
-
-  Article.findOne({ _id: _id }).exec((err, article) => {
-    if (err || !article) return next(err || Error('Article not found'))
-
-    getRoles(req.session.user._id, article, (err, roles) => {
-      if (err) return next(err)
-      if (roles.indexOf('cashier') == -1)
-        return next(Error('You need to be a cashier for this operation'))
-
-      article.newPriceRequest = {
-        applicant: req.session.user._id,
-        createdAt: new Date(),
-        price: price,
-      }
-
-      article.save((err) => {
-        if (err) return next(err)
-        res.json({
-          success: true,
-          message: 'New price request is created',
-          data: article,
-        })
-        //TODO: add Push notify to provider
-      })
-    })
   })
 }
 
@@ -368,7 +412,7 @@ export default {
   editArticle,
   deleteArticle,
   goBackArticle,
-  createNewPriceRequest,
+  editPrice,
   acceptNewPriceRequest,
   patchArticle,
 }

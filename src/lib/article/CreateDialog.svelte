@@ -2,7 +2,6 @@
   import { fade, slide } from 'svelte/transition'
   import { Dialog, Button, Textarea, TextField } from 'svelte-materialify'
 
-  import { useCreateArticle, useCreateArticles } from '$lib/article/store'
   import IconLink from '$lib/util/IconLink.svelte'
   import {
     faCircleNotch,
@@ -10,7 +9,7 @@
     faPlus,
   } from '@fortawesome/free-solid-svg-icons'
   import type { Article, ArticleCreate } from 'types'
-  import { api, useApi } from '$lib/api'
+  import { api } from '$lib/api'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   const queryClient = useQueryClient()

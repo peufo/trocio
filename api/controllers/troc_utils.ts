@@ -1,5 +1,11 @@
+import mongoose from 'mongoose'
+
 import Troc from '../models/troc'
-import Subsribe from '../models/subscribe'
+import Subscribe from '../models/subscribe'
+import { lookupTarif } from './subscribe_get'
+import type { Tarif } from '../../types'
+
+const { ObjectId } = mongoose.Types
 const noop: Callback = (err) => {}
 
 type Callback = (err?: Error | null, returnValue?: any) => any
@@ -34,6 +40,20 @@ export async function populateTrocUser(trocId: string) {
     .exec()
 }
 
+export async function getTarif(trocId: string, userId: string): Promise<Tarif> {
+  const aggregate = Subscribe.aggregate()
+  aggregate.match({
+    user: ObjectId(userId),
+    troc: ObjectId(trocId),
+  })
+  lookupTarif(aggregate)
+  const subscribes = await aggregate.exec()
+  return subscribes[0].tarif
+}
+
+/**
+ * @deprecated please use getTarif
+ */
 export async function findSpec(troc, user, cb: Callback = noop) {
   if (!troc) return cb(Error('troc query is required'))
   troc = await Troc.findById(troc, { tarif: 1, trader: 1 }).exec()
@@ -67,7 +87,9 @@ export function getMargin(art, tarif) {
   }
 }
 
-/** A SUPPRIMER */
+/**
+ * @deprecated
+ */
 export function lookupIfAdmin(troc, userId, cb: Callback) {
   let isAdmin = troc.admin.map((a) => a.toString()).indexOf(userId) != -1
   if (isAdmin) {

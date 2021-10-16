@@ -101,9 +101,9 @@ export const getSubscriber: RequestHandler = async (req, res, next) => {
 }
 
 /**
- * Replace user as id by user object {name, mail}
+ * Update aggregate for replace user as id by user object {name, mail}
  */
-function lookupUser(
+export function lookupUser(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
   userId = '$user'
 ): void {
@@ -134,9 +134,9 @@ function lookupUser(
 }
 
 /**
- * Lookup tarif from troc
+ * Update aggregate for lookup tarif from troc
  */
-function lookupTarif(
+export function lookupTarif(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
   tarifId = '$tarifId'
 ): void {
@@ -171,9 +171,9 @@ function lookupTarif(
 }
 
 /**
- * Add user's resum from articles documents
+ * Update aggregate for add user's resum from articles documents
  */
-function lookupResum(
+export function lookupResum(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
   userId = '$user',
   trocId = '$troc'

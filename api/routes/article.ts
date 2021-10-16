@@ -3,11 +3,12 @@ const router = express.Router()
 
 import {
   createArticle,
-  editArticle,
   deleteArticle,
+  editName,
+  editPrice,
+  editArticle,
   goBackArticle,
   patchArticle,
-  createNewPriceRequest,
   acceptNewPriceRequest,
 } from '../controllers/article_set'
 import {
@@ -21,12 +22,14 @@ import { checkLogin } from '../controllers/user_utils'
 
 router
   .get('/', searchArticle)
-  .post('/', checkLogin, createArticle)
+  .post('/', createArticle)
   .delete('/', deleteArticle)
+  .post('/edit-name', editName)
+  .post('/edit-price', editPrice)
+  // TODO: a revoir
   .patch('/', checkLogin, patchArticle)
   .post('/edit', checkLogin, editArticle)
   .post('/giveback', checkLogin, goBackArticle)
-  // .post('/newprice', checkLogin, createNewPriceRequest)
   // .post('/acceptnewprice', checkLogin, acceptNewPriceRequest)
   .get('/provided', getProvidedArticles)
   .get('/purschases', getPurchasesArticles)
