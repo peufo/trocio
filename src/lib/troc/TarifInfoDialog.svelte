@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Dialog } from 'svelte-materialify'
+  import { Dialog, Button } from 'svelte-materialify'
   import type { Tarif } from 'types'
   import { renderAmount } from '$lib/utils'
 
@@ -14,7 +14,6 @@
         Le tarif <b>{tarif.name}</b> vous est attirbué
       </h6>
 
-      <br />
       <div class="mb-4">
         Nombre maximum d'article proposés :
         <b>{tarif.maxarticles}</b>
@@ -44,6 +43,11 @@
 
       <div />
       <br />
+
+      <div class="d-flex">
+        <div class="flex-grow-1" />
+        <Button on:click={() => (active = false)}>ok merci</Button>
+      </div>
     </div>
   {/if}
 </Dialog>

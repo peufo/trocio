@@ -22,10 +22,13 @@
   export let prefix = ''
 
   let newName = ''
-  let newPrice: number
-
+  let newPrice = ''
+  /** Contenu de la textarea en mode list */
+  let newArticles = ''
   let listArticles: ArticleCreate[] = []
   let listArticlesError = ''
+
+  let textareaDesignation: HTMLTextAreaElement | undefined
 
   $: listPlaceHolder = `\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${
     prefix ? '[ Référence ] ' : ''
@@ -46,6 +49,9 @@
       }),
     {
       onSuccess: () => {
+        newName = ''
+        newPrice = ''
+        textareaDesignation?.focus()
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
       },
@@ -63,6 +69,9 @@
       }),
     {
       onSuccess: () => {
+        newArticles = ''
+        listArticles = []
+        listArticlesError = ''
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
       },
@@ -73,9 +82,8 @@
    * Parse la chaîne de la textarea en liste d'articles.
    * Si la chaîne est invalide, l'erreur est renvoyer dans listArticlesError
    */
-  function handleInputList(event) {
-    let value = event.target.value
-
+  function handleInputList() {
+    let value = newArticles
     listArticles = []
     listArticlesError = ''
 
@@ -178,6 +186,7 @@
     <div in:fade|local>
       <Textarea
         on:input={handleInputList}
+        bind:value={newArticles}
         rows={10}
         placeholder={listPlaceHolder}
         error={!!listArticlesError}
@@ -216,7 +225,12 @@
     </div>
   {:else}
     <div in:fade|local>
-      <Textarea bind:value={newName} rows={2} autogrow>Désignation</Textarea>
+      <Textarea
+        bind:value={newName}
+        rows={2}
+        autogrow
+        bind:textarea={textareaDesignation}>Désignation</Textarea
+      >
 
       <div class="d-flex mt-3">
         <TextField bind:value={newPrice} type="number" min="0">Prix</TextField>
@@ -242,7 +256,7 @@
             on:click={() =>
               $createArticle.mutate({
                 name: newName,
-                price: newPrice,
+                price: Number(newPrice),
                 troc: trocId,
                 provider: clientId,
               })}
