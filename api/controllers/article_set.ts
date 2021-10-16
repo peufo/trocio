@@ -5,6 +5,7 @@ import Troc from '../models/troc'
 import { getRoles, createArticleContext } from './article_utils'
 import { findSpec, getFee, getMargin } from './troc_utils'
 import { RequestHandler } from 'express'
+import { getRole } from './troc_get'
 
 export async function createArticle(req, res, next) {
   const isArray = Array.isArray(req.body)
@@ -70,18 +71,36 @@ export async function createArticle(req, res, next) {
   }
 }
 
-export function deleteArticle(req, res, next) {
-  Article.findOne({ _id: req.params.articleId }, (err, art) => {
-    if (err || !art) return next(err || Error('Article not found'))
-    if (art.valided) return next(Error(`Valided article can't be delete`))
-    art.remove((err) => {
-      if (err) return next(err)
-      res.json({
-        success: true,
-        message: `Article ${req.params.articleId} is removed`,
-      })
+/**
+ * Suppression d'un article permise si:
+ * L'article n'est pas validé
+ * L'utilisateur est le fournisseur de l'article ou un cassier du troc
+ */
+export const deleteArticle: RequestHandler = async (req, res, next) => {
+  try {
+    const { articleId } = req.body
+    if (!req.session.user) throw 'Login is required'
+    if (!articleId) throw 'articleId query is required'
+
+    const article = await Article.findOne({ _id: articleId }).exec()
+    if (!article) throw 'Article not found'
+    if (article.valided) throw `Valided article can't be delete`
+
+    // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
+    if (article.provider !== req.session.user._id) {
+      const role = await getRole(article.troc, req.session.user._id)
+      if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
+    }
+
+    await article.remove()
+
+    res.json({
+      success: true,
+      message: `Article ${articleId} is removed`,
     })
-  })
+  } catch (error) {
+    next(error)
+  }
 }
 
 export const goBackArticle: RequestHandler = async (req, res, next) => {

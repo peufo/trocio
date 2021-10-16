@@ -14,7 +14,7 @@ export async function getRole(trocId: string, userId: string) {
     troc: trocId,
     user: userId,
   })
-  return subscribe.role || null
+  return subscribe?.role || null
 }
 
 /**

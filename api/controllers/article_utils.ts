@@ -21,7 +21,9 @@ export function createArticleContext(articles, cb) {
     )
   })
 }
-
+/**
+ * @deprecated Please use import { getRole } from '../controllers/troc_get'
+ */
 export function getRoles(userId, art, cb) {
   //Verifie si l'utilisateur est caissier ou admin
   Troc.findOne({ _id: art.troc }, { admin: 1, cashier: 1 }, (err, troc) => {
