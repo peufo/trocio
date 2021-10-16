@@ -81,7 +81,7 @@
   {:else if mode === 'button' && $query.hasNextPage}
     <div class="d-flex">
       <div class="flex-grow-1" />
-      <Button on:click={() => $query.fetchNextPage()} class="ma-2">
+      <Button on:click={() => $query.fetchNextPage()} class="ma-2" depressed>
         Afficher plus
       </Button>
     </div>

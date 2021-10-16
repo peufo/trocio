@@ -4,11 +4,13 @@
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import { faFileDownload, faPlus } from '@fortawesome/free-solid-svg-icons'
+  import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
   import 'dayjs/locale/fr'
 
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'
+  import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
 
   import IconLink from '$lib/util/IconLink.svelte'
@@ -25,15 +27,12 @@
   $: resum = $queryResum.data
 
   let articleCreateDialogActive = false
+  let tarifInfoDialogActive = false
+  let providedShow = false
+  let paymentShow = false
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
-
-  //Création d'article (buttons)
-  let importArticlesListOpen = false //Modal popup for import list of articles
-  let paymentShow = false
-
-  let providedShow = false
 
   function print() {
     console.log('TODO, server endpoint provid resum.pdf')
@@ -47,12 +46,21 @@
     providedShow = true
     articleCreateDialogActive = true
   }
+
+  function clickOpenTarifInfo() {
+    tarifInfoDialogActive = true
+  }
 </script>
 
 <ArticleCreateDialog
   {trocId}
-  bind:dialogActive={articleCreateDialogActive}
+  bind:active={articleCreateDialogActive}
   {queryResum}
+/>
+
+<TarifInfoDialog
+  tarif={$queryResum.data?.tarif}
+  bind:active={tarifInfoDialogActive}
 />
 
 {#if $queryResum.isLoading}
@@ -86,12 +94,21 @@
         <!-- Provide button -->
         <span style="margin-left: 30px;">
           <!-- Bonton pour proposer un articles -->
-          {#if !importArticlesListOpen}
-            <Button text dense on:click={clickOpenCreateArticle}>
-              <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
-              article
-            </Button>
-          {/if}
+          <Button text dense on:click={clickOpenCreateArticle}>
+            <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
+            article
+          </Button>
+
+          <!-- Bonton pour proposer un articles -->
+          <Button text dense on:click={clickOpenTarifInfo}>
+            <IconLink
+              icon={faQuestionCircle}
+              opacity
+              size="1.1em"
+              class="mr-2"
+            />
+            Frais
+          </Button>
 
           <!-- Bonton pour télécharger le fichier .csv -->
           <!--
