@@ -135,5 +135,6 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           envs: TROCIO_ADMIN,TROCIO_DB,TROCIO_SECRET_STRING_COOKIE,TROCIO_SMTP_PASS,TROCIO_API_PORT,TROCIO_FRONT_PORT,TROCIO_OCD_API_KEY
           script: |
+            [ -e ".nvm/.profile" ] && . ".nvm/.profile"
             cd trocio
             npm run serve
