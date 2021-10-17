@@ -219,8 +219,8 @@ router
           prefix,
           validedByUser: true,
           tarifId:
-            troc.tarif.find((tarif) => tarif.apply?.includes(sub.userId))?._id ||
-            defaultTarifId,
+            troc.tarif.find((tarif) => tarif.apply?.includes(sub.userId))
+              ?._id || defaultTarifId,
         }
 
         if (sub) {
@@ -248,9 +248,9 @@ router
           sub.trocId = sub.troc
           sub.user = undefined
           sub.troc = undefined
-          sub.tarifId:
-            troc.tarif.find((tarif) => tarif.apply?.includes(sub.userId))?._id ||
-            defaultTarifId
+          sub.tarifId =
+            troc.tarif.find((tarif) => tarif.apply?.includes(sub.userId))
+              ?._id || defaultTarifId
           return sub.save()
         })
       )
