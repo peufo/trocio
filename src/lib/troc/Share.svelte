@@ -16,7 +16,7 @@
   export let label = 'Partager'
   export let open = false
 
-  $: url = `https:${document.location.host}/trocs/${troc._id}`
+  $: url = `https://${document.location.host}/trocs/${troc._id}`
 
   function copyLink() {
     navigator.clipboard
