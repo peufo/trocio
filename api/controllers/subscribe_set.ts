@@ -7,6 +7,10 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
     const { trocId } = req.body
     if (!req.session.user) throw 'Login is required'
     if (!trocId) throw 'trocId string is required on body'
+    const troc = await Troc.findById(trocId).exec()
+    if (!troc) throw 'Troc not found'
+
+    const tarif = troc.tarif.find((t) => t.bydefault)
 
     // Verifie si un sub n'éxiste pas déjà
     const oldSubscribe = await Subscribe.findOne({
@@ -19,9 +23,8 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
       trocId,
       userId: req.session.user._id,
       validedByUser: true,
+      tarifId: tarif._id,
     })
-    const troc = await Troc.findById(trocId).exec()
-    if (!troc) throw 'Troc not found'
     troc.subscriber++
     await troc.save()
     await subscribe.save()
