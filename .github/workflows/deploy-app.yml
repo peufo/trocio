@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    needs: [build]
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
