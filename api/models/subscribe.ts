@@ -26,7 +26,7 @@ let subscribeModel = new Schema({
   validedByTroc: { type: Boolean, default: false },
 
   /** Réference vers le tarif qui est attribué au participant */
-  tarifId: { type: ObjectId, ref: 'troc.tarif' },
+  tarifId: { type: ObjectId, ref: 'troc.tarif', required: true },
 
   /** Prefix pour les traders  */
   prefix: { type: String, uppercase: true, required: requiredIfRoleIsTrader },
