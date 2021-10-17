@@ -265,12 +265,6 @@
             <p>Validez les articles proposés par vos fournisseurs.</p>
             <p>Vendez ou rendez votre stock.</p>
             <p>
-              Acceptez des retours en fonction de votre politique.
-              <span class="warning">
-                <i class="fas fa-exclamation-triangle" />&nbsp; En développement
-              </span>
-            </p>
-            <p>
               Visualisez le compte de vos clients et effectuez des paiements
             </p>
           </div>
@@ -286,11 +280,6 @@
       <div class="feature-content">
         <p>Testez l'application de manière libre et privée.</p>
         <p>Formez vos caissiers afin qu'ils soient parés le jour J.</p>
-        <p>
-          <span class="warning">
-            <i class="fas fa-exclamation-triangle" />&nbsp; En développement
-          </span>
-        </p>
       </div>
     </div>
 
