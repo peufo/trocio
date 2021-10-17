@@ -8,6 +8,6 @@ jobs:
   build:
     uses: peufone/trocio/.github/workflows/build-app.yml@dev-vite
   deployApp:
+    uses: peufone/trocio/.github/workflows/deploy-app.yml@dev-vite
     with:
       environment: 'Nestor - Labo'
-    uses: peufone/trocio/.github/workflows/deploy-app.yml@dev-vite
