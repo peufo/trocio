@@ -1,22 +1,29 @@
+import { RequestHandler } from 'express'
 import Subscribe from '../models/subscribe'
 import Troc from '../models/troc'
 
-export async function createSubscribe(req, res, next) {
-  let { troc } = req.body
-  if (!req.session.user) return next(Error('Login is required'))
-  if (!troc) return next(Error('Troc is required on body'))
+export const createSubscribe: RequestHandler = async (req, res, next) => {
   try {
-    let subscribe = await Subscribe.findOne({
-      troc,
-      user: req.session.user._id,
-      validedByUser: true,
+    const { trocId } = req.body
+    if (!req.session.user) throw 'Login is required'
+    if (!trocId) throw 'trocId string is required on body'
+
+    // Verifie si un sub n'éxiste pas déjà
+    const oldSubscribe = await Subscribe.findOne({
+      trocId,
+      userId: req.session.user._id,
     }).exec()
-    if (subscribe) throw Error('Subscription already exist')
-    subscribe = new Subscribe({ troc, user: req.session.user._id })
-    troc = await Troc.findById(troc).exec()
-    if (!troc) throw Error('Troc not found')
+    if (oldSubscribe) throw 'Subscription already exist'
+
+    const subscribe = new Subscribe({
+      trocId,
+      userId: req.session.user._id,
+      validedByUser: true,
+    })
+    const troc = await Troc.findById(trocId).exec()
+    if (!troc) throw 'Troc not found'
     troc.subscriber++
-    troc.save()
+    await troc.save()
     await subscribe.save()
     res.json(subscribe)
   } catch (error) {

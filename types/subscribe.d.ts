@@ -3,12 +3,12 @@ import type { Troc, Tarif } from './troc'
 import type Tarif__SvelteComponent_ from '$lib/troc/Tarif.svelte'
 
 export interface SubscribeBase {
-  troc: string
+  trocId: string
 }
 
 export interface ISubscribe extends SubscribeBase {
   _id: string
-  user: string
+  userId: string
   createdAt: date
   updatedAt: date
 

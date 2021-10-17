@@ -24,6 +24,7 @@
     'articles',
     {
       trocId,
+      include_without_name: true,
       exact_provider: userId,
       or_search_name: searchValue,
       or_search_ref: searchValue,

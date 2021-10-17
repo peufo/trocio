@@ -11,8 +11,8 @@ const { ObjectId } = mongoose.Types
 
 export async function getRole(trocId: string, userId: string) {
   const subscribe = await Subscribe.findOne({
-    troc: trocId,
-    user: userId,
+    trocId,
+    userId,
   })
   return subscribe?.role || null
 }
@@ -146,8 +146,8 @@ function lookupRole(
           $match: {
             $expr: {
               $and: [
-                { $eq: ['$troc', '$$trocId'] },
-                { $eq: ['$user', ObjectId(userId)] },
+                { $eq: ['$trocId', '$$trocId'] },
+                { $eq: ['$userId', ObjectId(userId)] },
               ],
             },
           },
