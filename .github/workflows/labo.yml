@@ -8,6 +8,7 @@ jobs:
   build:
     uses: peufone/trocio/.github/workflows/build-app.yml@dev-vite
   deploy:
+    needs: [build]
     environment: Nestor - Labo
     runs-on: ubuntu-latest
     steps:
