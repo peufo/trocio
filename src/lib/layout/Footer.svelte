@@ -12,6 +12,7 @@
     <div class="underline-div">
       <a class="underline-span" href="/about"> À propos </a>
     </div>
+
     <div class="underline-div">
       <a class="underline-span" href="/contact">Contact</a>
     </div>
