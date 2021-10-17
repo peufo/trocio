@@ -4,6 +4,27 @@ on:
       environment:
         required: true
         type: string
+    secrets:
+      SSH_HOST:
+        required: true
+      SSH_USERNAME:
+        required: true
+      SSH_PASSWORD:
+        required: true
+      TROCIO_ADMIN:
+        required: true
+      TROCIO_API_PORT:
+        required: true
+      TROCIO_DB:
+        required: true
+      TROCIO_FRONT_PORT:
+        required: true
+      TROCIO_OCD_API_KEY:
+        required: true
+      TROCIO_SECRET_STRING_COOKIE:
+        required: true
+      TROCIO_SMTP_PASS:
+        required: true
 
 jobs:
   deploy:
