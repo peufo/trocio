@@ -249,8 +249,8 @@ router
           sub.user = undefined
           sub.troc = undefined
           sub.tarifId:
-            troc.tarif.find((tarif) => tarif.apply?.includes(userId))?._id ||
-            defaultTarifId,
+            troc.tarif.find((tarif) => tarif.apply?.includes(sub.userId))?._id ||
+            defaultTarifId
           return sub.save()
         })
       )
