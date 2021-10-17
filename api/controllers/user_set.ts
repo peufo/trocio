@@ -18,9 +18,13 @@ export const createUser: RequestHandler = async (req, res, next) => {
   */
 
   try {
+    const { origin } = req.query
+    if (!origin) throw 'origin query is required'
     const user = new User(req.body)
     await user.save()
-    mail.createUser(user).catch(() => console.log('Confirmation mail failed'))
+    mail
+      .createUser(user, origin)
+      .catch(() => console.log('Confirmation mail failed'))
     return next()
   } catch (error) {
     if (error.name === 'MongoError' && error.code == 11000) {
@@ -77,17 +81,21 @@ export const resetpwd: RequestHandler = async (req, res, next) => {
   }
 }
 
-export const sendValidMail: RequestHandler = (req, res, next) => {
-  if (!req.session.user) return next(Error('Login required'))
-  mail
-    .sendValidMail(req.session.user)
-    .then(() => {
-      res.json({
-        success: true,
-        message: `Mail sent for validation on address ${req.session.user.mail}`,
-      })
+export const sendValidMail: RequestHandler = async (req, res, next) => {
+  try {
+    const { origin } = req.query
+    if (!req.session.user) throw 'Login required'
+    if (!origin) throw 'origin query is required'
+
+    await mail.sendValidMail(req.session.user, origin)
+
+    res.json({
+      success: true,
+      message: `Mail sent for validation on address ${req.session.user.mail}`,
     })
-    .catch(next)
+  } catch (error) {
+    next(error)
+  }
 }
 
 export const validMail: RequestHandler = async (req, res, next) => {
