@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express'
 import Message from '../models/message'
 import User from '../models/user'
-import { transporter } from './mail'
+import mail, { transporter } from './mail'
 
 export const createContact: RequestHandler = async (req, res, next) => {
   try {
@@ -22,12 +22,10 @@ export const createContact: RequestHandler = async (req, res, next) => {
       await new Message({ content, authorMail, context: 'contact' }).save()
     }
 
-    const mailTo = req.session.user?.mail || authorMail
-
     // Renvoi une confirmation à l'auteur
-    await transporter.sendMail({
+    const mailInfo = await transporter.sendMail({
       from: 'TROCIO <postmaster@trocio.ch>',
-      to: mailTo,
+      to: req.session.user?.mail || authorMail,
       subject: 'Merci pour votre message',
       html: `
         <h2>Merci pour votre message</h2>
@@ -37,6 +35,17 @@ export const createContact: RequestHandler = async (req, res, next) => {
             <blockquote>${content}</blockquote>
         </p>
       `,
+    })
+
+    // Envoie le message sur la boite info@trocio.ch
+    await transporter.sendMail({
+      from: `TROCIO <postmaster@trocio.ch>`,
+      to: 'info@trocio.ch',
+      replyTo: req.session.user?.mail || authorMail,
+      subject: `Nouveau message de [${req.session.user?.name || 'inconu'}]`,
+      html: `
+            <p>${content}</p>
+          `,
     })
 
     res.json({ success: true, message: 'Message envoyé' })
