@@ -9,8 +9,6 @@ jobs:
     uses: peufone/trocio/.github/workflows/build-app.yml@dev-vite
   deploy:
     needs: [build]
-    runs-on: ubuntu-latest
-    environment: 'Nestor - Labo'
-    steps:
-      - name: 'tadfsf'
-        uses: peufone/trocio/.github/workflows/deploy-app.yml@dev-vite
+    uses: peufone/trocio/.github/workflows/deploy-app.yml@dev-vite
+    with:
+      environment: 'Nestor - Labo'
