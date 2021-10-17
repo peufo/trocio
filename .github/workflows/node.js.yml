@@ -8,35 +8,8 @@ on:
     branches: [dev-vite]
 
 jobs:
-  build-client:
-    uses: peufone/trocio/.github/workflows/build-client.yml@dev-vite
-  build-server:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14.x
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build:server
-
-      - name: Upload server artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: server
-          path: server
-
-      - name: Upload package artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: package
-          path: |
-            package.json
-            package-lock.json
-            ecosystem.config.js
-
+  build:
+    uses: peufone/trocio/.github/workflows/build-app.yml@dev-vite
   deploy:
     needs: [build-server, build-client]
     environment: 'Nestor - Labo'
