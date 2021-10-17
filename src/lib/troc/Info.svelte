@@ -62,14 +62,15 @@
       return $goto('/login', {
         callback: `/trocs/${troc._id}`,
       })
-    activityOpen = !activityOpen
-    if (!troc.role) {
+    if (troc.role) activityOpen = !activityOpen
+    else {
       $createSubscribe.mutate(
         { trocId: troc._id },
         {
           onSuccess: (subscribe) => {
             // TODO: manage subscribe already exist
             if (subscribe._id) troc.role = 'basic'
+            activityOpen = !activityOpen
           },
         }
       )
