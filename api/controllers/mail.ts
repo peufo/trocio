@@ -1,6 +1,5 @@
 import nodemailer, { SendMailOptions } from 'nodemailer'
 import randomize from 'randomatic'
-import type { Request } from 'express'
 
 import MailValidatorModel, { MailValidator } from '../models/mailvalidator'
 import type { User } from '../../types'
