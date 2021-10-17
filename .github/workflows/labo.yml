@@ -70,26 +70,17 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            [ -e ".nvm/.profile" ] && . ".nvm/.profile"
+            . .profile
             cd trocio
             npm ci --production
 
       - name: Restart server
         uses: appleboy/ssh-action@master
-        env:
-          TROCIO_ADMIN: ${{ secrets.TROCIO_ADMIN }}
-          TROCIO_API_PORT: ${{ secrets.TROCIO_API_PORT }}
-          TROCIO_DB: ${{ secrets.TROCIO_DB }}
-          TROCIO_PORT: ${{ secrets.TROCIO_PORT }}
-          TROCIO_OCD_API_KEY: ${{ secrets.TROCIO_OCD_API_KEY }}
-          TROCIO_SECRET_STRING_COOKIE: ${{ secrets.TROCIO_SECRET_STRING_COOKIE }}
-          TROCIO_SMTP_PASS: ${{ secrets.TROCIO_SMTP_PASS }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          envs: TROCIO_ADMIN,TROCIO_DB,TROCIO_SECRET_STRING_COOKIE,TROCIO_SMTP_PASS,TROCIO_API_PORT,TROCIO_PORT,TROCIO_OCD_API_KEY
           script: |
-            [ -e ".nvm/.profile" ] && . ".nvm/.profile"
+            . .profile
             cd trocio
             npm run serve
