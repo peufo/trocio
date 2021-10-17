@@ -6,6 +6,7 @@ import path from 'path'
 import bwipjs from 'bwip-js'
 
 router
+  .post('/contact')
   .get('/geocode/:query', (req, res, next) => {
     if (!config.TROCIO_OCD_API_KEY)
       return next(
