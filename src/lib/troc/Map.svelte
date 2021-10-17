@@ -78,6 +78,7 @@
     if (!$map?._panes?.mapPane) return
 
     $trocs.slice(0, markers.length).forEach((troc, i) => {
+      if (!troc.location) return
       markers[i].off('click')
       markers[i]
         .setLatLng(troc.location)
@@ -86,6 +87,7 @@
     })
     if ($trocs.length > markers.length) {
       $trocs.slice(markers.length).forEach((troc) => {
+        if (!troc.location) return
         markers.push(
           L.marker(troc.location, { icon })
             .addTo($map)
