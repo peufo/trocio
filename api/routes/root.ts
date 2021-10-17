@@ -6,7 +6,7 @@ import Article from '../models/article'
 import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
 import type { Document } from 'mongoose'
-import type { Subscribe as SubscribeInterface } from '../../types'
+import type { ISubscribe as SubscribeInterface } from '../../types'
 
 const router = Router()
 
@@ -85,7 +85,7 @@ router
       if (!troc) throw 'Troc not found'
 
       let { deletedCount: deletedSubscribes } = await Subscribe.deleteMany({
-        troc: troc._id,
+        trocId: troc._id,
       }).exec()
 
       let { deletedCount: deletedArticles } = await Article.deleteMany({
@@ -115,7 +115,7 @@ router
       if (!troc) throw 'Troc not found'
 
       troc.subscriber = await Subscribe.countDocuments({
-        troc: troc._id,
+        trocId: troc._id,
       }).exec()
 
       await troc.save()
@@ -152,6 +152,7 @@ router
      * - Récupère les liste admin, trader, cashier, et provider pour créer des subscribes
      * - Ajoute le validedByUser à vrai
      * - Ajoute le tarif appliqué dans l'abonnement
+     * - Transforme user et troc en userId et trocId
      */
     const { trocId } = req.body
     if (!trocId) return next(Error('trocId field is required in body'))
@@ -163,25 +164,34 @@ router
 
       /** ADMIN */
       await Promise.all(
-        troc.admin.map(async (user) => {
-          const sub = await Subscribe.findOne({ troc: troc._id, user }).exec()
-          return updateOrCreateSub(sub, 'admin', user)
+        troc.admin.map(async (userId) => {
+          const sub = await Subscribe.findOne({
+            troc: troc._id,
+            user: userId,
+          }).exec()
+          return updateOrCreateSub(sub, 'admin', userId)
         })
       )
 
       /** CASHIER */
       await Promise.all(
-        troc.cashier.map(async (user) => {
-          const sub = await Subscribe.findOne({ troc: troc._id, user }).exec()
-          return updateOrCreateSub(sub, 'cashier', user)
+        troc.cashier.map(async (userId) => {
+          const sub = await Subscribe.findOne({
+            troc: troc._id,
+            user: userId,
+          }).exec()
+          return updateOrCreateSub(sub, 'cashier', userId)
         })
       )
 
       /** PROVIDER */
       await Promise.all(
-        troc.provider.map(async (user) => {
-          const sub = await Subscribe.findOne({ troc: troc._id, user }).exec()
-          return updateOrCreateSub(sub, 'basic', user)
+        troc.provider.map(async (userId) => {
+          const sub = await Subscribe.findOne({
+            troc: troc._id,
+            user: userId,
+          }).exec()
+          return updateOrCreateSub(sub, 'basic', userId)
         })
       )
 
@@ -199,26 +209,26 @@ router
       function updateOrCreateSub(
         sub: SubscribeInterface & Document,
         role: SubscribeInterface['role'],
-        user: string,
+        userId: string,
         prefix?: string
       ): Promise<any> {
         const newSub = {
-          user,
-          troc: troc._id,
+          userId,
+          trocId: troc._id,
           role,
           prefix,
           validedByUser: true,
           tarifId:
-            troc.tarif.find((tarif) => tarif.apply?.includes(user))?._id ||
+            troc.tarif.find((tarif) => tarif.apply?.includes(userId))?._id ||
             defaultTarifId,
         }
-
-        console.count(newSub.tarifId)
 
         if (sub) {
           for (const key in newSub) {
             sub[key] = newSub[key]
           }
+          sub.troc = undefined
+          sub.user = undefined
         } else {
           sub = new Subscribe(newSub)
         }
@@ -234,6 +244,10 @@ router
       await Promise.all(
         subs.map((sub) => {
           sub.role = 'basic'
+          sub.userId = sub.user
+          sub.trocId = sub.troc
+          sub.user = undefined
+          sub.troc = undefined
           return sub.save()
         })
       )

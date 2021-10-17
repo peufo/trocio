@@ -6,27 +6,31 @@ const { ObjectId } = mongoose.Types
 
 import type { ISubscribe } from '../../types'
 
-export const getMySubscribes: RequestHandler = (req, res, next) => {
-  let { skip = 0, limit = 10 } = req.query
-  skip = Number(skip)
-  limit = Number(limit)
+export const getMySubscribes: RequestHandler = async (req, res, next) => {
+  try {
+    let { skip = 0, limit = 10 } = req.query
+    skip = +skip
+    limit = +limit
 
-  if (!req.session.user)
-    return res.json({ error: true, message: 'Login required' })
-  Subscribe.find({ user: req.session.user._id })
-    .sort({ updatedAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .populate(
-      'troc',
-      'name description address location schedule society societyweb is_try subscriber'
-    )
-    .lean()
-    .exec(async (err, subscribes) => {
-      if (err) return next(err)
+    if (!req.session.user) throw 'Login required'
 
-      res.json(subscribes)
+    const aggregate = Subscribe.aggregate()
+    aggregate.match({
+      userId: ObjectId(req.session.user._id),
     })
+
+    lookupTroc(aggregate)
+
+    const subscribes = await aggregate
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .exec()
+
+    res.json(subscribes)
+  } catch (error) {
+    next(error)
+  }
 }
 
 /**
@@ -40,8 +44,8 @@ export const getResum: RequestHandler = async (req, res, next) => {
 
     const aggregate = Subscribe.aggregate()
     aggregate.match({
-      user: ObjectId(userId),
-      troc: ObjectId(trocId),
+      userId: ObjectId(userId),
+      trocId: ObjectId(trocId),
     })
     lookupResum(aggregate)
     lookupTarif(aggregate)
@@ -79,7 +83,7 @@ export const getSubscriber: RequestHandler = async (req, res, next) => {
 
     const aggregate = Subscribe.aggregate()
     aggregate.match({
-      troc: new ObjectId(trocId),
+      trocId: new ObjectId(trocId),
       tarifId: tarifMatch,
     })
 
@@ -101,11 +105,11 @@ export const getSubscriber: RequestHandler = async (req, res, next) => {
 }
 
 /**
- * Update aggregate for replace user as id by user object {name, mail}
+ * Update aggregate for lookup user from userId
  */
 export function lookupUser(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
-  userId = '$user'
+  userId = '$userId'
 ): void {
   aggregate
     .lookup({
@@ -130,6 +134,46 @@ export function lookupUser(
     })
     .addFields({
       user: { $arrayElemAt: ['$user', 0] },
+    })
+}
+
+/**
+ * Update aggregate for lookup troc from trocId
+ */
+export function lookupTroc(
+  aggregate: mongoose.Aggregate<ISubscribe[]>,
+  trocId = '$trocId'
+): void {
+  aggregate
+    .lookup({
+      from: 'trocs',
+      let: { trocId },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ['$_id', '$$trocId'],
+            },
+          },
+        },
+        {
+          $project: {
+            name: 1,
+            description: 1,
+            address: 1,
+            location: 1,
+            schedule: 1,
+            society: 1,
+            societyweb: 1,
+            is_try: 1,
+            subscriber: 1,
+          },
+        },
+      ],
+      as: 'troc',
+    })
+    .addFields({
+      troc: { $arrayElemAt: ['$troc', 0] },
     })
 }
 
@@ -175,8 +219,8 @@ export function lookupTarif(
  */
 export function lookupResum(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
-  userId = '$user',
-  trocId = '$troc'
+  userId = '$userId',
+  trocId = '$trocId'
 ): void {
   const letTrocAndUser = { userId, trocId }
   const matchWith = (userField: 'user' | 'provider' | 'buyer') => ({

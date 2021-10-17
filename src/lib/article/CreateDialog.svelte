@@ -247,8 +247,6 @@
             />
             Chargement
           </Button>
-        {:else if $createArticle.isError}
-          <div>Oups, une erreur c'est produite</div>
         {:else}
           <Button
             class="primary-color"

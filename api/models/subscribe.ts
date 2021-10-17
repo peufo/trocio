@@ -4,8 +4,13 @@ const { ObjectId } = Schema.Types
 import type { ISubscribe } from '../../types'
 
 let subscribeModel = new Schema({
-  troc: { type: ObjectId, ref: 'troc', required: true },
-  user: { type: ObjectId, ref: 'user', required: true },
+  /** @deprecated please use trocId */
+  troc: { type: ObjectId, ref: 'troc' },
+  /** @deprecated please, use userId*/
+  user: { type: ObjectId, ref: 'user' },
+
+  trocId: { type: ObjectId, ref: 'troc', required: true },
+  userId: { type: ObjectId, ref: 'user', required: true },
 
   /** Rôle de l'utilsateur sur le troc */
   role: {

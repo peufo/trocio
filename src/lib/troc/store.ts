@@ -98,8 +98,10 @@ export const useSearchTrocs = (query: SearchTrocsQuery) =>
 
 /**
  * Creation
+ * @deprecated
  */
 export const useCreateTroc = () => useMutation(createTroc, { onSuccess })
+/** @deprecated */
 export const useCreateSubscribe = () => useMutation(createSubscribe)
 
 /**
