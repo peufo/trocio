@@ -1,29 +1,32 @@
 <!-- routify:options isFooterDisplay=true -->
 <script>
-  const contactMail = 'info@trocio.ch'
+  import { TextField, Textarea, Button } from 'svelte-materialify'
+  import { user } from '$lib/user/store'
 </script>
 
 <main>
   <br />
   <br />
-  <h4 class="w3-center">Contact</h4>
+  <h4 class="text-center">Contact</h4>
   <br />
   <br />
-  <div class="w3-center">
-    <span>
-      Envoyez-nous un mail à l'adresse
-      <a href={`mailto:${contactMail}`}>
-        <b>{contactMail}</b>
-      </a>
-    </span>
-    <br /><br />
-    <span>
-      Nous tâcherons de vous répondre aussi vite que possible, mais aussi
-      lentement que nécessaire.
-    </span>
+  <div>
+    <Textarea outlined autogrow>Votre message</Textarea>
+
+    <div class="d-flex mt-4">
+      {#if $user}
+        <div>De la part de {$user.name}</div>
+      {:else}
+        <TextField type="mail" outlined dense>Votre email</TextField>
+      {/if}
+      <div class="flex-grow-1" />
+      <Button class="primary-color">Envoyer</Button>
+    </div>
   </div>
 
-  <br />
+  <div class="text-center text-opacity pt-12">
+    Merci pour votre message, nous vous répondrons aussi vite que possible.
+  </div>
 </main>
 
 <style>

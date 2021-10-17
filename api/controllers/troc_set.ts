@@ -36,8 +36,8 @@ export const createTroc: RequestHandler = async (req, res, next) => {
 
     /** Create subscribe */
     const subscribe = new Subscribe({
-      user: req.session.user._id,
-      troc: troc._id,
+      userId: req.session.user._id,
+      trocId: troc._id,
       role: 'admin',
       validedByUser: true,
       validedByTroc: true,
