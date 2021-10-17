@@ -2,6 +2,8 @@ import { model, Schema, Model, Document } from 'mongoose'
 import type { IMessage } from '../../types'
 
 const { ObjectId } = Schema.Types
+const EMAIL_REGEX =
+  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 const messageModel = new Schema(
   {
@@ -17,9 +19,10 @@ const messageModel = new Schema(
       required: notRequiredIfAuthorMail,
     },
     authorMail: {
-      type: ObjectId,
-      ref: 'user',
+      type: String,
       required: notRequiredIfAuthorId,
+      lowercase: true,
+      validate: EMAIL_REGEX,
     },
     destinaterId: { type: ObjectId, ref: 'user', required: requiredIfPrivate },
 

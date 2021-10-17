@@ -1,12 +1,14 @@
-export interface IMessage {
-  context: 'contact' | 'private' | 'comment'
+export interface IMessageCreate {
+  /** Si absent, l'utilisateur connecté est utilisé pour authorId */
+  authorMail?: string
   content: string
+}
+
+export interface IMessage extends IMessageCreate {
+  authorId?: string
+  context: 'contact' | 'private' | 'comment'
   createdAt: Date
   updatedAt: Date
-
-  /** Soit l'un, soit l'autre */
-  authorId?: string
-  authorMail?: string
 
   /** context === 'private' */
   destinaterId?: string
