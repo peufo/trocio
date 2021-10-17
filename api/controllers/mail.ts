@@ -12,7 +12,7 @@ const {
   TROCIO_SMTP_PASS,
   TROCIO_SMTP_USER,
 } = config
-const transporter = nodemailer.createTransport({
+export const transporter = nodemailer.createTransport({
   host: TROCIO_SMTP_HOST,
   port: TROCIO_SMTP_PORT,
   auth: {

@@ -19,6 +19,7 @@ import routesRoot from './routes/root'
 import routesSubscribe from './routes/subscribe'
 import routesTroc from './routes/troc'
 import routesUser from './routes/user'
+import routesMessage from './routes/message'
 
 declare module 'express-session' {
   interface SessionData {
@@ -65,6 +66,7 @@ app.use('/articles', routesArticle)
 app.use('/trocs', routesTroc)
 app.use('/payments', routesPayment)
 app.use('/subscribes', routesSubscribe)
+app.use('/messages', routesMessage)
 app.use('/root', checkSuperAdmin, routesRoot)
 
 const catchError404: RequestHandler = (req, res, next) => {
