@@ -16,7 +16,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: server
-          path: trocio/server
+          path: trocio
 
       - name: Download artifact client
         uses: actions/download-artifact@v2
