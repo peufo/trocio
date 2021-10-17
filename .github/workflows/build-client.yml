@@ -2,7 +2,7 @@ on:
   workflow_call:
 
 jobs:
-  build-client:
+  client:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
