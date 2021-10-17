@@ -1,0 +1,13 @@
+name: Trocio CI Labo
+
+on:
+  push:
+    branches: [dev-vite]
+
+jobs:
+  build:
+    uses: peufone/trocio/.github/workflows/build-app.yml@dev-vite
+  deploy:
+    uses: peufone/trocio/.github/workflows/deploy-app.yml@dev-vite
+    with:
+      environment: 'Nestor - Labo'
