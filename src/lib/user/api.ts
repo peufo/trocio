@@ -45,7 +45,7 @@ export function register(name: string, mail: string, password: string) {
  * Réinitialisation du mot de passe
  */
 export function recover(mail: string) {
-  return api('/api/users/resetpwd', {
+  return api('/api/users/me/resetpwd', {
     method: 'post',
     data: { mail },
     info: 'Votre nouveau mot de passe vous à été envoyé par mail',
