@@ -31,7 +31,9 @@
   import UserResum from '$lib/troc/UserResum.svelte'
   import Share from '$lib/troc/Share.svelte'
   import { useCreateSubscribe } from '$lib/troc/store'
-  import type { TrocLookup } from 'types'
+  import type { SubscribeBase, SubscribeLookup, TrocLookup } from 'types'
+  import { useMutation } from '@sveltestack/svelte-query'
+  import { api } from '$lib/api'
 
   export let troc: TrocLookup
 
@@ -47,7 +49,13 @@
     recovery: faSignOutAlt,
     sale: faShoppingBasket,
   }
-  const createSubscribe = useCreateSubscribe()
+  const createSubscribe = useMutation((data) =>
+    api<SubscribeBase, SubscribeLookup>('/api/subscribes', {
+      method: 'post',
+      data,
+      success: 'Nouvelle participation',
+    })
+  )
 
   function handleClickActivity() {
     if (!$user)
@@ -57,7 +65,7 @@
     activityOpen = !activityOpen
     if (!troc.role) {
       $createSubscribe.mutate(
-        { troc: troc._id },
+        { trocId: troc._id },
         {
           onSuccess: (subscribe) => {
             // TODO: manage subscribe already exist
