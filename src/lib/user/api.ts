@@ -36,6 +36,7 @@ export function logout() {
 export function register(name: string, mail: string, password: string) {
   return api<User>('/api/users', {
     method: 'post',
+    params: { origin: location.origin },
     data: { name, mail, password },
     success: (data) => `Bienvenu ${data.name}`,
   })
@@ -70,6 +71,7 @@ export function update(newValue: Partial<User>) {
 export function sendValidationMail() {
   return api('/api/users/me/validmail', {
     method: 'post',
+    params: { origin: location.origin },
     success: 'Un mail de validation vous à été envoyé',
   })
 }

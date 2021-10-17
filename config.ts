@@ -7,7 +7,6 @@ const TROCIO_PORT = process.env.TROCIO_PORT || 3000
 const defaultConfig = {
   TROCIO_OCD_API_KEY: '', // API key provide by https://opencagedata.com/
   TROCIO_ADMIN: '', // Root user mail address
-  TROCIO_HOSTNAME: 'localhost:3000',
   TROCIO_SECRET_STRING_COOKIE: '', // A secret string for secure cookies
   TROCIO_SMTP_PASS: '', // password of your SMTP server
   TROCIO_SMTP_USER: 'postmaster@trocio.ch',

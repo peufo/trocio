@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Troc, TrocLookup } from 'types'
   import { Button } from 'svelte-materialify'
   import { fly } from 'svelte/transition'
   import notify from '$lib/notify'
