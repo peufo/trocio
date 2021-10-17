@@ -5,14 +5,10 @@ on:
     branches: [dev-vite]
 
 jobs:
-  fuck_off:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Just a boring jobs
-        run: echo "FUCK OFF"
   build:
     uses: peufone/trocio/.github/workflows/build-app.yml@dev-vite
   deploy:
+    needs: [build]
     uses: peufone/trocio/.github/workflows/deploy-app.yml@dev-vite
     with:
       environment: 'Nestor - Labo'
