@@ -2,85 +2,17 @@ name: Trocio CI Labo
 
 on:
   push:
-    branches: [dev-vite]
+    branches: [dev]
 
 jobs:
   build:
-    uses: peufone/trocio/.github/workflows/build-app.yml@dev-vite
+    uses: peufone/trocio/.github/workflows/build-app.yml@dev
   deploy:
     needs: [build]
-    environment: Nestor - Labo
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Download artifact server
-        uses: actions/download-artifact@v2
-        with:
-          name: server
-          path: trocio
-
-      - name: Download artifact client
-        uses: actions/download-artifact@v2
-        with:
-          name: client
-          path: trocio/dist
-
-      - name: Download artifact package
-        uses: actions/download-artifact@v2
-        with:
-          name: package
-          path: trocio
-
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: trocio
-
-      - name: Remove folder /trocio
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: rm -rf trocio
-
-      - name: Copy artifacts
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          source: 'trocio'
-          target: './'
-
-      - name: Test package.json
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            cd trocio
-            cat package.json
-
-      - name: Install npm dependencies
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            . .profile
-            cd trocio
-            npm ci --production
-
-      - name: Restart server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            . .profile
-            cd trocio
-            npm run serve
+    uses: peufone/trocio/.github/workflows/deploy-app.yml@dev
+    with:
+      environment: Nestor - Labo
+    secrets:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+      SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
