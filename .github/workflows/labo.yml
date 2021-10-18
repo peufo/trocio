@@ -62,7 +62,6 @@ jobs:
           script: |
             cd trocio
             cat package.json
-
       - name: Install npm dependencies
         uses: appleboy/ssh-action@master
         with:
@@ -73,7 +72,6 @@ jobs:
             . .profile
             cd trocio
             npm ci --production
-
       - name: Restart server
         uses: appleboy/ssh-action@master
         with:
