@@ -1,9 +1,9 @@
-import config from '../../config'
+import { RequestHandler } from 'express'
 import Troc from '../models/troc'
 import User from '../models/user'
 import Subscribe from '../models/subscribe'
 import { lookupIfAdmin } from '../controllers/troc_utils'
-import { RequestHandler } from 'express'
+import { getOpt } from './option'
 
 export const createTroc: RequestHandler = async (req, res, next) => {
   if (!req.session.user) return next(Error('Login required'))
@@ -26,7 +26,7 @@ export const createTroc: RequestHandler = async (req, res, next) => {
     if (!user) return next(Error('User not found !'))
 
     if (!troc.is_try) {
-      if (user.creditTroc <= -config.TROCIO_OPTION_FREE_TROC)
+      if (user.creditTroc <= -getOpt('FREE_TROC'))
         return next(Error('No credit'))
       user.creditTroc--
     }

@@ -1,4 +1,4 @@
-import { model, Schema, Model, Document } from 'mongoose'
+import { model, Schema, Document } from 'mongoose'
 import cc from 'currency-codes'
 
 const ObjectId = Schema.Types.ObjectId

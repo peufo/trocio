@@ -1,10 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { Table } from 'svelte-materialify'
+  import EditOption from '$lib/util/EditOption.svelte'
+  import type { Option } from 'types'
 
   onMount(getOptions)
 
-  let options: { name: string; value: string }[] = []
+  let options: Option[] = []
 
   async function getOptions() {
     try {
@@ -17,23 +19,10 @@
   }
 </script>
 
-<div class="mt-8" style="width: 800px; margin: auto;">
-  <h6>Options globals</h6>
+<div class="pt-8" style="width: 800px; margin: auto;">
+  <h6>Options</h6>
 
-  <Table>
-    <thead>
-      <tr>
-        <td>Name</td>
-        <td>Value</td>
-      </tr>
-    </thead>
-    <tbody>
-      {#each options as option}
-        <tr>
-          <td>{option.name}</td>
-          <td>{option.value}</td>
-        </tr>
-      {/each}
-    </tbody>
-  </Table>
+  {#each options as option}
+    <EditOption bind:option />
+  {/each}
 </div>

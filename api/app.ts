@@ -11,6 +11,7 @@ import createError from 'http-errors'
 import swaggerUI from 'swagger-ui-express'
 
 import type { User } from '../types'
+import { initOptions } from './controllers/option'
 
 import routesArticle from './routes/article'
 import routesIndex from './routes/index'
@@ -37,6 +38,8 @@ try {
 } catch (error) {
   console.log(error)
 }
+
+initOptions()
 
 const app = express()
 
