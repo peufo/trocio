@@ -9,7 +9,7 @@
   import type { User } from 'types'
 
   export let label = 'Chercher un utilisateur'
-  export let inputElement: HTMLInputElement
+  export let inputElement: any = undefined
   export let searchValue = ''
   export let exepted: string[] = []
   export let selectedItem: any = null
