@@ -61,7 +61,7 @@ export async function loginWithGoogle(req, res, next) {
   })
     .then(function (response) {
       const { access_token } = response.data
-      if (!access_token) return next('access_token not provided')
+      if (!access_token) return next('ccess_token not provideda')
 
       axios
         .get(`https://openidconnect.googleapis.com/v1/userinfo`, {
