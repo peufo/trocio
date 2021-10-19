@@ -8,7 +8,7 @@
   <div slot="icon">
     <Icon path={mdiAlert} />
   </div>
-  La création d'un troc est une fonctionalité réservé au testeurs. Contactez-nous
+  La création d'un troc est une onctionnalité réservée au testeurs. Contactez-nous
   si vous souhaitez participer à la beta.
 </Alert>
 
