@@ -38,7 +38,7 @@
   }
 </script>
 
-<div class="mt-8" style="width: 800px; margin: auto;">
+<div class="pt-8" style="width: 800px; margin: auto;">
   <h6>Utilisateurs</h6>
   <div class="w3-row">
     <div class="w3-col s6">

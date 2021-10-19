@@ -7,6 +7,7 @@ import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
 import type { Document } from 'mongoose'
 import type { ISubscribe as SubscribeInterface } from '../../types'
+import { getOptions, setOption } from '../controllers/option'
 
 const router = Router()
 
@@ -14,12 +15,14 @@ router
   .get('/', (req, res, next) => {
     res.json({ success: true, message: 'Yo root user' })
   })
-  .get('/options', (req, res, next) => {
+  .get('/options', getOptions)
+  .post('/options', setOption)
+  .get('/envs', (req, res, next) => {
     const options: { name: string; value: string }[] = []
     for (const key in config) {
-      if (key.match(/^TROCIO_OPTION_/)) {
+      if (key.match(/TROCIO/)) {
         options.push({
-          name: key.replace('TROCIO_OPTION_', ''),
+          name: key,
           value: config[key],
         })
       }

@@ -75,7 +75,7 @@
   }
 </script>
 
-<div class="mt-8" style="width: 800px; margin: auto;">
+<div class="pt-8" style="width: 800px; margin: auto;">
   <h6>Trocs</h6>
   <div class="w3-row">
     <input bind:value={searchTroc} on:input={fetchTrocs} class="w3-input" />
