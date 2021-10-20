@@ -99,7 +99,7 @@
       </Chip>
     {/if}
 
-    {#if troc.isClosed}
+    {#if troc.isClosed && !troc.is_try}
       <Chip size="small" label class="deep-orange darken-3 white-text">
         <IconLink icon={faStoreAltSlash} size=".7em" />
         <span>Terminé</span>
@@ -254,7 +254,11 @@
 
 {#if activityOpen}
   <div transition:slide|local>
-    <UserResum trocId={troc._id} userId={$user._id} />
+    <UserResum
+      trocId={troc._id}
+      userId={$user._id}
+      isClosed={troc.isClosed && !troc.is_try}
+    />
     <Divider />
   </div>
 {/if}

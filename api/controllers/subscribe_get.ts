@@ -1,9 +1,8 @@
 import type { RequestHandler } from 'express'
+const { ObjectId } = mongoose.Types
+import mongoose from 'mongoose'
 
 import Subscribe from '../models/subscribe'
-import mongoose from 'mongoose'
-const { ObjectId } = mongoose.Types
-
 import type { ISubscribe } from '../../types'
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
@@ -167,6 +166,8 @@ export function lookupTroc(
             societyweb: 1,
             is_try: 1,
             subscriber: 1,
+            open: { $min: `$schedule.open` },
+            isClosed: { $gt: ['$$NOW', { $max: `$schedule.close` }] },
           },
         },
       ],
