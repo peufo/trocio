@@ -44,8 +44,7 @@
             <Chip size="x-small" label class="amber darken-3 white-text">
               <span>Entrainement</span>
             </Chip>
-          {/if}
-          {#if troc.isClosed}
+          {:else if troc.isClosed}
             <Chip size="x-small" label class="deep-orange darken-3 white-text">
               <span>Terminé</span>
             </Chip>

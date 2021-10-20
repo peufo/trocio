@@ -19,6 +19,7 @@
 
   export let trocId = ''
   export let userId = ''
+  export let isClosed = false
 
   $: queryResum = useApi<{ trocId: string; userId: string }, SubscribeResum>([
     'subscribes/resum',
@@ -94,7 +95,12 @@
         <!-- Provide button -->
         <span style="margin-left: 30px;">
           <!-- Bonton pour proposer un articles -->
-          <Button text dense on:click={clickOpenCreateArticle}>
+          <Button
+            text
+            dense
+            on:click={clickOpenCreateArticle}
+            disabled={isClosed}
+          >
             <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
             article
           </Button>

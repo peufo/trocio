@@ -115,6 +115,8 @@ export const search: RequestHandler = async (req, res, next) => {
     .skip(Number(skip))
     .limit(Number(limit))
 
+  addComputedFields(aggregate)
+
   if (req.session.user) lookupRole(aggregate, req.session.user._id)
 
   const trocs = await aggregate.exec()
@@ -125,15 +127,30 @@ export const getTroc: RequestHandler = async (req, res, next) => {
   const { trocId } = req.params
   const aggregate = TrocModel.aggregate().match({ _id: ObjectId(trocId) })
   if (req.session.user) lookupRole(aggregate, req.session.user._id)
+  addComputedFields(aggregate)
   const trocs = await aggregate.exec()
   if (!trocs.length) return next(Error('Not found'))
   res.json(trocs[0])
 }
 
 /**
+ * Add computed fields
+ */
+export function addComputedFields(aggregate: mongoose.Aggregate<any[]>) {
+  aggregate
+    .addFields({
+      open: { $min: `$schedule.open` },
+      close: { $max: `$schedule.close` },
+    })
+    .addFields({
+      isClosed: { $gt: ['$$NOW', '$close'] },
+    })
+}
+
+/**
  * Add user role from subscribe document
  */
-function lookupRole(
+export function lookupRole(
   aggregate: mongoose.Aggregate<Troc[]>,
   userId?: string
 ): void {
