@@ -50,13 +50,13 @@
     <IconLink
       icon={faWhatsapp}
       target="_blank"
-      href="https://api.whatsapp.com/send/?phone&text=https://trocio.ch/trocs/{url}"
+      href="https://api.whatsapp.com/send/?phone&text={url}"
       opacity
     />
     <IconLink
       icon={faFacebook}
       target="_blank"
-      href="https://www.facebook.com/dialog/share?app_id=512391820023592&href=https://trocio.ch/trocs/{url}&display=popup"
+      href="https://www.facebook.com/dialog/share?app_id=512391820023592&href={url}&display=popup"
       opacity
     />
     <IconLink icon={faLink} on:click={copyLink} opacity clickable />
