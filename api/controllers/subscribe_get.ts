@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express'
-const { ObjectId } = mongoose.Types
 import mongoose from 'mongoose'
+const { ObjectId } = mongoose.Types
 
 import Subscribe from '../models/subscribe'
 import type { ISubscribe } from '../../types'
