@@ -143,6 +143,8 @@ export function lookupTroc(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
   trocId = '$trocId'
 ): void {
+  const NOW = new Date()
+
   aggregate
     .lookup({
       from: 'trocs',
@@ -167,7 +169,7 @@ export function lookupTroc(
             is_try: 1,
             subscriber: 1,
             open: { $min: `$schedule.open` },
-            isClosed: { $gt: ['$$NOW', { $max: `$schedule.close` }] },
+            isClosed: { $gt: [NOW, { $max: `$schedule.close` }] },
           },
         },
       ],

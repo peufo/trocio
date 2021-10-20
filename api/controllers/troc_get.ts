@@ -137,13 +137,14 @@ export const getTroc: RequestHandler = async (req, res, next) => {
  * Add computed fields
  */
 export function addComputedFields(aggregate: mongoose.Aggregate<any[]>) {
+  const NOW = new Date()
   aggregate
     .addFields({
       open: { $min: `$schedule.open` },
       close: { $max: `$schedule.close` },
     })
     .addFields({
-      isClosed: { $gt: ['$$NOW', '$close'] },
+      isClosed: { $gt: [NOW, '$close'] },
     })
 }
 
