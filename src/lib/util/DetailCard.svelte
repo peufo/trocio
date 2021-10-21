@@ -27,7 +27,7 @@
   }
 </script>
 
-<div class="simple-card clickable">
+<div class="simple-card">
   <div on:click={clickHandler} class="clickable w3-row header clickHandler">
     <div
       class="w3-col s1 w3-right-align w3-large clickHandler"

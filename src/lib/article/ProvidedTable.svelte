@@ -44,27 +44,28 @@
   article={articleSelected}
 />
 
-{#if articles.length}
-  <MagicTable
-    query={queryArticles}
-    mode="button"
-    class="mb-2"
-    style="min-height: 330px;"
-  >
-    <thead>
-      <tr>
-        <th colspan="2" style="padding-left: 0px;">
-          <SearchTextField
-            bind:search={searchValue}
-            placeholder="Chercher un article"
-          />
-        </th>
+<MagicTable
+  query={queryArticles}
+  mode="button"
+  class="mb-2"
+  style="min-height: 330px;"
+>
+  <thead>
+    <tr>
+      <th colspan="2" style="padding-left: 0px;">
+        <SearchTextField
+          bind:search={searchValue}
+          placeholder="Chercher un article"
+        />
+      </th>
 
-        <MagicTableHeaders {fields} />
-      </tr>
-    </thead>
-    <MagicTableBody {fields} items={articles} on:click={handleClick} />
-  </MagicTable>
-{:else}
-  <div class="text-center text--secondary pa-5">Aucun article proposé</div>
-{/if}
+      <MagicTableHeaders {fields} />
+    </tr>
+  </thead>
+  <MagicTableBody
+    {fields}
+    items={articles}
+    on:click={handleClick}
+    placeholder="Aucun article"
+  />
+</MagicTable>
