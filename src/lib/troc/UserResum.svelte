@@ -78,7 +78,7 @@
     <div class="d-flex">
       <div class="flex-grow-1" />
       <h6 class="mr-1">
-        Solde actuel &nbsp;&nbsp;
+        Solde &nbsp;&nbsp;
         {renderAmount(resum.balance)}
       </h6>
     </div>
@@ -139,15 +139,19 @@
 
     <DetailCard
       title="Achats"
+      free
       count={resum.purchasesCount || 0}
       sum={resum.purchasesSum || 0}
     >
-      <!--
-
-      <span slot="col-1">#{article.ref}</span>
-      <span slot="col-2">{article.name}</span>
-      <span slot="col-3">{article.price.toFixed(2)}</span>
-    -->
+      {#each resum.purchases || [] as article}
+        <div class="d-flex">
+          <div>#{article.ref}</div>
+          <div class="flex-grow-1">{article.name}</div>
+          <div>{renderAmount(article.price)}</div>
+        </div>
+      {:else}
+        <div class="text-center pa-12 text--secondary">Aucun achat</div>
+      {/each}
     </DetailCard>
 
     <br />
@@ -157,16 +161,18 @@
       count={resum.paymentsCount || 0}
       sum={resum.paymentsSum || 0}
       nonInteractive
+      free
       show={paymentShow}
     >
-      <!--
-      <span slot="col-1" />
-      <span slot="col-2"
-        >{payment.message} {dayjs(payment.createdAt).fromNow()}</span
-      >
-      <span slot="col-3">{payment.amount.toFixed(2)}</span>
-
-    -->
+      {#each resum.payments || [] as payment}
+        <div class="d-flex">
+          <div>{new Date(payment.createdAt).toLocaleString()}</div>
+          <div class="flex-grow-1">{payment.message}</div>
+          <div>{renderAmount(payment.amount)}</div>
+        </div>
+      {:else}
+        <div class="text-center pa-12 text--secondary">Aucun paiement</div>
+      {/each}
     </DetailCard><br />
 
     <!--

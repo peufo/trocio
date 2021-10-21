@@ -38,7 +38,7 @@
     on:click={() => ($trocNavigationActive = false)}
   />
 
-  <div class="pa-4" style="width: 100%;">
+  <div class="pa-4 pb-16" style="width: 100%;">
     <slot />
   </div>
 </div>

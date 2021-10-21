@@ -13,6 +13,7 @@ import {
   getNextPageParam,
 } from '$lib/article/api'
 
+/** @deprecated */
 export function useArticlesOptions(
   trocId: string,
   search: string
@@ -23,6 +24,7 @@ export function useArticlesOptions(
     getNextPageParam,
   }
 }
+/** @deprecated */
 export function useArticles(trocId: string, search: string) {
   return useInfiniteQuery(useArticlesOptions(trocId, search))
 }

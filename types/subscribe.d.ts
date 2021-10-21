@@ -1,5 +1,4 @@
-import type { User } from './user'
-import type { Troc, Tarif } from './troc'
+import type { User, Troc, Tarif, PaymentInterface, Article } from 'types'
 import type Tarif__SvelteComponent_ from '$lib/troc/Tarif.svelte'
 
 export interface SubscribeBase {
@@ -43,7 +42,9 @@ export interface SubscribeResum extends ISubscribe {
   marginSum?: number
   purchasesCount?: number
   purchasesSum?: number
+  purchases?: Article[]
   paymentsCount?: number
   paymentsSum?: number
+  payments?: PaymentInterface[]
   tarif: Tarif
 }

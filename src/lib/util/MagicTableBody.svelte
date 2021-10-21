@@ -6,6 +6,7 @@
 
   export let fields: FieldInteface[]
   export let items: any[]
+  export let placeholder = 'Aucun élément'
 
   /** Code ISO 4217 */
   export let currency: string | undefined = undefined
@@ -46,6 +47,15 @@
         </td>
       {/each}
     </tr>
+  {:else}
+    <tr class="text-center placeholder">
+      <td
+        class="text--secondary pa-16"
+        colspan={fields.filter((f) => f.visible).length + 2}
+      >
+        {placeholder}
+      </td>
+    </tr>
   {/each}
 </tbody>
 
@@ -53,5 +63,9 @@
   .currency,
   .number {
     text-align: right;
+  }
+  .placeholder:hover {
+    background: none;
+    cursor: initial;
   }
 </style>
