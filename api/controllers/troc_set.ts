@@ -91,6 +91,7 @@ export function patchTroc(req, res, next) {
   })
 }
 
+/** @deprecated */
 export function addAdmin(req, res, next) {
   const { trocId, userId } = req.params
 
@@ -116,6 +117,7 @@ export function addAdmin(req, res, next) {
   })
 }
 
+/** @deprecated */
 export function addCashier(req, res, next) {
   const { trocId, userId } = req.params
 
@@ -145,6 +147,7 @@ export function addCashier(req, res, next) {
   })
 }
 
+/** @deprecated */
 export function addTrader(req, res, next) {
   const { trocId, userId } = req.params
 
@@ -174,6 +177,7 @@ export function addTrader(req, res, next) {
   }
 }
 
+/** @deprecated */
 export function removeAdmin(req, res, next) {
   const { trocId, userId } = req.params
 
@@ -197,6 +201,7 @@ export function removeAdmin(req, res, next) {
   })
 }
 
+/** @deprecated */
 export function removeCashier(req, res, next) {
   const { trocId, userId } = req.params
 
@@ -216,6 +221,7 @@ export function removeCashier(req, res, next) {
   })
 }
 
+/** @deprecated */
 export function removeTrader(req, res, next) {
   const { trocId, userId } = req.params
 
@@ -235,6 +241,7 @@ export function removeTrader(req, res, next) {
   })
 }
 
+/** @deprecated */
 export function editTraderPrefix(req, res, next) {
   const { trocId, userId } = req.params
 

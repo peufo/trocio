@@ -33,23 +33,55 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
     next(error)
   }
 }
-/*
-function warrantedSubscribe(req, res, next) {
-    let { troc } = req.query
-    if (!req.session.user) return next(Error('Login is required'))
-    if (!troc) return next(Error('Troc is required on query'))
-    Subscribe.findOne({troc, user: req.session.user._id}).exec((err, sub) => {
-        if (err) return next(err)
-        if (sub) return next()
-        sub = new Subscribe({troc, user: req.session.user._id})
-        sub.save(err => {
-            if (err) return next(err)
-            next()
-        })
-    })
-}
-*/
 
-export default {
-  createSubscribe,
+export const assignRole: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId, userId, role, prefix } = req.body
+    if (typeof trocId !== 'string') throw 'trocId string is required in body'
+    if (typeof userId !== 'string') throw 'userId string is required in body'
+    if (typeof role !== 'string') throw 'role string is required in body'
+
+    const subscribe = await Subscribe.findOne({ trocId, userId }).exec()
+    // @ts-ignore
+    subscribe.role = role
+
+    if (role === 'trader') {
+      subscribe.prefix = prefix || (await findNewPrefix(trocId))
+    }
+
+    await subscribe.save()
+    res.json(subscribe)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const setTraderPrefix: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId, userId, prefix } = req.body
+    if (typeof trocId !== 'string') throw 'trocId string is required in body'
+    if (typeof userId !== 'string') throw 'userId string is required in body'
+    if (typeof prefix !== 'string') throw 'prefix string is required in body'
+
+    const subscribe = await Subscribe.findOne({ trocId, userId }).exec()
+    subscribe.prefix = prefix
+    await subscribe.save()
+    res.json(subscribe)
+  } catch (error) {
+    next(error)
+  }
+}
+
+async function findNewPrefix(trocId: string) {
+  const tradersSubscribes = await Subscribe.find(
+    { trocId, role: 'trader' },
+    { prefix: 1 }
+  )
+  let prefixs = tradersSubscribes.map(({ prefix }) => prefix)
+  let char = ''
+  for (let i = 65; i < 91; i++) {
+    char = String.fromCharCode(i)
+    if (prefixs.indexOf(char) == -1) break
+  }
+  return char
 }

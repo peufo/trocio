@@ -1,6 +1,5 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
-  import debounce from 'debounce'
   import {
     List,
     ListItem,
@@ -12,133 +11,100 @@
     CardText,
     CardActions,
   } from 'svelte-materialify'
-  import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
-  import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+  import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons'
 
   import { api, useApi } from '$lib/api'
-  import {
-    troc,
-    useAddAdmin,
-    useRemoveAdmin,
-    useAddCashier,
-    useRemoveCashier,
-    useAddTrader,
-    useRemoveTrader,
-    useSetTraderPrefix,
-  } from '$lib/troc/store'
+  import { troc } from '$lib/troc/store'
   import { user } from '$lib/user/store'
   import UserSelect from '$lib/user/Select.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import Share from '$lib/troc/Share.svelte'
-  import type { SubscribeLookup, ParamsAPI, TrocLookup } from 'types'
+  import type { SubscribeLookup, ParamsAPI, TrocLookup, RoleEnum } from 'types'
   import { useInfinitApi } from '$lib/api'
-  import { useMutation } from '@sveltestack/svelte-query'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
-  let selectedTrader = null
+  let selectedTraderSub: undefined | SubscribeLookup = undefined
   let traderDialogActive = false
   let selectedPrefix = ''
-
   let open = [false, false, false, false]
+  const queryClient = useQueryClient()
 
-  let searchValueAdmin = ''
-  let searchValueCashier = ''
-  let searchValueTrader = ''
+  /**
+   * Getters
+   */
+  let searchSubscribes = ''
+  let searchAdmins = ''
+  let searchCashiers = ''
+  let searchTraders = ''
+  $: queryAdminsCount = useApi<ParamsAPI, number>([
+    'subscribes/count',
+    { trocId: $params.trocId, role: 'admin' },
+  ])
+  $: queryAdmins = useInfinitApi<ParamsAPI, SubscribeLookup>([
+    'subscribes',
+    { trocId: $params.trocId, q: searchAdmins, role: 'admin' },
+  ])
+  $: queryCashiersCount = useApi<ParamsAPI, number>([
+    'subscribes/count',
+    { trocId: $params.trocId, role: 'cashier' },
+  ])
+  $: queryCashiers = useInfinitApi<ParamsAPI, SubscribeLookup>([
+    'subscribes',
+    { trocId: $params.trocId, q: searchCashiers, role: 'cashier' },
+  ])
+  $: queryTradersCount = useApi<ParamsAPI, number>([
+    'subscribes/count',
+    { trocId: $params.trocId, role: 'trader' },
+  ])
+  $: queryTraders = useInfinitApi<ParamsAPI, SubscribeLookup>([
+    'subscribes',
+    { trocId: $params.trocId, q: searchTraders, role: 'trader' },
+  ])
+  $: querySubscribes = useInfinitApi<ParamsAPI, SubscribeLookup>([
+    'subscribes',
+    { trocId: $params.trocId, q: searchSubscribes },
+  ])
+
+  /**
+   * Setters
+   */
 
   interface TrocUserQuery {
     trocId: string
     userId: string
   }
-
-  /**
-   * Getters
-   */
-
-  let subscribesSearch = ''
-  $: querySubscribes = useInfinitApi<ParamsAPI, SubscribeLookup>([
-    'subscribes',
-    { trocId: $params.trocId, q: subscribesSearch },
-  ])
-  $: subscribes = $querySubscribes.data
-    ? $querySubscribes.data.pages.flat()
-    : []
-
-  /**
-   $: filterAdmin = (user) =>
-     !!user.name.match(new RegExp(searchValueAdmin, 'i'))
-   $: filterCashier = (user) =>
-     !!user.name.match(new RegExp(searchValueCashier, 'i'))
-   $: filterTrader = (trader) =>
-     !!trader.user.name.match(new RegExp(searchValueTrader, 'i')) ||
-     trader.prefix === searchValueTrader.toUpperCase()
-   */
-
-  /**
-   * Setters
-   */
-  const addAdmin = useMutation(
-    ({ trocId, userId }: TrocUserQuery) =>
-      api<{}, TrocLookup>(`/api/trocs/${trocId}/admin/${userId}`, {
+  interface AssignRoleBody extends TrocUserQuery {
+    role: RoleEnum
+  }
+  const assignRole = useMutation(
+    (data: AssignRoleBody) =>
+      api<AssignRoleBody, SubscribeLookup>('/api/subscribes/assign', {
         method: 'post',
-        success: 'Administrateur ajouté',
+        data,
+        success: data.role === 'basic' ? 'Rôle retiré' : `Rôle attribué`,
       }),
-    { onSuccess: troc.set }
-  )
-
-  const removeAdmin = useMutation(
-    ({ trocId, userId }: TrocUserQuery) =>
-      api<{}, TrocLookup>(`/api/trocs/${trocId}/admin/${userId}`, {
-        method: 'delete',
-        success: 'Administrateur supprimé',
-      }),
-    { onSuccess: troc.set }
-  )
-
-  const addCashier = useMutation(
-    ({ trocId, userId }: TrocUserQuery) =>
-      api<{}, TrocLookup>(`/api/trocs/${trocId}/cashier/${userId}`, {
-        method: 'post',
-        success: 'Caisser ajouté',
-      }),
-    { onSuccess: troc.set }
-  )
-
-  const removeCashier = useMutation(
-    ({ trocId, userId }: TrocUserQuery) =>
-      api<{}, TrocLookup>(`/api/trocs/${trocId}/cashier/${userId}`, {
-        method: 'delete',
-        success: 'Caisser supprimé',
-      }),
-    { onSuccess: troc.set }
-  )
-
-  const addTrader = useMutation(
-    ({ trocId, userId }: TrocUserQuery) =>
-      api<{}, TrocLookup>(`/api/trocs/${trocId}/trader/${userId}`, {
-        method: 'post',
-        success: 'Commerçant ajouté',
-      }),
-    { onSuccess: troc.set }
-  )
-
-  const removeTrader = useMutation(
-    ({ trocId, userId }: TrocUserQuery) =>
-      api<{}, TrocLookup>(`/api/trocs/${trocId}/trader/${userId}`, {
-        method: 'delete',
-        success: 'Commerçant supprimé',
-      }),
-    { onSuccess: troc.set }
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('subscribes')
+        queryClient.invalidateQueries('subscribes/count')
+      },
+    }
   )
 
   const setTraderPrefix = useMutation(
-    ({ trocId, userId, prefix }: TrocUserQuery & { prefix: string }) =>
-      api<{}, TrocLookup>(`/api/trocs/${trocId}/trader/${userId}/prefix`, {
+    (data: TrocUserQuery & { prefix: string }) =>
+      api<{}, TrocLookup>(`/api/subscribes/prefix`, {
         method: 'post',
-        data: { prefix },
-        success: 'Commerçant supprimé',
+        data,
+        success: 'Prefix mis à jour',
       }),
-    { onSuccess: troc.set }
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['subscribes', { role: 'trader' }])
+      },
+    }
   )
 
   const prefixs: string[] = []
@@ -146,13 +112,13 @@
     prefixs.push(String.fromCharCode(index))
   }
 
-  function handleClickTrader(index: number) {
-    selectedTrader = $troc.trader[index]
-    selectedPrefix = selectedTrader.prefix
+  function handleClickTrader(subscribe: SubscribeLookup) {
+    selectedTraderSub = subscribe
+    selectedPrefix = selectedTraderSub.prefix || ''
     traderDialogActive = true
   }
 
-  function handleOpen(index: number) {
+  function handleOpenCard(index: number) {
     open = open.map((o, i) => i === index)
   }
 </script>
@@ -161,38 +127,41 @@
   <h6 class="mb-5">Gestion des collaborateurs</h6>
 
   <!-- Administrateurs -->
-  <!--
+
   <ExpansionCard
-    title="{$troc.admin.length} Administrateur{$troc.admin.length > 1
+    title="{$queryAdminsCount.data} Administrateur{($queryAdminsCount.data ||
+      0) > 1
       ? 's'
       : ''}"
     class="mb-3"
     open={open[0]}
-    on:open={() => handleOpen(0)}
+    on:open={() => handleOpenCard(0)}
     hasSearchInput
-    bind:searchValue={searchValueAdmin}
+    bind:searchValueDebounced={searchAdmins}
+    query={queryAdmins}
   >
     <List>
-      {#each $troc.admin.filter(filterAdmin) as admin}
+      {#each $queryAdmins.data?.pages.flat() || [] as subscribe}
         <ListItem selectable>
-          <span>{admin.name}</span>
-          <span slot="subtitle">{admin.mail}</span>
+          <span>{subscribe.user.name}</span>
+          <span slot="subtitle">{subscribe.user.mail}</span>
           <div
             slot="append"
-            class="trash"
+            class="remove-icon"
             on:click={() => {
-              if (!$removeAdmin.isLoading)
-                $removeAdmin.mutate({
+              if (!$assignRole.isLoading)
+                $assignRole.mutate({
                   trocId: $params.trocId,
-                  userId: admin._id,
+                  userId: subscribe.user._id,
+                  role: 'basic',
                 })
             }}
           >
-            {#if admin._id != $troc.creator._id && admin._id != $user._id}
+            {#if subscribe.user._id != $troc.creator._id && subscribe.user._id != $user._id}
               <IconLink
-                icon={$removeAdmin.isLoading ? faSpinner : faTrashAlt}
-                disabled={$removeAdmin.isLoading}
-                spin={$removeAdmin.isLoading}
+                icon={$assignRole.isLoading ? faSpinner : faTimes}
+                disabled={$assignRole.isLoading}
+                spin={$assignRole.isLoading}
                 opacity
               />
             {/if}
@@ -202,54 +171,59 @@
     </List>
 
     <div class="pa-4">
-      {#if $addAdmin.isLoading}
+      {#if $assignRole.isLoading}
         <Loader title="Ajout en cours" />
       {:else}
         <UserSelect
           label="Nouvel administrateur"
-          exepted={$troc.admin.map(({ _id }) => _id)}
+          exepted={($queryAdmins.data?.pages.flat() || []).map(
+            ({ _id }) => _id
+          )}
           on:select={(event) => {
-            $addAdmin.mutate({
+            $assignRole.mutate({
               trocId: $params.trocId,
               userId: event.detail._id,
+              role: 'admin',
             })
           }}
         />
       {/if}
     </div>
   </ExpansionCard>
-  -->
 
   <!-- Caissier -->
-  <!--
   <ExpansionCard
-    title="{$troc.cashier.length} Caissier{$troc.cashier.length > 1 ? 's' : ''}"
+    title="{$queryCashiersCount.data} Caissier{$queryCashiersCount.data || 0 > 1
+      ? 's'
+      : ''}"
     open={open[1]}
     class="mb-3"
-    on:open={() => handleOpen(1)}
+    on:open={() => handleOpenCard(1)}
     hasSearchInput
-    bind:searchValue={searchValueCashier}
+    bind:searchValueDebounced={searchCashiers}
+    query={queryCashiers}
   >
     <List>
-      {#each $troc.cashier.filter(filterCashier) as cashier}
+      {#each $queryCashiers.data?.pages.flat() || [] as subscribe}
         <ListItem slecteable>
-          <span>{cashier.name}</span>
-          <span slot="subtitle">{cashier.mail}</span>
+          <span>{subscribe.user.name}</span>
+          <span slot="subtitle">{subscribe.user.mail}</span>
           <div
-            class="trash"
+            class="remove-icon"
             slot="append"
             on:click={() => {
-              if (!$removeCashier.isLoading)
-                $removeCashier.mutate({
+              if (!$assignRole.isLoading)
+                $assignRole.mutate({
                   trocId: $params.trocId,
-                  userId: cashier._id,
+                  userId: subscribe.user._id,
+                  role: 'basic',
                 })
             }}
           >
             <IconLink
-              icon={$removeCashier.isLoading ? faSpinner : faTrashAlt}
-              disabled={$removeCashier.isLoading}
-              spin={$removeCashier.isLoading}
+              icon={$assignRole.isLoading ? faSpinner : faTimes}
+              disabled={$assignRole.isLoading}
+              spin={$assignRole.isLoading}
               opacity
             />
           </div>
@@ -258,62 +232,68 @@
     </List>
 
     <div class="pa-4">
-      {#if $addCashier.isLoading}
+      {#if $assignRole.isLoading}
         <Loader title="Ajout en cours" />
       {:else}
         <UserSelect
           label="Nouveau caissier"
-          exepted={$troc.cashier.map(({ _id }) => _id)}
+          exepted={($queryCashiers.data?.pages.flat() || []).map(
+            ({ _id }) => _id
+          )}
           on:select={(event) => {
-            $addCashier.mutate({
+            $assignRole.mutate({
               trocId: $params.trocId,
               userId: event.detail._id,
+              role: 'cashier',
             })
           }}
         />
       {/if}
     </div>
   </ExpansionCard>
--->
 
   <!-- Commercant -->
-  <!--
+
   <ExpansionCard
-    title="{$troc.trader.length} Commerçant{$troc.trader.length > 1 ? 's' : ''}"
+    title="{$queryTradersCount.data} Commerçant{$queryTradersCount.data || 0 > 1
+      ? 's'
+      : ''}"
     open={open[2]}
     class="mb-3"
-    on:open={() => handleOpen(2)}
+    on:open={() => handleOpenCard(2)}
     hasSearchInput
-    bind:searchValue={searchValueTrader}
+    bind:searchValue={searchTraders}
+    query={queryTraders}
   >
     <List>
-      {#each $troc.trader.filter(filterTrader) as trader, index}
-        <ListItem on:click={(e) => handleClickTrader(index)}>
+      {#each $queryTraders.data?.pages.flat() || [] as subscribe, index}
+        <ListItem on:click={() => handleClickTrader(subscribe)}>
           <div slot="prepend">
             <Avatar class="secondary-color">
-              {trader.prefix}
+              {subscribe.prefix}
             </Avatar>
           </div>
 
-          {trader.user.name}
+          {subscribe.user.name}
 
-          <span slot="subtitle">{trader.user.mail}</span>
+          <span slot="subtitle">{subscribe.user.mail}</span>
 
           <div
-            class="trash"
+            class="remove-icon"
             slot="append"
             on:click|stopPropagation={() => {
-              if (!$removeTrader.isLoading)
-                $removeTrader.mutate({
+              if (!$assignRole.isLoading)
+                $assignRole.mutate({
                   trocId: $params.trocId,
-                  userId: trader.user._id,
+                  userId: subscribe.user._id,
+                  role: 'basic',
                 })
             }}
           >
             <IconLink
-              icon={$removeTrader.isLoading ? faSpinner : faTrashAlt}
-              disabled={$removeTrader.isLoading}
-              spin={$removeTrader.isLoading}
+              icon={$assignRole.isLoading ? faSpinner : faTimes}
+              disabled={$assignRole.isLoading}
+              spin={$assignRole.isLoading}
               opacity
             />
           </div>
@@ -322,35 +302,37 @@
     </List>
 
     <div class="pa-4">
-      {#if $addTrader.isLoading}
+      {#if $assignRole.isLoading}
         <Loader title="Ajout en cours" />
       {:else}
         <UserSelect
           label="Nouveau commerçant"
-          exepted={$troc.trader.map(({ user }) => user._id)}
+          exepted={($queryTraders.data?.pages.flat() || []).map(
+            ({ _id }) => _id
+          )}
           on:select={(event) => {
-            $addTrader.mutate({
+            $assignRole.mutate({
               trocId: $params.trocId,
               userId: event.detail._id,
+              role: 'trader',
             })
           }}
         />
       {/if}
     </div>
   </ExpansionCard>
--->
 
   <ExpansionCard
     title="{$troc.subscriber} Participant{$troc.subscriber > 1 ? 's' : ''}"
     open={open[3]}
     class="mb-3"
-    on:open={() => handleOpen(3)}
+    on:open={() => handleOpenCard(3)}
     hasSearchInput
-    bind:searchValueDebounced={subscribesSearch}
+    bind:searchValueDebounced={searchSubscribes}
     query={querySubscribes}
   >
     <List>
-      {#each subscribes as subscribe}
+      {#each $querySubscribes.data?.pages.flat() || [] as subscribe}
         <ListItem>
           {subscribe.user.name}
           <span slot="subtitle">{subscribe.user.mail}</span>
@@ -367,71 +349,72 @@
 
 <!-- Prefix des commercant -->
 
-<!--
 <Dialog bind:active={traderDialogActive}>
-  <Card>
-    <CardTitle>
-      <h6>Choix du prefix de {selectedTrader.user.name}</h6>
-    </CardTitle>
+  {#if selectedTraderSub}
+    <Card>
+      <CardTitle>
+        <h6>Choix du prefix de {selectedTraderSub.user.name}</h6>
+      </CardTitle>
 
-    <CardText>
-      {#each prefixs as prefix}
-        <div
-          class="prefix"
-          class:selected={selectedPrefix === prefix}
-          class:secondary-color={selectedPrefix === prefix}
-          class:disabled={$troc.trader.map((t) => t.prefix).includes(prefix) &&
-            selectedTrader.prefix !== prefix}
-          on:click={() => {
-            if (
-              !$troc.trader.map((t) => t.prefix).includes(prefix) ||
-              selectedTrader.prefix === prefix
-            )
-              selectedPrefix = prefix
-          }}
-        >
-          {prefix}
-        </div>
-      {/each}
-    </CardText>
+      <CardText>
+        {#each prefixs as prefix}
+          <div
+            on:click={() => (selectedPrefix = prefix)}
+            class="prefix"
+            class:selected={selectedPrefix === prefix}
+            class:secondary-color={selectedPrefix === prefix}
+            class:disabled={$queryTraders.data?.pages
+              .flat()
+              .map((t) => t.prefix)
+              .includes(prefix) && selectedTraderSub.prefix !== prefix}
+          >
+            {prefix}
+          </div>
+        {/each}
+      </CardText>
 
-    <CardActions class="justify-end">
-      {#if $setTraderPrefix.isLoading}
-        <Button text disabled>
-          <Loader title="Validation" />
-        </Button>
-      {:else}
-        <Button
-          text
-          on:click={() => {
-            $setTraderPrefix.mutate(
-              {
-                trocId: $params.trocId,
-                userId: selectedTrader.user._id,
-                prefix: selectedPrefix,
-              },
-              {
-                onSuccess: () => {
-                  traderDialogActive = false
+      <CardActions class="justify-end">
+        {#if $setTraderPrefix.isLoading}
+          <Button text disabled>
+            <Loader title="Validation" />
+          </Button>
+        {:else}
+          <Button
+            text
+            on:click={() => {
+              $setTraderPrefix.mutate(
+                {
+                  trocId: $params.trocId,
+                  userId: selectedTraderSub?.user._id || '',
+                  prefix: selectedPrefix,
                 },
-              }
-            )
-          }}
-          disabled={$troc.trader.map((t) => t.prefix).includes(selectedPrefix)}
-        >
-          Valider
-        </Button>
-      {/if}
-    </CardActions>
-  </Card>
+                {
+                  onSuccess: () => {
+                    traderDialogActive = false
+                  },
+                }
+              )
+            }}
+            disabled={$queryTraders.data?.pages
+              .flat()
+              .map((t) => t.prefix)
+              .includes(selectedPrefix)}
+          >
+            Valider
+          </Button>
+        {/if}
+      </CardActions>
+    </Card>
+  {/if}
 </Dialog>
--->
+
 <style>
-  :global(.s-list-item:hover .trash) {
+  :global(.s-list-item:hover .remove-icon) {
     transform: translateX(0);
     transition-delay: 250ms;
   }
-  .trash {
+
+  .remove-icon {
     transform: translateX(50px);
     transition: transform 200ms;
   }
@@ -458,6 +441,7 @@
   .prefix.disabled {
     color: var(--theme-text-disabled);
     cursor: default;
+    pointer-events: none;
   }
 
   .prefix.disabled::after {
