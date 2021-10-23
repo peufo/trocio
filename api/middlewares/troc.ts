@@ -15,7 +15,7 @@ export const ensureUserIsAdmin: RequestHandler = async (req, res, next) => {
     if (!req.session.user._id) throw Error('Login required')
     const { trocId } = parseRequest(req)
     const role = await getRole(trocId, req.session.user._id)
-    if (role === 'admin' || role === 'cashier') return next()
+    if (role === 'admin') return next()
     throw 'User is not admin of troc'
   } catch (error) {
     return next(error)
@@ -27,7 +27,7 @@ export const ensureUserIsCashier: RequestHandler = async (req, res, next) => {
     if (!req.session.user._id) return next(Error('Login required'))
     const { trocId } = parseRequest(req)
     const role = await getRole(trocId, req.session.user._id)
-    if (role === 'cashier') return next()
+    if (role === 'admin' || role === 'cashier') return next()
     throw 'User is not cashier of troc'
   } catch (error) {
     return next(error)

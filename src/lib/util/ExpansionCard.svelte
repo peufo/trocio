@@ -1,10 +1,19 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import { Card, CardTitle, CardSubtitle, TextField } from 'svelte-materialify'
+  import {
+    Card,
+    CardTitle,
+    CardSubtitle,
+    TextField,
+    Button,
+  } from 'svelte-materialify'
   import { faChevronDown, faSearch } from '@fortawesome/free-solid-svg-icons'
+  import debounce from 'debounce'
 
   import IconLink from '$lib/util/IconLink.svelte'
+  import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
+  import Loader from './Loader.svelte'
 
   let klass = ''
   export { klass as class }
@@ -17,12 +26,22 @@
    */
   export let controlled = false
   export let open = false
-
   export let titleEditable = false
 
-  export let searchValue = ''
+  /**
+   * Gestion du champs de recherche
+   */
   export let hasSearchInput = false
   export let inputElement: HTMLInputElement | undefined = undefined
+  export let searchValue = ''
+  export let searchValueDebounced = ''
+  export let debounceDelay = 200
+
+  /**
+   * Gestion du chargement des données (fetchMore)
+   */
+  export let query: undefined | UseInfiniteQueryStoreResult<any, any, any, any>
+
   let isSearchActive = false
 
   const dispath = createEventDispatcher()
@@ -47,6 +66,16 @@
   function handleBlur(event) {
     if (event.target.value === '') isSearchActive = false
   }
+
+  function handleSearch(event: any) {
+    const value = event.target.value
+    debounceSearch(value)
+    dispath('search', value)
+  }
+
+  const debounceSearch = debounce((value: string) => {
+    searchValueDebounced = value
+  }, debounceDelay)
 </script>
 
 <Card outlined hover={!open} class={klass}>
@@ -78,8 +107,8 @@
             flat={!isSearchActive}
             bind:inputElement
             bind:value={searchValue}
-            on:change
-            on:input
+            on:change={handleSearch}
+            on:input={handleSearch}
             on:blur={handleBlur}
             style="
               transition: width 300ms;
@@ -110,6 +139,26 @@
     {#if open}
       <div transition:slide|local>
         <slot />
+
+        {#if query}
+          {#if $query.isLoading || $query.isFetchingNextPage}
+            <div class="text-center pa-16 text--opacity">
+              <Loader />
+            </div>
+          {:else if !$query.data?.pages.flat().length}
+            <div class="text-center pa-16 text--opacity">Aucun élément</div>
+          {:else if $query.hasNextPage}
+            <div class="d-flex pa-2">
+              <div class="flex-grow-1" />
+              <Button
+                depressed
+                on:click={() => query && $query.fetchNextPage()}
+              >
+                Plus de résultats
+              </Button>
+            </div>
+          {/if}
+        {/if}
       </div>
     {/if}
   </div>
