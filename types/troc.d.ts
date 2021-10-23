@@ -59,10 +59,6 @@ export declare interface Troc extends TrocBase {
   articles?: object[]
   subscriber: number
   creator: string
-  trader: {
-    prefix: string
-    user: string
-  }[]
   tarif: Tarif[]
   createdAt: string
   updatedAt: string

@@ -15,7 +15,7 @@
   import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
   import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 
-  import { useApi } from '$lib/api'
+  import { api, useApi } from '$lib/api'
   import {
     troc,
     useAddAdmin,
@@ -32,18 +32,10 @@
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import Share from '$lib/troc/Share.svelte'
-  import type { SubscribeLookup, ParamsAPI } from 'types'
+  import type { SubscribeLookup, ParamsAPI, TrocLookup } from 'types'
   import { useInfinitApi } from '$lib/api'
+  import { useMutation } from '@sveltestack/svelte-query'
 
-  // import { troc } from './stores'
-  // import { getHeader, updateTroc } from './utils'
-  const addAdmin = useAddAdmin()
-  const removeAdmin = useRemoveAdmin()
-  const addCashier = useAddCashier()
-  const removeCashier = useRemoveCashier()
-  const addTrader = useAddTrader()
-  const removeTrader = useRemoveTrader()
-  const setTraderPrefix = useSetTraderPrefix()
   let selectedTrader = null
   let traderDialogActive = false
   let selectedPrefix = ''
@@ -54,25 +46,100 @@
   let searchValueCashier = ''
   let searchValueTrader = ''
 
-  $: filterAdmin = (user) =>
-    !!user.name.match(new RegExp(searchValueAdmin, 'i'))
-  $: filterCashier = (user) =>
-    !!user.name.match(new RegExp(searchValueCashier, 'i'))
-  $: filterTrader = (trader) =>
-    !!trader.user.name.match(new RegExp(searchValueTrader, 'i')) ||
-    trader.prefix === searchValueTrader.toUpperCase()
+  interface TrocUserQuery {
+    trocId: string
+    userId: string
+  }
+
+  /**
+   * Getters
+   */
 
   let subscribesSearch = ''
-  const handleSearchSubscriber = debounce((event: any) => {
-    subscribesSearch = event.target.value
-  }, 200)
-  $: subscribesQuery = useInfinitApi<ParamsAPI, SubscribeLookup>([
+  $: querySubscribes = useInfinitApi<ParamsAPI, SubscribeLookup>([
     'subscribes',
     { trocId: $params.trocId, q: subscribesSearch },
   ])
-  $: subscribes = $subscribesQuery.data
-    ? $subscribesQuery.data.pages.flat()
+  $: subscribes = $querySubscribes.data
+    ? $querySubscribes.data.pages.flat()
     : []
+
+  /**
+   $: filterAdmin = (user) =>
+     !!user.name.match(new RegExp(searchValueAdmin, 'i'))
+   $: filterCashier = (user) =>
+     !!user.name.match(new RegExp(searchValueCashier, 'i'))
+   $: filterTrader = (trader) =>
+     !!trader.user.name.match(new RegExp(searchValueTrader, 'i')) ||
+     trader.prefix === searchValueTrader.toUpperCase()
+   */
+
+  /**
+   * Setters
+   */
+  const addAdmin = useMutation(
+    ({ trocId, userId }: TrocUserQuery) =>
+      api<{}, TrocLookup>(`/api/trocs/${trocId}/admin/${userId}`, {
+        method: 'post',
+        success: 'Administrateur ajouté',
+      }),
+    { onSuccess: troc.set }
+  )
+
+  const removeAdmin = useMutation(
+    ({ trocId, userId }: TrocUserQuery) =>
+      api<{}, TrocLookup>(`/api/trocs/${trocId}/admin/${userId}`, {
+        method: 'delete',
+        success: 'Administrateur supprimé',
+      }),
+    { onSuccess: troc.set }
+  )
+
+  const addCashier = useMutation(
+    ({ trocId, userId }: TrocUserQuery) =>
+      api<{}, TrocLookup>(`/api/trocs/${trocId}/cashier/${userId}`, {
+        method: 'post',
+        success: 'Caisser ajouté',
+      }),
+    { onSuccess: troc.set }
+  )
+
+  const removeCashier = useMutation(
+    ({ trocId, userId }: TrocUserQuery) =>
+      api<{}, TrocLookup>(`/api/trocs/${trocId}/cashier/${userId}`, {
+        method: 'delete',
+        success: 'Caisser supprimé',
+      }),
+    { onSuccess: troc.set }
+  )
+
+  const addTrader = useMutation(
+    ({ trocId, userId }: TrocUserQuery) =>
+      api<{}, TrocLookup>(`/api/trocs/${trocId}/trader/${userId}`, {
+        method: 'post',
+        success: 'Commerçant ajouté',
+      }),
+    { onSuccess: troc.set }
+  )
+
+  const removeTrader = useMutation(
+    ({ trocId, userId }: TrocUserQuery) =>
+      api<{}, TrocLookup>(`/api/trocs/${trocId}/trader/${userId}`, {
+        method: 'delete',
+        success: 'Commerçant supprimé',
+      }),
+    { onSuccess: troc.set }
+  )
+
+  const setTraderPrefix = useMutation(
+    ({ trocId, userId, prefix }: TrocUserQuery & { prefix: string }) =>
+      api<{}, TrocLookup>(`/api/trocs/${trocId}/trader/${userId}/prefix`, {
+        method: 'post',
+        data: { prefix },
+        success: 'Commerçant supprimé',
+      }),
+    { onSuccess: troc.set }
+  )
 
   const prefixs: string[] = []
   for (let index = 65; index < 91; index++) {
@@ -90,11 +157,11 @@
   }
 </script>
 
-<!-- Administrateurs -->
-
 <div style="max-width: 700px; margin: auto;">
   <h6 class="mb-5">Gestion des collaborateurs</h6>
 
+  <!-- Administrateurs -->
+  <!--
   <ExpansionCard
     title="{$troc.admin.length} Administrateur{$troc.admin.length > 1
       ? 's'
@@ -151,7 +218,10 @@
       {/if}
     </div>
   </ExpansionCard>
+  -->
 
+  <!-- Caissier -->
+  <!--
   <ExpansionCard
     title="{$troc.cashier.length} Caissier{$troc.cashier.length > 1 ? 's' : ''}"
     open={open[1]}
@@ -204,7 +274,10 @@
       {/if}
     </div>
   </ExpansionCard>
+-->
 
+  <!-- Commercant -->
+  <!--
   <ExpansionCard
     title="{$troc.trader.length} Commerçant{$troc.trader.length > 1 ? 's' : ''}"
     open={open[2]}
@@ -265,6 +338,7 @@
       {/if}
     </div>
   </ExpansionCard>
+-->
 
   <ExpansionCard
     title="{$troc.subscriber} Participant{$troc.subscriber > 1 ? 's' : ''}"
@@ -272,8 +346,8 @@
     class="mb-3"
     on:open={() => handleOpen(3)}
     hasSearchInput
-    on:change={handleSearchSubscriber}
-    on:input={handleSearchSubscriber}
+    bind:searchValueDebounced={subscribesSearch}
+    query={querySubscribes}
   >
     <List>
       {#each subscribes as subscribe}
@@ -291,6 +365,9 @@
   </div>
 </div>
 
+<!-- Prefix des commercant -->
+
+<!--
 <Dialog bind:active={traderDialogActive}>
   <Card>
     <CardTitle>
@@ -348,7 +425,7 @@
     </CardActions>
   </Card>
 </Dialog>
-
+-->
 <style>
   :global(.s-list-item:hover .trash) {
     transform: translateX(0);
