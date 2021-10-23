@@ -40,18 +40,20 @@
   /**
    * Gestion du chargement des données (fetchMore)
    */
-  export let query: undefined | UseInfiniteQueryStoreResult<any, any, any, any>
+  export let query:
+    | undefined
+    | UseInfiniteQueryStoreResult<any, any, any, any> = undefined
 
   let isSearchActive = false
 
   const dispath = createEventDispatcher()
 
-  function handleOpen(event) {
+  function handleOpen(event: any) {
     if (!open) dispath('open')
     if (!controlled) open = true
   }
 
-  function handleClose(event) {
+  function handleClose(event: any) {
     event.stopPropagation()
     if (!open) return handleOpen(event)
     if (!controlled) open = false
@@ -63,14 +65,15 @@
     inputElement?.focus()
   }
 
-  function handleBlur(event) {
+  function handleBlur(event: any) {
     if (event.target.value === '') isSearchActive = false
   }
 
-  function handleSearch(event: any) {
-    const value = event.target.value
-    debounceSearch(value)
-    dispath('search', value)
+  $: if (searchValue || true) handleSearch()
+
+  function handleSearch() {
+    debounceSearch(searchValue)
+    dispath('search', searchValue)
   }
 
   const debounceSearch = debounce((value: string) => {
@@ -86,7 +89,7 @@
       {#if titleEditable}
         <input value={title} on:input style="min-width: 100px;" />
       {:else}
-        <span class="text-uppercase">
+        <span>
           {title}
         </span>
       {/if}
@@ -107,8 +110,8 @@
             flat={!isSearchActive}
             bind:inputElement
             bind:value={searchValue}
-            on:change={handleSearch}
-            on:input={handleSearch}
+            on:change
+            on:input
             on:blur={handleBlur}
             style="
               transition: width 300ms;

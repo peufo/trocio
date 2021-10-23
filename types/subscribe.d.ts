@@ -5,6 +5,8 @@ export interface SubscribeBase {
   trocId: string
 }
 
+export type RoleEnum = 'basic' | 'trader' | 'cashier' | 'admin'
+
 export interface ISubscribe extends SubscribeBase {
   _id: string
   userId: string
@@ -12,7 +14,7 @@ export interface ISubscribe extends SubscribeBase {
   updatedAt: date
 
   /** Rôle de l'utilsateur sur le troc */
-  role: 'basic' | 'trader' | 'cashier' | 'admin'
+  role: RoleEnum
 
   /** L'inscription à été faite ou validé par le participant */
   validedByUser: boolean
@@ -28,8 +30,8 @@ export interface ISubscribe extends SubscribeBase {
 }
 
 export interface SubscribeLookup extends ISubscribe {
-  troc: Partial<Troc>
-  user: Partial<User>
+  troc: Troc
+  user: User
 }
 
 /** Résumé des interactions d'un utilisateur avec un troc */

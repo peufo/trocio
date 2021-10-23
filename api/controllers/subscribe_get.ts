@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Types
 
 import Subscribe from '../models/subscribe'
-import type { ISubscribe } from '../../types'
+import type { ISubscribe, RoleEnum } from '../../types'
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
   try {
@@ -56,7 +56,7 @@ export const getResum: RequestHandler = async (req, res, next) => {
   }
 }
 
-export const getSubscriber: RequestHandler = async (req, res, next) => {
+export const getSubscribers: RequestHandler = async (req, res, next) => {
   let {
     trocId,
     skip = 0,
@@ -66,6 +66,7 @@ export const getSubscriber: RequestHandler = async (req, res, next) => {
     exact_tarifId = '',
     includResum = false,
     includTarif = false,
+    role = '',
   } = req.query
   const regexp = new RegExp(q, 'i')
   skip = Number(skip)
@@ -74,17 +75,19 @@ export const getSubscriber: RequestHandler = async (req, res, next) => {
     if (typeof trocId !== 'string') throw 'Query "trocId" is required (string)'
     if (typeof exact_tarifId !== 'string')
       throw 'Query "exact_tarifId" need to be a string'
+    if (typeof role !== 'string') throw 'role query need to be a string'
 
-    const tarifMatch = exact_tarifId
-      ? ObjectId(exact_tarifId)
-      : // @ts-ignore
-        { $nin: filtredTarifs.map(ObjectId) }
+    const match: any = {
+      trocId: new ObjectId(trocId),
+      tarifId: exact_tarifId
+        ? ObjectId(exact_tarifId)
+        : // @ts-ignore
+          { $nin: filtredTarifs.map(ObjectId) },
+    }
+    if (role) match.role = role
 
     const aggregate = Subscribe.aggregate()
-    aggregate.match({
-      trocId: new ObjectId(trocId),
-      tarifId: tarifMatch,
-    })
+    aggregate.match(match)
 
     lookupUser(aggregate)
     aggregate.match({ $or: [{ 'user.name': regexp }, { 'user.name': regexp }] })
@@ -98,6 +101,22 @@ export const getSubscriber: RequestHandler = async (req, res, next) => {
 
     const subscribes = await aggregate.skip(skip).limit(limit).exec()
     res.json(subscribes)
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Retourne le nombre de participant à un troc selon le rôle
+ */
+export const getSubscribersCount: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId, role = '' } = req.query
+    if (typeof trocId !== 'string') throw 'trocId string is required'
+    if (typeof role !== 'string') throw 'role string is required'
+    const match: any = role ? { trocId, role } : { trocId }
+    const count = await Subscribe.countDocuments(match)
+    res.json(count)
   } catch (error) {
     next(error)
   }

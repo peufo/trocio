@@ -1,3 +1,4 @@
+import type { RoleEnum } from 'types'
 import type { Article } from './article'
 
 export declare type DynamicQuery =
@@ -20,6 +21,7 @@ export declare interface ParamsAPI {
   q?: string
   limit?: number
   skip?: number
+  role?: RoleEnum
 }
 
 export declare interface ParamsArticleAPI
