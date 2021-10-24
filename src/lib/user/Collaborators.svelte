@@ -177,7 +177,7 @@
         <UserSelect
           label="Nouvel administrateur"
           exepted={($queryAdmins.data?.pages.flat() || []).map(
-            ({ _id }) => _id
+            ({ userId }) => userId
           )}
           on:select={(event) => {
             $assignRole.mutate({
@@ -238,7 +238,7 @@
         <UserSelect
           label="Nouveau caissier"
           exepted={($queryCashiers.data?.pages.flat() || []).map(
-            ({ _id }) => _id
+            ({ userId }) => userId
           )}
           on:select={(event) => {
             $assignRole.mutate({
@@ -308,7 +308,7 @@
         <UserSelect
           label="Nouveau commerçant"
           exepted={($queryTraders.data?.pages.flat() || []).map(
-            ({ _id }) => _id
+            ({ userId }) => userId
           )}
           on:select={(event) => {
             $assignRole.mutate({

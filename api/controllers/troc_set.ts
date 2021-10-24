@@ -292,6 +292,8 @@ export const deleteTarif: RequestHandler = async (req, res, next) => {
       throw `Tarif by default can't be removed`
     await troc.save()
 
+    // TODO: Passer les personne attribué au tarif sur le tarif standard
+
     const trocWithUsers = await populateTrocUser(trocId)
     res.json(trocWithUsers)
   } catch (error) {
