@@ -23,17 +23,6 @@
   let tarif_selected: string | undefined
   $: tarif_selected = $params.tarif_selected || ''
 
-  // Pre calcule les liens vers la pages attribution
-  $: urlAttributions = $troc.tarif.map((tarif) => {
-    return $url('/admin/tarif_attribution', {
-      ...$params,
-      tab_admin: 'tarif_attribution',
-      filtredTarifs: $troc.tarif
-        .filter((_tarif) => _tarif !== tarif)
-        .map(({ _id }) => _id),
-    })
-  })
-
   function handleOpen(tarifId?: string) {
     tarif_selected = tarifId
     $goto($url(), { ...$params, tarif_selected })
@@ -51,7 +40,6 @@
   {#each $troc.tarif as tarif, index (tarif._id)}
     <Tarif
       {tarif}
-      urlAttribution={urlAttributions[index]}
       class="mb-3"
       open={tarif_selected === tarif._id}
       on:open={() => handleOpen(tarif._id)}

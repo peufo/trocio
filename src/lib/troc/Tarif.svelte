@@ -17,21 +17,25 @@
   import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
   import notify from '$lib/notify'
   import { useMutation } from '@sveltestack/svelte-query'
+  import { page, params, url } from '@roxi/routify'
 
   let klass = ''
   export { klass as class }
   export let open = false
   export let tarif: Tarif
-  export let urlAttribution: string = ''
 
   // Copie de tarif
   let _tarif: Tarif = getClone()
   $: isModified = JSON.stringify(tarif) !== JSON.stringify(_tarif)
-
   $: queryTarifApplyCount = useApi([
     'subscribes/count',
     { trocId: $troc._id, tarifId: _tarif._id },
   ])
+
+  $: urlAttribution = $url('management_users', {
+    ...$params,
+    exact_tarifId: _tarif._id,
+  })
 
   const queryDeleteTarif = useMutation(
     (data: { trocId: string; tarifId: string }) =>
