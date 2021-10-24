@@ -2,7 +2,11 @@ import { RequestHandler } from 'express'
 import Troc from '../models/troc'
 import User from '../models/user'
 import Subscribe from '../models/subscribe'
-import { lookupIfAdmin } from '../controllers/troc_utils'
+import {
+  lookupIfAdmin,
+  populateTrocUser,
+  populateUsers,
+} from '../controllers/troc_utils'
 import { getOpt } from './option'
 
 export const createTroc: RequestHandler = async (req, res, next) => {
@@ -264,38 +268,56 @@ export function editTraderPrefix(req, res, next) {
   })
 }
 
-export const createTarif: RequestHandler = (req, res, next) => {
-  const { trocId } = req.params
-  const newTarif = req.body
-  Troc.updateOne({ _id: trocId }, { $push: { tarif: newTarif } })
-    .then(() => next())
-    .catch(next)
+export const createTarif: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId = '', ...newTarif } = req.body
+    console.log({ newTarif })
+    const troc = await Troc.findById(trocId)
+    // @ts-ignore
+    troc.tarif.push(newTarif)
+    await troc.save()
+    const trocWithUsers = await populateTrocUser(trocId)
+    res.json(trocWithUsers)
+  } catch (error) {
+    next(error)
+  }
 }
 
-export const deleteTarif: RequestHandler = (req, res, next) => {
-  const { trocId, tarifId } = req.params
-  Troc.updateOne(
-    { _id: trocId },
-    {
-      $pull: { tarif: { _id: tarifId, bydefault: false } },
-    }
-  )
-    .then((res) => next())
-    .catch(next)
+export const deleteTarif: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId = '', tarifId = '' } = req.body
+    const troc = await Troc.findById(trocId).exec()
+    troc.tarif = troc.tarif.filter((t) => String(t._id) !== tarifId)
+    if (!troc.tarif.filter((t) => t.bydefault).length)
+      throw `Tarif by default can't be removed`
+    await troc.save()
+
+    const trocWithUsers = await populateTrocUser(trocId)
+    res.json(trocWithUsers)
+  } catch (error) {
+    next(error)
+  }
 }
 
-export const editTarif: RequestHandler = (req, res, next) => {
-  const { trocId, tarifId } = req.params
-  const { name, margin, maxarticles, fee } = req.body
-  Troc.findById(trocId, (err, troc) => {
-    if (err || !troc) return next(err || Error('Troc not found'))
-    troc.tarif.id(tarifId).name = name
-    troc.tarif.id(tarifId).margin = margin
-    troc.tarif.id(tarifId).maxarticles = maxarticles
-    troc.tarif.id(tarifId).fee = fee
-    troc.vali
-    troc.save(next)
-  })
+export const editTarif: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId, tarifId, name, margin, maxarticles, fee } = req.body
+    const troc = await Troc.findById(trocId).exec()
+    if (!troc) throw 'Troc not found'
+    const tarifIndex = troc.tarif.findIndex((t) => String(t._id) === tarifId)
+    if (tarifIndex < 0) throw 'Tarif not found'
+    const tarif = troc.tarif[tarifIndex]
+    tarif.name = name
+    tarif.margin = margin
+    tarif.maxarticles = maxarticles
+    tarif.fee = fee
+    troc.tarif[tarifIndex] = tarif
+    await troc.save()
+    const trocWithUsers = await populateTrocUser(trocId)
+    res.json(trocWithUsers)
+  } catch (error) {
+    next(error)
+  }
 }
 
 export const addApply: RequestHandler = (req, res, next) => {

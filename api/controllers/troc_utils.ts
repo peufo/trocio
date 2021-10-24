@@ -29,6 +29,7 @@ export function checkAdmin(req, res, next) {
   })
 }
 
+/** @deprecated */
 export async function populateTrocUser(trocId: string) {
   return await Troc.findById(trocId)
     .populate('creator', 'name mail')

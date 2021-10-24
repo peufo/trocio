@@ -1,11 +1,23 @@
 <script lang="ts">
   import { Button } from 'svelte-materialify'
   import { url, params, goto } from '@roxi/routify'
-
-  import { troc, useCreateTarif } from '$lib/troc/store'
+  import { api } from '$lib/api'
+  import { troc } from '$lib/troc/store'
   import Tarif from '$lib/troc/Tarif.svelte'
+  import { useMutation } from '@sveltestack/svelte-query'
+  import type { TrocLookup, Tarif as ITarif } from 'types'
 
-  const queryCreateTarif = useCreateTarif()
+  const queryCreateTarif = useMutation(
+    (data: { trocId: string } & Partial<ITarif>) =>
+      api<{}, TrocLookup>(`/api/trocs/tarif`, {
+        method: 'post',
+        data,
+        success: 'Nouveau tarif créé',
+      }),
+    {
+      onSuccess: troc.set,
+    }
+  )
 
   // Nécéssaire pour la vitesse de réaction
   let tarif_selected: string | undefined
@@ -33,7 +45,7 @@
   }
 </script>
 
-<div class="container">
+<div class="container pb-16">
   <h6 class="mb-5">Edition des tarifs</h6>
 
   {#each $troc.tarif as tarif, index (tarif._id)}

@@ -20,6 +20,9 @@ import { resTrocUser } from '../res/troc'
 router
   .get('/', search)
   .post('/', createTroc)
+  .post('/tarif', ensureUserIsAdmin, createTarif)
+  .delete('/tarif', ensureUserIsAdmin, deleteTarif)
+  .patch('/tarif', ensureUserIsAdmin, editTarif)
 
   /** TODO: not use params */
   .patch('/:trocId', ensureUserIsAdmin, patchTroc)
@@ -30,14 +33,6 @@ router
     '/:trocId/trader/:userId/prefix',
     ensureUserIsAdmin,
     editTraderPrefix,
-    resTrocUser
-  )
-  .post('/:trocId/tarif', ensureUserIsAdmin, createTarif, resTrocUser)
-  .patch('/:trocId/tarif/:tarifId', ensureUserIsAdmin, editTarif, resTrocUser)
-  .delete(
-    '/:trocId/tarif/:tarifId',
-    ensureUserIsAdmin,
-    deleteTarif,
     resTrocUser
   )
   .post(
