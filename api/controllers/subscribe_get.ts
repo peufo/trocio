@@ -107,14 +107,19 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
 }
 
 /**
- * Retourne le nombre de participant à un troc selon le rôle
+ * Retourne le nombre de participant à un troc selon le rôle ou le tarif
  */
 export const getSubscribersCount: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId, role = '' } = req.query
+    const { trocId, role = '', tarifId = '' } = req.query
     if (typeof trocId !== 'string') throw 'trocId string is required'
-    if (typeof role !== 'string') throw 'role string is required'
-    const match: any = role ? { trocId, role } : { trocId }
+    if (typeof role !== 'string' && typeof tarifId !== 'string')
+      throw 'role or tarifId need to be a string'
+
+    const match: any = { trocId }
+    if (role) match.role = role
+    if (tarifId) match.tarifId = tarifId
+
     const count = await Subscribe.countDocuments(match)
     res.json(count)
   } catch (error) {
