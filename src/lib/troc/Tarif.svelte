@@ -9,7 +9,7 @@
   } from 'svelte-materialify'
 
   import type { Tarif, TrocLookup } from 'types'
-  import { api } from '$lib/api'
+  import { api, useApi } from '$lib/api'
   import { troc } from '$lib/troc/store'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
@@ -23,6 +23,16 @@
   export let open = false
   export let tarif: Tarif
   export let urlAttribution: string = ''
+
+  // Copie de tarif
+  let _tarif: Tarif = getClone()
+  $: isModified = JSON.stringify(tarif) !== JSON.stringify(_tarif)
+
+  $: queryTarifApplyCount = useApi([
+    'subscribes/count',
+    { trocId: $troc._id, tarifId: _tarif._id },
+  ])
+
   const queryDeleteTarif = useMutation(
     (data: { trocId: string; tarifId: string }) =>
       api<{}, TrocLookup>('/api/trocs/tarif', {
@@ -46,10 +56,6 @@
       onSuccess: troc.set,
     }
   )
-
-  // la copie tarif
-  let _tarif: Tarif = getClone()
-  $: isModified = JSON.stringify(tarif) !== JSON.stringify(_tarif)
 
   function getClone(): Tarif {
     return {
@@ -119,7 +125,7 @@
       {`Attribué ${
         _tarif.bydefault
           ? 'par défaut'
-          : `à ${_tarif.apply?.length} participants`
+          : `à ${$queryTarifApplyCount.data} participants`
       }`}
     </a>
   </div>
@@ -150,7 +156,7 @@
         min="1"
         max="5000"
         placeholder=" "
-        hint="Nombre maximum d{`'`}article pouvant être proposé par un participant"
+        hint="Nombre maximum d'article pouvant être proposé par un participant"
         style="max-width: 50%;"
         class="ml-2"
       >
@@ -250,7 +256,7 @@
             $queryEditTarif.mutate(
               {
                 trocId: $troc._id,
-                tarifId: _tarif._id,
+                tarifId: _tarif._id || '',
                 ..._tarif,
               },
               {
