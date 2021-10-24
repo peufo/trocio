@@ -205,7 +205,7 @@ router
             troc: troc._id,
             user: trader.user,
           }).exec()
-          return updateOrCreateSub(sub, 'basic', trader.user, trader.prefix)
+          return updateOrCreateSub(sub, 'trader', trader.user, trader.prefix)
         })
       )
 

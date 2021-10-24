@@ -45,6 +45,7 @@ export function getsubscribes({ pageParam = 0, queryKey }) {
   return api<SubscribeLookup[]>('/api/subscribes', { params })
 }
 
+/** @deprecated */
 export function createSubscribe(
   subscribeBase: SubscribeBase
 ): Promise<SubscribeLookup> {
@@ -55,6 +56,7 @@ export function createSubscribe(
   })
 }
 
+/** @deprecated */
 export function createTroc(trocBase: TrocBase) {
   return api<TrocBase, TrocLookup>('/api/trocs', {
     method: 'post',
@@ -63,6 +65,7 @@ export function createTroc(trocBase: TrocBase) {
   })
 }
 
+/** @deprecated */
 export function updateTroc(troc: Partial<Troc>) {
   return api<Troc, TrocLookup>(`/api/trocs/${troc._id}`, {
     method: 'patch',
@@ -76,6 +79,7 @@ interface TrocUserQuery {
   userId: string
 }
 
+/** @deprecated */
 export function addAdmin({ trocId, userId }: TrocUserQuery) {
   return api<{ admin: string }, TrocLookup>(
     `/api/trocs/${trocId}/admin/${userId}`,
@@ -86,6 +90,7 @@ export function addAdmin({ trocId, userId }: TrocUserQuery) {
   )
 }
 
+/** @deprecated */
 export function removeAdmin({ trocId, userId }: TrocUserQuery) {
   return api<{ admin: string }, TrocLookup>(
     `/api/trocs/${trocId}/admin/${userId}`,
@@ -96,6 +101,7 @@ export function removeAdmin({ trocId, userId }: TrocUserQuery) {
   )
 }
 
+/** @deprecated */
 export function addCashier({ trocId, userId }: TrocUserQuery) {
   return api<{ cashier: string }, TrocLookup>(
     `/api/trocs/${trocId}/cashier/${userId}`,
@@ -106,6 +112,7 @@ export function addCashier({ trocId, userId }: TrocUserQuery) {
   )
 }
 
+/** @deprecated */
 export function removeCashier({ trocId, userId }: TrocUserQuery) {
   return api<{ cashier: string }, TrocLookup>(
     `/api/trocs/${trocId}/cashier/${userId}`,
@@ -116,6 +123,7 @@ export function removeCashier({ trocId, userId }: TrocUserQuery) {
   )
 }
 
+/** @deprecated */
 export function addTrader({ trocId, userId }: TrocUserQuery) {
   return api<{ trader: string }, TrocLookup>(
     `/api/trocs/${trocId}/trader/${userId}`,
@@ -126,6 +134,7 @@ export function addTrader({ trocId, userId }: TrocUserQuery) {
   )
 }
 
+/** @deprecated */
 export function removeTrader({ trocId, userId }: TrocUserQuery) {
   return api<{ trader: string }, TrocLookup>(
     `/api/trocs/${trocId}/trader/${userId}`,
@@ -136,6 +145,7 @@ export function removeTrader({ trocId, userId }: TrocUserQuery) {
   )
 }
 
+/** @deprecated */
 export function setTraderPrefix({
   trocId,
   userId,
@@ -163,6 +173,7 @@ interface UserQuery {
 interface TrocTarifQuery extends TrocQuery, TarifQuery {}
 interface TrocTarifUserQuery extends TrocTarifQuery, UserQuery {}
 
+/** @deprecated */
 export function createTarif({
   trocId,
   name,
@@ -177,6 +188,7 @@ export function createTarif({
   })
 }
 
+/** @deprecated */
 export function deleteTarif({ trocId, tarifId }: TrocTarifQuery) {
   return api<{}, TrocLookup>(`/api/trocs/${trocId}/tarif/${tarifId}`, {
     method: 'delete',
@@ -184,6 +196,7 @@ export function deleteTarif({ trocId, tarifId }: TrocTarifQuery) {
   })
 }
 
+/** @deprecated */
 export function editTarif({
   trocId,
   tarifId,

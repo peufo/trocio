@@ -8,21 +8,44 @@
     Table,
   } from 'svelte-materialify'
 
-  import type { Tarif } from 'types'
-  import { troc, useDeleteTarif, useEditTarif } from '$lib/troc/store'
+  import type { Tarif, TrocLookup } from 'types'
+  import { api } from '$lib/api'
+  import { troc } from '$lib/troc/store'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import { faCubes, faPercent } from '@fortawesome/free-solid-svg-icons'
   import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
   import notify from '$lib/notify'
+  import { useMutation } from '@sveltestack/svelte-query'
 
   let klass = ''
   export { klass as class }
   export let open = false
   export let tarif: Tarif
   export let urlAttribution: string = ''
-  const queryDeleteTarif = useDeleteTarif()
-  const queryEditTarif = useEditTarif()
+  const queryDeleteTarif = useMutation(
+    (data: { trocId: string; tarifId: string }) =>
+      api<{}, TrocLookup>('/api/trocs/tarif', {
+        method: 'delete',
+        data,
+        success: 'Tarif supprimé',
+      }),
+    {
+      onSuccess: troc.set,
+    }
+  )
+
+  const queryEditTarif = useMutation(
+    (data: { trocId: string; tarifId: string } & Partial<Tarif>) =>
+      api<Partial<Tarif>, TrocLookup>('/api/trocs/tarif', {
+        method: 'patch',
+        data,
+        success: 'Tarif mis à jour',
+      }),
+    {
+      onSuccess: troc.set,
+    }
+  )
 
   // la copie tarif
   let _tarif: Tarif = getClone()
@@ -40,7 +63,7 @@
       return notify.warning('Le tarif par défaut ne peut pas être supprimé')
     if (!confirm(`Etes-vous sur de vouloir supprimer le tarif "${tarif.name}"`))
       return
-    $queryDeleteTarif.mutate({ trocId: $troc._id, tarifId: tarif._id })
+    $queryDeleteTarif.mutate({ trocId: $troc._id, tarifId: tarif._id || '' })
   }
 
   function handleInputName(event: any) {

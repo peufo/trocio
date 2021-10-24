@@ -23,6 +23,16 @@ const trocModel = new Schema(
     description: { type: String, required: true },
     creator: { type: ObjectId, ref: 'user', required: true },
 
+    admin: [{ type: ObjectId, ref: 'user' }],
+    cashier: [{ type: ObjectId, ref: 'user' }],
+    trader: [
+      {
+        user: { type: ObjectId, ref: 'user' },
+        prefix: { type: String, uppercase: true },
+      },
+    ],
+    provider: [{ type: ObjectId, ref: 'user' }],
+
     schedule: [
       {
         name: {

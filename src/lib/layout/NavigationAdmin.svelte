@@ -44,10 +44,6 @@
       label: 'Tarifications',
       icon: faCoins,
       groupActive: false,
-      group: [
-        { ref: 'tarif_attribution', label: 'Attribution', icon: faUsers },
-        { ref: 'tarif_edition', label: 'Edition', icon: faEdit },
-      ],
     },
     { ref: 'tag', label: 'Etiquetage', icon: faTag },
     { ref: 'statistic', label: 'Statistique', icon: faChartPie },
