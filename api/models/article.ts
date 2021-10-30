@@ -2,8 +2,8 @@ import mongoose, { Schema } from 'mongoose'
 const { ObjectId } = Schema.Types
 
 let articleModel = new Schema({
-  troc: { type: ObjectId, ref: 'troc', required: true },
-  provider: { type: ObjectId, ref: 'user', required: true },
+  troc: { type: ObjectId, ref: 'troc', required: true, index: true },
+  provider: { type: ObjectId, ref: 'user', required: true, index: true },
   ref: { type: String, required: true },
   name: { type: String, default: '' },
   price: { type: Number, default: 0 },
@@ -21,7 +21,7 @@ let articleModel = new Schema({
       user: { type: ObjectId, ref: 'user' },
     },
   ], //user is not required for anonyme buyer
-  buyer: { type: ObjectId, ref: 'user' },
+  buyer: { type: ObjectId, ref: 'user', index: true },
   validator: { type: ObjectId, ref: 'user' }, //For valided or refused
   seller: { type: ObjectId, ref: 'user' }, //For sold or recover
   newPriceRequest: {

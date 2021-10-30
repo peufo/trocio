@@ -1,5 +1,6 @@
 import type { RoleEnum } from 'types'
 import type { Article } from './article'
+import type { ISubscribe } from './subscribe'
 
 export declare type DynamicQuery =
   | 'exact'
@@ -9,11 +10,16 @@ export declare type DynamicQuery =
   | 'sort'
   | 'min'
   | 'max'
-export declare type DynamicQueryArticle = Partial<
+
+export type DynamicQueryArticle = Partial<
   Record<`${DynamicQuery}_${keyof Article}`, string | number>
 >
 
-export declare interface ParamsAPI {
+export type DynamicQuerySubscribe = Partial<
+  Record<`${DynamicQuery}_${keyof ISubscribe}`, string | number>
+>
+
+export interface ParamsAPI {
   trocId?: string
   /** tarif à ne pas afficher */
   filtredTarifs?: string[]
@@ -21,19 +27,16 @@ export declare interface ParamsAPI {
   q?: string
   limit?: number
   skip?: number
-  role?: RoleEnum
 }
 
-export declare interface ParamsArticleAPI
-  extends DynamicQueryArticle,
-    ParamsAPI {
-  /**
-   * Seléctionnes les tarifs d'un troc
-   * TODO: à remplacer par trocId
-   */
-  troc?: string
-  /** Ne renvoie que les tarifs d'un certain dans un certain statut */
-  select_statut?: 'proposed' | 'valided' | 'refused' | 'sold' | 'recover'
+export interface ParamsSubscribeAPI extends DynamicQuerySubscribe, ParamsAPI {
+  /** Inclue le résumé des interactions d'un participant sur un troc */
+  includResum?: boolean
+  /** Inclue les détails du tarif attribué au client */
+  includTarif?: boolean
+}
+
+export interface ParamsArticleAPI extends DynamicQueryArticle, ParamsAPI {
   /** Sélection de fournisseurs (id) dont on souhaite récupérer les articles */
   provider?: string[]
   /** Sélection de fournisseurs (id) dont on ne souhaite pas récupérer les articles */

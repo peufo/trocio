@@ -32,6 +32,8 @@ let subscribeModel = new Schema({
   prefix: { type: String, uppercase: true, required: requiredIfRoleIsTrader },
 })
 
+subscribeModel.index({ trocId: 1, userId: 1 }, { unique: true })
+
 subscribeModel.set('timestamps', true)
 
 function requiredIfRoleIsTrader() {
