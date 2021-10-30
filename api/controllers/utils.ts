@@ -1,4 +1,5 @@
-import { FilterQuery } from 'mongoose'
+import mongoose, { FilterQuery } from 'mongoose'
+const { ObjectId } = mongoose.Types
 
 /**
  * Traite les paramètre dynamiquement suivant des règles prédéfini
@@ -36,9 +37,14 @@ export function dynamicQuery(
         [key.replace(QUERY_OR_SEARCH, '')]: new RegExp(requestQuery[key], 'i'),
       })
 
-      // add match exact
+      // add match exact (work with ObjectId)
     } else if (key.startsWith(QUERY_EXACT)) {
-      match.$and.push({ [key.replace(QUERY_EXACT, '')]: requestQuery[key] })
+      if (mongoose.isValidObjectId(requestQuery[key]))
+        match.$and.push({
+          [key.replace(QUERY_EXACT, '')]: new ObjectId(requestQuery[key]),
+        })
+      else
+        match.$and.push({ [key.replace(QUERY_EXACT, '')]: requestQuery[key] })
 
       // Number and Date test
     } else if (
@@ -49,7 +55,7 @@ export function dynamicQuery(
 
       // add sort
       if (key.startsWith(QUERY_SORT)) {
-        sort[key.replace(QUERY_SORT, '')] = value
+        sort[key.replace(QUERY_SORT, '')] = +value
 
         // add filter min
       } else if (key.startsWith(QUERY_FILTER_MIN)) {

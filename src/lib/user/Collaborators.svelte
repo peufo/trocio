@@ -12,7 +12,13 @@
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import Share from '$lib/troc/Share.svelte'
-  import type { SubscribeLookup, ParamsAPI, TrocLookup, RoleEnum } from 'types'
+  import type {
+    SubscribeLookup,
+    ParamsAPI,
+    TrocLookup,
+    RoleEnum,
+    ParamsSubscribeAPI,
+  } from 'types'
   import { useInfinitApi } from '$lib/api'
   import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
   import PrefixDialog from '$lib/user/PrefixDialog.svelte'
@@ -30,31 +36,31 @@
   let searchAdmins = ''
   let searchCashiers = ''
   let searchTraders = ''
-  $: queryAdminsCount = useApi<ParamsAPI, number>([
+  $: queryAdminsCount = useApi<ParamsSubscribeAPI, number>([
     'subscribes/count',
-    { trocId: $params.trocId, role: 'admin' },
+    { trocId: $params.trocId, exact_role: 'admin' },
   ])
-  $: queryAdmins = useInfinitApi<ParamsAPI, SubscribeLookup>([
+  $: queryAdmins = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup>([
     'subscribes',
-    { trocId: $params.trocId, q: searchAdmins, role: 'admin' },
+    { trocId: $params.trocId, q: searchAdmins, exact_role: 'admin' },
   ])
-  $: queryCashiersCount = useApi<ParamsAPI, number>([
+  $: queryCashiersCount = useApi<ParamsSubscribeAPI, number>([
     'subscribes/count',
-    { trocId: $params.trocId, role: 'cashier' },
+    { trocId: $params.trocId, exact_role: 'cashier' },
   ])
-  $: queryCashiers = useInfinitApi<ParamsAPI, SubscribeLookup>([
+  $: queryCashiers = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup>([
     'subscribes',
-    { trocId: $params.trocId, q: searchCashiers, role: 'cashier' },
+    { trocId: $params.trocId, q: searchCashiers, exact_role: 'cashier' },
   ])
-  $: queryTradersCount = useApi<ParamsAPI, number>([
+  $: queryTradersCount = useApi<ParamsSubscribeAPI, number>([
     'subscribes/count',
-    { trocId: $params.trocId, role: 'trader' },
+    { trocId: $params.trocId, exact_role: 'trader' },
   ])
-  $: queryTraders = useInfinitApi<ParamsAPI, SubscribeLookup>([
+  $: queryTraders = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup>([
     'subscribes',
-    { trocId: $params.trocId, q: searchTraders, role: 'trader' },
+    { trocId: $params.trocId, q: searchTraders, exact_role: 'trader' },
   ])
-  $: querySubscribes = useInfinitApi<ParamsAPI, SubscribeLookup>([
+  $: querySubscribes = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup>([
     'subscribes',
     { trocId: $params.trocId, q: searchSubscribes },
   ])

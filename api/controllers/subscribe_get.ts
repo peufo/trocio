@@ -3,7 +3,8 @@ import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Types
 
 import Subscribe from '../models/subscribe'
-import type { ISubscribe, RoleEnum } from '../../types'
+import type { ISubscribe } from '../../types'
+import { dynamicQuery } from './utils'
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
   try {
@@ -15,7 +16,7 @@ export const getMySubscribes: RequestHandler = async (req, res, next) => {
 
     const aggregate = Subscribe.aggregate()
     aggregate.match({
-      userId: ObjectId(req.session.user._id),
+      userId: new ObjectId(req.session.user._id),
     })
 
     lookupTroc(aggregate)
@@ -43,8 +44,8 @@ export const getResum: RequestHandler = async (req, res, next) => {
 
     const aggregate = Subscribe.aggregate()
     aggregate.match({
-      userId: ObjectId(userId),
-      trocId: ObjectId(trocId),
+      userId: new ObjectId(userId),
+      trocId: new ObjectId(trocId),
     })
     lookupResum(aggregate)
     lookupTarif(aggregate)
@@ -62,31 +63,23 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     skip = 0,
     limit = 10,
     q = '',
-    filtredTarifs = [],
-    exact_tarifId = '',
     includResum = false,
     includTarif = false,
-    role = '',
   } = req.query
   try {
     if (typeof trocId !== 'string') throw 'Query "trocId" is required (string)'
-    if (typeof exact_tarifId !== 'string')
-      throw 'Query "exact_tarifId" need to be a string'
-    if (typeof role !== 'string') throw 'Query "role" need to be a string'
     if (typeof q !== 'string') throw 'Query "q" need to be a string'
 
     const regexp = new RegExp(q, 'i')
     skip = Number(skip)
     limit = Number(limit)
 
-    const match: any = {
-      trocId: new ObjectId(trocId),
-      tarifId: exact_tarifId
-        ? ObjectId(exact_tarifId)
-        : // @ts-ignore
-          { $nin: filtredTarifs.map(ObjectId) },
-    }
-    if (role) match.role = role
+    let { match, sort } = dynamicQuery(req.query)
+
+    match.$and.push({ trocId: new ObjectId(trocId) })
+
+    // remove match if is empty
+    if (!match.$or.length) delete match.$or
 
     const aggregate = Subscribe.aggregate()
     aggregate.match(match)
@@ -95,11 +88,13 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     aggregate.match({ $or: [{ 'user.name': regexp }, { 'user.name': regexp }] })
 
     if (includResum) {
-      lookupResum(aggregate, '$user._id')
-      // TODO: Add sort system for resum
+      lookupResum(aggregate)
     }
 
     if (includTarif) lookupTarif(aggregate)
+
+    // Ca fait mal au serveur
+    if (Object.keys(sort).length) aggregate.sort(sort)
 
     const subscribes = await aggregate.skip(skip).limit(limit).exec()
     res.json(subscribes)
@@ -113,15 +108,13 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
  */
 export const getSubscribersCount: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId, role = '', tarifId = '' } = req.query
-    if (typeof trocId !== 'string') throw 'trocId string is required'
-    if (typeof role !== 'string' && typeof tarifId !== 'string')
-      throw 'role or tarifId need to be a string'
-
-    const match: any = { trocId }
-    if (role) match.role = role
-    if (tarifId) match.tarifId = tarifId
-
+    const { trocId } = req.query
+    if (typeof trocId !== 'string') throw 'Query "trocId" is required (string)'
+    let { match } = dynamicQuery(req.query)
+    match.$and.push({ trocId })
+    // remove match if is empty
+    if (!match.$or.length) delete match.$or
+    // @ts-ignore
     const count = await Subscribe.countDocuments(match)
     res.json(count)
   } catch (error) {
@@ -341,7 +334,7 @@ export function lookupResum(
       },
     })
     .addFields({
-      balance: {
+      'resum.balance': {
         $subtract: [
           {
             $sum: ['$resum.paymentsSum', '$resum.soldSum'],

@@ -30,13 +30,7 @@ declare module 'express-session' {
 
 //Connection database
 try {
-  mongoose
-    .connect(config.TROCIO_DB, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    })
-    .then(initOptions)
+  mongoose.connect(config.TROCIO_DB).then(initOptions)
 } catch (error) {
   console.log(error)
 }
