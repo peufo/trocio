@@ -37,10 +37,12 @@
 </script>
 
 <th>
-  <Menu hover>
-    <span slot="activator">
+  <Menu>
+    <span slot="activator" class="clickable">
       {field.label}
-      <span class="text-caption">{queryLabel}</span>
+      <span class="text-caption" style="white-space: pre;">
+        {queryLabel}
+      </span>
     </span>
     <List dense>
       {#if field.enumOptions}

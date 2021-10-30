@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte'
+  import { createEventDispatcher } from 'svelte'
   import { fly } from 'svelte/transition'
   import { List, ListItem } from 'svelte-materialify'
   import { url, params, goto } from '@roxi/routify'
@@ -8,8 +8,8 @@
   import Loader from '$lib/util/Loader.svelte'
   import { useApi } from '$lib/api'
 
-  export let label = 'Chercher un utilisateur'
-  export let inputElement: HTMLInputElement | null = null
+  export let label = ''
+  export let inputElement: HTMLInputElement | undefined = undefined
   export let selectedItem: any = null
 
   export let searchValue = ''
@@ -39,7 +39,7 @@
   let focus = false
   const dispatch = createEventDispatcher()
 
-  $: searchValue = $params[searchKey] || ''
+  // $: searchValue = $params[searchKey] || '' // <-- Communication par $params, inutil...
   $: querySearch = useApi<any, any[]>([path, { [searchKey]: searchValue }])
   $: items = $querySearch.data ? $querySearch.data.flat() : []
   $: itemsFiltred = items.filter((item) => !exepted.includes(getKey(item)))
@@ -52,7 +52,7 @@
     selectedItem = item
     dispatch('select', item)
     if (!inputElement) return
-    inputElement.value = keepValue ? getValue(item) : ''
+    inputElement.value = keepValue ? '' : getValue(item)
     inputElement.blur()
   }
 
@@ -94,15 +94,16 @@
   }
 </script>
 
-<div style="position: relative;">
+<div style="position: relative; min-width: 200px;">
   <SearchTextField
     bind:inputElement
-    {searchKey}
+    bind:search={searchValue}
     on:keydown={handleKeydown}
     on:focus={handleFocus}
     on:blur={handleBlur}
     autocomplete="off"
     placeholder={keepValue && !!selectedItem ? ' ' : ''}
+    class="mt-2"
     {...$$restProps}
   >
     {label}

@@ -10,7 +10,7 @@
   export let placeholder = 'Chercher'
   export let style = ''
   export let debounceTime = 200
-  export let inputElement: HTMLInputElement | null = null
+  export let inputElement: HTMLInputElement | undefined = undefined
   // bind with url query
   export let searchKey = ''
   export const dispatch = createEventDispatcher()
@@ -54,4 +54,5 @@
   <div slot="prepend">
     <IconLink icon={faSearch} size="1.1em" />
   </div>
+  <slot />
 </TextField>

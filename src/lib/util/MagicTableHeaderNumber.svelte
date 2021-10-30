@@ -114,8 +114,8 @@
 </script>
 
 <th>
-  <Menu hover right={isLast} closeOnClick={false} bind:active>
-    <span slot="activator">
+  <Menu right={isLast} closeOnClick={false} bind:active>
+    <span slot="activator" class="clickable">
       {field.label}
 
       {#if sortIcon}
@@ -123,7 +123,7 @@
       {/if}
 
       {#if filterLabel}
-        <span class="text-caption">
+        <span class="text-caption" style="white-space: pre;">
           <IconLink icon={faFilter} size="1em" />
           {filterLabel}
         </span>

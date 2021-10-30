@@ -89,20 +89,15 @@ export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
     {
       label: 'Fournisseur',
       visible: true,
-      format: 'user',
       queryKey: 'provider',
       getValue: ({ provider }) => provider?.name,
       cellWidth: 70,
-      /**
-       TODO: NE FONCTIONNE PAS BIEN
-       format: 'select',
-       selectOption: {
-         path: '/users/search',
-         searchKey: 'q',
-         getValue2: (item) => item.mail,
-       },
-
-      */
+      format: 'select',
+      selectOption: {
+        path: '/users/search',
+        searchKey: 'q',
+        getValue2: (item) => item.mail,
+      },
     },
     {
       label: 'Validateur',

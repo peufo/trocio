@@ -35,12 +35,11 @@
 </script>
 
 <th>
-  <Menu hover closeOnClick={false} style="width: 220px;">
-    <span slot="activator">
+  <Menu closeOnClick={false} style="width: 220px;">
+    <span slot="activator" class="clickable">
       {field.label}
-
       {#if search}
-        <span class="text-caption" style="white-space: nowrap;">
+        <span class="text-caption" style="white-space: pre;">
           <IconLink icon={faSearch} size="1em" />
           {search}
         </span>
