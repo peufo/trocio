@@ -68,14 +68,16 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     includTarif = false,
     role = '',
   } = req.query
-  const regexp = new RegExp(q, 'i')
-  skip = Number(skip)
-  limit = Number(limit)
   try {
     if (typeof trocId !== 'string') throw 'Query "trocId" is required (string)'
     if (typeof exact_tarifId !== 'string')
       throw 'Query "exact_tarifId" need to be a string'
-    if (typeof role !== 'string') throw 'role query need to be a string'
+    if (typeof role !== 'string') throw 'Query "role" need to be a string'
+    if (typeof q !== 'string') throw 'Query "q" need to be a string'
+
+    const regexp = new RegExp(q, 'i')
+    skip = Number(skip)
+    limit = Number(limit)
 
     const match: any = {
       trocId: new ObjectId(trocId),
@@ -329,13 +331,14 @@ export function lookupResum(
       ],
       as: 'paymentsResum',
     })
-    .replaceRoot({
-      $mergeObjects: [
-        '$$ROOT',
-        { $arrayElemAt: ['$providedResum', 0] },
-        { $arrayElemAt: ['$purchasesResum', 0] },
-        { $arrayElemAt: ['$paymentsResum', 0] },
-      ],
+    .addFields({
+      resum: {
+        $mergeObjects: [
+          { $arrayElemAt: ['$providedResum', 0] },
+          { $arrayElemAt: ['$purchasesResum', 0] },
+          { $arrayElemAt: ['$paymentsResum', 0] },
+        ],
+      },
     })
     .addFields({
       balance: {
