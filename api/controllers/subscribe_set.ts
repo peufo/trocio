@@ -56,6 +56,23 @@ export const assignRole: RequestHandler = async (req, res, next) => {
   }
 }
 
+export const assignTarif: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId, userId, tarifId } = req.body
+    if (typeof trocId !== 'string') throw 'trocId string is required in body'
+    if (typeof userId !== 'string') throw 'userId string is required in body'
+    if (typeof tarifId !== 'string') throw 'tarifId string is required in body'
+
+    const subscribe = await Subscribe.findOne({ trocId, userId }).exec()
+    subscribe.tarifId = tarifId
+
+    await subscribe.save()
+    res.json(subscribe)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const setTraderPrefix: RequestHandler = async (req, res, next) => {
   try {
     const { trocId, userId, prefix } = req.body

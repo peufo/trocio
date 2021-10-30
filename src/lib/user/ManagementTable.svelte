@@ -5,11 +5,12 @@
   import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
-
   import type { FieldInteface, SubscribeLookup } from 'types'
   import layout from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc } from '$lib/troc/store'
+  import SubscribeMenu from './SubscribeMenu.svelte'
+  let subscribeMenu: SubscribeMenu
 
   let searchValue = ''
 
@@ -141,6 +142,8 @@
   ]
 </script>
 
+<SubscribeMenu bind:this={subscribeMenu} />
+
 <div class="container">
   <div class="d-flex align-center">
     <h6 class="mb-5">Gestion des participants</h6>
@@ -166,6 +169,12 @@
       </tr>
     </thead>
 
-    <MagicTableBody {fields} {items} currency={$troc.currency} />
+    <MagicTableBody
+      {fields}
+      {items}
+      currency={$troc.currency}
+      on:click={({ detail }) =>
+        subscribeMenu.open(detail.clickEvent, detail.item)}
+    />
   </MagicTable>
 </div>
