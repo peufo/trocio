@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fade, fly } from 'svelte/transition'
   import { List, ListItem } from 'svelte-materialify'
+  import { params, url, goto } from '@roxi/routify'
   import { debounce } from 'debounce'
   import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
   import { faCheckCircle } from '@fortawesome/free-regular-svg-icons'
@@ -72,10 +73,24 @@
           <ListItem disabled dense>
             <span class="text-subtitle-2">{subscribe?.user.name}</span>
           </ListItem>
-          <ListItem on:click={() => notify.info('TODO')}>
+          <ListItem
+            on:click={() =>
+              $goto($url('/admin/management_articles'), {
+                trocId: $params.trocId,
+                tab_admin: 'management_articles',
+                exact_buyer: subscribe?.userId,
+              })}
+          >
             Voir les achats
           </ListItem>
-          <ListItem on:click={() => notify.info('TODO')}>
+          <ListItem
+            on:click={() =>
+              $goto($url('/admin/management_articles'), {
+                trocId: $params.trocId,
+                tab_admin: 'management_articles',
+                exact_provider: subscribe?.userId,
+              })}
+          >
             Voir les propositions
           </ListItem>
           <ListItem on:click={() => (state = 'role')}>
@@ -108,7 +123,9 @@
           {#each ROLES as { label, icon }}
             <ListItem on:click={() => notify.info('TODO')}>
               <span slot="prepend">
-                <IconLink {icon} size="1.2em" class="mr-4" />
+                {#if icon}
+                  <IconLink {icon} size="1.2em" class="mr-4" />
+                {/if}
               </span>
               {label}
             </ListItem>
