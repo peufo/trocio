@@ -26,7 +26,6 @@
     'subscribes',
     { trocId: $params.trocId, q: searchValue, ...$params, includResum: true },
   ])
-  $: items = $query.data ? $query.data.pages.flat() : []
 
   let fields: FieldInteface[] = [
     {
@@ -180,7 +179,7 @@
 
     <MagicTableBody
       {fields}
-      {items}
+      {query}
       currency={$troc.currency}
       on:click={({ detail }) =>
         subscribeMenu.open(detail.clickEvent, detail.item)}

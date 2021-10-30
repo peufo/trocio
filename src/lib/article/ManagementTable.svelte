@@ -53,6 +53,6 @@
       </tr>
     </thead>
 
-    <MagicTableBody {fields} items={articles} currency={$troc.currency} />
+    <MagicTableBody {fields} {query} currency={$troc.currency} />
   </MagicTable>
 </div>
