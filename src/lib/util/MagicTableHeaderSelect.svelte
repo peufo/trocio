@@ -1,24 +1,63 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { params, goto, url } from '@roxi/routify'
-  import { Menu } from 'svelte-materialify'
+  import { ListItem, Menu } from 'svelte-materialify'
+  import { goto, params, url } from '@roxi/routify'
+  import { faTimes } from '@fortawesome/free-solid-svg-icons'
+
   import MagicSelect from '$lib/util/MagicSelect.svelte'
-
+  import IconLink from '$lib/util/IconLink.svelte'
   import type { FieldInteface } from 'types'
-
   export let field: Partial<FieldInteface>
+  let inputElement: HTMLInputElement
+  let active = false
+  let filterLabel = ''
+
+  function handleOpen() {
+    // Place directement le curseur dans la recherche
+    setTimeout(() => {
+      inputElement.focus()
+    }, 200)
+  }
+
+  function handleSelect(item: any) {
+    filterLabel = field.selectOption?.getValue
+      ? field.selectOption?.getValue(item)
+      : item['name']
+    active = false
+  }
+
+  function handleClear() {
+    const query = $params
+    delete query[`exact_${field.queryKey}`]
+    $goto($url(), query)
+    filterLabel = ''
+    active = false
+  }
 </script>
 
 <th>
-  <Menu hover closeOnClick={false}>
-    <span slot="activator">
+  <Menu closeOnClick={false} on:open={handleOpen} bind:active>
+    <span slot="activator" class="clickable">
       {field.label}
-      <span class="text-caption">{'TODO'}</span>
+      <span class="text-caption" style="white-space: pre;">
+        {filterLabel}
+      </span>
     </span>
+
+    {#if filterLabel}
+      <ListItem on:click={handleClear} dense>
+        <span slot="prepend">
+          <IconLink icon={faTimes} />
+        </span>
+        Pas de filtre
+      </ListItem>
+    {/if}
+
     {#if field.selectOption}
       <MagicSelect
         flatMode
         keepValue
+        bind:inputElement
+        on:select={({ detail }) => handleSelect(detail)}
         selectKey="exact_{field.queryKey}"
         path={field.selectOption?.path || ''}
         searchKey={field.selectOption?.searchKey || ''}

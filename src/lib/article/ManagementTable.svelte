@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import { params } from '@roxi/routify'
 
   import MagicTable from '$lib/util/MagicTable.svelte'

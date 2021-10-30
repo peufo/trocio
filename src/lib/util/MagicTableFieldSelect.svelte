@@ -34,11 +34,11 @@
   }
 </script>
 
-<Menu closeOnClick={false} hover style="max-height: none;">
+<Menu closeOnClick={false} style="max-height: none;">
   <div slot="activator">
     <Button depressed>Choisir les champs visibles</Button>
   </div>
-  <List>
+  <List dense>
     {#each fields as field, index}
       <ListItem disabled={field.disabled} on:click={() => handleClick(index)}>
         <span slot="prepend">
