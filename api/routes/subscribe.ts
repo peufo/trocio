@@ -3,6 +3,7 @@ const router = express.Router()
 import {
   createSubscribe,
   assignRole,
+  assignTarif,
   setTraderPrefix,
 } from '../controllers/subscribe_set'
 import {
@@ -22,6 +23,7 @@ router
   .get('/', ensureUserIsCashier, getSubscribers)
   .get('/count', ensureUserIsCashier, getSubscribersCount)
   .post('/assign', ensureUserIsAdmin, assignRole)
+  .post('/tarif', ensureUserIsAdmin, assignTarif)
   .post('/prefix', ensureUserIsAdmin, setTraderPrefix)
   .get('/me', getMySubscribes)
   .get('/resum', ensureUserCanAccessResum, getResum)

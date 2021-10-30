@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
+  import { Ripple } from 'svelte-materialify'
 
   import type { FieldInteface } from 'types'
   import { renderAmount } from '$lib/utils'
@@ -39,7 +40,7 @@
     <tr>
       {#each fields.filter((f) => f.visible) as field}
         <td
-          on:click={() => dispatch('click', item)}
+          on:click={(clickEvent) => dispatch('click', { clickEvent, item })}
           class:currency={field.format === 'currency'}
           class:number={field.format === 'number'}
         >

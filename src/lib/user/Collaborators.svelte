@@ -1,17 +1,8 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
-  import {
-    List,
-    ListItem,
-    Dialog,
-    Button,
-    Avatar,
-    Card,
-    CardTitle,
-    CardText,
-    CardActions,
-  } from 'svelte-materialify'
+  import { List, ListItem, Avatar } from 'svelte-materialify'
   import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   import { api, useApi } from '$lib/api'
   import { troc } from '$lib/troc/store'
@@ -23,13 +14,14 @@
   import Share from '$lib/troc/Share.svelte'
   import type { SubscribeLookup, ParamsAPI, TrocLookup, RoleEnum } from 'types'
   import { useInfinitApi } from '$lib/api'
-  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
+  import SubscribeDialog from '$lib/user/SubscribeDialog.svelte'
+  import PrefixDialog from '$lib/user/PrefixDialog.svelte'
 
-  let selectedTraderSub: undefined | SubscribeLookup = undefined
-  let traderDialogActive = false
-  let selectedPrefix = ''
+  let selectedSubscribe: undefined | SubscribeLookup = undefined
+  let prefixDialogActive = false
   let open = [false, false, false, false]
   const queryClient = useQueryClient()
+  let subscribeDialog: SubscribeDialog
 
   /**
    * Getters
@@ -93,29 +85,14 @@
     }
   )
 
-  const setTraderPrefix = useMutation(
-    (data: TrocUserQuery & { prefix: string }) =>
-      api<{}, TrocLookup>(`/api/subscribes/prefix`, {
-        method: 'post',
-        data,
-        success: 'Prefix mis à jour',
-      }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['subscribes', { role: 'trader' }])
-      },
-    }
-  )
-
-  const prefixs: string[] = []
-  for (let index = 65; index < 91; index++) {
-    prefixs.push(String.fromCharCode(index))
+  function handleClick(subscribe: SubscribeLookup) {
+    selectedSubscribe = subscribe
+    subscribeDialog.openSubscribe(subscribe)
   }
 
-  function handleClickTrader(subscribe: SubscribeLookup) {
-    selectedTraderSub = subscribe
-    selectedPrefix = selectedTraderSub.prefix || ''
-    traderDialogActive = true
+  function handleClickPrefix(subscribe: SubscribeLookup) {
+    selectedSubscribe = subscribe
+    prefixDialogActive = true
   }
 
   function handleOpenCard(index: number) {
@@ -123,11 +100,20 @@
   }
 </script>
 
+<SubscribeDialog bind:this={subscribeDialog} />
+
+<PrefixDialog
+  bind:active={prefixDialogActive}
+  subscribe={selectedSubscribe}
+  disabledPrefixs={$queryTraders.data?.pages
+    .flat()
+    .map((t) => t.prefix || '') || []}
+/>
+
 <div style="max-width: 700px; margin: auto;">
   <h6 class="mb-5">Gestion des collaborateurs</h6>
 
   <!-- Administrateurs -->
-
   <ExpansionCard
     title="{$queryAdminsCount.data} Administrateur{($queryAdminsCount.data ||
       0) > 1
@@ -142,7 +128,7 @@
   >
     <List>
       {#each $queryAdmins.data?.pages.flat() || [] as subscribe}
-        <ListItem selectable>
+        <ListItem on:click={() => handleClick(subscribe)}>
           <span>{subscribe.user.name}</span>
           <span slot="subtitle">{subscribe.user.mail}</span>
           <div
@@ -205,7 +191,7 @@
   >
     <List>
       {#each $queryCashiers.data?.pages.flat() || [] as subscribe}
-        <ListItem slecteable>
+        <ListItem on:click={() => handleClick(subscribe)}>
           <span>{subscribe.user.name}</span>
           <span slot="subtitle">{subscribe.user.mail}</span>
           <div
@@ -253,7 +239,6 @@
   </ExpansionCard>
 
   <!-- Commercant -->
-
   <ExpansionCard
     title="{$queryTradersCount.data} Commerçant{$queryTradersCount.data || 0 > 1
       ? 's'
@@ -267,8 +252,11 @@
   >
     <List>
       {#each $queryTraders.data?.pages.flat() || [] as subscribe, index}
-        <ListItem on:click={() => handleClickTrader(subscribe)}>
-          <div slot="prepend">
+        <ListItem on:click={() => handleClick(subscribe)}>
+          <div
+            slot="prepend"
+            on:click|stopPropagation={() => handleClickPrefix(subscribe)}
+          >
             <Avatar class="secondary-color">
               {subscribe.prefix}
             </Avatar>
@@ -322,6 +310,7 @@
     </div>
   </ExpansionCard>
 
+  <!-- Participants -->
   <ExpansionCard
     title="{$troc.subscriber} Participant{$troc.subscriber > 1 ? 's' : ''}"
     open={open[3]}
@@ -333,7 +322,7 @@
   >
     <List>
       {#each $querySubscribes.data?.pages.flat() || [] as subscribe}
-        <ListItem>
+        <ListItem on:click={() => handleClick(subscribe)}>
           {subscribe.user.name}
           <span slot="subtitle">{subscribe.user.mail}</span>
         </ListItem>
@@ -347,67 +336,6 @@
   </div>
 </div>
 
-<!-- Prefix des commercant -->
-
-<Dialog bind:active={traderDialogActive}>
-  {#if selectedTraderSub}
-    <Card>
-      <CardTitle>
-        <h6>Choix du prefix de {selectedTraderSub.user.name}</h6>
-      </CardTitle>
-
-      <CardText>
-        {#each prefixs as prefix}
-          <div
-            on:click={() => (selectedPrefix = prefix)}
-            class="prefix"
-            class:selected={selectedPrefix === prefix}
-            class:secondary-color={selectedPrefix === prefix}
-            class:disabled={$queryTraders.data?.pages
-              .flat()
-              .map((t) => t.prefix)
-              .includes(prefix) && selectedTraderSub.prefix !== prefix}
-          >
-            {prefix}
-          </div>
-        {/each}
-      </CardText>
-
-      <CardActions class="justify-end">
-        {#if $setTraderPrefix.isLoading}
-          <Button text disabled>
-            <Loader title="Validation" />
-          </Button>
-        {:else}
-          <Button
-            text
-            on:click={() => {
-              $setTraderPrefix.mutate(
-                {
-                  trocId: $params.trocId,
-                  userId: selectedTraderSub?.user._id || '',
-                  prefix: selectedPrefix,
-                },
-                {
-                  onSuccess: () => {
-                    traderDialogActive = false
-                  },
-                }
-              )
-            }}
-            disabled={$queryTraders.data?.pages
-              .flat()
-              .map((t) => t.prefix)
-              .includes(selectedPrefix)}
-          >
-            Valider
-          </Button>
-        {/if}
-      </CardActions>
-    </Card>
-  {/if}
-</Dialog>
-
 <style>
   :global(.s-list-item:hover .remove-icon) {
     transform: translateX(0);
@@ -417,40 +345,5 @@
   .remove-icon {
     transform: translateX(50px);
     transition: transform 200ms;
-  }
-
-  .prefix {
-    height: 48px;
-    width: 48px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    position: relative;
-  }
-
-  .prefix.selected {
-    color: #fff;
-  }
-
-  .prefix:not(.disabled):hover {
-    background-color: var(--theme-tables-hover);
-  }
-
-  .prefix.disabled {
-    color: var(--theme-text-disabled);
-    cursor: default;
-    pointer-events: none;
-  }
-
-  .prefix.disabled::after {
-    content: '';
-    position: absolute;
-    width: 50%;
-    border-top: 2px var(--theme-text-secondary) solid;
-    border-bottom: 1px var(--theme-surface) solid;
-    transform-origin: 50% 0;
-    transform: rotate(45deg);
   }
 </style>
