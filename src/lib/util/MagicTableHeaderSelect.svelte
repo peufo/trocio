@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { ListItem, Menu } from 'svelte-materialify'
   import { goto, params, url } from '@roxi/routify'
   import { faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -10,6 +11,14 @@
   let inputElement: HTMLInputElement
   let active = false
   let filterLabel = ''
+
+  onMount(() => {
+    // Très chiant des récupérer un label à partir d'un id ...
+    const queryValue = $params[`exact_${field.queryKey}`]
+    if (queryValue) {
+      filterLabel = 'Filtre actif'
+    }
+  })
 
   function handleOpen() {
     // Place directement le curseur dans la recherche

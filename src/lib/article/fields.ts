@@ -1,5 +1,5 @@
 import { faDotCircle } from '@fortawesome/free-solid-svg-icons'
-import type { Article, ArticleLookup, FieldInteface } from 'types'
+import type { Article, ArticleLookup, FieldInteface, User } from 'types'
 import { getStatut } from '$lib/utils'
 
 export function getFields(): FieldInteface<Article>[] {
@@ -83,6 +83,15 @@ export function getFields(): FieldInteface<Article>[] {
   ]
 }
 
+const selectOptionUser = {
+  path: '/users/search',
+  searchKey: 'q',
+  getValue2: (item: User) => item.mail,
+}
+
+/**
+ * Retourne les champs complet
+ */
 export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
   return [
     ...getFields(),
@@ -93,35 +102,34 @@ export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
       getValue: ({ provider }) => provider?.name,
       cellWidth: 70,
       format: 'select',
-      selectOption: {
-        path: '/users/search',
-        searchKey: 'q',
-        getValue2: (item) => item.mail,
-      },
+      selectOption: selectOptionUser,
     },
     {
       label: 'Validateur',
       visible: false,
       queryKey: 'validator',
-      format: 'user',
+      format: 'select',
       getValue: ({ validator }) => validator?.name,
       cellWidth: 50,
+      selectOption: selectOptionUser,
     },
     {
       label: 'Caissier',
       visible: false,
       queryKey: 'seller',
-      format: 'user',
+      format: 'select',
       getValue: ({ seller }) => seller?.name,
       cellWidth: 50,
+      selectOption: selectOptionUser,
     },
     {
       label: 'Client',
       visible: false,
       queryKey: 'buyer',
-      format: 'user',
+      format: 'select',
       getValue: ({ buyer }) => buyer?.name,
       cellWidth: 50,
+      selectOption: selectOptionUser,
     },
   ]
 }
