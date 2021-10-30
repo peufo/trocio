@@ -1,18 +1,19 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { Ripple } from 'svelte-materialify'
+  import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
 
   import type { FieldInteface } from 'types'
   import { renderAmount } from '$lib/utils'
 
   export let fields: FieldInteface[]
-  export let items: any[]
+  export let query: UseInfiniteQueryStoreResult<any, any, any, any>
   export let placeholder = 'Aucun élément'
-
   /** Code ISO 4217 */
   export let currency: string | undefined = undefined
 
   const dispatch = createEventDispatcher()
+
+  $: items = $query.data ? $query.data.pages.flat() : []
 
   function formatCell(item: any, field: FieldInteface) {
     let value: string =
@@ -48,7 +49,9 @@
         </td>
       {/each}
     </tr>
-  {:else}
+  {/each}
+
+  {#if !$query.isLoading && !items.length}
     <tr class="text-center placeholder">
       <td
         class="text--secondary pa-16"
@@ -57,7 +60,7 @@
         {placeholder}
       </td>
     </tr>
-  {/each}
+  {/if}
 </tbody>
 
 <style>
