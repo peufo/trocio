@@ -25,7 +25,7 @@
     'subscribes/resum',
     { trocId, userId },
   ])
-  $: resum = $queryResum.data
+  $: resum = $queryResum.data?.resum
 
   let articleCreateDialogActive = false
   let tarifInfoDialogActive = false
@@ -53,11 +53,7 @@
   }
 </script>
 
-<ArticleCreateDialog
-  {trocId}
-  bind:active={articleCreateDialogActive}
-  {queryResum}
-/>
+<ArticleCreateDialog {trocId} bind:active={articleCreateDialogActive} />
 
 <TarifInfoDialog
   tarif={$queryResum.data?.tarif}

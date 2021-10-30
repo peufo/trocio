@@ -2,9 +2,9 @@ import { FilterQuery } from 'mongoose'
 
 /**
  * Traite les paramètre dynamiquement suivant des règles prédéfini
- * PAS UTILISé
+ * @returns match
  */
-export function requestToQuery(
+export function dynamicQuery(
   requestQuery: object,
   ignore?: string | string[]
 ): { match: FilterQuery<any>; sort: object } {

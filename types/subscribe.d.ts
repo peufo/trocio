@@ -36,17 +36,19 @@ export interface SubscribeLookup extends ISubscribe {
 
 /** Résumé des interactions d'un utilisateur avec un troc */
 export interface SubscribeResum extends ISubscribe {
-  balance: number
-  providedCount?: number
-  providedSum?: number
-  feeSum?: number
-  soldSum?: number
-  marginSum?: number
-  purchasesCount?: number
-  purchasesSum?: number
-  purchases?: Article[]
-  paymentsCount?: number
-  paymentsSum?: number
-  payments?: PaymentInterface[]
+  resum: {
+    balance: number
+    providedCount?: number
+    providedSum?: number
+    feeSum?: number
+    soldSum?: number
+    marginSum?: number
+    purchasesCount?: number
+    purchasesSum?: number
+    purchases?: Article[]
+    paymentsCount?: number
+    paymentsSum?: number
+    payments?: PaymentInterface[]
+  }
   tarif: Tarif
 }

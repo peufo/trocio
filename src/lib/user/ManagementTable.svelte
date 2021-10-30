@@ -19,12 +19,12 @@
     trocId: string
     q?: string
     lookupTarif?: boolean
-    computeResum?: boolean
+    includResum?: boolean
   }
 
   $: query = useInfinitApi<QueryParams, SubscribeLookup[]>([
     'subscribes',
-    { trocId: $params.trocId, q: searchValue, ...$params, computeResum: true },
+    { trocId: $params.trocId, q: searchValue, ...$params, includResum: true },
   ])
   $: items = $query.data ? $query.data.pages.flat() : []
 
@@ -49,7 +49,7 @@
     },
     {
       label: 'Rôle',
-      visible: true,
+      visible: false,
       queryKey: 'role',
       format: 'enum',
       getValue: (sub) => ROLES.find((r) => r.queryValue === sub.role)?.label,
