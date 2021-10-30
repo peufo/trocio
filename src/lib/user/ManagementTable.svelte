@@ -9,7 +9,8 @@
   import layout from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc } from '$lib/troc/store'
-  import SubscribeMenu from './SubscribeMenu.svelte'
+  import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
+  import { ROLES } from '$lib/user/roles'
   let subscribeMenu: SubscribeMenu
 
   let searchValue = ''
@@ -45,6 +46,14 @@
       format: 'string',
       cellWidth: 50,
       getValue: (sub) => sub.user.mail,
+    },
+    {
+      label: 'Rôle',
+      visible: true,
+      queryKey: 'role',
+      format: 'enum',
+      getValue: (sub) => ROLES.find((r) => r.queryValue === sub.role)?.label,
+      enumOptions: ROLES,
     },
     {
       label: 'Tarif',
@@ -84,57 +93,57 @@
       getValue: (sub) => sub.resum?.marginSum,
     },
     {
-      label: `Achats (nombre)`,
-      visible: false,
+      label: `Nombre d'achats`,
+      visible: true,
       queryKey: 'resum.purchasesCount',
       format: 'number',
       getValue: (sub) => sub.resum?.purchasesCount,
     },
     {
-      label: 'Achats (somme)',
-      visible: true,
+      label: 'Somme des achats',
+      visible: false,
       queryKey: 'resum.purchasesSum',
       format: 'currency',
       getValue: (sub) => sub.resum?.purchasesSum,
     },
     {
-      label: 'Paiements (nombre)',
+      label: 'Nombre de paiements',
       visible: false,
       queryKey: 'resum.paymentsCount',
       format: 'number',
       getValue: (sub) => sub.resum?.paymentsCount,
     },
     {
-      label: 'Paiements (somme)',
-      visible: true,
+      label: 'Somme des paiements',
+      visible: false,
       queryKey: 'resum.paymentsSum',
       format: 'currency',
       getValue: (sub) => sub.resum?.paymentsSum,
     },
     {
-      label: 'Fourni (nombre)',
-      visible: false,
+      label: `Nombre d'articles fournis`,
+      visible: true,
       queryKey: 'resum.providedCount',
       format: 'number',
       getValue: (sub) => sub.resum?.providedCount,
     },
     {
-      label: 'Fourni (somme)',
-      visible: true,
+      label: 'Somme des articles fournis',
+      visible: false,
       queryKey: 'resum.providedSum',
       format: 'currency',
       getValue: (sub) => sub.resum?.providedSum,
     },
     {
-      label: 'Vendu (nombre)',
+      label: 'Nombre de ventes',
       visible: false,
       queryKey: 'resum.soldCount',
       format: 'number',
       getValue: (sub) => sub.resum?.soldCount,
     },
     {
-      label: 'Vendu (somme)',
-      visible: true,
+      label: 'Somme des ventes',
+      visible: false,
       queryKey: 'resum.soldSum',
       format: 'currency',
       getValue: (sub) => sub.resum?.soldSum,

@@ -50,7 +50,12 @@
           <ListItem on:click={() => handleClick(option)}>
             <div slot="prepend">
               {#if option.icon}
-                <IconLink icon={option.icon} style={option.iconStyle} />
+                <IconLink
+                  icon={option.icon}
+                  style={option.iconStyle}
+                  size="1.1em"
+                  class="mr-2"
+                />
               {/if}
             </div>
             {option.label}
