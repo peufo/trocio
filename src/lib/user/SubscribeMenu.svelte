@@ -2,14 +2,7 @@
   import { fade, fly } from 'svelte/transition'
   import { List, ListItem } from 'svelte-materialify'
   import { debounce } from 'debounce'
-  import {
-    faAngleLeft,
-    faAngleRight,
-    faUserAlt,
-    faUserTie,
-    faUserTag,
-    faUserCog,
-  } from '@fortawesome/free-solid-svg-icons'
+  import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
   import { faCheckCircle } from '@fortawesome/free-regular-svg-icons'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
@@ -18,6 +11,7 @@
   import notify from '$lib/notify'
   import { troc } from '$lib/troc/store'
   import { api } from '$lib/api'
+  import { ROLES } from '$lib/user/roles'
 
   export let active = false
   export let state: 'main' | 'role' | 'tarif' = 'main'
@@ -26,13 +20,6 @@
   let position = { x: 0, y: 0 }
   let mouseIn = false
   const queryClient = useQueryClient()
-
-  const ROLES = [
-    { name: '', label: 'Participant', icon: faUserAlt },
-    { name: '', label: 'Commerçant', icon: faUserTie },
-    { name: '', label: 'Caissier', icon: faUserTag },
-    { name: '', label: 'Administrateur', icon: faUserCog },
-  ]
 
   export function open(event: MouseEvent, sub: SubscribeLookup) {
     position = { x: event.pageX - 20, y: event.pageY - 20 }
@@ -83,7 +70,7 @@
       {#if state === 'main'}
         <div in:fly|local={{ x: -200 }}>
           <ListItem disabled dense>
-            <span class="text-caption">{subscribe?.user.name}</span>
+            <span class="text-subtitle-2">{subscribe?.user.name}</span>
           </ListItem>
           <ListItem on:click={() => notify.info('TODO')}>
             Voir les achats
@@ -115,7 +102,7 @@
             <span slot="prepend">
               <IconLink icon={faAngleLeft} size="1.2em" class="mr-4" />
             </span>
-            <span class="text-caption">Rôle de {subscribe?.user.name}</span>
+            <span class="text-subtitle-2">Rôle de {subscribe?.user.name}</span>
           </ListItem>
 
           {#each ROLES as { label, icon }}
@@ -135,7 +122,7 @@
             <span slot="prepend">
               <IconLink icon={faAngleLeft} size="1.2em" class="mr-4" />
             </span>
-            <span class="text-caption">Tarif de {subscribe?.user.name}</span>
+            <span class="text-subtitle-2">Tarif de {subscribe?.user.name}</span>
           </ListItem>
 
           {#each $troc.tarif as tarif}
