@@ -21,7 +21,7 @@
 
   export let active = false
   export let state: 'main' | 'role' | 'tarif' = 'main'
-  export let subscribe: SubscribeLookup | undefined
+  export let subscribe: SubscribeLookup | undefined = undefined
 
   let position = { x: 0, y: 0 }
   let mouseIn = false
@@ -35,7 +35,7 @@
   ]
 
   export function open(event: MouseEvent, sub: SubscribeLookup) {
-    position = { x: event.clientX - 20, y: event.clientY - 20 }
+    position = { x: event.pageX - 20, y: event.pageY - 20 }
     state = 'main'
     subscribe = sub
     active = true

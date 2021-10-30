@@ -14,14 +14,14 @@
   import Share from '$lib/troc/Share.svelte'
   import type { SubscribeLookup, ParamsAPI, TrocLookup, RoleEnum } from 'types'
   import { useInfinitApi } from '$lib/api'
-  import SubscribeDialog from '$lib/user/SubscribeDialog.svelte'
+  import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
   import PrefixDialog from '$lib/user/PrefixDialog.svelte'
 
   let selectedSubscribe: undefined | SubscribeLookup = undefined
   let prefixDialogActive = false
   let open = [false, false, false, false]
   const queryClient = useQueryClient()
-  let subscribeDialog: SubscribeDialog
+  let subscribeMenu: SubscribeMenu
 
   /**
    * Getters
@@ -85,9 +85,9 @@
     }
   )
 
-  function handleClick(subscribe: SubscribeLookup) {
+  function handleClick(event: MouseEvent, subscribe: SubscribeLookup) {
     selectedSubscribe = subscribe
-    subscribeDialog.openSubscribe(subscribe)
+    subscribeMenu.open(event, subscribe)
   }
 
   function handleClickPrefix(subscribe: SubscribeLookup) {
@@ -100,7 +100,7 @@
   }
 </script>
 
-<SubscribeDialog bind:this={subscribeDialog} />
+<SubscribeMenu bind:this={subscribeMenu} />
 
 <PrefixDialog
   bind:active={prefixDialogActive}
@@ -128,31 +128,33 @@
   >
     <List>
       {#each $queryAdmins.data?.pages.flat() || [] as subscribe}
-        <ListItem on:click={() => handleClick(subscribe)}>
-          <span>{subscribe.user.name}</span>
-          <span slot="subtitle">{subscribe.user.mail}</span>
-          <div
-            slot="append"
-            class="remove-icon"
-            on:click={() => {
-              if (!$assignRole.isLoading)
-                $assignRole.mutate({
-                  trocId: $params.trocId,
-                  userId: subscribe.user._id,
-                  role: 'basic',
-                })
-            }}
-          >
-            {#if subscribe.user._id != $troc.creator._id && subscribe.user._id != $user._id}
-              <IconLink
-                icon={$assignRole.isLoading ? faSpinner : faTimes}
-                disabled={$assignRole.isLoading}
-                spin={$assignRole.isLoading}
-                opacity
-              />
-            {/if}
-          </div>
-        </ListItem>
+        <div on:click={(event) => handleClick(event, subscribe)}>
+          <ListItem>
+            <span>{subscribe.user.name}</span>
+            <span slot="subtitle">{subscribe.user.mail}</span>
+            <div
+              slot="append"
+              class="remove-icon"
+              on:click|stopPropagation={() => {
+                if (!$assignRole.isLoading)
+                  $assignRole.mutate({
+                    trocId: $params.trocId,
+                    userId: subscribe.user._id,
+                    role: 'basic',
+                  })
+              }}
+            >
+              {#if subscribe.user._id != $troc.creator._id && subscribe.user._id != $user._id}
+                <IconLink
+                  icon={$assignRole.isLoading ? faSpinner : faTimes}
+                  disabled={$assignRole.isLoading}
+                  spin={$assignRole.isLoading}
+                  opacity
+                />
+              {/if}
+            </div>
+          </ListItem>
+        </div>
       {/each}
     </List>
 
@@ -191,29 +193,31 @@
   >
     <List>
       {#each $queryCashiers.data?.pages.flat() || [] as subscribe}
-        <ListItem on:click={() => handleClick(subscribe)}>
-          <span>{subscribe.user.name}</span>
-          <span slot="subtitle">{subscribe.user.mail}</span>
-          <div
-            class="remove-icon"
-            slot="append"
-            on:click={() => {
-              if (!$assignRole.isLoading)
-                $assignRole.mutate({
-                  trocId: $params.trocId,
-                  userId: subscribe.user._id,
-                  role: 'basic',
-                })
-            }}
-          >
-            <IconLink
-              icon={$assignRole.isLoading ? faSpinner : faTimes}
-              disabled={$assignRole.isLoading}
-              spin={$assignRole.isLoading}
-              opacity
-            />
-          </div>
-        </ListItem>
+        <div on:click={(event) => handleClick(event, subscribe)}>
+          <ListItem>
+            <span>{subscribe.user.name}</span>
+            <span slot="subtitle">{subscribe.user.mail}</span>
+            <div
+              class="remove-icon"
+              slot="append"
+              on:click|stopPropagation={() => {
+                if (!$assignRole.isLoading)
+                  $assignRole.mutate({
+                    trocId: $params.trocId,
+                    userId: subscribe.user._id,
+                    role: 'basic',
+                  })
+              }}
+            >
+              <IconLink
+                icon={$assignRole.isLoading ? faSpinner : faTimes}
+                disabled={$assignRole.isLoading}
+                spin={$assignRole.isLoading}
+                opacity
+              />
+            </div>
+          </ListItem>
+        </div>
       {/each}
     </List>
 
@@ -252,40 +256,42 @@
   >
     <List>
       {#each $queryTraders.data?.pages.flat() || [] as subscribe, index}
-        <ListItem on:click={() => handleClick(subscribe)}>
-          <div
-            slot="prepend"
-            on:click|stopPropagation={() => handleClickPrefix(subscribe)}
-          >
-            <Avatar class="secondary-color">
-              {subscribe.prefix}
-            </Avatar>
-          </div>
+        <div on:click={(event) => handleClick(event, subscribe)}>
+          <ListItem>
+            <div
+              slot="prepend"
+              on:click|stopPropagation={() => handleClickPrefix(subscribe)}
+            >
+              <Avatar class="secondary-color">
+                {subscribe.prefix}
+              </Avatar>
+            </div>
 
-          {subscribe.user.name}
+            {subscribe.user.name}
 
-          <span slot="subtitle">{subscribe.user.mail}</span>
+            <span slot="subtitle">{subscribe.user.mail}</span>
 
-          <div
-            class="remove-icon"
-            slot="append"
-            on:click|stopPropagation={() => {
-              if (!$assignRole.isLoading)
-                $assignRole.mutate({
-                  trocId: $params.trocId,
-                  userId: subscribe.user._id,
-                  role: 'basic',
-                })
-            }}
-          >
-            <IconLink
-              icon={$assignRole.isLoading ? faSpinner : faTimes}
-              disabled={$assignRole.isLoading}
-              spin={$assignRole.isLoading}
-              opacity
-            />
-          </div>
-        </ListItem>
+            <div
+              class="remove-icon"
+              slot="append"
+              on:click|stopPropagation={() => {
+                if (!$assignRole.isLoading)
+                  $assignRole.mutate({
+                    trocId: $params.trocId,
+                    userId: subscribe.user._id,
+                    role: 'basic',
+                  })
+              }}
+            >
+              <IconLink
+                icon={$assignRole.isLoading ? faSpinner : faTimes}
+                disabled={$assignRole.isLoading}
+                spin={$assignRole.isLoading}
+                opacity
+              />
+            </div>
+          </ListItem>
+        </div>
       {/each}
     </List>
 
@@ -322,10 +328,12 @@
   >
     <List>
       {#each $querySubscribes.data?.pages.flat() || [] as subscribe}
-        <ListItem on:click={() => handleClick(subscribe)}>
-          {subscribe.user.name}
-          <span slot="subtitle">{subscribe.user.mail}</span>
-        </ListItem>
+        <div on:click={(event) => handleClick(event, subscribe)}>
+          <ListItem>
+            {subscribe.user.name}
+            <span slot="subtitle">{subscribe.user.mail}</span>
+          </ListItem>
+        </div>
       {/each}
     </List>
   </ExpansionCard>
