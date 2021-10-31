@@ -24,7 +24,7 @@
       {#each articles as article}
         <div
           class="simple-card pl-2 pr-2 pt-1 pb-1 ma-1 flex-grow-1"
-          style="max-width: 50%;"
+          style="max-width: calc(50% - 8px);"
         >
           <span class="text-subtitle-2">{article.name}</span>
           <br />
