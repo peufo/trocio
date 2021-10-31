@@ -65,7 +65,7 @@
         },
       ],
     },
-    { ref: 'cashier', label: 'Caisse', icon: faCashRegister },
+    { ref: 'cash_register', label: 'Caisse', icon: faCashRegister },
   ]
 
   const dispatch = createEventDispatcher()

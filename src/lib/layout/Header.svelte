@@ -15,7 +15,7 @@
   import notify from '$lib/notify'
   import { getHeader } from '$lib/utils'
 
-  export let offsetHeight
+  export let offsetHeight = 0
   let offsetWidth = 0
   $: mobileMode = offsetWidth < 540
 
