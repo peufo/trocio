@@ -1,5 +1,12 @@
 import { faDotCircle } from '@fortawesome/free-solid-svg-icons'
-import type { Article, ArticleLookup, FieldInteface, User } from 'types'
+import type {
+  Article,
+  ArticleLookup,
+  FieldInteface,
+  ISubscribe,
+  SubscribeLookup,
+  User,
+} from 'types'
 import { getStatut } from '$lib/utils'
 
 export function getFields(): FieldInteface<Article>[] {
@@ -84,9 +91,11 @@ export function getFields(): FieldInteface<Article>[] {
 }
 
 const selectOptionUser = {
-  path: '/users/search',
+  path: '/subscribes',
   searchKey: 'q',
-  getValue2: (item: User) => item.mail,
+  getValue: (sub: SubscribeLookup) => sub.user.name,
+  getValue2: (sub: SubscribeLookup) => sub.user.mail,
+  getKey: (sub: SubscribeLookup) => sub.userId,
 }
 
 /**

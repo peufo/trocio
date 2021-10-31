@@ -8,6 +8,7 @@
   import IconLink from '$lib/util/IconLink.svelte'
   export let search = ''
   export let placeholder = 'Chercher'
+  export let icon = faSearch
   export let style = ''
   export let debounceTime = 200
   export let inputElement: HTMLInputElement | undefined = undefined
@@ -42,7 +43,6 @@
   {placeholder}
   solo
   dense
-  flat
   on:keydown
   on:focus
   on:blur
@@ -52,7 +52,7 @@
   {...$$restProps}
 >
   <div slot="prepend">
-    <IconLink icon={faSearch} size="1.1em" />
+    <IconLink {icon} size="1.1em" />
   </div>
   <slot />
 </TextField>

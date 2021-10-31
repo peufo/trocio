@@ -25,7 +25,6 @@
       ...$params,
     },
   ])
-  $: articles = $query.data ? $query.data.pages.flat() : []
 </script>
 
 <div class="container">
@@ -46,6 +45,7 @@
           <SearchTextField
             bind:search={searchValue}
             placeholder="Chercher un article"
+            flat
           />
         </th>
 

@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-
+import mongoose from 'mongoose'
 import UserModel from '../models/user'
 
 export const getMe: RequestHandler = async (req, res, next) => {
@@ -19,6 +19,7 @@ export const getMe: RequestHandler = async (req, res, next) => {
   }
 }
 
+/** @deprecated use subscribe */
 export function searchUser(req, res, next) {
   const { q = '', skip = 0, limit = 10 } = req.query
   const regexp = new RegExp(q, 'i')
@@ -36,22 +37,17 @@ export function searchUser(req, res, next) {
     })
 }
 
-export function getUser(req, res, next) {
-  UserModel.findById(req.params.userId, { password: 0 })
-    .lean()
-    .exec((err, user) => {
-      if (err || !user) return next(err || Error('User not found'))
-      res.json(user)
-    })
-}
-
-export function getUserName(req, res, next) {
-  UserModel.findOne({ _id: req.params.userId }, 'name')
-    .lean()
-    .exec((err, user) => {
-      if (err || !user) return next(err || Error('User not found'))
-      res.json(user)
-    })
+/** @deprecated use Subscribe */
+export const getUserName: RequestHandler = async (req, res, next) => {
+  try {
+    const { _id } = req.query
+    if (!mongoose.isValidObjectId(_id))
+      throw 'Query "_id" need to be a valid ObjectId'
+    const user = await UserModel.findOne({ _id }, 'name').exec()
+    res.json(user)
+  } catch (error) {
+    next(error)
+  }
 }
 
 export function hideMail(user) {
@@ -64,11 +60,4 @@ export function hideMail(user) {
   } else {
     user.mail = 'Invalid mail'
   }
-}
-
-export default {
-  getMe,
-  searchUser,
-  getUser,
-  getUserName,
 }
