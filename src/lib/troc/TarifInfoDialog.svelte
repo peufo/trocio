@@ -36,7 +36,7 @@
 
       <div>
         Marge de l'organisateur
-        <span class="text-caption">( Appliquée à la vente de l'article )</span>
+        <span class="text-caption">( Appliqué à la vente de l'article )</span>
         :
         <b>{tarif.margin * 100}</b>%
       </div>

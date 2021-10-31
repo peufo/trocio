@@ -27,8 +27,8 @@ router
   .post('/me/resetpwd', resetpwd)
   .post('/me/validmail', sendValidMail)
   .get('/me/validmail/:validator', validMail)
+  .get('/name', getUserName)
 // .get('/search', searchUser)
 // .get('/:id',  getUser)
-// .get('/name', getUserName)
 
 export default router

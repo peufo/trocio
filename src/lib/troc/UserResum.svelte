@@ -17,8 +17,8 @@
   import { useApi } from '$lib/api'
   import type { SubscribeResum } from 'types'
 
-  export let trocId = ''
-  export let userId = ''
+  export let trocId: string
+  export let userId: string
   export let isClosed = false
 
   $: queryResum = useApi<{ trocId: string; userId: string }, SubscribeResum>([

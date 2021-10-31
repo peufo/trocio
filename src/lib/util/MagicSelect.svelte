@@ -51,6 +51,10 @@
     if (inputElement) inputElement.value = ''
   }
 
+  export function setValue(value: string) {
+    if (inputElement) inputElement.value = value
+  }
+
   // $: searchValue = $params[searchKey] || '' // <-- Communication par $params, inutil...
   $: querySearch = useApi<any, any[]>([
     path,
