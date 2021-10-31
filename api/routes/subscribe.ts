@@ -21,11 +21,11 @@ import {
 router
   .post('/', createSubscribe)
   .get('/', ensureUserIsCashier, getSubscribers)
+  .get('/resum', ensureUserCanAccessResum, getResum)
+  .get('/me', getMySubscribes)
   .get('/count', ensureUserIsCashier, getSubscribersCount)
   .post('/assign', ensureUserIsAdmin, assignRole)
   .post('/tarif', ensureUserIsAdmin, assignTarif)
   .post('/prefix', ensureUserIsAdmin, setTraderPrefix)
-  .get('/me', getMySubscribes)
-  .get('/resum', ensureUserCanAccessResum, getResum)
 
 export default router

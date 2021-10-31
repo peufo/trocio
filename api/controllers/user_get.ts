@@ -37,13 +37,12 @@ export function searchUser(req, res, next) {
     })
 }
 
-/** @deprecated use Subscribe */
 export const getUserName: RequestHandler = async (req, res, next) => {
   try {
-    const { _id } = req.query
-    if (!mongoose.isValidObjectId(_id))
-      throw 'Query "_id" need to be a valid ObjectId'
-    const user = await UserModel.findOne({ _id }, 'name').exec()
+    const { userId } = req.query
+    if (!mongoose.isValidObjectId(userId))
+      throw 'Query "userId" need to be a valid ObjectId'
+    const user = await UserModel.findOne({ _id: userId }, 'name').exec()
     res.json(user)
   } catch (error) {
     next(error)
