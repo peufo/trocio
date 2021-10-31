@@ -8,6 +8,7 @@ import type {
  * @param store
  * @param item
  * @return infinitResults updated
+ * @deprecated
  */
 export function setItemById(
   infinitResult: UseInfiniteQueryResult<any[]>,
@@ -24,6 +25,7 @@ export function setItemById(
 }
 
 // TODO: Remove. replaced by $lib/api
+/** @deprecated */
 export function getNextPageParam(lastPage, allPages): GetNextPageParamFunction {
   return lastPage.length ? allPages.flat().length : undefined
 }

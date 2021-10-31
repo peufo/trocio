@@ -4,7 +4,7 @@
 
   import Header from '$lib/layout/Header.svelte'
   import Footer from '$lib/layout/Footer.svelte'
-  import FadeDecorator from '$lib/decorator/Fade.svelte'
+  import FadeDecorator from '$lib/layout/Fade.svelte'
   import { layout, isDarkTheme } from '$lib/store/layout'
 
   import '$assets/index.css'
