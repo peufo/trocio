@@ -23,6 +23,8 @@ export interface SelectOption {
   getValue?: (item: any) => string
   /** Affichage d'une propriété secondaire */
   getValue2?: (item: any) => string
+  /** Obtien l'identifiant à partir de l'item */
+  getKey?: (item: any) => string
 }
 
 export interface FieldInteface<Type = any> {

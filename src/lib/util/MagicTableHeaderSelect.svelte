@@ -68,10 +68,7 @@
         bind:inputElement
         on:select={({ detail }) => handleSelect(detail)}
         selectKey="exact_{field.queryKey}"
-        path={field.selectOption?.path || ''}
-        searchKey={field.selectOption?.searchKey || ''}
-        getValue={field.selectOption?.getValue}
-        getValue2={field.selectOption?.getValue2}
+        {...field.selectOption}
       />
     {/if}
   </Menu>

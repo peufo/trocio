@@ -170,6 +170,7 @@
           <SearchTextField
             bind:search={searchValue}
             placeholder="Chercher un participant"
+            flat
           />
         </th>
 

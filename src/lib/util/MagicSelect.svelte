@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte'
   import { fly } from 'svelte/transition'
   import { List, ListItem } from 'svelte-materialify'
-  import { url, params, goto } from '@roxi/routify'
+  import { url, params, goto, redirect } from '@roxi/routify'
 
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import Loader from '$lib/util/Loader.svelte'
@@ -22,25 +22,40 @@
   export let selectKey: string
 
   /** Function for obtain unique string key from item */
-  export let getKey: (item: any) => string = (item) => item._id
+  export let getKey: (item: any) => string = (item) => item?._id
   /** Items key hidden */
   export let exepted: string[] = []
 
   /** Si vrai, la valeur de la sélection est maintenue dans le champ de text */
   export let keepValue = false
   /** func used for obtain name from item */
-  export let getValue: (item: any) => string = (item) => item.name
+  export let getValue: (item: any) => string = (item) => item?.name
   /** func used for obtain the secoundary name from item */
-  export let getValue2: ((item: any) => string) | undefined
+  export let getValue2: ((item: any) => string) | undefined = undefined
 
   /** Si vrai, les choix sont en permanance visible */
   export let flatMode = false
   let selectedIndex = 0
-  let focus = false
+  let isFocus = false
   const dispatch = createEventDispatcher()
 
+  export function focus() {
+    inputElement?.focus()
+  }
+
+  export function clear() {
+    const query = $params
+    delete query[selectKey]
+    $redirect($url(), query)
+    selectedItem = null
+    if (inputElement) inputElement.value = ''
+  }
+
   // $: searchValue = $params[searchKey] || '' // <-- Communication par $params, inutil...
-  $: querySearch = useApi<any, any[]>([path, { [searchKey]: searchValue }])
+  $: querySearch = useApi<any, any[]>([
+    path,
+    { [searchKey]: searchValue, ...$params },
+  ])
   $: items = $querySearch.data ? $querySearch.data.flat() : []
   $: itemsFiltred = items.filter((item) => !exepted.includes(getKey(item)))
 
@@ -52,7 +67,7 @@
     selectedItem = item
     dispatch('select', item)
     if (!inputElement) return
-    inputElement.value = keepValue ? '' : getValue(item)
+    inputElement.value = keepValue ? getValue(item) : ''
     inputElement.blur()
   }
 
@@ -80,16 +95,13 @@
   }
 
   function handleFocus() {
-    focus = true
-    if (keepValue) {
-      selectedItem = null
-      if (inputElement) inputElement.value = ''
-    }
+    isFocus = true
+    if (keepValue) clear()
   }
 
   function handleBlur() {
     setTimeout(() => {
-      focus = false
+      isFocus = false
     }, 200)
   }
 </script>
@@ -132,7 +144,7 @@
         {/each}
       {/if}
     </List>
-  {:else if focus}
+  {:else if isFocus}
     <div class="items elevation-5 rounded" in:fly|local={{ y: 50 }}>
       <List dense>
         {#if $querySearch.isLoading}

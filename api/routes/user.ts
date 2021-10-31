@@ -14,12 +14,7 @@ import {
   sendValidMail,
   validMail,
 } from '../controllers/user_set'
-import {
-  getMe,
-  searchUser,
-  getUser,
-  getUserName,
-} from '../controllers/user_get'
+import { getMe, searchUser, getUserName } from '../controllers/user_get'
 
 router
   .post('/', createUser, login, getMe)
@@ -32,8 +27,8 @@ router
   .post('/me/resetpwd', resetpwd)
   .post('/me/validmail', sendValidMail)
   .get('/me/validmail/:validator', validMail)
-  .get('/search', searchUser)
-  //.get('/:id', checkSuperAdmin, getUser)
-  .get('/name/:userId', getUserName)
+// .get('/search', searchUser)
+// .get('/:id',  getUser)
+// .get('/name', getUserName)
 
 export default router
