@@ -31,7 +31,6 @@
       ...$params,
     },
   ])
-  $: articles = $queryArticles.data?.pages.flat() || []
 
   function handleClick(event: { detail: ArticleLookup }) {
     articleSelected = event.detail
@@ -56,6 +55,7 @@
         <SearchTextField
           bind:search={searchValue}
           placeholder="Chercher un article"
+          flat
         />
       </th>
 
@@ -64,7 +64,7 @@
   </thead>
   <MagicTableBody
     {fields}
-    items={articles}
+    query={queryArticles}
     on:click={handleClick}
     placeholder="Aucun article"
   />

@@ -10,7 +10,9 @@ let subscribeModel = new Schema({
   user: { type: ObjectId, ref: 'user' },
 
   trocId: { type: ObjectId, ref: 'troc', required: true },
-  userId: { type: ObjectId, ref: 'user', required: true },
+
+  /** L'absence d'userId signifi que la participation est anonyme */
+  userId: { type: ObjectId, ref: 'user' },
 
   /** Rôle de l'utilsateur sur le troc */
   role: {
