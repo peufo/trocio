@@ -276,5 +276,40 @@ router
       next(error)
     }
   })
+  .post('/clean-up-articles', async (req, res, next) => {
+    /**
+     * Supprime les frais des articles non validé et les marges des articles non vendu
+     */
+    try {
+      const unvalidedArticles = await Article.find({
+        valided: { $exists: false },
+      })
+      await Promise.all(
+        unvalidedArticles.map((art) => {
+          art.margin = undefined
+          art.fee = undefined
+          return art.save()
+        })
+      )
+
+      const unsoldedArticles = await Article.find({
+        sold: { $exists: false },
+      })
+
+      await Promise.all(
+        unsoldedArticles.map((art) => {
+          art.margin = undefined
+          return art.save()
+        })
+      )
+
+      res.json({
+        success: true,
+        message: `${unvalidedArticles.length} articles non validé et ${unsoldedArticles.length} articles non vendu traité`,
+      })
+    } catch (error) {
+      next(error)
+    }
+  })
 
 export default router
