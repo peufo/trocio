@@ -60,11 +60,6 @@ export const createArticle: RequestHandler = async (req, res, next) => {
         art = new Article(art)
         if (!art.ref) art.ref = newRef + nbAttributedRef++
         if (art.price === null) art.price = 0
-        else {
-          art.fee = getFee(art, tarif)
-          // TODO: bizard de caclulé la marge maintenant
-          art.margin = getMargin(art, tarif)
-        }
         return art.save()
       })
     )

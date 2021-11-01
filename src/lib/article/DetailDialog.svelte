@@ -1,16 +1,11 @@
 <script lang="ts">
-  import notify from '$lib/notify'
-  import { getHeader, renderAmount } from '$lib/utils'
+  import { renderAmount } from '$lib/utils'
 
   import { Dialog, Divider, Button } from 'svelte-materialify'
 
   import type { ArticleLookup } from 'types'
   import { getStatut } from '$lib/utils'
-  import {
-    QueryClient,
-    useMutation,
-    useQueryClient,
-  } from '@sveltestack/svelte-query'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { api } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
 
