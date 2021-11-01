@@ -232,7 +232,14 @@
       >
 
       <div class="d-flex mt-3">
-        <TextField bind:value={newPrice} type="number" min="0">Prix</TextField>
+        <TextField
+          bind:value={newPrice}
+          type="number"
+          min="0"
+          rules={[(value) => +value > 0 || 'Le prix doit être positif']}
+        >
+          Prix
+        </TextField>
 
         <div class="flex-grow-1" />
 
