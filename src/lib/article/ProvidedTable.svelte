@@ -32,8 +32,8 @@
     },
   ])
 
-  function handleClick(event: { detail: ArticleLookup }) {
-    articleSelected = event.detail
+  function handleClick(event: { detail: { item: ArticleLookup } }) {
+    articleSelected = event.detail.item
     detailDialogActive = true
   }
 </script>
