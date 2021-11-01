@@ -41,11 +41,11 @@
         >
           {troc.name}
           {#if troc.is_try}
-            <Chip size="x-small" label class="amber darken-3 white-text">
+            <Chip size="x-small" label outlined class="orange-text ml-2">
               <span>Entrainement</span>
             </Chip>
           {:else if troc.isClosed}
-            <Chip size="x-small" label class="deep-orange darken-3 white-text">
+            <Chip size="x-small" label outlined class="deep-orange-text ml-2">
               <span>Terminé</span>
             </Chip>
           {/if}

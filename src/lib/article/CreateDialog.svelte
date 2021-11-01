@@ -236,7 +236,7 @@
           bind:value={newPrice}
           type="number"
           min="0"
-          rules={[(value) => +value > 0 || 'Le prix doit être positif']}
+          rules={[(value) => +value >= 0 || 'Le prix doit être positif']}
         >
           Prix
         </TextField>
