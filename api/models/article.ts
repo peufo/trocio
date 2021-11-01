@@ -6,7 +6,7 @@ let articleModel = new Schema({
   provider: { type: ObjectId, ref: 'user', required: true, index: true },
   ref: { type: String, required: true },
   name: { type: String, default: '' },
-  price: { type: Number, default: 0 },
+  price: { type: Number, default: 0, min: 0 },
   fee: { type: Number, default: 0 },
   margin: { type: Number, default: 0 },
   valided: Date, //ou
