@@ -87,7 +87,7 @@ export const deleteArticle: RequestHandler = async (req, res, next) => {
     if (article.valided) throw `Valided article can't be delete`
 
     // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
-    if (article.provider !== req.session.user._id) {
+    if (String(article.provider) !== req.session.user._id) {
       const role = await getRole(article.troc, req.session.user._id)
       if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
     }
@@ -118,9 +118,8 @@ export const editName: RequestHandler<
     if (!newName) throw 'newName number is required in body'
 
     const article = await Article.findById(articleId).exec()
-
     // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
-    if (article.provider !== req.session.user._id) {
+    if (String(article.provider) !== req.session.user._id) {
       const role = await getRole(article.troc, req.session.user._id)
       if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
     }
@@ -153,7 +152,7 @@ export const editPrice: RequestHandler<
     if (article.sold) throw `Solded article's price can't be edited`
 
     // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
-    if (article.provider !== req.session.user._id) {
+    if (String(article.provider) !== req.session.user._id) {
       const role = await getRole(article.troc, req.session.user._id)
       if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
     }

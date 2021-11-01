@@ -3,8 +3,6 @@ name: Trocio CI Production
 on:
   push:
     branches: [master]
-  pull_request:
-    branches: [master]
 
 jobs:
   build:
