@@ -1,8 +1,11 @@
 import { User } from './user'
 
 export declare interface ArticleCreate {
-  /** ID du subscriber qui propose l'article */
+  /** ID du subscribe de l'utilisateur qui propose l'article */
   providerSubId: string
+  /** Shortcuts */
+  trocId: string
+  providerId?: string
   /** Reference lisible et unique de l'article TODO: rendre unique */
   ref?: string
   /** Nom ou désignation de l'article*/
@@ -14,8 +17,6 @@ export declare interface ArticleCreate {
 export declare interface Article extends ArticleCreate {
   /** ID de l'article */
   _id: string
-  /** ID du troc sur lequel l'article proposé */
-  trocId: string
   createdAt: Date
   updatedAt: Date
   /**
@@ -47,12 +48,18 @@ export declare interface Article extends ArticleCreate {
     /** Client ayant effetué le retour */
     subscribeId: string
   }[]
+
   /** ID du sub ayant effectué l'achat */
   buyerSubId?: string
   /** ID du sub de l'organisation ayant validé ou refusé l'article */
   validatorSubId?: string
   /** ID du sub de l'organisation ayant vendu ou rendu l'article */
   sellerSubId?: string
+
+  /** Raccourci vers les utilisateurs pour ne pas passé par les subscribes */
+  buyerId: string
+  validatorId: string
+  sellerId: string
 }
 
 export declare interface ArticleLookup extends Article {

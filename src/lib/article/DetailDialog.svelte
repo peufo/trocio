@@ -79,7 +79,7 @@
   }
 
   function handleEditPrice() {
-    const newPrice = prompt('Nouveau prix', article?.price)
+    const newPrice = prompt('Nouveau prix', String(article?.price))
     if (!newPrice || !article) return
     $queryEditPrice.mutate({ articleId: article._id, newPrice })
   }

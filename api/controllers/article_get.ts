@@ -1,10 +1,10 @@
 import Article from '../models/article'
-import User from '../models/user'
-import { Schema } from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
 const { ObjectId } = Schema.Types
 
 import { dynamicQuery } from './utils'
 import { RequestHandler } from 'express'
+import type { Article as IArticle } from '../../types'
 
 /** @deprecated use searchArticle */
 export function getProvidedArticles(req, res, next) {
@@ -112,10 +112,18 @@ export const getArticles: RequestHandler = async (req, res, next) => {
   if (match.$and.length === 0) delete match.$and
   if (match.$or.length === 0) delete match.$or
 
-  Article.find(match)
-    .sort(sort)
+  const aggregate = Article.aggregate()
+    .match(match)
     .skip(+skip || 0)
     .limit((+limit || 40) > 100 ? 100 : +limit || 40)
+
+  if (Object.keys(sort).length) aggregate.sort(sort)
+
+  lookupUsers(aggregate)
+
+  const articles = await aggregate.exec()
+  res.json(articles)
+  /*
     .populate('provider', 'name')
     .populate('validator', 'name')
     .populate('seller', 'name')
@@ -123,5 +131,41 @@ export const getArticles: RequestHandler = async (req, res, next) => {
     .exec((err, articles) => {
       if (err) return next(err)
       res.json(articles)
+    })
+    */
+}
+
+/**
+ * Update aggregate for lookup troc from trocId
+ */
+export function lookupUsers(aggregate: mongoose.Aggregate<IArticle[]>): void {
+  const populate = (key: string) => ({
+    from: 'users',
+    let: { userId: `$${key}Id` },
+    pipeline: [
+      {
+        $match: {
+          $expr: {
+            $eq: ['$$userId', '$_id'],
+          },
+        },
+      },
+      {
+        $project: { name: 1 },
+      },
+    ],
+    as: `${key}`,
+  })
+
+  aggregate
+    .lookup(populate('provider'))
+    .lookup(populate('validator'))
+    .lookup(populate('seller'))
+    .lookup(populate('buyer'))
+    .addFields({
+      provider: { $arrayElemAt: ['$provider', 0] },
+      validator: { $arrayElemAt: ['$validator', 0] },
+      seller: { $arrayElemAt: ['$seller', 0] },
+      buyer: { $arrayElemAt: ['$buyer', 0] },
     })
 }

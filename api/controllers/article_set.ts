@@ -68,10 +68,16 @@ export const createArticle: RequestHandler<
     let nbAttributedRef = 0
     const articlesCreated = await Promise.all(
       articles.map((art) => {
-        art.providerSubId = sub._id
         // @ts-ignore
         delete art._id
-        const article = new Article({ ...art, trocId: sub.trocId })
+
+        /** Shortcuts */
+        art.providerSubId = sub._id
+        art.providerId = sub.userId
+        art.trocId = sub.trocId
+
+        /** Création de l'article */
+        const article = new Article(art)
         if (!article.ref) article.ref = String(newRef + nbAttributedRef++)
         if (article.price === null) article.price = 0
         return article.save()

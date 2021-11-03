@@ -9,12 +9,13 @@ let articleModel = new Schema({
     required: true,
     index: true,
   },
-  /*
+
+  /** Shortcuts */
   providerId: { type: ObjectId, ref: 'user', required: true, index: true },
   buyerId: { type: ObjectId, ref: 'user', index: true },
   validatorId: { type: ObjectId, ref: 'user' },
   sellerId: { type: ObjectId, ref: 'user' },
-  */
+
   ref: { type: String, required: true },
   name: { type: String, default: '' },
   price: { type: Number, default: 0, min: 0 },
@@ -41,6 +42,7 @@ let articleModel = new Schema({
     required: isValidedOrRefused,
   },
   sellerSubId: { type: ObjectId, ref: 'subscribe', required: isSoldOrRecover },
+
   /** @deprecated */
   troc: { type: ObjectId, ref: 'troc' },
   /** @deprecated  */
