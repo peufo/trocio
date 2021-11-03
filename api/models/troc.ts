@@ -23,14 +23,18 @@ const trocModel = new Schema(
     description: { type: String, required: true },
     creator: { type: ObjectId, ref: 'user', required: true },
 
+    /** @deprecated */
     admin: [{ type: ObjectId, ref: 'user' }],
+    /** @deprecated */
     cashier: [{ type: ObjectId, ref: 'user' }],
+    /** @deprecated */
     trader: [
       {
         user: { type: ObjectId, ref: 'user' },
         prefix: { type: String, uppercase: true },
       },
     ],
+    /** @deprecated */
     provider: [{ type: ObjectId, ref: 'user' }],
 
     schedule: [

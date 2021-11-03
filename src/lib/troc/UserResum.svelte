@@ -17,13 +17,12 @@
   import { useApi } from '$lib/api'
   import type { SubscribeResum } from 'types'
 
-  export let trocId: string
-  export let userId: string
+  export let subscribeId: string
   export let isClosed = false
 
-  $: queryResum = useApi<{ trocId: string; userId: string }, SubscribeResum>([
+  $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
     'subscribes/resum',
-    { trocId, userId },
+    { subscribeId },
   ])
   $: resum = $queryResum.data?.resum
 
@@ -53,7 +52,7 @@
   }
 </script>
 
-<ArticleCreateDialog {trocId} bind:active={articleCreateDialogActive} />
+<ArticleCreateDialog {subscribeId} bind:active={articleCreateDialogActive} />
 
 <TarifInfoDialog
   tarif={$queryResum.data?.tarif}
@@ -128,7 +127,7 @@
         </span>
       </span>
 
-      <ArticleProvidedTable {trocId} {userId} on:openTarifDialog />
+      <ArticleProvidedTable {subscribeId} on:openTarifDialog />
     </DetailCard>
 
     <br />

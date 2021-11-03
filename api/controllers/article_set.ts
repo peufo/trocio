@@ -2,41 +2,58 @@ import Article from '../models/article'
 import User from '../models/user'
 import Troc from '../models/troc'
 
-import { getRoles, createArticleContext } from './article_utils'
+import { getRoles } from './article_utils'
 import { findSpec, getTarif, getFee, getMargin } from './troc_utils'
 import { RequestHandler } from 'express'
-import { getRole } from './troc_get'
+import { getRole } from './subscribe_util'
+import type { ArticleCreate } from '../../types'
+import Subscribe from '../models/subscribe'
+
+function ensureArray<T extends any | any[]>(value: T | T[]): T[] {
+  if (Array.isArray(value)) return value
+  return [value]
+}
 
 /**
  * Création d'article permise
  * - Dans la limite du tarif attribué
  * - L'utilisateur est le fournisseur de l'article ou un cassier du troc
  */
-export const createArticle: RequestHandler = async (req, res, next) => {
-  const isArray = Array.isArray(req.body)
-  const articles = isArray ? req.body : [req.body]
-  const providerId = articles[0].provider || req.session.user._id
-  const trocId = articles[0].troc
-
+export const createArticle: RequestHandler<
+  void,
+  any,
+  ArticleCreate | ArticleCreate[]
+> = async (req, res, next) => {
   try {
     if (!req.session.user) throw 'Login is required'
+    const isArray = Array.isArray(req.body)
+    const articles = ensureArray(req.body)
+    let { providerSubId, trocId } = articles[0]
+    if (!providerSubId && !trocId)
+      throw 'article need "providerSubId" or "trocId"'
 
-    // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
-    if (providerId !== req.session.user._id) {
-      const role = await getRole(trocId, req.session.user._id)
+    const sub = providerSubId
+      ? await Subscribe.findById(providerSubId)
+      : await Subscribe.findOne({ trocId, userId: req.session.user._id })
+
+    if (!sub) throw `Subscribe not found`
+
+    // Test le role de l'utilisateur connecté si celui ci n'est pas le fournisseur
+    if (String(sub.userId) !== req.session.user._id) {
+      const role = await getRole(sub.trocId, req.session.user._id)
       if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
     }
 
     // Trouve le troc et le tarif correspondant
-    const troc = await Troc.findById(trocId).exec()
+    const troc = await Troc.findById(sub.trocId).exec()
     if (!troc) throw 'Troc is not found !'
-    const tarif = await getTarif(trocId, providerId)
+    const tarif = await getTarif(sub.trocId, sub.userId)
     if (!tarif) throw 'Tarif is not found !'
 
     // Controle la limite du nombre d'article
     const articlesCount = await Article.countDocuments({
-      troc: trocId,
-      provider: providerId,
+      trocId: sub.trocId,
+      provider: sub.userId,
     })
     if (articlesCount + articles.length > tarif.maxarticles)
       throw `The limit of ${tarif.maxarticles} articles is reached`
@@ -45,27 +62,24 @@ export const createArticle: RequestHandler = async (req, res, next) => {
     // Met a jour les state du troc
     const newRef = troc.articlelastref + 1
     troc.articlelastref += articles.filter((art) => !art.ref).length
-    troc.articles += articles.length
+    troc.articlesCount += articles.length
     troc.save()
 
-    // Formatage des articles
-    articles.forEach((art) => {
-      art.provider = providerId
-      delete art._id
-    })
-
     let nbAttributedRef = 0
-    await Promise.all(
+    const articlesCreated = await Promise.all(
       articles.map((art) => {
-        art = new Article(art)
-        if (!art.ref) art.ref = newRef + nbAttributedRef++
-        if (art.price === null) art.price = 0
-        return art.save()
+        art.providerSubId = sub._id
+        // @ts-ignore
+        delete art._id
+        const article = new Article({ ...art, trocId: sub.trocId })
+        if (!article.ref) article.ref = String(newRef + nbAttributedRef++)
+        if (article.price === null) article.price = 0
+        return article.save()
       })
     )
 
-    if (isArray) res.json(articles)
-    else res.json(articles[0])
+    if (isArray) return res.json(articlesCreated)
+    res.json(articlesCreated[0])
   } catch (error) {
     next(error)
   }
@@ -191,6 +205,7 @@ export const goBackArticle: RequestHandler = async (req, res, next) => {
   })
 }
 
+/** @deprecated */
 export function acceptNewPriceRequest(req, res, next) {
   let { _id } = req.body
   if (!_id) return next(Error('_id is request'))

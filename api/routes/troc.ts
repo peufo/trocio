@@ -23,11 +23,11 @@ router
   .post('/tarif', ensureUserIsAdmin, createTarif)
   .delete('/tarif', ensureUserIsAdmin, deleteTarif)
   .patch('/tarif', ensureUserIsAdmin, editTarif)
+  .get('/by-id', getTroc)
 
   /** TODO: not use params */
   .patch('/:trocId', ensureUserIsAdmin, patchTroc)
   .get('/:trocId/stats', ensureUserIsAdmin, getStats)
-  .get('/:trocId', getTroc)
 
   .post(
     '/:trocId/trader/:userId/prefix',

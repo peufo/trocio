@@ -1,7 +1,7 @@
 export declare interface PaymentCreate {
-  acceptor: string
-  user: string
-  troc: string
+  trocId: string
+  acceptorSubId: string
+  userSubId: string
   amount: number
   message?: string
 }

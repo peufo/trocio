@@ -3,7 +3,8 @@ import type Tarif__SvelteComponent_ from '$lib/troc/Tarif.svelte'
 
 export interface SubscribeBase {
   trocId: string
-  userId: string
+  /** Logged user user can provide userId */
+  userId?: string
 }
 
 export type RoleEnum = 'basic' | 'trader' | 'cashier' | 'admin'

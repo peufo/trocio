@@ -37,16 +37,23 @@ export const getMySubscribes: RequestHandler = async (req, res, next) => {
  * Resum is compute and tarif is added by default
  */
 export const getResum: RequestHandler = async (req, res, next) => {
-  const { userId, trocId } = req.query
   try {
-    if (typeof userId !== 'string' || typeof trocId !== 'string')
-      throw 'Query "userId" and "trocId" are required (string)'
+    const { userId, trocId, subscribeId } = req.query
+    if (
+      typeof subscribeId !== 'string' &&
+      (typeof userId !== 'string' || typeof trocId !== 'string')
+    )
+      throw 'Query "subscribeId" or "userId" and "trocId" are required'
+
+    const match = subscribeId
+      ? { _id: new ObjectId(subscribeId) }
+      : {
+          userId: new ObjectId(userId),
+          trocId: new ObjectId(trocId),
+        }
 
     const aggregate = Subscribe.aggregate()
-    aggregate.match({
-      userId: new ObjectId(userId),
-      trocId: new ObjectId(trocId),
-    })
+    aggregate.match(match)
     lookupResum(aggregate)
     lookupTarif(aggregate)
 
@@ -239,29 +246,19 @@ export function lookupTarif(
 /**
  * Update aggregate for add user's resum from articles documents
  */
-export function lookupResum(
-  aggregate: mongoose.Aggregate<ISubscribe[]>,
-  userId = '$userId',
-  trocId = '$trocId'
-): void {
-  const letTrocAndUser = { userId, trocId }
-  const matchWith = (userField: 'user' | 'provider' | 'buyer') => ({
-    $match: {
-      $expr: {
-        $and: [
-          { $eq: ['$troc', '$$trocId'] },
-          { $eq: [`$${userField}`, '$$userId'] },
-        ],
-      },
-    },
-  })
-
+export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
   aggregate
     .lookup({
       from: 'articles',
-      let: letTrocAndUser,
+      let: { subscribeId: '$_id' },
       pipeline: [
-        matchWith('provider'),
+        {
+          $match: {
+            $expr: {
+              $eq: ['$$subscribeId', '$providerSubId'],
+            },
+          },
+        },
         {
           $group: {
             _id: null,
@@ -294,9 +291,15 @@ export function lookupResum(
     })
     .lookup({
       from: 'articles',
-      let: letTrocAndUser,
+      let: { subscribeId: '$_id' },
       pipeline: [
-        matchWith('buyer'),
+        {
+          $match: {
+            $expr: {
+              $eq: ['$$subscribeId', '$buyerSubId'],
+            },
+          },
+        },
         {
           $group: {
             _id: null,
@@ -310,9 +313,15 @@ export function lookupResum(
     })
     .lookup({
       from: 'payments',
-      let: letTrocAndUser,
+      let: { subscribeId: '$_id' },
       pipeline: [
-        matchWith('user'),
+        {
+          $match: {
+            $expr: {
+              $eq: ['$$subscribeId', '$userSubId'],
+            },
+          },
+        },
         {
           $group: {
             _id: null,

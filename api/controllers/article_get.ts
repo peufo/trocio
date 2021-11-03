@@ -4,13 +4,7 @@ import { Schema } from 'mongoose'
 const { ObjectId } = Schema.Types
 
 import { dynamicQuery } from './utils'
-
-export function getArticle(req, res, next) {
-  Article.find({ _id: req.params.articleId }).exec((err, article) => {
-    if (err) return next(err)
-    res.json(article)
-  })
-}
+import { RequestHandler } from 'express'
 
 /** @deprecated use searchArticle */
 export function getProvidedArticles(req, res, next) {
@@ -84,36 +78,13 @@ export function getGivbacksArticles(req, res, next) {
     })
 }
 
-export async function searchArticle(req, res, next) {
-  let {
-    trocId,
-    limit,
-    skip,
-    exact_statut,
-    provider,
-    providernot,
-    include_without_name,
-  } = req.query
+export const getArticles: RequestHandler = async (req, res, next) => {
+  let { exact_statut, include_without_name, limit, skip } = req.query
 
   let { match, sort } = dynamicQuery(req.query, ['exact_statut'])
 
-  // addMatch
+  // add specific match
   if (!include_without_name) match.$and.push({ name: { $ne: '' } })
-
-  if (trocId) match.$and.push({ troc: trocId })
-
-  // Filtre pour un groupe de founisseur
-  if (provider) match.$and.push({ provider: { $in: provider } })
-  if (providernot) match.$and.push({ provider: { $ne: providernot } })
-
-  // Define skip
-  skip = Number(skip)
-  if (!skip) skip = 0
-
-  //Define limit
-  limit = Number(limit)
-  if (!limit) limit = 40
-  else if (limit > 100) limit = 100
 
   //Add filter statut
   switch (exact_statut) {
@@ -143,8 +114,8 @@ export async function searchArticle(req, res, next) {
 
   Article.find(match)
     .sort(sort)
-    .skip(skip)
-    .limit(limit)
+    .skip(+skip || 0)
+    .limit((+limit || 40) > 100 ? 100 : +limit || 40)
     .populate('provider', 'name')
     .populate('validator', 'name')
     .populate('seller', 'name')
@@ -153,34 +124,4 @@ export async function searchArticle(req, res, next) {
       if (err) return next(err)
       res.json(articles)
     })
-}
-
-/*
-interface ArticleState {
-  proposed: 'proposed'
-  valided: 'valided'
-  refused: 'refused'
-  sold: 'sold'
-  recover: 'recover'
-}
-
-interface SearchArticleQuery {
-  troc: string
-  limit: number
-  skip: number
-  exact_statut: ArticleState
-  provider: string[]
-  providernot: string[]
-  include_without_name: boolean
-}
-*/
-
-// TODO: migration from commonjs to ES6 typscript
-
-export default {
-  getArticle,
-  getProvidedArticles,
-  getPurchasesArticles,
-  getGivbacksArticles,
-  searchArticle,
 }

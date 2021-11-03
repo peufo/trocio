@@ -1,19 +1,23 @@
-<script>
+<script lang="ts">
   import { params, metatags } from '@roxi/routify'
 
+  import { useApi } from '$lib/api'
   import { useTroc, useTrocOptions, trocs } from '$lib/troc/store'
   import Loader from '$lib/util/Loader.svelte'
   import TrocInfo from '$lib/troc/Info.svelte'
+  import type { Troc } from 'types'
 
-  const trocQuery = useTroc($params.trocId)
-  $: $params.trocId && trocQuery.setOptions(useTrocOptions($params.trocId))
+  $: console.log($params.trocId)
 
-  // TODO: not util ?
+  $: trocQuery = useApi<{ trocId: string }, Troc>([
+    'trocs/by-id',
+    { trocId: $params.trocId },
+  ])
+
+  // Nécéssaire pour mettre à jour le point sur la map
   $: $trocs = $trocQuery.data ? [$trocQuery.data] : []
 
-  $: console.log($trocs[0])
-
-  $: metatags.title = $trocs[0]?.name || 'Trocio'
+  $: metatags.title = `Trocio ⋅ ${$trocs[0]?.name}` || 'Trocio'
 </script>
 
 {#if $trocQuery.isLoading}

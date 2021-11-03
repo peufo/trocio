@@ -9,14 +9,6 @@ import Subscribe from '../models/subscribe'
 
 const { ObjectId } = mongoose.Types
 
-export async function getRole(trocId: string, userId: string) {
-  const subscribe = await Subscribe.findOne({
-    trocId,
-    userId,
-  })
-  return subscribe?.role || null
-}
-
 /**
  * Return tous les infos nécéssaire au graphique
  */
@@ -117,20 +109,25 @@ export const search: RequestHandler = async (req, res, next) => {
 
   addComputedFields(aggregate)
 
-  if (req.session.user) lookupRole(aggregate, req.session.user._id)
+  if (req.session.user) lookupSubscribe(aggregate, req.session.user._id)
 
   const trocs = await aggregate.exec()
   res.json(trocs)
 }
 
 export const getTroc: RequestHandler = async (req, res, next) => {
-  const { trocId } = req.params
-  const aggregate = TrocModel.aggregate().match({ _id: ObjectId(trocId) })
-  if (req.session.user) lookupRole(aggregate, req.session.user._id)
-  addComputedFields(aggregate)
-  const trocs = await aggregate.exec()
-  if (!trocs.length) return next(Error('Not found'))
-  res.json(trocs[0])
+  try {
+    const { trocId } = req.query
+    if (!trocId) throw 'query "trocId" is required'
+    const aggregate = TrocModel.aggregate().match({ _id: ObjectId(trocId) })
+    if (req.session.user) lookupSubscribe(aggregate, req.session.user._id)
+    addComputedFields(aggregate)
+    const trocs = await aggregate.exec()
+    if (!trocs.length) return next(Error('Not found'))
+    res.json(trocs[0])
+  } catch (error) {
+    next(error)
+  }
 }
 
 /**
@@ -151,7 +148,7 @@ export function addComputedFields(aggregate: mongoose.Aggregate<any[]>) {
 /**
  * Add user role from subscribe document
  */
-export function lookupRole(
+export function lookupSubscribe(
   aggregate: mongoose.Aggregate<Troc[]>,
   userId?: string
 ): void {
@@ -165,19 +162,15 @@ export function lookupRole(
             $expr: {
               $and: [
                 { $eq: ['$trocId', '$$trocId'] },
-                { $eq: ['$userId', ObjectId(userId)] },
+                { $eq: ['$userId', new ObjectId(userId)] },
               ],
             },
           },
         },
-        {
-          $project: { role: 1 },
-        },
       ],
       as: 'subscribe',
     })
-    .replaceRoot({
-      $mergeObjects: [{ $arrayElemAt: ['$subscribe', 0] }, '$$ROOT'],
+    .addFields({
+      subscribe: { $arrayElemAt: ['$subscribe', 0] },
     })
-    .project({ subscribe: 0 })
 }

@@ -22,7 +22,7 @@ export function createArticleContext(articles, cb) {
   })
 }
 /**
- * @deprecated Please use import { getRole } from '../controllers/troc_get'
+ * @deprecated Please use import { getRole } from '../controllers/subscribe_util'
  */
 export function getRoles(userId, art, cb) {
   //Verifie si l'utilisateur est caissier ou admin

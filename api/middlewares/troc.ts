@@ -3,9 +3,11 @@
  */
 
 import type { RequestHandler, Request } from 'express'
-import { getRole } from '../controllers/troc_get'
+import { getRole } from '../controllers/subscribe_util'
+import Subscribe from '../models/subscribe'
 
-interface UserTroc {
+interface SubscribeQuery {
+  subscribeId: string
   trocId: string
   userId: string
 }
@@ -63,13 +65,16 @@ export const ensureUserCanAccessResum: RequestHandler = async (
 ) => {
   if (!req.session.user._id) return next(Error('Login required'))
 
-  const { trocId, userId } = parseRequest(req)
-  const role = await getRole(trocId, userId)
+  const { trocId, userId, subscribeId } = parseRequest(req)
+
+  const sub = subscribeId
+    ? await Subscribe.findById(subscribeId)
+    : await Subscribe.findOne({ trocId, userId })
 
   if (
     req.session.user?._id !== userId &&
-    role !== 'admin' &&
-    role !== 'cashier'
+    sub.role !== 'admin' &&
+    sub.role !== 'cashier'
   ) {
     return next(Error(`User can't access to resum`))
   }
@@ -78,7 +83,18 @@ export const ensureUserCanAccessResum: RequestHandler = async (
 }
 
 /** S'assure également qu'il n'y a pas de diff entre les params */
-function parseRequest(req: Request): UserTroc {
+function parseRequest(req: Request): SubscribeQuery {
+  /** Parse subscribeId */
+  const subscribeIds = [
+    req.params.subscribeId,
+    req.body.subscribeId,
+    req.query.subscribeId,
+  ]
+  const subscribeIdsUnique = subscribeIds.filter(Boolean).filter(beUnique)
+  if (subscribeIdsUnique.length > 1)
+    throw Error('Different subscribeId param is detected')
+  const subscribeId = subscribeIdsUnique[0]
+
   /** Parse trocId */
   const trocIds = [req.params.trocId, req.body.trocId, req.query.trocId]
   const trocIdsUnique = trocIds.filter(Boolean).filter(beUnique)
@@ -93,7 +109,7 @@ function parseRequest(req: Request): UserTroc {
     throw Error('Different userId param is detected')
   const userId = userIdsUnique[0]
 
-  return { trocId, userId }
+  return { trocId, userId, subscribeId }
 }
 
 function beUnique(elem: any, index: number, self: any[]) {

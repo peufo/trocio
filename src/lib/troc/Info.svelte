@@ -27,7 +27,7 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import { user } from '$lib/user/store'
   import ArticleList from '$lib/article/List.svelte'
-  import ArticleSearchTextField from '$lib/article/SearchTextField.svelte'
+  import SearchTextField from '$lib/util/SearchTextField.svelte'
   import UserResum from '$lib/troc/UserResum.svelte'
   import Share from '$lib/troc/Share.svelte'
   import type { SubscribeBase, SubscribeLookup, TrocLookup } from 'types'
@@ -48,7 +48,7 @@
     recovery: faSignOutAlt,
     sale: faShoppingBasket,
   }
-  const createSubscribe = useMutation((data) =>
+  const createSubscribe = useMutation((data: SubscribeBase) =>
     api<SubscribeBase, SubscribeLookup>('/api/subscribes', {
       method: 'post',
       data,
@@ -61,14 +61,14 @@
       return $goto('/login', {
         callback: `/trocs/${troc._id}`,
       })
-    if (troc.role) activityOpen = !activityOpen
+    if (troc.subscribe.role) activityOpen = !activityOpen
     else {
       $createSubscribe.mutate(
         { trocId: troc._id },
         {
           onSuccess: (subscribe) => {
             // TODO: manage subscribe already exist
-            if (subscribe._id) troc.role = 'basic'
+            if (subscribe._id) troc.subscribe.role = 'basic'
             activityOpen = !activityOpen
           },
         }
@@ -214,18 +214,23 @@
   style="min-height: 56px;"
 >
   {#if !activityOpen}
-    <ArticleSearchTextField bind:search={articleSearch} class="mr-1 ml-1" />
+    <SearchTextField
+      bind:search={articleSearch}
+      class="mr-1 ml-1"
+      placeholder="Chercher un article"
+      style="max-width: 200px;"
+    />
   {/if}
 
   <div class="flex-grow-1" />
-  {#if !!$user && troc.role === 'admin'}
+  {#if !!$user && troc.subscribe.role === 'admin'}
     <a href={`/admin?trocId=${troc._id}`}>
       <Button depressed class="mr-1 ml-1">
         administration
         <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
       </Button>
     </a>
-  {:else if !!$user && troc.role === 'cashier'}
+  {:else if !!$user && troc.subscribe.role === 'cashier'}
     <a href={`/cashier?trocId=${troc._id}`}>
       <Button depressed class="ml-2">
         Caisse
@@ -239,7 +244,7 @@
     </a>
   {/if}
   <Button on:click={handleClickActivity} depressed class="mr-1 ml-1">
-    {troc.role ? 'Mon activité' : 'Participer au troc'}
+    {troc.subscribe.role ? 'Mon activité' : 'Participer au troc'}
     <IconLink
       icon={faChevronRight}
       rotate={activityOpen ? 90 : 0}
@@ -255,8 +260,7 @@
 {#if activityOpen}
   <div transition:slide|local>
     <UserResum
-      trocId={troc._id}
-      userId={$user._id}
+      subscribeId={troc.subscribe._id}
       isClosed={troc.isClosed && !troc.is_try}
     />
     <Divider />
@@ -264,7 +268,12 @@
 {/if}
 
 {#if activityOpen}
-  <ArticleSearchTextField bind:search={articleSearch} class="pt-4" />
+  <SearchTextField
+    bind:search={articleSearch}
+    class="pt-4"
+    placeholder="Chercher un article"
+    style="max-width: 200px;"
+  />
 {/if}
 
 <ArticleList

@@ -1,16 +1,19 @@
-<script>
+<script lang="ts">
   import { fade } from 'svelte/transition'
 
   import Loader from '$lib/util/Loader.svelte'
-  import { useArticles, useArticlesOptions } from '$lib/article/store'
   import { renderAmount } from '$lib/utils'
+  import { useInfinitApi } from '$lib/api'
+  import type { Article, DynamicQueryArticle } from 'types'
 
   export let trocId = ''
   export let currency = ''
   export let search = ''
 
-  const queryArticles = useArticles(trocId, search)
-  $: queryArticles.setOptions(useArticlesOptions(trocId, search))
+  $: queryArticles = useInfinitApi<DynamicQueryArticle, Article>([
+    'articles',
+    { exact_trocId: trocId, or_search_name: search },
+  ])
   $: articles = $queryArticles.data ? $queryArticles.data.pages.flat() : []
 </script>
 

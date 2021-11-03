@@ -12,8 +12,7 @@ import {
   acceptNewPriceRequest,
 } from '../controllers/article_set'
 import {
-  searchArticle,
-  getArticle,
+  getArticles,
   getProvidedArticles,
   getPurchasesArticles,
   getGivbacksArticles,
@@ -21,7 +20,7 @@ import {
 import { checkLogin } from '../controllers/user_utils'
 
 router
-  .get('/', searchArticle)
+  .get('/', getArticles)
   .post('/', createArticle)
   .delete('/', deleteArticle)
   .post('/edit-name', editName)
@@ -34,6 +33,5 @@ router
   .get('/provided', getProvidedArticles)
   .get('/purschases', getPurchasesArticles)
   .get('/givebacks', getGivbacksArticles)
-  .get('/:articleId', getArticle)
 
 export default router

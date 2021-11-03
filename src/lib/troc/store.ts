@@ -37,11 +37,13 @@ import {
  * Info détaillé d'un troc + liste des participants
  */
 export const troc = writable<TrocLookup>(null)
+/** @deprecated */
 export const useTrocOptions = (trocId: string) => ({
   queryFn: getTroc,
   queryKey: ['troc', trocId],
   onSuccess: (t) => troc.set(t),
 })
+/** @deprecated */
 export const useTroc = (trocId: string) =>
   useQuery<Troc, AxiosError>(useTrocOptions(trocId))
 

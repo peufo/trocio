@@ -56,7 +56,9 @@ export declare interface Troc extends TrocBase {
   _id: string
   tag: TagInterface
   articlelastref: number
-  articles?: object[]
+  /** @deprecated use articlesCount */
+  articles?: number
+  articlesCount: number
   subscriber: number
   creator: string
   tarif: Tarif[]
@@ -72,9 +74,8 @@ export declare interface Troc extends TrocBase {
 
 /** Information complette avec les informations collaborateurs */
 export declare interface TrocLookup extends Troc {
-  /** Role from subscribe */
-  role: ISubscribe['role']
   creator: User
+  subscribe: ISubscribe
 }
 
 /**

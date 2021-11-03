@@ -13,9 +13,7 @@
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   const queryClient = useQueryClient()
-  export let trocId: string
-  /** Si le client n'est pas définit, c'est l'utilisateur connecté qui est le fournisseur*/
-  export let clientId = ''
+  export let subscribeId: string
   export let active = false
   export let listMode = false
   export let prefix = ''
@@ -116,8 +114,7 @@
     listArticles.push({
       name,
       price,
-      troc: trocId,
-      provider: clientId,
+      providerSubId: subscribeId,
     })
   }
 
@@ -158,8 +155,7 @@
       ref,
       name,
       price,
-      troc: trocId,
-      provider: clientId,
+      providerSubId: subscribeId,
     })
   }
 </script>
@@ -261,8 +257,7 @@
               $createArticle.mutate({
                 name: newName,
                 price: Number(newPrice),
-                troc: trocId,
-                provider: clientId,
+                providerSubId: subscribeId,
               })}
           >
             Valider

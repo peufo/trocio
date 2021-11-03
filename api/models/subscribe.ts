@@ -4,11 +4,6 @@ const { ObjectId } = Schema.Types
 import type { ISubscribe } from '../../types'
 
 let subscribeModel = new Schema({
-  /** @deprecated please use trocId */
-  troc: { type: ObjectId, ref: 'troc' },
-  /** @deprecated please, use userId*/
-  user: { type: ObjectId, ref: 'user' },
-
   trocId: { type: ObjectId, ref: 'troc', required: true },
 
   /** L'absence d'userId signifi que la participation est anonyme */
@@ -32,6 +27,11 @@ let subscribeModel = new Schema({
 
   /** Prefix pour les traders  */
   prefix: { type: String, uppercase: true, required: requiredIfRoleIsTrader },
+
+  /** @deprecated please use trocId */
+  troc: { type: ObjectId, ref: 'troc' },
+  /** @deprecated please, use userId*/
+  user: { type: ObjectId, ref: 'user' },
 })
 
 subscribeModel.index({ trocId: 1, userId: 1 }, { unique: true })
