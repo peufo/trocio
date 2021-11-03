@@ -25,8 +25,7 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
       validedByUser: true,
       tarifId: tarif._id,
     })
-    troc.subscriber++
-    await troc.save()
+
     await subscribe.save()
     res.json(subscribe)
   } catch (error) {

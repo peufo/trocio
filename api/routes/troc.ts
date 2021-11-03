@@ -1,7 +1,12 @@
 import express from 'express'
 const router = express.Router()
 
-import { getStats, search, getTroc } from '../controllers/troc_get'
+import {
+  getStats,
+  search,
+  getTroc,
+  getTrocCounter,
+} from '../controllers/troc_get'
 import {
   createTroc,
   patchTroc,
@@ -23,7 +28,8 @@ router
   .post('/tarif', ensureUserIsAdmin, createTarif)
   .delete('/tarif', ensureUserIsAdmin, deleteTarif)
   .patch('/tarif', ensureUserIsAdmin, editTarif)
-  .get('/by-id', getTroc)
+  .get('/id', getTroc)
+  .get('/id/counters', getTrocCounter)
 
   /** TODO: not use params */
   .patch('/:trocId', ensureUserIsAdmin, patchTroc)

@@ -56,10 +56,6 @@ export declare interface Troc extends TrocBase {
   _id: string
   tag: TagInterface
   articlelastref: number
-  /** @deprecated use articlesCount */
-  articles?: number
-  articlesCount: number
-  subscriber: number
   creator: string
   tarif: Tarif[]
   createdAt: string

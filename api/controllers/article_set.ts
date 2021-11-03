@@ -62,7 +62,6 @@ export const createArticle: RequestHandler<
     // Met a jour les state du troc
     const newRef = troc.articlelastref + 1
     troc.articlelastref += articles.filter((art) => !art.ref).length
-    troc.articlesCount += articles.length
     troc.save()
 
     let nbAttributedRef = 0

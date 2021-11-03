@@ -10,7 +10,7 @@
   $: console.log($params.trocId)
 
   $: trocQuery = useApi<{ trocId: string }, Troc>([
-    'trocs/by-id',
+    'trocs/id',
     { trocId: $params.trocId },
   ])
 

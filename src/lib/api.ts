@@ -4,10 +4,8 @@ import notify from '$lib/notify'
 import type { BaseResponse, ResponseNotifyOptions } from 'types'
 import {
   GetNextPageParamFunction,
-  InfiniteData,
   QueryFunction,
   QueryFunctionContext,
-  QueryKey,
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   useQuery,

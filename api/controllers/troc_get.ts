@@ -119,7 +119,7 @@ export const getTroc: RequestHandler = async (req, res, next) => {
   try {
     const { trocId } = req.query
     if (!trocId) throw 'query "trocId" is required'
-    const aggregate = TrocModel.aggregate().match({ _id: ObjectId(trocId) })
+    const aggregate = TrocModel.aggregate().match({ _id: new ObjectId(trocId) })
     if (req.session.user) lookupSubscribe(aggregate, req.session.user._id)
     addComputedFields(aggregate)
     const trocs = await aggregate.exec()
@@ -173,4 +173,23 @@ export function lookupSubscribe(
     .addFields({
       subscribe: { $arrayElemAt: ['$subscribe', 0] },
     })
+}
+
+/**
+ * Retourne le compte des subscribes et des articles proposé
+ */
+export const getTrocCounter: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId } = req.query
+    if (!trocId) throw 'Query "trocId" is required'
+
+    const [articlesCount, subscribesCount] = await Promise.all([
+      Article.countDocuments({ trocId }),
+      Subscribe.countDocuments({ trocId, validedByUser: true }),
+    ])
+
+    res.json({ articlesCount, subscribesCount })
+  } catch (error) {
+    next(error)
+  }
 }

@@ -32,7 +32,7 @@
   import Share from '$lib/troc/Share.svelte'
   import type { SubscribeBase, SubscribeLookup, TrocLookup } from 'types'
   import { useMutation } from '@sveltestack/svelte-query'
-  import { api } from '$lib/api'
+  import { api, useApi } from '$lib/api'
 
   export let troc: TrocLookup
 
@@ -55,6 +55,11 @@
       success: 'Nouvelle participation',
     })
   )
+
+  $: queryCounters = useApi<
+    { trocId: string },
+    { articlesCount: number; subscribesCount: number }
+  >(['trocs/id/counters', { trocId: troc._id }])
 
   function handleClickActivity() {
     if (!$user)
@@ -84,12 +89,16 @@
     <!-- Chips infos -->
     <Chip size="small" outlined class="text--secondary">
       <IconLink icon={faChild} size=".7em" />
-      <span>{troc.subscriber}</span>
+      <span>
+        {$queryCounters.isSuccess ? $queryCounters.data.subscribesCount : '∿'}
+      </span>
     </Chip>
 
     <Chip size="small" outlined class="text--secondary">
       <IconLink icon={faCubes} size=".7em" />
-      <span>{troc.articles}</span>
+      <span>
+        {$queryCounters.isSuccess ? $queryCounters.data.articlesCount : '∿'}
+      </span>
     </Chip>
 
     {#if troc.is_try}

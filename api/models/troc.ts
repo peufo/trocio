@@ -74,8 +74,6 @@ const trocModel = new Schema(
       useTagPrinter: { type: Boolean, default: false },
       useScanner: { type: Boolean, default: false },
     },
-    subscriber: { type: Number, default: 1 },
-    articles: { type: Number, default: 0 },
   },
   {
     toJSON: { virtuals: true },

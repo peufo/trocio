@@ -4,7 +4,7 @@ export declare interface ArticleCreate {
   /** ID du subscribe de l'utilisateur qui propose l'article */
   providerSubId: string
   /** Shortcuts */
-  trocId: string
+  trocId?: string
   providerId?: string
   /** Reference lisible et unique de l'article TODO: rendre unique */
   ref?: string
