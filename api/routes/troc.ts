@@ -28,8 +28,8 @@ router
   .post('/tarif', ensureUserIsAdmin, createTarif)
   .delete('/tarif', ensureUserIsAdmin, deleteTarif)
   .patch('/tarif', ensureUserIsAdmin, editTarif)
-  .get('/id', getTroc)
-  .get('/id/counters', getTrocCounter)
+  .get('/byId', getTroc)
+  .get('/byId/counters', getTrocCounter)
 
   /** TODO: not use params */
   .patch('/:trocId', ensureUserIsAdmin, patchTroc)

@@ -51,7 +51,7 @@
         textareaDesignation?.focus()
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
-        queryClient.invalidateQueries('trocs/id/counters')
+        queryClient.invalidateQueries('trocs/byId/counters')
       },
     }
   )

@@ -14,8 +14,6 @@
   import Share from '$lib/troc/Share.svelte'
   import type {
     SubscribeLookup,
-    ParamsAPI,
-    TrocLookup,
     RoleEnum,
     ParamsSubscribeAPI,
   } from 'types'

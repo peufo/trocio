@@ -2,7 +2,7 @@
   import { params, metatags } from '@roxi/routify'
 
   import { useApi } from '$lib/api'
-  import { useTroc, useTrocOptions, trocs } from '$lib/troc/store'
+  import { trocs } from '$lib/troc/store'
   import Loader from '$lib/util/Loader.svelte'
   import TrocInfo from '$lib/troc/Info.svelte'
   import type { Troc } from 'types'
@@ -10,7 +10,7 @@
   $: console.log($params.trocId)
 
   $: trocQuery = useApi<{ trocId: string }, Troc>([
-    'trocs/id',
+    'trocs/byId',
     { trocId: $params.trocId },
   ])
 

@@ -1,11 +1,16 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
-  import { useApi, useInfinitApi } from '$lib/api'
+
+  import { useInfinitApi } from '$lib/api'
   import MagicTable from '$lib/util/MagicTable.svelte'
   import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
-  import type { FieldInteface, SubscribeLookup } from 'types'
+  import type {
+    FieldInteface,
+    SubscribeLookup,
+    ParamsSubscribeAPI,
+  } from 'types'
   import layout from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc } from '$lib/troc/store'
@@ -15,16 +20,14 @@
 
   let searchValue = ''
 
-  interface QueryParams {
-    trocId: string
-    q?: string
-    lookupTarif?: boolean
-    includResum?: boolean
-  }
-
-  $: query = useInfinitApi<QueryParams, SubscribeLookup[]>([
+  $: query = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup[]>([
     'subscribes',
-    { trocId: $params.trocId, q: searchValue, ...$params, includResum: true },
+    {
+      exact_trocId: $params.trocId,
+      q: searchValue,
+      ...$params,
+      includResum: true,
+    },
   ])
 
   let fields: FieldInteface[] = [
@@ -60,11 +63,11 @@
       queryKey: 'tarifId',
       format: 'enum',
       getValue: (sub) =>
-        $troc.tarif.find((tarif) => tarif._id === sub.tarifId)?.name,
+        $troc?.tarif.find((tarif) => tarif._id === sub.tarifId)?.name,
       enumOptions: [
         { queryValue: '', label: 'Tous' },
         // @ts-ignore tarif._id can be undefined ...
-        ...$troc.tarif.map((tarif) => ({
+        ...$troc?.tarif.map((tarif) => ({
           label: tarif.name,
           queryValue: tarif._id,
         })),

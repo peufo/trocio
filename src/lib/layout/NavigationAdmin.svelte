@@ -10,7 +10,6 @@
     faChartPie,
     faTasks,
     faCashRegister,
-    faEdit,
     faUsersCog,
     faChevronDown,
     faAngleDoubleLeft,
@@ -18,8 +17,7 @@
   } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
 
-  import type { Troc } from 'types'
-  import { useQueryClient } from '@sveltestack/svelte-query'
+  import { troc } from '$lib/troc/store'
   import layout from '$lib/store/layout'
   import logo from '$assets/logo'
   import IconLink from '$lib/util/IconLink.svelte'
@@ -32,9 +30,6 @@
   export let realWidth = mini ? '56px' : width
   $: realWidth = mini ? '56px' : width
   let scrollY = 0
-
-  const queryClient = useQueryClient()
-  const troc = queryClient.getQueryData<Troc>(['troc', $params.trocId])
 
   const tabs = [
     { ref: 'info', label: 'Définition', icon: faInfoCircle },
@@ -92,7 +87,7 @@
         <Icon {...logo} size="1.3em" />
       </span>
 
-      <span>{troc?.name}</span>
+      <span>{$troc.name}</span>
 
       <span slot="subtitle">Administration</span>
     </ListItem>

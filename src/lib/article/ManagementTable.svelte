@@ -11,21 +11,33 @@
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc } from '$lib/troc/store'
   import { getFieldsLookup } from '$lib/article/fields'
+  import ArticleDetailDialog from '$lib/article/DetailDialog.svelte'
 
   let searchValue = ''
-
   let fields = getFieldsLookup()
+  let articleSelected: ArticleLookup | undefined = undefined
+  let detailDialogActive = false
 
   $: query = useInfinitApi<ParamsArticleAPI, ArticleLookup[]>([
     'articles',
     {
-      trocId: $params.trocId,
+      exact_trocId: $params.trocId,
       or_search_name: searchValue,
       or_search_ref: searchValue,
       ...$params,
     },
   ])
+
+  function handleClick(event: { detail: { item: ArticleLookup } }) {
+    articleSelected = event.detail.item
+    detailDialogActive = true
+  }
 </script>
+
+<ArticleDetailDialog
+  bind:active={detailDialogActive}
+  article={articleSelected}
+/>
 
 <div class="container">
   <div class="d-flex align-center">
@@ -46,6 +58,8 @@
             bind:search={searchValue}
             placeholder="Chercher un article"
             flat
+            solo
+            dense
           />
         </th>
 
@@ -53,6 +67,11 @@
       </tr>
     </thead>
 
-    <MagicTableBody {fields} {query} currency={$troc.currency} />
+    <MagicTableBody
+      {fields}
+      {query}
+      currency={$troc.currency}
+      on:click={handleClick}
+    />
   </MagicTable>
 </div>

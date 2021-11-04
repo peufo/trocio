@@ -14,14 +14,11 @@ const FIRST_LIMIT = 10
 const NEXT_LIMIT = 5
 export const getNextPageParam = createGetNextPageParam(FIRST_LIMIT, NEXT_LIMIT)
 
+/** @deprecated */
 export function getTroc({ queryKey }: { queryKey: ['troc', string] }) {
   return api<Troc>(`/api/trocs/${queryKey[1]}`)
 }
-
-export function getTrocUserResum({ queryKey }) {
-  return api<TrocUserResum>('/api/trocs/resum', { params: queryKey[1] })
-}
-
+/** @deprecated */
 export function getTrocStats({ queryKey }) {
   const { trocId = '' } = queryKey[1]
   return api<TrocStats>(`/api/trocs/${trocId}/stats`, { params: queryKey[1] })
@@ -215,6 +212,7 @@ export function editTarif({
   )
 }
 
+/** @deprecated */
 export function addApply({ trocId, tarifId, userId }: TrocTarifUserQuery) {
   return api<{}, TrocLookup>(
     `/api/trocs/${trocId}/tarif/${tarifId}/apply/${userId}`,
@@ -225,6 +223,7 @@ export function addApply({ trocId, tarifId, userId }: TrocTarifUserQuery) {
 }
 
 // Not util ?
+/** @deprecated */
 export function removeApply({ trocId, tarifId, userId }: TrocTarifUserQuery) {
   return api<{}, TrocLookup>(
     `/api/trocs/${trocId}/tarif/${tarifId}/apply/${userId}`,

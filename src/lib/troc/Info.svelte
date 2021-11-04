@@ -59,7 +59,7 @@
   $: queryCounters = useApi<
     { trocId: string },
     { articlesCount: number; subscribesCount: number }
-  >(['trocs/id/counters', { trocId: troc._id }])
+  >(['trocs/byId/counters', { trocId: troc._id }])
 
   function handleClickActivity() {
     if (!$user)

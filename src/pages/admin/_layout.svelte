@@ -1,20 +1,23 @@
 <script lang="ts">
   import { fly } from 'svelte/transition'
   import { params } from '@roxi/routify'
+  import { Alert } from 'svelte-materialify'
 
   import Loader from '$lib/util/Loader.svelte'
   import NavigationAdmin from '$lib/layout/NavigationAdmin.svelte'
   import Tips from '$lib/layout/Tips.svelte'
+  import { troc } from '$lib/troc/store'
+  import { useApi } from '$lib/api'
+  import type { TrocLookup } from 'types'
 
-  let isTry = false
   export let tipsActive = false
-
   let navigationWidth: string
   let tipsWidth: string
 
-  import { useTroc } from '$lib/troc/store'
-
-  const trocQuery = $params.trocId && useTroc($params.trocId)
+  const trocQuery = useApi<{ trocId: string }, TrocLookup>({
+    queryKey: ['trocs/byId', { trocId: $params.trocId }],
+    onSuccess: troc.set,
+  })
 </script>
 
 {#if $trocQuery?.isLoading}
@@ -25,7 +28,7 @@
   <div class="centered" style="height: 100px;">
     <span>Oups, une erreur c'est produite.</span>
   </div>
-{:else if $params.trocId}
+{:else if $trocQuery.isSuccess}
   <NavigationAdmin
     bind:realWidth={navigationWidth}
     on:openTips={() => (tipsActive = !tipsActive)}
@@ -36,20 +39,14 @@
   <div
     class="layout"
     style="
-      padding-left: {navigationWidth};
-      padding-right: {tipsActive ? tipsWidth : '0px'};"
+  padding-left: {navigationWidth};
+  padding-right: {tipsActive ? tipsWidth : '0px'};"
   >
     <main class="pa-4">
-      <slot />
-
-      {#if isTry}
-        <div
-          transition:fly={{ y: 40, delay: 500, duration: 800 }}
-          class="try-bannear"
-        >
-          <b>Troc d'entrainement</b>
-        </div>
+      {#if $trocQuery.data.is_try}
+        <Alert visible class="orange white-text">Troc d'entrainement</Alert>
       {/if}
+      <slot />
     </main>
   </div>
 {/if}
