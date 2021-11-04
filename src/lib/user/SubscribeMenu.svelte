@@ -8,7 +8,7 @@
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   import IconLink from '$lib/util/IconLink.svelte'
-  import type { SubscribeLookup, SubscribeBase, ISubscribe } from 'types'
+  import type { SubscribeLookup, ISubscribe, RoleEnum } from 'types'
   import notify from '$lib/notify'
   import { troc } from '$lib/troc/store'
   import { api } from '$lib/api'
@@ -35,8 +35,14 @@
 
   const handleMouseLeave = debounce(() => mouseIn || close(), 400)
 
-  interface AssignTarifBody extends SubscribeBase {
+  interface AssignTarifBody {
+    subscribeId: string
     tarifId: string
+  }
+  interface AssignRoleBody {
+    subscribeId: string
+    role: RoleEnum
+    prefix?: string
   }
 
   const assignTarif = useMutation(
@@ -49,6 +55,24 @@
     {
       onSuccess: (data) => {
         if (subscribe) subscribe.tarifId = data.tarifId
+        queryClient.invalidateQueries('subscribes')
+      },
+    }
+  )
+
+  const assignRole = useMutation(
+    (data: AssignRoleBody) =>
+      api<AssignRoleBody, ISubscribe>('/api/subscribes/role', {
+        method: 'post',
+        data,
+        success: data.role === 'basic' ? 'Rôle retiré' : `Rôle attribué`,
+      }),
+    {
+      onSuccess: (data) => {
+        if (subscribe) {
+          subscribe.role = data.role
+          subscribe.prefix = data.prefix
+        }
         queryClient.invalidateQueries('subscribes')
       },
     }
@@ -105,7 +129,7 @@
               <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
             </span>
           </ListItem>
-          <ListItem on:click={() => notify.info('TODO')}>
+          <ListItem disabled on:click={() => notify.info('TODO')}>
             Corriger le solde
           </ListItem>
         </div>
@@ -120,8 +144,15 @@
             <span class="text-subtitle-2">Rôle de {subscribe?.user.name}</span>
           </ListItem>
 
-          {#each ROLES as { label, icon }}
-            <ListItem on:click={() => notify.info('TODO')}>
+          {#each ROLES as { label, icon, queryValue }}
+            <ListItem
+              on:click={() =>
+                subscribe &&
+                $assignRole.mutate({
+                  subscribeId: subscribe._id,
+                  role: queryValue,
+                })}
+            >
               <span slot="prepend">
                 {#if icon}
                   <IconLink {icon} size="1.2em" class="mr-4" />
@@ -145,9 +176,9 @@
           {#each $troc.tarif as tarif}
             <ListItem
               on:click={() =>
+                subscribe &&
                 $assignTarif.mutate({
-                  trocId: $troc._id,
-                  userId: subscribe?.userId || '',
+                  subscribeId: subscribe._id,
                   tarifId: tarif._id || '',
                 })}
             >

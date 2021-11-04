@@ -35,17 +35,22 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
 
 export const assignRole: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId, userId, role, prefix } = req.body
-    if (typeof trocId !== 'string') throw 'trocId string is required in body'
-    if (typeof userId !== 'string') throw 'userId string is required in body'
+    const { subscribeId, role, prefix } = req.body
+    if (typeof subscribeId !== 'string')
+      throw 'subscribeId string is required in body'
     if (typeof role !== 'string') throw 'role string is required in body'
 
-    const subscribe = await Subscribe.findOne({ trocId, userId }).exec()
+    const subscribe = await Subscribe.findById(subscribeId).exec()
+    if (subscribe.userId.valueOf() === req.session.user._id)
+      throw `You can't change your role`
+    const troc = await Troc.findById(subscribe.trocId, { creator: 1 })
+    if (subscribe.userId.valueOf() === troc.creator.valueOf())
+      throw `The creator of the troc cannot change its role`
+
     // @ts-ignore
     subscribe.role = role
-
     if (role === 'trader') {
-      subscribe.prefix = prefix || (await findNewPrefix(trocId))
+      subscribe.prefix = prefix || (await findNewPrefix(subscribe.trocId))
     }
 
     await subscribe.save()
@@ -57,12 +62,12 @@ export const assignRole: RequestHandler = async (req, res, next) => {
 
 export const assignTarif: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId, userId, tarifId } = req.body
-    if (typeof trocId !== 'string') throw 'trocId string is required in body'
-    if (typeof userId !== 'string') throw 'userId string is required in body'
+    const { subscribeId, tarifId } = req.body
+    if (typeof subscribeId !== 'string')
+      throw 'subscribeId string is required in body'
     if (typeof tarifId !== 'string') throw 'tarifId string is required in body'
 
-    const subscribe = await Subscribe.findOne({ trocId, userId }).exec()
+    const subscribe = await Subscribe.findById(subscribeId).exec()
     subscribe.tarifId = tarifId
 
     await subscribe.save()

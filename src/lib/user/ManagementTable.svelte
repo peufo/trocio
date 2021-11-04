@@ -14,8 +14,8 @@
   import layout from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc } from '$lib/troc/store'
-  import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
   import { ROLES } from '$lib/user/roles'
+  import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
   let subscribeMenu: SubscribeMenu
 
   let searchValue = ''
@@ -25,8 +25,8 @@
     {
       exact_trocId: $params.trocId,
       q: searchValue,
-      ...$params,
       includResum: true,
+      ...$params,
     },
   ])
 
@@ -174,6 +174,8 @@
             bind:search={searchValue}
             placeholder="Chercher un participant"
             flat
+            solo
+            dense
           />
         </th>
 

@@ -24,7 +24,7 @@ router
   .get('/resum', ensureUserCanAccessResum, getResum)
   .get('/me', getMySubscribes)
   .get('/count', ensureUserIsCashier, getSubscribersCount)
-  .post('/assign', ensureUserIsAdmin, assignRole)
+  .post('/role', ensureUserIsAdmin, assignRole)
   .post('/tarif', ensureUserIsAdmin, assignTarif)
   .post('/prefix', ensureUserIsAdmin, setTraderPrefix)
 

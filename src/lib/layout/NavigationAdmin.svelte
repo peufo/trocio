@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { params, url, page } from '@roxi/routify'
+  import { params, url } from '@roxi/routify'
   import { createEventDispatcher } from 'svelte'
   import { List, ListItem, Divider, Icon } from 'svelte-materialify'
   import {
@@ -87,7 +87,7 @@
         <Icon {...logo} size="1.3em" />
       </span>
 
-      <span>{$troc.name}</span>
+      <span>{$troc?.name}</span>
 
       <span slot="subtitle">Administration</span>
     </ListItem>

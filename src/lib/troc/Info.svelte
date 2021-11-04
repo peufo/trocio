@@ -66,14 +66,14 @@
       return $goto('/login', {
         callback: `/trocs/${troc._id}`,
       })
-    if (troc.subscribe.role) activityOpen = !activityOpen
+    if (troc.subscribe?.role) activityOpen = !activityOpen
     else {
       $createSubscribe.mutate(
         { trocId: troc._id },
         {
           onSuccess: (subscribe) => {
             // TODO: manage subscribe already exist
-            if (subscribe._id) troc.subscribe.role = 'basic'
+            if (subscribe) troc.subscribe = subscribe
             activityOpen = !activityOpen
           },
         }
@@ -232,14 +232,14 @@
   {/if}
 
   <div class="flex-grow-1" />
-  {#if !!$user && troc.subscribe.role === 'admin'}
+  {#if !!$user && troc.subscribe?.role === 'admin'}
     <a href={`/admin?trocId=${troc._id}`}>
       <Button depressed class="mr-1 ml-1">
         administration
         <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
       </Button>
     </a>
-  {:else if !!$user && troc.subscribe.role === 'cashier'}
+  {:else if !!$user && troc.subscribe?.role === 'cashier'}
     <a href={`/cashier?trocId=${troc._id}`}>
       <Button depressed class="ml-2">
         Caisse
@@ -253,7 +253,7 @@
     </a>
   {/if}
   <Button on:click={handleClickActivity} depressed class="mr-1 ml-1">
-    {troc.subscribe.role ? 'Mon activité' : 'Participer au troc'}
+    {troc.subscribe ? 'Mon activité' : 'Participer au troc'}
     <IconLink
       icon={faChevronRight}
       rotate={activityOpen ? 90 : 0}
@@ -266,7 +266,7 @@
   <Share {troc} class="mr-1 ml-1" />
 </div>
 
-{#if activityOpen}
+{#if activityOpen && troc.subscribe}
   <div transition:slide|local>
     <UserResum
       subscribeId={troc.subscribe._id}
