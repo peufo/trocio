@@ -12,11 +12,7 @@
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import Share from '$lib/troc/Share.svelte'
-  import type {
-    SubscribeLookup,
-    RoleEnum,
-    ParamsSubscribeAPI,
-  } from 'types'
+  import type { SubscribeLookup, RoleEnum, ParamsSubscribeAPI } from 'types'
   import { useInfinitApi } from '$lib/api'
   import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
   import PrefixDialog from '$lib/user/PrefixDialog.svelte'
@@ -36,31 +32,35 @@
   let searchTraders = ''
   $: queryAdminsCount = useApi<ParamsSubscribeAPI, number>([
     'subscribes/count',
-    { trocId: $params.trocId, exact_role: 'admin' },
+    { exact_trocId: $params.trocId, exact_role: 'admin' },
   ])
   $: queryAdmins = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup>([
     'subscribes',
-    { trocId: $params.trocId, q: searchAdmins, exact_role: 'admin' },
+    { exact_trocId: $params.trocId, q: searchAdmins, exact_role: 'admin' },
   ])
   $: queryCashiersCount = useApi<ParamsSubscribeAPI, number>([
     'subscribes/count',
-    { trocId: $params.trocId, exact_role: 'cashier' },
+    { exact_trocId: $params.trocId, exact_role: 'cashier' },
   ])
   $: queryCashiers = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup>([
     'subscribes',
-    { trocId: $params.trocId, q: searchCashiers, exact_role: 'cashier' },
+    { exact_trocId: $params.trocId, q: searchCashiers, exact_role: 'cashier' },
   ])
   $: queryTradersCount = useApi<ParamsSubscribeAPI, number>([
     'subscribes/count',
-    { trocId: $params.trocId, exact_role: 'trader' },
+    { exact_trocId: $params.trocId, exact_role: 'trader' },
   ])
   $: queryTraders = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup>([
     'subscribes',
-    { trocId: $params.trocId, q: searchTraders, exact_role: 'trader' },
+    { exact_trocId: $params.trocId, q: searchTraders, exact_role: 'trader' },
+  ])
+  $: querySubscribesCount = useApi<ParamsSubscribeAPI, number>([
+    'subscribes/count',
+    { exact_trocId: $params.trocId, exact_role: 'basic' },
   ])
   $: querySubscribes = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup>([
     'subscribes',
-    { trocId: $params.trocId, q: searchSubscribes },
+    { exact_trocId: $params.trocId, q: searchSubscribes, exact_role: 'basic' },
   ])
 
   /**
@@ -169,7 +169,7 @@
         <UserSelect
           label="Nouvel administrateur"
           exepted={($queryAdmins.data?.pages.flat() || []).map(
-            ({ userId }) => userId
+            ({ userId }) => userId || ''
           )}
           on:select={(event) => {
             $assignRole.mutate({
@@ -232,7 +232,7 @@
         <UserSelect
           label="Nouveau caissier"
           exepted={($queryCashiers.data?.pages.flat() || []).map(
-            ({ userId }) => userId
+            ({ userId }) => userId || ''
           )}
           on:select={(event) => {
             $assignRole.mutate({
@@ -306,7 +306,7 @@
         <UserSelect
           label="Nouveau commerçant"
           exepted={($queryTraders.data?.pages.flat() || []).map(
-            ({ userId }) => userId
+            ({ userId }) => userId || ''
           )}
           on:select={(event) => {
             $assignRole.mutate({
@@ -322,7 +322,10 @@
 
   <!-- Participants -->
   <ExpansionCard
-    title="{$troc.subscriber} Participant{$troc.subscriber > 1 ? 's' : ''}"
+    title="{$querySubscribesCount.data} Participant{$querySubscribesCount.data ||
+    0 > 1
+      ? 's'
+      : ''}"
     open={open[3]}
     class="mb-3"
     on:open={() => handleOpenCard(3)}

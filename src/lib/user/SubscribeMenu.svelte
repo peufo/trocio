@@ -56,6 +56,7 @@
       onSuccess: (data) => {
         if (subscribe) subscribe.tarifId = data.tarifId
         queryClient.invalidateQueries('subscribes')
+        queryClient.invalidateQueries('subscribes/count')
       },
     }
   )
@@ -74,6 +75,7 @@
           subscribe.prefix = data.prefix
         }
         queryClient.invalidateQueries('subscribes')
+        queryClient.invalidateQueries('subscribes/count')
       },
     }
   )

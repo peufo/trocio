@@ -20,9 +20,6 @@ export type DynamicQuerySubscribe = Partial<
 >
 
 export interface ParamsAPI {
-  trocId?: string
-  /** tarif à ne pas afficher */
-  filtredTarifs?: string[]
   /** query */
   q?: string
   limit?: number

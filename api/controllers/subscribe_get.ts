@@ -66,7 +66,6 @@ export const getResum: RequestHandler = async (req, res, next) => {
 
 export const getSubscribers: RequestHandler = async (req, res, next) => {
   let {
-    trocId,
     skip = 0,
     limit = 10,
     q = '',
@@ -74,7 +73,6 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     includTarif = false,
   } = req.query
   try {
-    if (typeof trocId !== 'string') throw 'Query "trocId" is required (string)'
     if (typeof q !== 'string') throw 'Query "q" need to be a string'
 
     const regexp = new RegExp(q, 'i')
@@ -83,9 +81,8 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
 
     let { match, sort } = dynamicQuery(req.query)
 
-    match.$and.push({ trocId: new ObjectId(trocId) })
-
     // remove match if is empty
+    if (!match.$and.length) delete match.$and
     if (!match.$or.length) delete match.$or
 
     const aggregate = Subscribe.aggregate()
@@ -100,7 +97,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
 
     if (includTarif) lookupTarif(aggregate)
 
-    // Ca fait mal au serveur
+    // Ca fait mal au serveur 😁
     if (Object.keys(sort).length) aggregate.sort(sort)
 
     const subscribes = await aggregate.skip(skip).limit(limit).exec()
