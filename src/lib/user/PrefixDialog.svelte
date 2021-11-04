@@ -32,7 +32,7 @@
       }),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(['subscribes', { role: 'trader' }])
+        queryClient.invalidateQueries(['subscribes', { exact_role: 'trader' }])
       },
     }
   )
