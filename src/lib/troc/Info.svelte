@@ -167,7 +167,7 @@
       </div>
     {/if}
 
-    {#if troc.schedule}
+    {#if troc.schedule?.length}
       <div class="d-flex pt-5">
         <IconLink icon={faCalendarAlt} opacity />
         <div class="pl-4">
