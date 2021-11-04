@@ -115,10 +115,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
  */
 export const getSubscribersCount: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId } = req.query
-    if (typeof trocId !== 'string') throw 'Query "trocId" is required (string)'
     let { match } = dynamicQuery(req.query)
-    match.$and.push({ trocId })
     // remove match if is empty
     if (!match.$or.length) delete match.$or
     // @ts-ignore
