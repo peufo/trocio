@@ -4,6 +4,7 @@ import type {
   ArticleLookup,
   FieldInteface,
   ISubscribe,
+  SelectOption,
   SubscribeLookup,
   User,
 } from 'types'
@@ -90,12 +91,12 @@ export function getFields(): FieldInteface<Article>[] {
   ]
 }
 
-const selectOptionUser = {
-  path: '/subscribes',
+const selectOptionUser: SelectOption = {
+  path: 'subscribes',
   searchKey: 'q',
   getValue: (sub: SubscribeLookup) => sub.user.name,
   getValue2: (sub: SubscribeLookup) => sub.user.mail,
-  getKey: (sub: SubscribeLookup) => sub.userId,
+  getKey: (sub: SubscribeLookup) => sub.userId || '',
 }
 
 /**
@@ -107,7 +108,7 @@ export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
     {
       label: 'Fournisseur',
       visible: true,
-      queryKey: 'provider',
+      queryKey: 'providerId',
       getValue: ({ provider }) => provider?.name,
       cellWidth: 70,
       format: 'select',
@@ -116,7 +117,7 @@ export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
     {
       label: 'Validateur',
       visible: false,
-      queryKey: 'validator',
+      queryKey: 'validatorId',
       format: 'select',
       getValue: ({ validator }) => validator?.name,
       cellWidth: 50,
@@ -134,7 +135,7 @@ export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
     {
       label: 'Client',
       visible: false,
-      queryKey: 'buyer',
+      queryKey: 'buyerId',
       format: 'select',
       getValue: ({ buyer }) => buyer?.name,
       cellWidth: 50,

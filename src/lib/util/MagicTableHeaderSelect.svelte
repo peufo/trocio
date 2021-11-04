@@ -64,7 +64,6 @@
     {#if field.selectOption}
       <MagicSelect
         flatMode
-        keepValue
         bind:inputElement
         on:select={({ detail }) => handleSelect(detail)}
         selectKey="exact_{field.queryKey}"

@@ -66,6 +66,8 @@ export const getResum: RequestHandler = async (req, res, next) => {
 
 export const getSubscribers: RequestHandler = async (req, res, next) => {
   let {
+    trocId,
+    exact_trocId,
     skip = 0,
     limit = 10,
     q = '',
@@ -73,23 +75,34 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     includTarif = false,
   } = req.query
   try {
+    if (!trocId && !exact_trocId)
+      throw 'Query "trocId" or exact_trocId is rquired'
+
     if (typeof q !== 'string') throw 'Query "q" need to be a string'
 
-    const regexp = new RegExp(q, 'i')
     skip = Number(skip)
     limit = Number(limit)
 
     let { match, sort } = dynamicQuery(req.query)
 
-    // remove match if is empty
-    if (!match.$and.length) delete match.$and
+    // Assure de filtrer sur le troc
+    // @ts-ignore
+    if (!exact_trocId) match.$and.push({ trocId: new ObjectId(trocId) })
+
+    // remove match $or if is empty
     if (!match.$or.length) delete match.$or
 
     const aggregate = Subscribe.aggregate()
     aggregate.match(match)
 
     lookupUser(aggregate)
-    aggregate.match({ $or: [{ 'user.name': regexp }, { 'user.name': regexp }] })
+    if (q)
+      aggregate.match({
+        $or: [
+          { 'user.name': new RegExp(q, 'i') },
+          { 'user.mail': new RegExp(q, 'i') },
+        ],
+      })
 
     if (includResum) {
       lookupResum(aggregate)
