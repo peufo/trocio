@@ -42,16 +42,20 @@ export const ensureUserCanAccessResum: RequestHandler = async (
   res,
   next
 ) => {
-  const { accessed, accessor } = await getAccessedAndAssecor(req)
-  if (
-    accessed._id !== accessor._id &&
-    accessor.role !== 'admin' &&
-    accessor.role !== 'cashier'
-  ) {
-    throw `User can't access to resum`
-  }
+  try {
+    const { accessed, accessor } = await getAccessedAndAssecor(req)
+    if (
+      accessed._id !== accessor._id &&
+      accessor.role !== 'admin' &&
+      accessor.role !== 'cashier'
+    ) {
+      throw `User can't access to resum`
+    }
 
-  return next()
+    return next()
+  } catch (error) {
+    return next(error)
+  }
 }
 
 async function getAccessedAndAssecor(req: Request) {
