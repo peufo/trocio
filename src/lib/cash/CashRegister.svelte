@@ -14,7 +14,7 @@
   import { troc } from '$lib/troc/store'
 
   let clientSelector: MagicSelect
-  const clientKey = 'clientId'
+  const clientKey = 'clientSubId'
 
   onMount(() => {
     if ($params[clientKey]) {

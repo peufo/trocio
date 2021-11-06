@@ -36,6 +36,7 @@
 
   /** Si vrai, les choix sont en permanance visible */
   export let flatMode = false
+
   let selectedIndex = 0
   let isFocus = false
   const dispatch = createEventDispatcher()
@@ -51,6 +52,7 @@
       $redirect($url(), query)
     }
     selectedItem = null
+    searchValue = ''
     if (inputElement) inputElement.value = ''
   }
 
