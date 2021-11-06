@@ -102,6 +102,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     if (q)
       aggregate.match({
         $or: [
+          { name: new RegExp(q, 'i') },
           { 'user.name': new RegExp(q, 'i') },
           { 'user.mail': new RegExp(q, 'i') },
         ],
@@ -119,12 +120,11 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     const subscribes = await aggregate.skip(skip).limit(limit).exec()
 
     // inclue la recherche au delà du troc si le nombre de subscribes est inférieur à la limite
-    if (q && includSGlobalUser) {
+    if (q && includSGlobalUser && limit > subscribes.length) {
       const users = await User.aggregate()
         .match({
           $or: [{ name: new RegExp(q, 'i') }, { mail: new RegExp(q, 'i') }],
         })
-        .skip(skip + subscribes.length)
         .limit(limit - subscribes.length)
         .project({
           _id: null,
@@ -147,7 +147,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
  */
 function hideMail(subscribes: SubscribeLookup[]): SubscribeLookup[] {
   return subscribes.map((sub) => {
-    if (sub.validedByUser) return sub
+    if (sub.validedByUser || !sub.userId) return sub
     const index = sub.user.mail.indexOf('@')
     if (index > -1) {
       sub.user.mail = sub.user.mail.replace(

@@ -47,7 +47,7 @@ export const createArticle: RequestHandler<
     // Trouve le troc et le tarif correspondant
     const troc = await Troc.findById(sub.trocId).exec()
     if (!troc) throw 'Troc is not found !'
-    const tarif = await getTarif(sub.trocId, sub.userId)
+    const tarif = await getTarif(sub._id)
     if (!tarif) throw 'Tarif is not found !'
 
     // Controle la limite du nombre d'article

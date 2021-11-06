@@ -11,7 +11,7 @@ let articleModel = new Schema({
   },
 
   /** Shortcuts */
-  providerId: { type: ObjectId, ref: 'user', required: true, index: true },
+  providerId: { type: ObjectId, ref: 'user', index: true },
   buyerId: { type: ObjectId, ref: 'user', index: true },
   validatorId: { type: ObjectId, ref: 'user' },
   sellerId: { type: ObjectId, ref: 'user' },

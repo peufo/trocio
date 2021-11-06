@@ -51,7 +51,8 @@ const trocModel = new Schema(
     ],
     tarif: [
       {
-        apply: [{ type: ObjectId, ref: 'user' }], // A supprimer après migration
+        /** @deprecated */
+        apply: [{ type: ObjectId, ref: 'user' }],
         name: { type: String, default: 'Tarif' },
         bydefault: { type: Boolean, default: false },
         margin: { type: Number, default: 0, min: 0, max: 0.4 },

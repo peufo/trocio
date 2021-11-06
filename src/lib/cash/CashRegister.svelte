@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { fade } from 'svelte/transition'
   import { params, redirect } from '@roxi/routify'
-  import { faUserAlt, faUserSecret } from '@fortawesome/free-solid-svg-icons'
+  import { faUserAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { api } from '$lib/api'
   import { Button, Tabs, Tab, TabContent } from 'svelte-materialify'
@@ -57,17 +57,10 @@
     const sub = event.detail
     if (!sub._id) {
       /** Création du subscribe dans le cas ou le client n'est pas encore participant */
-      $createSubscribe.mutate(
-        {
-          trocId: $params.trocId,
-          userId: sub.userId || '',
-        },
-        {
-          onSuccess: (newSubscribe) => {
-            $redirect('', { ...$params, [clientKey]: newSubscribe._id })
-          },
-        }
-      )
+      $createSubscribe.mutate({
+        trocId: $params.trocId,
+        userId: sub.userId || '',
+      })
     }
   }
 
@@ -78,21 +71,12 @@
   }
 
   interface CreateSubscribeBody {
-    userId: string
     trocId: string
-    role?: RoleEnum
+    userId?: string
+    anonym?: boolean
   }
   /** Inscris un client qui à pu être identifé */
-  const createSubscribe = useMutation((data: CreateSubscribeBody) =>
-    api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
-      method: 'post',
-      data,
-      success: 'Nouvelle participation créée',
-    })
-  )
-
-  /** Créer un client anonym */
-  const createSubscribeAnonym = useMutation(
+  const createSubscribe = useMutation(
     (data: CreateSubscribeBody) =>
       api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
         method: 'post',
@@ -100,11 +84,29 @@
         success: 'Nouvelle participation créée',
       }),
     {
-      onSuccess: () => {
-        console.log('TODO: Select new subscribe')
+      onSuccess: redirectSubscribe,
+    }
+  )
+
+  /** Créer un client anonym */
+  const createSubscribeAnonym = useMutation(
+    (data: CreateSubscribeBody) =>
+      api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
+        method: 'post',
+        data: { ...data, anonym: true },
+        success: 'Nouveau participant anonyme',
+      }),
+    {
+      onSuccess: (newSubscribe) => {
+        redirectSubscribe(newSubscribe)
+        clientSelector.setValue(newSubscribe.name)
       },
     }
   )
+
+  function redirectSubscribe(newSubscribe: ISubscribe) {
+    $redirect('', { ...$params, [clientKey]: newSubscribe._id })
+  }
 </script>
 
 <div class="main-container">
@@ -117,8 +119,8 @@
         selectKey={clientKey}
         on:select={handleSelectClient}
         queryParams={{ trocId: $troc._id, includSGlobalUser: true }}
-        getValue={(sub) => sub.user.name}
-        getValue2={(sub) => sub.user.mail}
+        getValue={(sub) => sub.user?.name || sub.name}
+        getValue2={(sub) => sub.user?.mail || ''}
         getKey={(sub) => sub._id}
         icon={faUserAlt}
         solo
@@ -129,9 +131,14 @@
     </div>
 
     <div class="ml-4 mt-2">
-      <Button depressed style="height: 40px;" on:click={() => {}}>
-        <IconLink icon={faUserSecret} opacity class="mr-2" size="1.2em" />
-        Nouveau client anonyme
+      <Button
+        depressed
+        style="height: 40px;"
+        on:click={() =>
+          $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
+      >
+        <IconLink icon={faUserPlus} opacity class="mr-2" size="1.2em" />
+        Nouveau client
       </Button>
     </div>
   </div>

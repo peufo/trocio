@@ -52,7 +52,7 @@ export const getUserName: RequestHandler = async (req, res, next) => {
         'userId',
         'name'
       )
-      res.json(sub.userId)
+      res.json(sub.userId || sub)
     }
   } catch (error) {
     next(error)
