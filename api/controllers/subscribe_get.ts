@@ -3,7 +3,8 @@ import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Types
 
 import Subscribe from '../models/subscribe'
-import type { ISubscribe } from '../../types'
+import User from '../models/user'
+import type { ISubscribe, SubscribeLookup } from '../../types'
 import { dynamicQuery } from './utils'
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
@@ -73,6 +74,8 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     q = '',
     includResum = false,
     includTarif = false,
+    /** Active une recherche d'utilisateur au delà du troc */
+    includSGlobalUser = false,
   } = req.query
   try {
     if (!trocId && !exact_trocId)
@@ -114,10 +117,48 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     if (Object.keys(sort).length) aggregate.sort(sort)
 
     const subscribes = await aggregate.skip(skip).limit(limit).exec()
-    res.json(subscribes)
+
+    // inclue la recherche au delà du troc si le nombre de subscribes est inférieur à la limite
+    if (q && includSGlobalUser) {
+      const users = await User.aggregate()
+        .match({
+          $or: [{ name: new RegExp(q, 'i') }, { mail: new RegExp(q, 'i') }],
+        })
+        .skip(skip + subscribes.length)
+        .limit(limit - subscribes.length)
+        .project({
+          _id: null,
+          userId: '$_id',
+          user: { _id: '$_id', name: '$name', mail: '$mail' },
+        })
+        .exec()
+
+      res.json(hideMail([...subscribes, ...users]))
+    } else {
+      res.json(hideMail(subscribes))
+    }
   } catch (error) {
     next(error)
   }
+}
+
+/**
+ * Cache le mail d'un subscribe si il n'est pas validé pas un client
+ */
+function hideMail(subscribes: SubscribeLookup[]): SubscribeLookup[] {
+  return subscribes.map((sub) => {
+    if (sub.validedByUser) return sub
+    const index = sub.user.mail.indexOf('@')
+    if (index > -1) {
+      sub.user.mail = sub.user.mail.replace(
+        sub.user.mail.slice(1, index - 1),
+        '*'.repeat(index - 2)
+      )
+    } else {
+      sub.user.mail = 'Invalid mail'
+    }
+    return sub
+  })
 }
 
 /**

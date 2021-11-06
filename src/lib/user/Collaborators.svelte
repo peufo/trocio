@@ -1,21 +1,28 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
   import { List, ListItem, Avatar } from 'svelte-materialify'
-  import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons'
+  import { faSpinner, faTimes, faUser } from '@fortawesome/free-solid-svg-icons'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   import { api, useApi } from '$lib/api'
   import { troc } from '$lib/troc/store'
   import { user } from '$lib/user/store'
-  import UserSelect from '$lib/user/Select.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import Share from '$lib/troc/Share.svelte'
-  import type { SubscribeLookup, RoleEnum, ParamsSubscribeAPI } from 'types'
+  import type {
+    SubscribeLookup,
+    RoleEnum,
+    ParamsSubscribeAPI,
+    ISubscribe,
+    SubscribeBaseWithUser,
+  } from 'types'
   import { useInfinitApi } from '$lib/api'
   import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
   import PrefixDialog from '$lib/user/PrefixDialog.svelte'
+
+  import MagicSelect from '$lib/util/MagicSelect.svelte'
 
   let selectedSubscribe: undefined | SubscribeLookup = undefined
   let prefixDialogActive = false
@@ -63,31 +70,67 @@
     { exact_trocId: $params.trocId, q: searchSubscribes, exact_role: 'basic' },
   ])
 
-  /**
-   * Setters
-   */
-
-  interface TrocUserQuery {
-    trocId: string
-    userId: string
-  }
-  interface AssignRoleBody extends TrocUserQuery {
+  interface AssignRoleBody {
+    subscribeId: string
     role: RoleEnum
   }
+  interface CreateSubscribeBody {
+    userId: string
+    trocId: string
+    role: RoleEnum
+  }
+
+  function invalidateSubscribes() {
+    queryClient.invalidateQueries('subscribes')
+    queryClient.invalidateQueries('subscribes/count')
+  }
+
   const assignRole = useMutation(
     (data: AssignRoleBody) =>
-      api<AssignRoleBody, SubscribeLookup>('/api/subscribes/assign', {
+      api<AssignRoleBody, SubscribeLookup>('/api/subscribes/role', {
         method: 'post',
         data,
         success: data.role === 'basic' ? 'Rôle retiré' : `Rôle attribué`,
       }),
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries('subscribes')
-        queryClient.invalidateQueries('subscribes/count')
-      },
+      onSuccess: invalidateSubscribes,
     }
   )
+
+  const createSubscribe = useMutation(
+    (data: CreateSubscribeBody) =>
+      api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
+        method: 'post',
+        data,
+        success: 'Nouvelle participation créée',
+      }),
+    {
+      onSuccess: invalidateSubscribes,
+    }
+  )
+
+  function assignRoleHandler(role: RoleEnum) {
+    return (event: any | string) => {
+      if ($assignRole.isLoading) return
+      if (typeof event === 'string') {
+        $assignRole.mutate({
+          subscribeId: event,
+          role,
+        })
+      } else if (event.detail._id) {
+        $assignRole.mutate({
+          subscribeId: event?.detail?._id,
+          role,
+        })
+      } else {
+        $createSubscribe.mutate({
+          trocId: $params.trocId,
+          userId: event.detail.userId,
+          role,
+        })
+      }
+    }
+  }
 
   function handleClick(event: MouseEvent, subscribe: SubscribeLookup) {
     selectedSubscribe = subscribe
@@ -101,6 +144,17 @@
 
   function handleOpenCard(index: number) {
     open = open.map((o, i) => i === index)
+  }
+
+  const magicSelectProps = {
+    path: '/subscribes',
+    searchKey: 'q',
+    queryParams: { exact_trocId: $troc._id, includSGlobalUser: true },
+    getValue: (sub: SubscribeBaseWithUser) => sub.user.name,
+    getValue2: (sub: SubscribeBaseWithUser) => sub.user.mail,
+    getKey: (sub: SubscribeBaseWithUser) => sub.userId || '',
+    solo: true,
+    icon: faUser,
   }
 </script>
 
@@ -139,14 +193,8 @@
             <div
               slot="append"
               class="remove-icon"
-              on:click|stopPropagation={() => {
-                if (!$assignRole.isLoading)
-                  $assignRole.mutate({
-                    trocId: $params.trocId,
-                    userId: subscribe.user._id,
-                    role: 'basic',
-                  })
-              }}
+              on:click|stopPropagation={() =>
+                assignRoleHandler('basic')(subscribe._id)}
             >
               {#if subscribe.user._id != $troc.creator._id && subscribe.user._id != $user._id}
                 <IconLink
@@ -163,21 +211,13 @@
     </List>
 
     <div class="pa-4">
-      {#if $assignRole.isLoading}
+      {#if $assignRole.isLoading || $createSubscribe.isLoading}
         <Loader title="Ajout en cours" />
       {:else}
-        <UserSelect
-          label="Nouvel administrateur"
-          exepted={($queryAdmins.data?.pages.flat() || []).map(
-            ({ userId }) => userId || ''
-          )}
-          on:select={(event) => {
-            $assignRole.mutate({
-              trocId: $params.trocId,
-              userId: event.detail._id,
-              role: 'admin',
-            })
-          }}
+        <MagicSelect
+          placeholder="Nouvel administrateur"
+          on:select={assignRoleHandler('admin')}
+          {...magicSelectProps}
         />
       {/if}
     </div>
@@ -204,14 +244,8 @@
             <div
               class="remove-icon"
               slot="append"
-              on:click|stopPropagation={() => {
-                if (!$assignRole.isLoading)
-                  $assignRole.mutate({
-                    trocId: $params.trocId,
-                    userId: subscribe.user._id,
-                    role: 'basic',
-                  })
-              }}
+              on:click|stopPropagation={() =>
+                assignRoleHandler('basic')(subscribe._id)}
             >
               <IconLink
                 icon={$assignRole.isLoading ? faSpinner : faTimes}
@@ -226,21 +260,13 @@
     </List>
 
     <div class="pa-4">
-      {#if $assignRole.isLoading}
+      {#if $assignRole.isLoading || $createSubscribe.isLoading}
         <Loader title="Ajout en cours" />
       {:else}
-        <UserSelect
-          label="Nouveau caissier"
-          exepted={($queryCashiers.data?.pages.flat() || []).map(
-            ({ userId }) => userId || ''
-          )}
-          on:select={(event) => {
-            $assignRole.mutate({
-              trocId: $params.trocId,
-              userId: event.detail._id,
-              role: 'cashier',
-            })
-          }}
+        <MagicSelect
+          placeholder="Nouveau caissier"
+          on:select={assignRoleHandler('cashier')}
+          {...magicSelectProps}
         />
       {/if}
     </div>
@@ -278,14 +304,8 @@
             <div
               class="remove-icon"
               slot="append"
-              on:click|stopPropagation={() => {
-                if (!$assignRole.isLoading)
-                  $assignRole.mutate({
-                    trocId: $params.trocId,
-                    userId: subscribe.user._id,
-                    role: 'basic',
-                  })
-              }}
+              on:click|stopPropagation={() =>
+                assignRoleHandler('basic')(subscribe._id)}
             >
               <IconLink
                 icon={$assignRole.isLoading ? faSpinner : faTimes}
@@ -300,21 +320,13 @@
     </List>
 
     <div class="pa-4">
-      {#if $assignRole.isLoading}
+      {#if $assignRole.isLoading || $createSubscribe.isLoading}
         <Loader title="Ajout en cours" />
       {:else}
-        <UserSelect
-          label="Nouveau commerçant"
-          exepted={($queryTraders.data?.pages.flat() || []).map(
-            ({ userId }) => userId || ''
-          )}
-          on:select={(event) => {
-            $assignRole.mutate({
-              trocId: $params.trocId,
-              userId: event.detail._id,
-              role: 'trader',
-            })
-          }}
+        <MagicSelect
+          placeholder="Nouveau commerçant"
+          on:select={assignRoleHandler('trader')}
+          {...magicSelectProps}
         />
       {/if}
     </div>
@@ -343,11 +355,23 @@
         </div>
       {/each}
     </List>
+
+    <div class="pa-4">
+      {#if $assignRole.isLoading || $createSubscribe.isLoading}
+        <Loader title="Ajout en cours" />
+      {:else}
+        <MagicSelect
+          placeholder="Inviter un nouveau particiant"
+          on:select={assignRoleHandler('basic')}
+          {...magicSelectProps}
+        />
+      {/if}
+    </div>
   </ExpansionCard>
 
   <div class="d-flex">
     <div class="flex-grow-1" />
-    <Share troc={$troc} label="Inviter de nouveaux particiants" />
+    <Share troc={$troc} label="Partager le troc" />
   </div>
 </div>
 

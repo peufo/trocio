@@ -11,6 +11,7 @@
   import { api } from '$lib/api'
   import { Button } from 'svelte-materialify'
   import IconLink from '$lib/util/IconLink.svelte'
+  import { troc } from '$lib/troc/store'
 
   let clientSelector: MagicSelect
   const clientKey = 'clientId'
@@ -46,6 +47,7 @@
       path="/subscribes"
       searchKey="q"
       selectKey={clientKey}
+      queryParams={{ trocId: $troc._id, includSGlobalUser: true }}
       getValue={(sub) => sub.user.name}
       getValue2={(sub) => sub.user.mail}
       getKey={(sub) => sub.userId}

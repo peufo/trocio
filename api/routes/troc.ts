@@ -18,7 +18,7 @@ import {
   removeApply,
 } from '../controllers/troc_set'
 // import { checkAdmin } from '../controllers/troc_utils'
-import { ensureUserIsAdmin } from '../middlewares/troc'
+import { ensureUserIsAdmin } from '../controllers/subscribe_util'
 
 import { resTrocUser } from '../res/troc'
 

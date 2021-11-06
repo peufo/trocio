@@ -5,9 +5,12 @@ import type { ISubscribe } from '../../types'
 
 let subscribeModel = new Schema({
   trocId: { type: ObjectId, ref: 'troc', required: true },
-
-  /** L'absence d'userId signifi que la participation est anonyme */
   userId: { type: ObjectId, ref: 'user' },
+
+  /** Nécéssaire pour les client anonyme */
+  name: { type: String, required: isAnonym },
+  /** Clé de récuperation du subscribe anonyme */
+  recoverKey: { type: String, required: isAnonym },
 
   /** Rôle de l'utilsateur sur le troc */
   role: {
@@ -26,7 +29,7 @@ let subscribeModel = new Schema({
   tarifId: { type: ObjectId, ref: 'troc.tarif', required: true },
 
   /** Prefix pour les traders  */
-  prefix: { type: String, uppercase: true, required: requiredIfRoleIsTrader },
+  prefix: { type: String, uppercase: true, required: isRoleTrader },
 
   /** @deprecated please use trocId */
   troc: { type: ObjectId, ref: 'troc' },
@@ -38,8 +41,12 @@ subscribeModel.index({ trocId: 1, userId: 1 }, { unique: true })
 
 subscribeModel.set('timestamps', true)
 
-function requiredIfRoleIsTrader() {
+function isRoleTrader() {
   return this.role === 'trader'
+}
+
+function isAnonym() {
+  return !this.userId
 }
 
 export default mongoose.model<ISubscribe & Document>(

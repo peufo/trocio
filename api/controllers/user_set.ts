@@ -19,7 +19,7 @@ export const createUser: RequestHandler = async (req, res, next) => {
 
   try {
     const { origin } = req.query
-    if (!origin) throw 'origin query is required'
+    if (typeof origin !== 'string') throw 'origin query is required'
     const user = new User(req.body)
     await user.save()
     mail
@@ -68,7 +68,7 @@ export const resetpwd: RequestHandler = async (req, res, next) => {
   try {
     const user = await User.findOne({ mail: req.body.mail }).exec()
     if (!user) return next('User not found')
-    let unchiffredPwd = randomize('Aa0', 10)
+    let unchiffredPwd = new Array(3).fill(randomize('0000')).join('-')
     user.password = unchiffredPwd
     await user.save()
     await mail.resetpwd(user, unchiffredPwd)

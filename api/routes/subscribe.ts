@@ -16,14 +16,14 @@ import {
   ensureUserIsCashier,
   ensureUserIsAdmin,
   ensureUserCanAccessResum,
-} from '../middlewares/troc'
+} from '../controllers/subscribe_util'
 
 router
   .post('/', createSubscribe)
   .get('/', ensureUserIsCashier, getSubscribers)
+  .get('/count', ensureUserIsCashier, getSubscribersCount)
   .get('/resum', ensureUserCanAccessResum, getResum)
   .get('/me', getMySubscribes)
-  .get('/count', ensureUserIsCashier, getSubscribersCount)
   .post('/role', ensureUserIsAdmin, assignRole)
   .post('/tarif', ensureUserIsAdmin, assignTarif)
   .post('/prefix', ensureUserIsAdmin, setTraderPrefix)

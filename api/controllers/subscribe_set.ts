@@ -1,32 +1,66 @@
 import { RequestHandler } from 'express'
+import randomize from 'randomatic'
+
+import type { ISubscribe } from '../../types'
 import Subscribe from '../models/subscribe'
 import Troc from '../models/troc'
 
 export const createSubscribe: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId } = req.body
+    const { trocId, userId, anonym, role, prefix } = req.body
     if (!req.session.user) throw 'Login is required'
     if (!trocId) throw 'trocId string is required on body'
     const troc = await Troc.findById(trocId).exec()
     if (!troc) throw 'Troc not found'
 
-    const tarif = troc.tarif.find((t) => t.bydefault)
-
-    // Verifie si un sub n'éxiste pas déjà
-    const oldSubscribe = await Subscribe.findOne({
+    // Récupère le sub de la personne connecté
+    const accessorSub = await Subscribe.findOne({
       trocId,
       userId: req.session.user._id,
     }).exec()
-    if (oldSubscribe) throw 'Subscription already exist'
 
-    const subscribe = new Subscribe({
+    if (!userId && !anonym && accessorSub) throw 'Subscription already exist'
+    if (
+      (userId || anonym) &&
+      accessorSub.role !== 'admin' &&
+      accessorSub.role !== 'cashier'
+    )
+      throw 'Create subscribe for other user (or anonym) require admin or cashier right'
+
+    const newSubscribe: Partial<ISubscribe> = {
       trocId,
-      userId: req.session.user._id,
-      validedByUser: true,
-      tarifId: tarif._id,
-    })
+      tarifId: troc.tarif.find((t) => t.bydefault)._id,
+    }
 
+    if (userId || anonym) {
+      // Création d'un sub pour un client
+      newSubscribe.validedByTroc = true
+      newSubscribe.role = role
+      if (role === 'trader') {
+        newSubscribe.prefix =
+          prefix || (await findNewPrefix(newSubscribe.trocId))
+      }
+
+      if (userId) {
+        newSubscribe.userId = userId
+      } else {
+        // Création d'un sub pour un client anonyme
+        const anonymSubCount = await Subscribe.countDocuments({
+          trocId,
+          $exists: { userId: 0 },
+        })
+        newSubscribe.name = `Client n°${anonymSubCount + 1}`
+        newSubscribe.recoverKey = new Array(3).fill(randomize('0000')).join('-')
+      }
+    } else {
+      // Création d'un sub sur son propre compte
+      newSubscribe.validedByUser = true
+      newSubscribe.userId = req.session.user._id
+    }
+
+    const subscribe = new Subscribe(newSubscribe)
     await subscribe.save()
+
     res.json(subscribe)
   } catch (error) {
     next(error)

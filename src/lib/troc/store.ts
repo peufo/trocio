@@ -2,7 +2,6 @@ import { writable } from 'svelte/store'
 import type { AxiosError } from 'axios'
 import L from 'leaflet'
 import {
-  useQuery,
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   useMutation,

@@ -11,6 +11,7 @@
   export let label = ''
   export let inputElement: HTMLInputElement | undefined = undefined
   export let selectedItem: any = null
+  export let queryParams: object = {}
 
   export let searchValue = ''
 
@@ -18,8 +19,8 @@
   export let path: string
   /** key used in url for search values */
   export let searchKey: string
-  /** key used in url for select à value. exemple: 'provider' */
-  export let selectKey: string
+  /** key used in url for select à value. exemple: 'providerId' */
+  export let selectKey: string | undefined = undefined
 
   /** Function for obtain unique string key from item */
   export let getKey: (item: any) => string = (item) => item?._id
@@ -44,9 +45,11 @@
   }
 
   export function clear() {
-    const query = $params
-    delete query[selectKey]
-    $redirect($url(), query)
+    if (selectKey) {
+      const query = $params
+      delete query[selectKey]
+      $redirect($url(), query)
+    }
     selectedItem = null
     if (inputElement) inputElement.value = ''
   }
@@ -58,15 +61,17 @@
   // $: searchValue = $params[searchKey] || '' // <-- Communication par $params, inutil...
   $: querySearch = useApi<any, any[]>([
     path,
-    { [searchKey]: searchValue, ...$params },
+    { [searchKey]: searchValue, ...queryParams },
   ])
   $: items = $querySearch.data ? $querySearch.data.flat() : []
   $: itemsFiltred = items.filter((item) => !exepted.includes(getKey(item)))
 
   function handleSelect(item: any) {
-    const query = $params
-    query[selectKey] = getKey(item)
-    $goto($url(), query)
+    if (selectKey) {
+      const query = $params
+      query[selectKey] = getKey(item)
+      $goto($url(), query)
+    }
 
     selectedItem = item
     dispatch('select', item)
