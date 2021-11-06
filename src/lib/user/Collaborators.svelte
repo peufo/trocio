@@ -77,7 +77,7 @@
   interface CreateSubscribeBody {
     userId: string
     trocId: string
-    role: RoleEnum
+    role?: RoleEnum
   }
 
   function invalidateSubscribes() {

@@ -14,6 +14,9 @@
   import Recover from '$lib/cash/Recover.svelte'
   import Buy from '$lib/cash/Buy.svelte'
   import UserResum from '$lib/troc/UserResum.svelte'
+  import { useMutation } from '@sveltestack/svelte-query'
+  import type { ISubscribe, RoleEnum } from 'types'
+  import { subscribe } from 'svelte/internal'
 
   let clientSelector: MagicSelect
   const clientKey = 'client_subscribe_id'
@@ -50,13 +53,58 @@
     }
   }
 
+  function handleSelectClient(event: { detail: ISubscribe }) {
+    const sub = event.detail
+    if (!sub._id) {
+      /** Création du subscribe dans le cas ou le client n'est pas encore participant */
+      $createSubscribe.mutate(
+        {
+          trocId: $params.trocId,
+          userId: sub.userId || '',
+        },
+        {
+          onSuccess: (newSubscribe) => {
+            $redirect('', { ...$params, [clientKey]: newSubscribe._id })
+          },
+        }
+      )
+    }
+  }
+
   function handleChangeTab(event: { detail: number }) {
     const queryParams = $params
     queryParams[tabIndexKey] = event.detail
     $redirect('', queryParams)
   }
 
-  $: console.log($params[tabIndexKey])
+  interface CreateSubscribeBody {
+    userId: string
+    trocId: string
+    role?: RoleEnum
+  }
+  /** Inscris un client qui à pu être identifé */
+  const createSubscribe = useMutation((data: CreateSubscribeBody) =>
+    api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
+      method: 'post',
+      data,
+      success: 'Nouvelle participation créée',
+    })
+  )
+
+  /** Créer un client anonym */
+  const createSubscribeAnonym = useMutation(
+    (data: CreateSubscribeBody) =>
+      api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
+        method: 'post',
+        data,
+        success: 'Nouvelle participation créée',
+      }),
+    {
+      onSuccess: () => {
+        console.log('TODO: Select new subscribe')
+      },
+    }
+  )
 </script>
 
 <div class="main-container">
@@ -67,6 +115,7 @@
         path="/subscribes"
         searchKey="q"
         selectKey={clientKey}
+        on:select={handleSelectClient}
         queryParams={{ trocId: $troc._id, includSGlobalUser: true }}
         getValue={(sub) => sub.user.name}
         getValue2={(sub) => sub.user.mail}
@@ -80,7 +129,7 @@
     </div>
 
     <div class="ml-4 mt-2">
-      <Button depressed style="height: 40px;">
+      <Button depressed style="height: 40px;" on:click={() => {}}>
         <IconLink icon={faUserSecret} opacity class="mr-2" size="1.2em" />
         Nouveau client anonyme
       </Button>
