@@ -50,7 +50,9 @@
       api<AssignTarifBody, ISubscribe>('/api/subscribes/tarif', {
         method: 'post',
         data,
-        success: `Nouveau tarif attribué à ${subscribe?.user.name}`,
+        success: `Nouveau tarif attribué à ${
+          subscribe?.user?.name || subscribe?.name
+        }`,
       }),
     {
       onSuccess: (data) => {
@@ -97,7 +99,9 @@
       {#if state === 'main'}
         <div in:fly|local={{ x: -200 }}>
           <ListItem disabled dense>
-            <span class="text-subtitle-2">{subscribe?.user.name}</span>
+            <span class="text-subtitle-2">
+              {subscribe?.user?.name || subscribe?.name}
+            </span>
           </ListItem>
           <ListItem
             on:click={() =>
@@ -119,12 +123,14 @@
           >
             Voir les propositions
           </ListItem>
-          <ListItem on:click={() => (state = 'role')}>
-            Assigner un rôle
-            <span slot="append">
-              <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
-            </span>
-          </ListItem>
+          {#if subscribe?.userId}
+            <ListItem on:click={() => (state = 'role')}>
+              Assigner un rôle
+              <span slot="append">
+                <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
+              </span>
+            </ListItem>
+          {/if}
           <ListItem on:click={() => (state = 'tarif')}>
             Attribuer un tarif
             <span slot="append">
@@ -143,7 +149,9 @@
             <span slot="prepend">
               <IconLink icon={faAngleLeft} size="1.2em" class="mr-4" />
             </span>
-            <span class="text-subtitle-2">Rôle de {subscribe?.user.name}</span>
+            <span class="text-subtitle-2">
+              Rôle de {subscribe?.user?.name || subscribe?.name}
+            </span>
           </ListItem>
 
           {#each ROLES as { label, icon, queryValue }}
@@ -172,11 +180,14 @@
             <span slot="prepend">
               <IconLink icon={faAngleLeft} size="1.2em" class="mr-4" />
             </span>
-            <span class="text-subtitle-2">Tarif de {subscribe?.user.name}</span>
+            <span class="text-subtitle-2">
+              Tarif de {subscribe?.user?.name || subscribe?.name}
+            </span>
           </ListItem>
 
           {#each $troc.tarif as tarif}
             <ListItem
+              disabled={tarif._id === subscribe?.tarifId}
               on:click={() =>
                 subscribe &&
                 $assignTarif.mutate({

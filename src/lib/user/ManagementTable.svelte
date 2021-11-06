@@ -38,7 +38,7 @@
       queryKey: 'name',
       format: 'string',
       cellWidth: 50,
-      getValue: (sub) => sub.user.name,
+      getValue: (sub) => sub.user?.name || sub.name,
     },
     {
       label: 'mail',
@@ -47,14 +47,15 @@
       queryKey: 'mail',
       format: 'string',
       cellWidth: 50,
-      getValue: (sub) => sub.user.mail,
+      getValue: (sub) => sub.user?.mail || '',
     },
     {
       label: 'Rôle',
       visible: false,
       queryKey: 'role',
       format: 'enum',
-      getValue: (sub) => ROLES.find((r) => r.queryValue === sub.role)?.label,
+      getValue: (sub) =>
+        sub.userId ? ROLES.find((r) => r.queryValue === sub.role)?.label : '',
       enumOptions: ROLES,
     },
     {

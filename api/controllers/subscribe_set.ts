@@ -75,6 +75,7 @@ export const assignRole: RequestHandler = async (req, res, next) => {
     if (typeof role !== 'string') throw 'role string is required in body'
 
     const subscribe = await Subscribe.findById(subscribeId).exec()
+    if (!subscribe.userId) throw `Anonym subscribe can't have a role`
     if (subscribe.userId.valueOf() === req.session.user._id)
       throw `You can't change your role`
     const troc = await Troc.findById(subscribe.trocId, { creator: 1 })
