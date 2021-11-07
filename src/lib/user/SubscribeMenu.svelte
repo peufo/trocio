@@ -108,7 +108,7 @@
               $goto($url('/admin/management_articles'), {
                 trocId: $params.trocId,
                 tab_admin: 'management_articles',
-                exact_buyer: subscribe?.userId,
+                exact_buyerSubId: subscribe?._id,
               })}
           >
             Voir les achats
@@ -118,7 +118,7 @@
               $goto($url('/admin/management_articles'), {
                 trocId: $params.trocId,
                 tab_admin: 'management_articles',
-                exact_provider: subscribe?.userId,
+                exact_providerSubId: subscribe?._id,
               })}
           >
             Voir les propositions

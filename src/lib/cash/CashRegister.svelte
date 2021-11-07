@@ -149,22 +149,24 @@
       class="simple-card mt-4"
       style="min-height: {$layout.innerHeight - container?.offsetTop - 16}px;"
     >
-      <Tabs grow value={$params[tabIndexKey]} on:change={handleChangeTab}>
+      <Tabs grow value={$params[tabIndexKey] || 3} on:change={handleChangeTab}>
         <div slot="tabs">
           {#each TABS as { ref, label }}
             <Tab class="rounded">{label}</Tab>
           {/each}
         </div>
+      </Tabs>
 
-        {#each TABS as { component }}
-          <TabContent class="pl-4 pr-4">
+      {#each TABS as { component }, index}
+        {#if index == $params[tabIndexKey]}
+          <div in:fade|locale class="pl-4 pr-4">
             <svelte:component
               this={component}
               subscribeId={$params[clientKey]}
             />
-          </TabContent>
-        {/each}
-      </Tabs>
+          </div>
+        {/if}
+      {/each}
     </div>
   {/if}
 </div>
