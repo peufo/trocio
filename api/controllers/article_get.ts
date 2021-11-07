@@ -120,19 +120,10 @@ export const getArticles: RequestHandler = async (req, res, next) => {
   if (Object.keys(sort).length) aggregate.sort(sort)
 
   lookupUsers(aggregate)
+  lookupProviderSubscribe(aggregate)
 
   const articles = await aggregate.exec()
   res.json(articles)
-  /*
-    .populate('provider', 'name')
-    .populate('validator', 'name')
-    .populate('seller', 'name')
-    .populate('buyer', 'name')
-    .exec((err, articles) => {
-      if (err) return next(err)
-      res.json(articles)
-    })
-    */
 }
 
 /**
@@ -167,5 +158,34 @@ export function lookupUsers(aggregate: mongoose.Aggregate<IArticle[]>): void {
       validator: { $arrayElemAt: ['$validator', 0] },
       seller: { $arrayElemAt: ['$seller', 0] },
       buyer: { $arrayElemAt: ['$buyer', 0] },
+    })
+}
+
+/**
+ * Update aggregate for lookup subscribe of provider
+ */
+export function lookupProviderSubscribe(
+  aggregate: mongoose.Aggregate<IArticle[]>
+): void {
+  aggregate
+    .lookup({
+      from: 'subscribes',
+      let: { subId: '$providerSubId' },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ['$$subId', '$_id'],
+            },
+          },
+        },
+        {
+          $project: { name: 1 },
+        },
+      ],
+      as: 'providerSub',
+    })
+    .addFields({
+      providerSub: { $arrayElemAt: ['$providerSub', 0] },
     })
 }

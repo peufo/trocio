@@ -94,8 +94,8 @@ export function getFields(): FieldInteface<Article>[] {
 const selectOptionUser: SelectOption = {
   path: 'subscribes',
   searchKey: 'q',
-  getValue: (sub: SubscribeLookup) => sub.user.name,
-  getValue2: (sub: SubscribeLookup) => sub.user.mail,
+  getValue: (sub: SubscribeLookup) => sub.user?.name || sub.name,
+  getValue2: (sub: SubscribeLookup) => sub.user?.mail || '',
   getKey: (sub: SubscribeLookup) => sub.userId || '',
 }
 
@@ -109,7 +109,7 @@ export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
       label: 'Fournisseur',
       visible: true,
       queryKey: 'providerId',
-      getValue: ({ provider }) => provider?.name,
+      getValue: (art) => art?.provider?.name || art?.providerSub?.name,
       cellWidth: 70,
       format: 'select',
       selectOption: selectOptionUser,

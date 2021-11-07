@@ -41,7 +41,7 @@ export interface ISubscribe extends SubscribeBase {
 
 export interface SubscribeLookup extends ISubscribe {
   troc: Troc
-  user: User
+  user?: User
 }
 
 /** Résumé des interactions d'un utilisateur avec un troc */

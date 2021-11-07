@@ -1,3 +1,4 @@
+import type { ISubscribe } from './subscribe'
 import { User } from './user'
 
 export declare interface ArticleCreate {
@@ -19,6 +20,7 @@ export declare interface Article extends ArticleCreate {
   _id: string
   createdAt: Date
   updatedAt: Date
+
   /**
    * Frais prise par l'organisation sur l'article lors de sa validation.
    * Elle est calculé sur le prix en fonction du tarif décidé pour le fournisseur.
@@ -64,6 +66,7 @@ export declare interface Article extends ArticleCreate {
 
 export declare interface ArticleLookup extends Article {
   provider?: User
+  providerSub?: ISubscribe
   buyer?: User
   validator?: User
   seller?: User
