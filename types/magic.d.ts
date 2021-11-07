@@ -19,6 +19,8 @@ export interface SelectOption {
   path: string
   /** Parametre de recherche (query) */
   searchKey: string
+  /** Paramètres ajouté aux requète de recherche */
+  queryParams?: object
   /** Affichage de la propriété principal ('name' par défaut  ) */
   getValue?: (item: any) => string
   /** Affichage d'une propriété secondaire */

@@ -14,7 +14,7 @@
   import ArticleDetailDialog from '$lib/article/DetailDialog.svelte'
 
   let searchValue = ''
-  let fields = getFieldsLookup()
+  let fields = getFieldsLookup($params.trocId)
   let articleSelected: ArticleLookup | undefined = undefined
   let detailDialogActive = false
 

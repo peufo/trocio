@@ -91,28 +91,33 @@ export function getFields(): FieldInteface<Article>[] {
   ]
 }
 
-const selectOptionUser: SelectOption = {
-  path: 'subscribes',
-  searchKey: 'q',
-  getValue: (sub: SubscribeLookup) => sub.user?.name || sub.name,
-  getValue2: (sub: SubscribeLookup) => sub.user?.mail || '',
-  getKey: (sub: SubscribeLookup) => sub.userId || '',
+function selectOptionUser(trocId: string): SelectOption {
+  return {
+    path: 'subscribes',
+    searchKey: 'q',
+    queryParams: { trocId },
+    getValue: (sub: SubscribeLookup) => sub.user?.name || sub.name,
+    getValue2: (sub: SubscribeLookup) => sub.user?.mail || '',
+    getKey: (sub: SubscribeLookup) => sub._id || '',
+  }
 }
 
 /**
  * Retourne les champs complet
  */
-export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
+export function getFieldsLookup(
+  trocId: string
+): FieldInteface<Article & ArticleLookup>[] {
   return [
     ...getFields(),
     {
       label: 'Fournisseur',
       visible: true,
-      queryKey: 'providerId',
+      queryKey: 'providerSubId',
       getValue: (art) => art?.provider?.name || art?.providerSub?.name,
       cellWidth: 70,
       format: 'select',
-      selectOption: selectOptionUser,
+      selectOption: selectOptionUser(trocId),
     },
     {
       label: 'Validateur',
@@ -121,7 +126,7 @@ export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
       format: 'select',
       getValue: ({ validator }) => validator?.name,
       cellWidth: 50,
-      selectOption: selectOptionUser,
+      selectOption: selectOptionUser(trocId),
     },
     {
       label: 'Caissier',
@@ -130,7 +135,7 @@ export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
       format: 'select',
       getValue: ({ seller }) => seller?.name,
       cellWidth: 50,
-      selectOption: selectOptionUser,
+      selectOption: selectOptionUser(trocId),
     },
     {
       label: 'Client',
@@ -139,7 +144,7 @@ export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
       format: 'select',
       getValue: ({ buyer }) => buyer?.name,
       cellWidth: 50,
-      selectOption: selectOptionUser,
+      selectOption: selectOptionUser(trocId),
     },
   ]
 }
