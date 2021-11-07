@@ -7,10 +7,10 @@ import {
   editName,
   editPrice,
   validArticles,
+  cancelEvent,
   editArticle,
   goBackArticle,
   patchArticle,
-  acceptNewPriceRequest,
 } from '../controllers/article_set'
 import { getArticles } from '../controllers/article_get'
 import { checkLogin } from '../controllers/user_utils'
@@ -22,6 +22,7 @@ router
   .post('/edit-name', editName)
   .post('/edit-price', editPrice)
   .post('/valid', validArticles)
+  .post('/cancel-event', cancelEvent)
   // TODO: a revoir
   .patch('/', checkLogin, patchArticle)
   .post('/edit', checkLogin, editArticle)

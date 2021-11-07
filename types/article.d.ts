@@ -71,3 +71,5 @@ export declare interface ArticleLookup extends Article {
   validator?: User
   seller?: User
 }
+
+export type EventName = 'valided' | 'refused' | 'sold' | 'recover'

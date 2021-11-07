@@ -5,7 +5,7 @@
    */
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import { List, ListItem, Icon } from 'svelte-materialify'
+  import { List, ListItem } from 'svelte-materialify'
 
   import { renderAmount } from '$lib/utils'
 

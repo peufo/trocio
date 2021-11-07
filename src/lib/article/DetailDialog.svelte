@@ -3,7 +3,8 @@
 
   import { Dialog, Divider, Button } from 'svelte-materialify'
 
-  import type { ArticleLookup } from 'types'
+  import type { ArticleLookup, EventName } from 'types'
+
   import { getStatut } from '$lib/utils'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { api } from '$lib/api'
@@ -11,6 +12,7 @@
 
   export let active = false
   export let article: ArticleLookup | undefined
+  export let modeAdmin = false
 
   const queryClient = useQueryClient()
 
@@ -41,10 +43,10 @@
   )
 
   const queryEditName = useMutation(
-    (data: { articleId: string; newName: string }) =>
+    (newName: string) =>
       api('/api/articles/edit-name', {
         method: 'post',
-        data,
+        data: { articleId: article?._id, newName },
         success: 'Nom modifé',
       }),
     {
@@ -57,10 +59,10 @@
   )
 
   const queryEditPrice = useMutation(
-    (data: { articleId: string; newPrice: string }) =>
+    (newPrice: string) =>
       api('/api/articles/edit-price', {
         method: 'post',
-        data,
+        data: { articleId: article?._id, newPrice },
         success: 'Prix mis à jour',
       }),
     {
@@ -72,16 +74,34 @@
     }
   )
 
+  const queryCancelEvent = useMutation(
+    (eventName: EventName) =>
+      api<{ articleId: string; eventName: EventName }, ArticleLookup>(
+        '/api/articles/cancel-event',
+        {
+          method: 'post',
+          data: { eventName, articleId: article?._id },
+          success: 'Evenement de caisse annulé',
+        }
+      ),
+    {
+      onSuccess: (articleUpdated) => {
+        article = articleUpdated
+        queryClient.invalidateQueries('articles')
+      },
+    }
+  )
+
   function handleEditName() {
     const newName = prompt('Nouveau nom', article?.name)
     if (!newName || !article) return
-    $queryEditName.mutate({ articleId: article._id, newName })
+    $queryEditName.mutate(newName)
   }
 
   function handleEditPrice() {
     const newPrice = prompt('Nouveau prix', String(article?.price))
     if (!newPrice || !article) return
-    $queryEditPrice.mutate({ articleId: article._id, newPrice })
+    $queryEditPrice.mutate(newPrice)
   }
 </script>
 
@@ -98,11 +118,22 @@
       </div>
     </div>
 
-    <div>
-      Proposé {intl.format(new Date(article.createdAt))}
-      par {article.provider?.name}
-      pour {renderAmount(article.price)}
-    </div>
+    <p>
+      Proposé le {intl.format(new Date(article.createdAt))}
+      par <b>{article.provider?.name || article.providerSub?.name}</b>
+      pour <b>{renderAmount(article.price)}</b>
+    </p>
+    {#if article.valided}
+      <p>
+        Validé le {intl.format(new Date(article.valided))}
+        par {article.validator?.name}
+      </p>
+    {:else if article.refused}
+      <p>
+        Refusé le {intl.format(new Date(article.refused))}
+        par {article.validator?.name}
+      </p>
+    {/if}
 
     <Divider />
 
@@ -113,17 +144,58 @@
         </Button>
       </div>
     {:else}
-      <div class="d-flex">
-        <Button
-          text
-          class="red-text mr-2"
-          on:click={() =>
-            $queryDelete.mutate({ articleId: article?._id || '' })}
-        >
-          Supprimer
-        </Button>
+      <div class="d-flex flex-wrap">
+        {#if !article.valided && !article.refused}
+          <Button
+            text
+            class="red-text mr-2"
+            on:click={() =>
+              confirm('Etes vous sur ?') &&
+              $queryDelete.mutate({ articleId: article?._id || '' })}
+          >
+            Supprimer
+          </Button>
+        {/if}
         <Button text on:click={handleEditName}>Modifier le nom</Button>
         <Button text on:click={handleEditPrice}>Modifier le prix</Button>
+
+        {#if modeAdmin}
+          {#if $queryCancelEvent.isLoading}
+            <Button disabled text><Loader /></Button>
+          {:else if article.sold}
+            <Button
+              text
+              class="red-text"
+              on:click={() => $queryCancelEvent.mutate('sold')}
+            >
+              Annuler la vente
+            </Button>
+          {:else if article.recover}
+            <Button
+              text
+              class="red-text"
+              on:click={() => $queryCancelEvent.mutate('recover')}
+            >
+              Annuler la récupération
+            </Button>
+          {:else if article.valided}
+            <Button
+              text
+              class="red-text"
+              on:click={() => $queryCancelEvent.mutate('valided')}
+            >
+              Annuler la validation
+            </Button>
+          {:else if article.refused}
+            <Button
+              text
+              class="red-text"
+              on:click={() => $queryCancelEvent.mutate('refused')}
+            >
+              Annuler le refus
+            </Button>
+          {/if}
+        {/if}
       </div>
     {/if}
   </Dialog>

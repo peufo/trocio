@@ -6,7 +6,7 @@ import { getRoles } from './article_utils'
 import { findSpec, getTarif, getFee, getMargin } from './troc_utils'
 import { RequestHandler, Request } from 'express'
 import { getRole } from './subscribe_util'
-import type { ArticleCreate } from '../../types'
+import type { ArticleCreate, EventName } from '../../types'
 import Subscribe from '../models/subscribe'
 
 function ensureArray<T extends any | any[]>(value: T | T[]): T[] {
@@ -188,7 +188,7 @@ export const editPrice: RequestHandler<
 
 export const validArticles: RequestHandler = async (req, res, next) => {
   try {
-    let { articles, subscribe } = await ensureCanEdit(req)
+    let { articles, subscribe, isArray } = await ensureCanEdit(req)
     const { valided } = req.body
 
     const now = new Date()
@@ -208,29 +208,90 @@ export const validArticles: RequestHandler = async (req, res, next) => {
       })
     )
 
-    res.json(articles)
+    res.json(isArray ? articles : articles[0])
   } catch (error) {
     next(error)
   }
 }
 
+export const cancelEvent: RequestHandler<any, any, { eventName: EventName }> =
+  async (req, res, next) => {
+    try {
+      // TODO: create an historic
+      let { articles, isArray } = await ensureCanEdit(req)
+      const { eventName } = req.body
+
+      articles = await Promise.all(
+        articles.map((article) => {
+          if (
+            (eventName === 'refused' || eventName === 'valided') &&
+            (article.sold || article.recover)
+          )
+            throw `Refused or valided events can't be canceled if article is already sold or recover `
+
+          switch (eventName) {
+            case 'refused':
+            case 'valided':
+              article.refused = undefined
+              article.valided = undefined
+              article.validatorId = undefined
+              article.validatorSubId = undefined
+              break
+            case 'sold':
+            case 'recover':
+              article.sold = undefined
+              article.recover = undefined
+              article.sellerId = undefined
+              article.sellerSubId = undefined
+              break
+            default:
+              throw `eventName ${eventName} unknow`
+          }
+
+          return article.save()
+        })
+      )
+
+      res.json(isArray ? articles : articles[0])
+    } catch (error) {
+      next(error)
+    }
+  }
+
 /**
  * Garantie que l'utilisateur connecté peut gerer la liste d'articles
+ * Parse le articlesId ou articleId
  */
 async function ensureCanEdit(req: Request) {
   try {
     if (!req.session.user) throw 'Login required'
-    const { articlesId } = req.body
-    if (!Array.isArray(articlesId))
-      throw 'articlesId string array is required in body'
-    if (articlesId.length > 1000)
-      throw `articlesId array can't containt more of 1000 items`
+    const { articleId, articlesId } = req.body
+    if (!articleId && !articlesId) throw 'articleId or articlesId is required'
 
-    let articles = await Article.find({ _id: { $in: articlesId } }).exec()
+    const isArray = !!articlesId
 
-    // Assure que tout les articles viennent du même troc
-    if (articles.map((art) => art.trocId.valueOf()).filter(beUnique).length > 1)
-      throw 'All article need to come from the same troc'
+    if (isArray) {
+      if (!Array.isArray(articlesId))
+        throw 'articlesId string array is required in body'
+      if (articlesId.length > 1000)
+        throw `articlesId array can't containt more of 1000 items`
+    }
+
+    let articles = isArray
+      ? await Article.find({ _id: { $in: articlesId } }).exec()
+      : await Article.find({ _id: articleId }).exec()
+
+    if (isArray) {
+      // Assure que tout les articles viennent du même troc
+      if (articles.map((a) => a.trocId.valueOf()).filter(beUnique).length > 1)
+        throw 'All article need to come from the same troc'
+
+      // Assure que tout les articles viennent du même fournisseur
+      if (
+        articles.map((a) => a.providerId.valueOf()).filter(beUnique).length > 1
+      )
+        throw 'All article need to come from the same provider'
+    }
 
     // Assure que l'utilisateur connecté à le droit de validé les articles
     const subscribe = await Subscribe.findOne({
@@ -240,13 +301,13 @@ async function ensureCanEdit(req: Request) {
     if (subscribe.role !== 'admin' && subscribe.role !== 'cashier')
       throw 'Not allowed'
 
-    return { articles, subscribe }
+    return { articles, subscribe, isArray }
   } catch (error) {
     throw error
   }
 }
 
-// TODO: A REVOIRE à partir d'ici
+// TODO: A REVOIR à partir d'ici
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------

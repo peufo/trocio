@@ -37,6 +37,7 @@
 <ArticleDetailDialog
   bind:active={detailDialogActive}
   article={articleSelected}
+  modeAdmin
 />
 
 <div class="container">
