@@ -5,7 +5,7 @@
   import { faUserAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { api } from '$lib/api'
-  import { Button, Tabs, Tab, TabContent } from 'svelte-materialify'
+  import { Button, Tabs, Tab } from 'svelte-materialify'
   import IconLink from '$lib/util/IconLink.svelte'
   import { troc } from '$lib/troc/store'
   import { layout } from '$lib/store/layout'
@@ -15,8 +15,8 @@
   import Buy from '$lib/cash/Buy.svelte'
   import UserResum from '$lib/troc/UserResum.svelte'
   import { useMutation } from '@sveltestack/svelte-query'
-  import type { ISubscribe, RoleEnum } from 'types'
-  import { subscribe } from 'svelte/internal'
+  import type { ISubscribe } from 'types'
+  import Loader from '$lib/util/Loader.svelte'
 
   let clientSelector: MagicSelect
   const clientKey = 'client_subscribe_id'
@@ -131,15 +131,21 @@
     </div>
 
     <div class="ml-4 mt-2">
-      <Button
-        depressed
-        style="height: 40px;"
-        on:click={() =>
-          $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
-      >
-        <IconLink icon={faUserPlus} opacity class="mr-2" size="1.2em" />
-        Nouveau client
-      </Button>
+      {#if $createSubscribeAnonym.isLoading}
+        <Button depressed disabled style="height: 40px;">
+          <Loader />
+        </Button>
+      {:else}
+        <Button
+          depressed
+          style="height: 40px;"
+          on:click={() =>
+            $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
+        >
+          <IconLink icon={faUserPlus} opacity class="mr-2" size="1.2em" />
+          Nouveau client
+        </Button>
+      {/if}
     </div>
   </div>
   {#if $params[clientKey]}
@@ -158,7 +164,7 @@
       </Tabs>
 
       {#each TABS as { component }, index}
-        {#if index == $params[tabIndexKey]}
+        {#if index == ($params[tabIndexKey] || 3)}
           <div in:fade|locale class="pl-4 pr-4">
             <svelte:component
               this={component}

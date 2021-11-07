@@ -80,7 +80,11 @@ export async function loginWithGoogle(req, res, next) {
                 name,
                 mail: email,
                 mailvalided: email_verified,
-                password: randomize('0', 8),
+                password: [
+                  randomize('0000'),
+                  randomize('0000'),
+                  randomize('0000'),
+                ].join('-'),
               })
               await user.save()
               mail

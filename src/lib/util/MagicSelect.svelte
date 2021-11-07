@@ -150,7 +150,7 @@
           </ListItem>
         {:else}
           <ListItem disabled>
-            Aucun résultat pour <b>{searchValue}</b>
+            Aucun résultat{#if searchValue} pour <b>{searchValue}</b>{/if}
           </ListItem>
         {/each}
       {/if}
@@ -176,7 +176,7 @@
             </ListItem>
           {:else}
             <ListItem disabled>
-              Aucun résultat pour <b>{searchValue}</b>
+              Aucun résultat{#if searchValue} pour <b>{searchValue}</b>{/if}
             </ListItem>
           {/each}
         {/if}

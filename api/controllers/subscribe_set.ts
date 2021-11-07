@@ -50,7 +50,11 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
           $exists: { userId: 0 },
         })
         newSubscribe.name = `Client n°${anonymSubCount + 1}`
-        newSubscribe.recoverKey = new Array(3).fill(randomize('0000')).join('-')
+        newSubscribe.recoverKey = [
+          randomize('0000'),
+          randomize('0000'),
+          randomize('0000'),
+        ].join('-')
       }
     } else {
       // Création d'un sub sur son propre compte

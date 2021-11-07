@@ -11,12 +11,7 @@ import {
   patchArticle,
   acceptNewPriceRequest,
 } from '../controllers/article_set'
-import {
-  getArticles,
-  getProvidedArticles,
-  getPurchasesArticles,
-  getGivbacksArticles,
-} from '../controllers/article_get'
+import { getArticles } from '../controllers/article_get'
 import { checkLogin } from '../controllers/user_utils'
 
 router
@@ -29,9 +24,5 @@ router
   .patch('/', checkLogin, patchArticle)
   .post('/edit', checkLogin, editArticle)
   .post('/giveback', checkLogin, goBackArticle)
-  // .post('/acceptnewprice', checkLogin, acceptNewPriceRequest)
-  .get('/provided', getProvidedArticles)
-  .get('/purschases', getPurchasesArticles)
-  .get('/givebacks', getGivbacksArticles)
 
 export default router
