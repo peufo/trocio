@@ -4,7 +4,7 @@ import Troc from '../models/troc'
 
 import { getRoles } from './article_utils'
 import { findSpec, getTarif, getFee, getMargin } from './troc_utils'
-import { RequestHandler } from 'express'
+import { RequestHandler, Request } from 'express'
 import { getRole } from './subscribe_util'
 import type { ArticleCreate } from '../../types'
 import Subscribe from '../models/subscribe'
@@ -186,11 +186,72 @@ export const editPrice: RequestHandler<
   }
 }
 
+export const validArticles: RequestHandler = async (req, res, next) => {
+  try {
+    let { articles, subscribe } = await ensureCanEdit(req)
+    const { valided } = req.body
+
+    const now = new Date()
+    const tarif = await getTarif(articles[0].providerSubId)
+
+    articles = await Promise.all(
+      articles.map((article) => {
+        if (valided) {
+          article.valided = now
+          article.fee = getFee(article, tarif)
+        } else {
+          article.refused = now
+        }
+        article.validatorId = req.session.user._id
+        article.validatorSubId = subscribe._id
+        return article.save()
+      })
+    )
+
+    res.json(articles)
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Garantie que l'utilisateur connecté peut gerer la liste d'articles
+ */
+async function ensureCanEdit(req: Request) {
+  try {
+    if (!req.session.user) throw 'Login required'
+    const { articlesId } = req.body
+    if (!Array.isArray(articlesId))
+      throw 'articlesId string array is required in body'
+    if (articlesId.length > 1000)
+      throw `articlesId array can't containt more of 1000 items`
+
+    let articles = await Article.find({ _id: { $in: articlesId } }).exec()
+
+    // Assure que tout les articles viennent du même troc
+    if (articles.map((art) => art.trocId.valueOf()).filter(beUnique).length > 1)
+      throw 'All article need to come from the same troc'
+
+    // Assure que l'utilisateur connecté à le droit de validé les articles
+    const subscribe = await Subscribe.findOne({
+      trocId: articles[0].trocId,
+      userId: req.session.user._id,
+    }).exec()
+    if (subscribe.role !== 'admin' && subscribe.role !== 'cashier')
+      throw 'Not allowed'
+
+    return { articles, subscribe }
+  } catch (error) {
+    throw error
+  }
+}
+
 // TODO: A REVOIRE à partir d'ici
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 
+/** @deprecated */
 export const goBackArticle: RequestHandler = async (req, res, next) => {
   const errors = []
   const ids = req.body.map((a) => a._id)
@@ -237,6 +298,7 @@ export function acceptNewPriceRequest(req, res, next) {
   })
 }
 
+/** @deprecated */
 export function patchArticle(req, res, next) {
   let patchedArticles = req.body
   if (!Array.isArray(req.body)) patchedArticles = [patchedArticles]
@@ -375,6 +437,7 @@ export function patchArticle(req, res, next) {
 }
 
 //TODO: for replace patch article ?
+/** @deprecated */
 export async function editArticle(req, res, next) {
   try {
     let { edits, article } = req.body
@@ -421,12 +484,6 @@ export async function editArticle(req, res, next) {
   }
 }
 
-export default {
-  createArticle,
-  editArticle,
-  deleteArticle,
-  goBackArticle,
-  editPrice,
-  acceptNewPriceRequest,
-  patchArticle,
+function beUnique(elem: any, index: number, self: any[]) {
+  return self.indexOf(elem) === index
 }

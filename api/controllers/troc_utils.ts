@@ -41,11 +41,16 @@ export async function populateTrocUser(trocId: string) {
     .exec()
 }
 
-export async function getTarif(subscribeId: string): Promise<Tarif> {
+export async function getTarif(
+  subscribeId: string | typeof ObjectId
+): Promise<Tarif> {
   const aggregate = Subscribe.aggregate()
-  aggregate.match({
-    _id: new ObjectId(subscribeId),
-  })
+  const match =
+    typeof subscribeId === 'string'
+      ? { _id: new ObjectId(subscribeId) }
+      : { _id: subscribeId }
+
+  aggregate.match(match)
   lookupTarif(aggregate)
   const subscribes = await aggregate.exec()
   return subscribes[0].tarif

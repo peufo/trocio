@@ -6,6 +6,7 @@ import {
   deleteArticle,
   editName,
   editPrice,
+  validArticles,
   editArticle,
   goBackArticle,
   patchArticle,
@@ -20,6 +21,7 @@ router
   .delete('/', deleteArticle)
   .post('/edit-name', editName)
   .post('/edit-price', editPrice)
+  .post('/valid', validArticles)
   // TODO: a revoir
   .patch('/', checkLogin, patchArticle)
   .post('/edit', checkLogin, editArticle)

@@ -10,11 +10,34 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import notify from '$lib/notify'
   import Loader from '$lib/util/Loader.svelte'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   export let subscribeId: string
   let magicSelect: MagicSelect
   let pendingArticles: Article[] = []
   let selectAllPromise: Promise<void>
+  const queryClient = useQueryClient()
+
+  const queryValid = useMutation(
+    (valided: boolean) =>
+      api<{ articlesId: string[]; valided: boolean }, Article[]>(
+        '/api/articles/valid',
+        {
+          method: 'post',
+          data: { articlesId: pendingArticles.map((art) => art._id), valided },
+          success: `${pendingArticles.length} articles ${
+            valided ? 'validés' : 'refusés'
+          }`,
+        }
+      ),
+    {
+      onSuccess: () => {
+        pendingArticles = []
+        queryClient.invalidateQueries('articles')
+        queryClient.invalidateQueries('subscribes/resum')
+      },
+    }
+  )
 
   function handleSelectAll() {
     return api<Article[]>('/api/articles', {
@@ -25,6 +48,8 @@
       },
     }).then((articles) => {
       pendingArticles = articles
+      if (!articles.length)
+        notify.warning(`Le client n'a pas d'article proposé`)
       if (articles.length === 1000)
         notify.warning('Seul 1000 article peuvent être sélectionés')
     })
@@ -57,7 +82,11 @@
         path="articles"
         searchKey="q"
         placeholder="Articles proposés"
-        queryParams={{ exact_providerSubId: subscribeId, limit: 10 }}
+        queryParams={{
+          exact_providerSubId: subscribeId,
+          exact_statut: 'proposed',
+          limit: 10,
+        }}
         getValue={(art) => `${art.ref} - ${art.name}`}
         getValue2={(art) => renderAmount(art.price, $troc.currency)}
         exepted={pendingArticles.map((art) => art._id)}
@@ -83,8 +112,24 @@
 
     {#if pendingArticles.length}
       <div in:fade|locale>
-        <Button class="red white-text mt-1">Refuser</Button>
-        <Button class="primary-color mt-1">Valider la sélection</Button>
+        {#if $queryValid.isLoading}
+          <Button disabled><Loader /></Button>
+        {:else}
+          <Button
+            text
+            class="red-text mt-1"
+            on:click={() =>
+              confirm('Etes-vous sur ?') && $queryValid.mutate(false)}
+          >
+            Refuser
+          </Button>
+          <Button
+            class="primary-color mt-1"
+            on:click={() => $queryValid.mutate(true)}
+          >
+            Valider la sélection
+          </Button>
+        {/if}
       </div>
     {/if}
   </div>
@@ -98,7 +143,9 @@
             style="min-width: 200px; max-width: calc(50% - 8px);"
           >
             <div class="flex-grow-1">
-              <span class="text-subtitle-2">{article.name}</span>
+              <span class="text-subtitle-2">
+                {article.ref} - {article.name}
+              </span>
               <br />
               <div class="text-right">
                 <b class="text-caption" style="line-height: 1;">
