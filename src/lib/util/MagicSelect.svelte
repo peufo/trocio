@@ -6,7 +6,7 @@
 
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import Loader from '$lib/util/Loader.svelte'
-  import { useApi } from '$lib/api'
+  import { useInfinitApi } from '$lib/api'
 
   export let label = ''
   export let inputElement: HTMLInputElement | undefined = undefined
@@ -61,11 +61,11 @@
   }
 
   // $: searchValue = $params[searchKey] || '' // <-- Communication par $params, inutil...
-  $: querySearch = useApi<any, any[]>([
+  $: querySearch = useInfinitApi<any, any[]>([
     path,
     { [searchKey]: searchValue, ...queryParams },
   ])
-  $: items = $querySearch.data ? $querySearch.data.flat() : []
+  $: items = $querySearch.data ? $querySearch.data.pages.flat() : []
   $: itemsFiltred = items.filter((item) => !exepted.includes(getKey(item)))
 
   function handleSelect(item: any) {
@@ -132,29 +132,41 @@
     {label}
   </SearchTextField>
   {#if flatMode}
-    <List dense>
-      {#if $querySearch.isLoading}
-        <ListItem disabled><Loader /></ListItem>
-      {:else if $querySearch.isError}
-        <ListItem disabled>Oups, un problème est survenu</ListItem>
-      {:else}
-        {#each itemsFiltred as item, index}
-          <ListItem
-            active={selectedIndex === index}
-            on:click={() => handleSelect(item)}
-          >
-            {getValue(item)}
-            <span slot="subtitle">
-              {#if getValue2}{getValue2(item)}{/if}
-            </span>
-          </ListItem>
+    <div class="elevation-1 rounded">
+      <List dense>
+        {#if $querySearch.isLoading}
+          <ListItem disabled><Loader /></ListItem>
+        {:else if $querySearch.isError}
+          <ListItem disabled>Oups, un problème est survenu</ListItem>
         {:else}
-          <ListItem disabled>
-            Aucun résultat{#if searchValue} pour <b>{searchValue}</b>{/if}
-          </ListItem>
-        {/each}
-      {/if}
-    </List>
+          {#each itemsFiltred as item, index}
+            <ListItem
+              active={isFocus && selectedIndex === index}
+              on:click={() => handleSelect(item)}
+            >
+              {getValue(item)}
+              <span slot="subtitle">
+                {#if getValue2}{getValue2(item)}{/if}
+              </span>
+            </ListItem>
+          {:else}
+            <ListItem disabled>
+              Aucun résultat{#if searchValue} pour <b>{searchValue}</b>{/if}
+            </ListItem>
+          {/each}
+
+          {#if $querySearch.hasNextPage && !$querySearch.isFetchingNextPage}
+            <ListItem on:click={() => $querySearch.fetchNextPage()}>
+              Afficher plus
+            </ListItem>
+          {:else if $querySearch.isFetchingNextPage}
+            <ListItem disabled>
+              <Loader />
+            </ListItem>
+          {/if}
+        {/if}
+      </List>
+    </div>
   {:else if isFocus}
     <div class="items elevation-5 rounded" in:fly|local={{ y: 50 }}>
       <List dense>

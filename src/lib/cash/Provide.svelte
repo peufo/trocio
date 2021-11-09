@@ -39,20 +39,18 @@
     }
   )
 
-  function handleSelectAll() {
-    return api<Article[]>('/api/articles', {
+  async function handleSelectAll() {
+    const articles = await api<Article[]>('/api/articles', {
       params: {
         exact_providerSubId: subscribeId,
         exact_statut: 'proposed',
         limit: 1000,
       },
-    }).then((articles) => {
-      pendingArticles = articles
-      if (!articles.length)
-        notify.warning(`Le client n'a pas d'article proposé`)
-      if (articles.length === 1000)
-        notify.warning('Seul 1000 article peuvent être sélectionés')
     })
+    pendingArticles = articles
+    if (!articles.length) notify.warning(`Le client n'a pas d'article proposé`)
+    if (articles.length === 1000)
+      notify.warning('Seul 1000 article peuvent être sélectionés')
   }
 
   function handleSelect(event: { detail: Article }) {
@@ -75,10 +73,12 @@
 </script>
 
 <div class="pa-4">
-  <div class="d-flex flex-wrap">
-    <div class="flex-grow-1 mr-4" style="max-width: 320px;">
+  <div class="d-flex">
+    <!-- Selecteur -->
+    <div class="flex-grow-1 mr-4" style="min-width: 260px; max-width: 320px;">
       <MagicSelect
         bind:this={magicSelect}
+        flatMode
         path="articles"
         searchKey="q"
         placeholder="Articles proposés"
@@ -94,81 +94,88 @@
       />
     </div>
 
-    {#await selectAllPromise}
-      <Button disabled class="mt-1" style="width: 190px;">
-        <Loader />
-      </Button>
-    {:then}
-      <Button
-        class="mt-1"
-        depressed
-        on:click={() => (selectAllPromise = handleSelectAll())}
-      >
-        Tout sélectionner
-      </Button>
-    {/await}
-
-    <div class="flex-grow-1" />
-
-    {#if pendingArticles.length}
-      <div in:fade|locale>
-        {#if $queryValid.isLoading}
-          <Button disabled><Loader /></Button>
-        {:else}
-          <Button
-            text
-            class="red-text mt-1"
-            on:click={() =>
-              confirm('Etes-vous sur ?') && $queryValid.mutate(false)}
-          >
-            Refuser
+    <!-- Selection -->
+    <div class="flex-grow-1">
+      <!-- Selection actions -->
+      <div class="d-flex">
+        {#await selectAllPromise}
+          <Button disabled class="mt-1" style="width: 190px;">
+            <Loader />
           </Button>
+        {:then}
           <Button
-            class="primary-color mt-1"
-            on:click={() => $queryValid.mutate(true)}
+            class="mt-1 ml-1"
+            depressed
+            on:click={() => (selectAllPromise = handleSelectAll())}
           >
-            Valider la sélection
+            Tout sélectionner
           </Button>
+        {/await}
+
+        <div class="flex-grow-1" />
+
+        {#if pendingArticles.length}
+          <div in:fade|locale>
+            {#if $queryValid.isLoading}
+              <Button disabled><Loader /></Button>
+            {:else}
+              <Button
+                text
+                class="red-text mt-1"
+                on:click={() =>
+                  confirm('Etes-vous sur ?') && $queryValid.mutate(false)}
+              >
+                Refuser
+              </Button>
+              <Button
+                class="primary-color mt-1"
+                on:click={() => $queryValid.mutate(true)}
+              >
+                Valider la sélection
+              </Button>
+            {/if}
+          </div>
         {/if}
       </div>
-    {/if}
-  </div>
 
-  <div class="mt-4">
-    {#if pendingArticles.length}
-      <div in:fade|local class="d-flex flex-wrap">
-        {#each pendingArticles as article, index}
-          <div
-            class="d-flex simple-card pl-2 pr-2 pt-1 pb-1 ma-1"
-            style="min-width: 200px; max-width: calc(50% - 8px);"
-          >
-            <div class="flex-grow-1">
-              <span class="text-subtitle-2">
-                {article.ref} - {article.name}
-              </span>
-              <br />
-              <div class="text-right">
-                <b class="text-caption" style="line-height: 1;">
-                  {renderAmount(article.price, $troc.currency)}
-                </b>
+      <!-- Basket -->
+      <div class="mt-2">
+        {#if pendingArticles.length}
+          <div in:fade|local class="d-flex flex-wrap">
+            {#each pendingArticles as article, index}
+              <div
+                class="d-flex simple-card pl-2 pr-2 pt-1 pb-1 ma-1"
+                style="min-width: 200px; max-width: calc(50% - 8px);"
+              >
+                <div class="flex-grow-1">
+                  <span class="text-subtitle-2">
+                    {article.ref} - {article.name}
+                  </span>
+                  <br />
+                  <div class="text-right">
+                    <b class="text-caption" style="line-height: 1;">
+                      {renderAmount(article.price, $troc.currency)}
+                    </b>
+                  </div>
+                </div>
+                <div class="ml-3 mt-1">
+                  <IconLink
+                    icon={faTimes}
+                    clickable
+                    opacity
+                    on:click={() => handleRemove(index)}
+                  />
+                </div>
               </div>
-            </div>
-            <div class="ml-3 mt-1">
-              <IconLink
-                icon={faTimes}
-                clickable
-                opacity
-                on:click={() => handleRemove(index)}
-              />
-            </div>
+            {/each}
           </div>
-        {/each}
+        {:else}
+          <div class="text-center pa-16 text-caption">
+            Sélectionner des articles proposés par le client pour les valider ou
+            les refuser.
+          </div>
+        {/if}
       </div>
-    {:else}
-      <div class="text-center pa-16 text-caption">
-        Sélectionner des articles proposés par le client pour les valider ou les
-        refuser.
-      </div>
-    {/if}
+    </div>
   </div>
 </div>
