@@ -5,14 +5,20 @@
     faCashRegister,
     faShoppingCart,
     faTruck,
+    faUser,
   } from '@fortawesome/free-solid-svg-icons'
 
-  import type { TrocStats, PaymentInterface, Article } from 'types'
+  import type {
+    TrocStats,
+    PaymentInterface,
+    Article,
+    SubscribeLookup,
+  } from 'types'
   import type { TrocStatsFormatted } from './formatStats'
   import { getTrocStats } from '$lib/troc/api'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import { troc } from '$lib/troc/store'
-  import UserSelect from '$lib/user/Select.svelte'
+  import MagicSelect from '$lib/util/MagicSelect.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import PlotStock from './PlotStock.svelte'
@@ -69,7 +75,19 @@
   <h6 class="mb-5">Statistique du troc</h6>
   <div class="d-flex">
     <Radio bind:group={selectedView} value="user">
-      <UserSelect modeSelect on:select={selectUser} bind:search={searchUser} />
+      <MagicSelect
+        modeSelect
+        on:select={selectUser}
+        bind:search={searchUser}
+        path="/subscribes"
+        searchKey="q"
+        queryParams={{ exact_trocId: $troc._id }}
+        getValue={(sub) => sub.user?.name || sub.name}
+        getValue2={(sub) => sub.user?.mail || ''}
+        getKey={(sub) => sub._id || ''}
+        solo
+        icon={faUser}
+      />
     </Radio>
     <div style="width: 36px;" />
     <Radio bind:group={selectedView} value="global">

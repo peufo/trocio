@@ -16,7 +16,7 @@
     RoleEnum,
     ParamsSubscribeAPI,
     ISubscribe,
-    SubscribeBaseWithUser,
+    SubscribeLookup,
   } from 'types'
   import { useInfinitApi } from '$lib/api'
   import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
@@ -149,10 +149,10 @@
   const magicSelectProps = {
     path: '/subscribes',
     searchKey: 'q',
-    queryParams: { exact_trocId: $troc._id, includSGlobalUser: true },
-    getValue: (sub: SubscribeBaseWithUser) => sub.user.name,
-    getValue2: (sub: SubscribeBaseWithUser) => sub.user.mail,
-    getKey: (sub: SubscribeBaseWithUser) => sub.userId || '',
+    queryParams: { exact_trocId: $troc._id },
+    getValue: (sub: SubscribeLookup) => sub.user?.name || sub.name,
+    getValue2: (sub: SubscribeLookup) => sub.user?.mail || '',
+    getKey: (sub: SubscribeLookup) => sub._id || '',
     solo: true,
     icon: faUser,
   }
@@ -188,15 +188,15 @@
       {#each $queryAdmins.data?.pages.flat() || [] as subscribe}
         <div on:click={(event) => handleClick(event, subscribe)}>
           <ListItem>
-            <span>{subscribe.user.name}</span>
-            <span slot="subtitle">{subscribe.user.mail}</span>
+            <span>{subscribe.user?.name || subscribe.name}</span>
+            <span slot="subtitle">{subscribe.user?.mail || ''}</span>
             <div
               slot="append"
               class="remove-icon"
               on:click|stopPropagation={() =>
                 assignRoleHandler('basic')(subscribe._id)}
             >
-              {#if subscribe.user._id != $troc.creator._id && subscribe.user._id != $user._id}
+              {#if subscribe.user?._id !== $troc.creator._id && subscribe.user?._id !== $user._id}
                 <IconLink
                   icon={$assignRole.isLoading ? faSpinner : faTimes}
                   disabled={$assignRole.isLoading}
@@ -239,8 +239,8 @@
       {#each $queryCashiers.data?.pages.flat() || [] as subscribe}
         <div on:click={(event) => handleClick(event, subscribe)}>
           <ListItem>
-            <span>{subscribe.user.name}</span>
-            <span slot="subtitle">{subscribe.user.mail}</span>
+            <span>{subscribe.user?.name || subscribe.name}</span>
+            <span slot="subtitle">{subscribe.user?.mail || ''}</span>
             <div
               class="remove-icon"
               slot="append"
@@ -297,9 +297,9 @@
               </Avatar>
             </div>
 
-            {subscribe.user.name}
+            {subscribe.user?.name || subscribe.name}
 
-            <span slot="subtitle">{subscribe.user.mail}</span>
+            <span slot="subtitle">{subscribe.user?.mail || ''}</span>
 
             <div
               class="remove-icon"
@@ -349,8 +349,8 @@
       {#each $querySubscribes.data?.pages.flat() || [] as subscribe}
         <div on:click={(event) => handleClick(event, subscribe)}>
           <ListItem>
-            {subscribe.user.name}
-            <span slot="subtitle">{subscribe.user.mail}</span>
+            {subscribe.user?.name || subscribe.name}
+            <span slot="subtitle">{subscribe.user?.mail || ''}</span>
           </ListItem>
         </div>
       {/each}

@@ -9,6 +9,7 @@
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { api } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
+  import notify from '$lib/notify'
 
   export let active = false
   export let article: ArticleLookup | undefined
@@ -126,12 +127,12 @@
     {#if article.valided}
       <p>
         Validé le {intl.format(new Date(article.valided))}
-        par {article.validator?.name}
+        par <b>{article.validator?.name}</b>
       </p>
     {:else if article.refused}
       <p>
         Refusé le {intl.format(new Date(article.refused))}
-        par {article.validator?.name}
+        par <b>{article.validator?.name}</b>
       </p>
     {/if}
 
@@ -156,8 +157,12 @@
             Supprimer
           </Button>
         {/if}
-        <Button text on:click={handleEditName}>Modifier le nom</Button>
-        <Button text on:click={handleEditPrice}>Modifier le prix</Button>
+        <Button text class="blue-text" on:click={handleEditName}>
+          Modifier le nom
+        </Button>
+        <Button text class="blue-text" on:click={handleEditPrice}>
+          Modifier le prix
+        </Button>
 
         {#if modeAdmin}
           {#if $queryCancelEvent.isLoading}
@@ -194,6 +199,13 @@
             >
               Annuler le refus
             </Button>
+          {/if}
+
+          {#if !article.valided}
+            <Button text on:click={() => notify.info('TODO')}>Valider</Button>
+          {:else if article.valided && !article.sold && !article.refused}
+            <Button text on:click={() => notify.info('TODO')}>Vendre</Button>
+            <Button text on:click={() => notify.info('TODO')}>Rendre</Button>
           {/if}
         {/if}
       </div>

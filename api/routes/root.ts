@@ -43,11 +43,15 @@ router
       })
     })
   })
-  .get('/users', (req, res, next) => {
-    User.find(req.query, (err, users) => {
-      if (err) return next(err)
+  .get('/users', async (req, res, next) => {
+    try {
+      const { limit = 100 } = req.query
+      // @ts-ignore
+      const users = await User.find(req.query).limit(limit)
       res.json(users)
-    })
+    } catch (error) {
+      next(error)
+    }
   })
   .get('/trocs', (req, res, next) => {
     Troc.find(req.query, (err, trocs) => {
