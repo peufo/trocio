@@ -6,7 +6,6 @@
   import { faPlus } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
   import 'dayjs/locale/fr'
-  import { params } from '@roxi/routify'
 
   import { renderAmount } from '$lib/utils'
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
@@ -109,7 +108,7 @@
               size="1.1em"
               class="mr-2"
             />
-            Frais
+            Tarif
           </Button>
 
           <!-- Bonton pour télécharger le fichier .csv -->

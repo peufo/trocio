@@ -132,7 +132,7 @@
     {label}
   </SearchTextField>
   {#if flatMode}
-    <div class="elevation-1 rounded">
+    <div class="elevation-1 rounded mt-1">
       <List dense>
         {#if $querySearch.isLoading}
           <ListItem disabled><Loader /></ListItem>
