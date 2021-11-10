@@ -84,7 +84,7 @@
       free
       bind:show={providedShow}
       count={resum.providedCount || 0}
-      sum={(resum.soldSum || 0) + (resum.feeSum || 0) + (resum.marginSum || 0)}
+      sum={(resum.soldSum || 0) - (resum.feeSum || 0) - (resum.marginSum || 0)}
     >
       <span slot="head">
         <!-- Provide button -->
@@ -136,7 +136,7 @@
       title="Achats"
       free
       count={resum.purchasesCount || 0}
-      sum={resum.purchasesSum || 0}
+      sum={-(resum.purchasesSum || 0)}
     >
       {#each resum.purchases || [] as article}
         <div class="d-flex">

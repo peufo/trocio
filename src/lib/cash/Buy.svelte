@@ -38,6 +38,7 @@
   bind:pendingItems
   queryParams={{ ne_exact_providerSubId: subscribeId, exact_statut: 'valided' }}
   placeholder="Articles disponibles"
+  message="Sélectionner des articles disponible pour les vendres à un client."
 >
   <div slot="actions">
     {#if $querySold.isLoading}

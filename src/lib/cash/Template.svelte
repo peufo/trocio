@@ -15,6 +15,7 @@
   export let queryParams = {}
   export let placeholder = 'Articles'
   export let canSelectAll = false
+  export let message = ''
   let magicSelect: MagicSelect
   let selectAllPromise: Promise<void>
 
@@ -131,8 +132,7 @@
           </div>
         {:else}
           <div class="text-center pa-16 text-caption">
-            Sélectionner des articles proposés par le client pour les valider ou
-            les refuser.
+            {message}
           </div>
         {/if}
       </div>

@@ -38,6 +38,7 @@
   queryParams={{ exact_providerSubId: subscribeId, exact_statut: 'proposed' }}
   placeholder="Articles proposés"
   canSelectAll
+  message="Sélectionner des articles proposés par le client pour les valider ou les refuser."
 >
   <div slot="actions">
     {#if $queryValid.isLoading}

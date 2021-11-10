@@ -33,6 +33,7 @@
   queryParams={{ exact_providerSubId: subscribeId, exact_statut: 'valided' }}
   placeholder="Articles validés"
   canSelectAll
+  message="Sélectionner des articles invendus pour les rendre au client."
 >
   <div slot="actions">
     {#if $queryRecover.isLoading}
