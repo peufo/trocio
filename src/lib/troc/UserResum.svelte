@@ -19,6 +19,8 @@
 
   export let subscribeId: string
   export let isClosed = false
+  /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
+  export let modeAdmin = false
 
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
     'subscribes/resum',
@@ -72,10 +74,15 @@
     <br />
     <div class="d-flex">
       <div class="flex-grow-1" />
-      <h6 class="mr-1">
-        Solde &nbsp;&nbsp;
-        {renderAmount(resum.balance)}
-      </h6>
+      {#if modeAdmin && resum.balance !== 0}
+        <Button class="primary-color mt-2 mr-4">Regler le solde</Button>
+        <h6>{renderAmount(resum.balance)}</h6>
+      {:else}
+        <h6 class="mr-1">
+          Solde &nbsp;&nbsp;
+          {renderAmount(resum.balance)}
+        </h6>
+      {/if}
     </div>
 
     <br />
@@ -127,7 +134,7 @@
         </span>
       </span>
 
-      <ArticleProvidedTable {subscribeId} on:openTarifDialog />
+      <ArticleProvidedTable modeAdmin {subscribeId} on:openTarifDialog />
     </DetailCard>
 
     <br />

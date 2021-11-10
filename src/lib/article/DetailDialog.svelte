@@ -87,8 +87,10 @@
       ),
     {
       onSuccess: (articleUpdated) => {
+        // TODO: lookup subscribe
         article = articleUpdated
         queryClient.invalidateQueries('articles')
+        queryClient.invalidateQueries('subscribes/resum')
       },
     }
   )

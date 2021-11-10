@@ -12,6 +12,7 @@
   import SearchTextField from '$lib/util/SearchTextField.svelte'
 
   export let subscribeId: string
+  export let modeAdmin = false
 
   let searchValue = ''
   let fields = getFields()
@@ -40,6 +41,7 @@
 <ArticleDetailDialog
   bind:active={detailDialogActive}
   article={articleSelected}
+  {modeAdmin}
 />
 
 <MagicTable

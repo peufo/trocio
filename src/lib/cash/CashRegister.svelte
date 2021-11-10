@@ -169,6 +169,7 @@
             <svelte:component
               this={component}
               subscribeId={$params[clientKey]}
+              modeAdmin
             />
           </div>
         {/if}
