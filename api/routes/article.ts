@@ -7,6 +7,7 @@ import {
   editName,
   editPrice,
   validArticles,
+  soldArticles,
   cancelEvent,
   editArticle,
   goBackArticle,
@@ -22,6 +23,7 @@ router
   .post('/edit-name', editName)
   .post('/edit-price', editPrice)
   .post('/valid', validArticles)
+  .post('/sold', soldArticles)
   .post('/cancel-event', cancelEvent)
   // TODO: a revoir
   .patch('/', checkLogin, patchArticle)

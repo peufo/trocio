@@ -15,6 +15,7 @@ export function dynamicQuery(
   const QUERY_OR_SEARCH = 'or_search_'
   const QUERY_SORT = 'sort_'
   const QUERY_EXACT = 'exact_'
+  const QUERY_NE_EXACT = 'ne_exact_'
   const QUERY_FILTER_MIN = 'min_'
   const QUERY_FILTER_MAX = 'max_'
 
@@ -45,6 +46,19 @@ export function dynamicQuery(
         })
       else
         match.$and.push({ [key.replace(QUERY_EXACT, '')]: requestQuery[key] })
+
+      // add not match exact (work with ObjectId)
+    } else if (key.startsWith(QUERY_NE_EXACT)) {
+      if (mongoose.isValidObjectId(requestQuery[key]))
+        match.$and.push({
+          [key.replace(QUERY_NE_EXACT, '')]: {
+            $ne: new ObjectId(requestQuery[key]),
+          },
+        })
+      else
+        match.$and.push({
+          [key.replace(QUERY_NE_EXACT, '')]: { $ne: requestQuery[key] },
+        })
 
       // Number and Date test
     } else if (

@@ -191,6 +191,13 @@ export const validArticles: RequestHandler = async (req, res, next) => {
     let { articles, subscribe, isArray } = await ensureCanEdit(req)
     const { valided } = req.body
 
+    if (
+      articles.filter(
+        (art) => !art.valided && !art.refused && !art.sold && !art.recover
+      ).length < articles.length
+    )
+      throw 'Articles status no permit this operation'
+
     const now = new Date()
     const tarif = await getTarif(articles[0].providerSubId)
 
@@ -204,6 +211,42 @@ export const validArticles: RequestHandler = async (req, res, next) => {
         }
         article.validatorId = req.session.user._id
         article.validatorSubId = subscribe._id
+        return article.save()
+      })
+    )
+
+    res.json(isArray ? articles : articles[0])
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const soldArticles: RequestHandler = async (req, res, next) => {
+  try {
+    let { articles, subscribe, isArray } = await ensureCanEdit(req)
+    /** Si buyerSubId est fourni il s'agit d'une vente. Sinon, il s'agit d'une récupération */
+    const { buyerSubId } = req.body
+
+    if (
+      articles.filter((art) => art.valided && !art.sold).length <
+      articles.length
+    )
+      throw 'Articles status no permit this operation'
+
+    const now = new Date()
+    const tarif = await getTarif(articles[0].providerSubId)
+
+    articles = await Promise.all(
+      articles.map((article) => {
+        if (buyerSubId) {
+          article.sold = now
+          article.buyerSubId = buyerSubId
+          article.margin = getMargin(article, tarif)
+        } else {
+          article.recover = now
+        }
+        article.sellerId = req.session.user._id
+        article.sellerSubId = subscribe._id
         return article.save()
       })
     )
