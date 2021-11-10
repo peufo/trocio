@@ -8,13 +8,16 @@
   import type { FieldInteface, EnumOption } from 'types'
 
   export let field: Partial<FieldInteface>
+  export let queryParam: { [key: string]: any } = {}
 
+  const key = `exact_${field.queryKey}`
   let queryLabel = ''
 
   onMount(() => {
     // Charge le queryLabel
-    const queryValue = $params[`exact_${field.queryKey}`]
+    const queryValue = $params[key]
     if (queryValue) {
+      queryParam[key] = queryValue
       queryLabel =
         field.enumOptions?.find((opt) => opt.queryValue === queryValue)
           ?.label || ''
@@ -23,14 +26,16 @@
 
   function handleClick(option: EnumOption) {
     if (!field.queryKey) return
-    const key = `exact_${field.queryKey}`
+    // const key = `exact_${field.queryKey}`
     const query = $params
     query[key] = option.queryValue
     if (!option.queryValue) {
       delete query[key]
       queryLabel = ''
+      queryParam = {}
     } else {
       queryLabel = option.label
+      queryParam[key] = option.queryValue
     }
     $goto($url(), query)
   }

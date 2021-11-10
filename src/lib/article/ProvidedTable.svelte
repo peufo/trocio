@@ -18,6 +18,8 @@
   let articleSelected: ArticleLookup | undefined = undefined
   let detailDialogActive = false
 
+  let queryParams = {}
+
   $: queryArticles = useInfinitApi<ParamsArticleAPI, ArticleLookup[]>([
     'articles',
     {
@@ -25,7 +27,7 @@
       include_without_name: true,
       or_search_name: searchValue,
       or_search_ref: searchValue,
-      ...$params,
+      ...queryParams,
     },
   ])
 
@@ -58,7 +60,7 @@
         />
       </th>
 
-      <MagicTableHeaders {fields} />
+      <MagicTableHeaders {fields} bind:queryParams />
     </tr>
   </thead>
   <MagicTableBody

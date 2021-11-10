@@ -19,6 +19,7 @@
   let subscribeMenu: SubscribeMenu
 
   let searchValue = ''
+  let queryParams = {}
 
   $: query = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup[]>([
     'subscribes',
@@ -26,7 +27,7 @@
       exact_trocId: $params.trocId,
       q: searchValue,
       includResum: true,
-      ...$params,
+      ...queryParams,
     },
   ])
 
@@ -180,7 +181,7 @@
           />
         </th>
 
-        <MagicTableHeaders {fields} />
+        <MagicTableHeaders {fields} bind:queryParams />
       </tr>
     </thead>
 

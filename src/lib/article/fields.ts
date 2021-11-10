@@ -122,7 +122,7 @@ export function getFieldsLookup(
     {
       label: 'Validateur',
       visible: false,
-      queryKey: 'validatorId',
+      queryKey: 'validatorSubId',
       format: 'select',
       getValue: ({ validator }) => validator?.name,
       cellWidth: 50,
@@ -131,7 +131,7 @@ export function getFieldsLookup(
     {
       label: 'Caissier',
       visible: false,
-      queryKey: 'seller',
+      queryKey: 'sellerSubId',
       format: 'select',
       getValue: ({ seller }) => seller?.name,
       cellWidth: 50,
@@ -140,7 +140,7 @@ export function getFieldsLookup(
     {
       label: 'Client',
       visible: false,
-      queryKey: 'buyerId',
+      queryKey: 'buyerSubId',
       format: 'select',
       getValue: ({ buyer }) => buyer?.name,
       cellWidth: 50,
