@@ -143,11 +143,11 @@
   <div class="troc">
     <h6>Le troc</h6>
     <br />
-    {#if createMode || newTroc.is_try}
+    {#if createMode || newTroc?.is_try}
       <div class="pb-3">
         <Checkbox
           value="is_try"
-          checked={newTroc.is_try}
+          checked={newTroc?.is_try}
           on:change={handleInput}
           disabled={!createMode}
         >
@@ -156,7 +156,7 @@
       </div>
     {/if}
 
-    {#if isNewTrocCloned && newTroc.is_try}
+    {#if isNewTrocCloned && newTroc?.is_try}
       <div
         transition:slide|local
         class="text--disabled d-flex"
@@ -218,7 +218,7 @@
   <div class="schedule">
     <h6>Horaire</h6>
     <br />
-    {#if newTroc.is_try}
+    {#if newTroc?.is_try}
       <div class="icon-container">
         <br />
         <span class="w3-text-orange">
