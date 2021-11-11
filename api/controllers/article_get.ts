@@ -53,7 +53,8 @@ export const getArticles: RequestHandler = async (req, res, next) => {
   if (Object.keys(sort).length) aggregate.sort(sort)
 
   lookupUsers(aggregate)
-  lookupProviderSubscribe(aggregate)
+  lookupSubscribe(aggregate, 'provider')
+  lookupSubscribe(aggregate, 'buyer')
 
   const articles = await aggregate.exec()
   res.json(articles)
@@ -97,13 +98,14 @@ export function lookupUsers(aggregate: mongoose.Aggregate<IArticle[]>): void {
 /**
  * Update aggregate for lookup subscribe of provider
  */
-export function lookupProviderSubscribe(
-  aggregate: mongoose.Aggregate<IArticle[]>
+export function lookupSubscribe(
+  aggregate: mongoose.Aggregate<IArticle[]>,
+  key = 'provider'
 ): void {
   aggregate
     .lookup({
       from: 'subscribes',
-      let: { subId: '$providerSubId' },
+      let: { subId: `$${key}SubId` },
       pipeline: [
         {
           $match: {
@@ -116,9 +118,9 @@ export function lookupProviderSubscribe(
           $project: { name: 1 },
         },
       ],
-      as: 'providerSub',
+      as: `${key}Sub`,
     })
     .addFields({
-      providerSub: { $arrayElemAt: ['$providerSub', 0] },
+      [`${key}Sub`]: { $arrayElemAt: [`$${key}Sub`, 0] },
     })
 }

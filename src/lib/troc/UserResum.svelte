@@ -75,7 +75,11 @@
     <div class="d-flex">
       <div class="flex-grow-1" />
       {#if modeAdmin && resum.balance !== 0}
-        <Button class="primary-color mt-2 mr-4">Regler le solde</Button>
+        <Button class="primary-color mt-2 mr-4">
+          Regler le solde en {resum.balance > 0
+            ? 'faveur du client'
+            : 'votre faveur'}
+        </Button>
         <h6>{renderAmount(resum.balance)}</h6>
       {:else}
         <h6 class="mr-1">

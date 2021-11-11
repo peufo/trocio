@@ -1,12 +1,11 @@
 import Article from '../models/article'
-import User from '../models/user'
 import Troc from '../models/troc'
 
 import { getRoles } from './article_utils'
 import { findSpec, getTarif, getFee, getMargin } from './troc_utils'
 import { RequestHandler, Request } from 'express'
 import { getRole } from './subscribe_util'
-import type { Article, EventName } from '../../types'
+import type { Article as IArticle, EventName } from '../../types'
 import Subscribe from '../models/subscribe'
 
 function ensureArray<T extends any | any[]>(value: T | T[]): T[] {
@@ -19,7 +18,7 @@ function ensureArray<T extends any | any[]>(value: T | T[]): T[] {
  * - Dans la limite du tarif attribué
  * - L'utilisateur est le fournisseur de l'article ou un cassier du troc
  */
-export const createArticle: RequestHandler<void, any, Article | Article[]> =
+export const createArticle: RequestHandler<void, any, IArticle | IArticle[]> =
   async (req, res, next) => {
     try {
       if (!req.session.user) throw 'Login is required'
@@ -249,11 +248,16 @@ export const soldArticles: RequestHandler = async (req, res, next) => {
 
     const now = new Date()
     const tarif = await getTarif(articles[0].providerSubId)
+    const buyerSub = buyerSubId
+      ? await Subscribe.findById(buyerSubId)
+      : undefined
+    if (buyerSubId && !buyerSub) throw 'buyerSub not found'
 
     articles = await Promise.all(
       articles.map((article) => {
         if (buyerSubId) {
           article.sold = now
+          article.buyerId = buyerSub.userId
           article.buyerSubId = buyerSubId
           article.margin = getMargin(article, tarif)
         } else {
@@ -301,6 +305,8 @@ export const cancelEvent: RequestHandler<any, any, { eventName: EventName }> =
               article.recover = undefined
               article.sellerId = undefined
               article.sellerSubId = undefined
+              article.buyerId = undefined
+              article.buyerSubId = undefined
               article.margin = undefined
               break
             default:

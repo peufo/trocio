@@ -138,6 +138,19 @@
       </p>
     {/if}
 
+    {#if article.sold}
+      <p>
+        Vendu le {intl.format(new Date(article.sold))}
+        par <b>{article.seller?.name}</b>
+        à <b>{article.buyer?.name || article.buyerSub?.name}</b>
+      </p>
+    {:else if article.recover}
+      <p>
+        Récupèré le {intl.format(new Date(article.recover))}
+        par <b>{article.seller?.name}</b>
+      </p>
+    {/if}
+
     <Divider />
 
     {#if $queryDelete.isLoading}

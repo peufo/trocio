@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { fly } from 'svelte/transition'
   import { params } from '@roxi/routify'
   import { Alert } from 'svelte-materialify'
 
@@ -43,7 +42,7 @@
   padding-right: {tipsActive ? tipsWidth : '0px'};"
   >
     <main class="pa-4">
-      {#if $trocQuery.data.is_try}
+      {#if $trocQuery?.data?.is_try}
         <Alert visible class="orange white-text">Troc d'entrainement</Alert>
       {/if}
       <slot />

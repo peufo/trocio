@@ -68,6 +68,7 @@ export declare interface ArticleLookup extends Article {
   provider?: User
   providerSub?: ISubscribe
   buyer?: User
+  buyerSub?: ISubscribe
   validator?: User
   seller?: User
 }
