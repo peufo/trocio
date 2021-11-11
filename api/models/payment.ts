@@ -11,9 +11,9 @@ var paymentModel = new Schema({
   /** @deprecated use acceptorSubId */
   acceptor: { type: ObjectId, ref: 'user' },
   /** @deprecated use userSubId */
-  user: { type: ObjectId, ref: 'user', index: true },
+  user: { type: ObjectId, ref: 'user' },
   /** @deprecated use trocId */
-  troc: { type: ObjectId, ref: 'troc', index: true },
+  troc: { type: ObjectId, ref: 'troc' },
 })
 
 paymentModel.set('timestamps', true)

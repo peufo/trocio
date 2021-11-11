@@ -14,13 +14,20 @@
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
-  import { useApi } from '$lib/api'
-  import type { SubscribeResum } from 'types'
+  import { api, useApi } from '$lib/api'
+  import type { PaymentCreate, SubscribeResum } from 'types'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   export let subscribeId: string
   export let isClosed = false
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
   export let modeAdmin = false
+
+  let articleCreateDialogActive = false
+  let tarifInfoDialogActive = false
+  let providedShow = false
+  let paymentShow = false
+  const queryClient = useQueryClient()
 
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
     'subscribes/resum',
@@ -28,10 +35,19 @@
   ])
   $: resum = $queryResum.data?.resum
 
-  let articleCreateDialogActive = false
-  let tarifInfoDialogActive = false
-  let providedShow = false
-  let paymentShow = false
+  const queryPayment = useMutation(
+    () =>
+      api<PaymentCreate>('/api/payments', {
+        method: 'post',
+        data: { userSubId: subscribeId, amount: -(resum?.balance || 0) },
+        success: 'Solde reglé avec succès',
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('subscribes/resum')
+      },
+    }
+  )
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
@@ -75,7 +91,11 @@
     <div class="d-flex">
       <div class="flex-grow-1" />
       {#if modeAdmin && resum.balance !== 0}
-        <Button class="primary-color mt-2 mr-4">
+        <Button
+          class="primary-color mt-2 mr-4"
+          on:click={() => $queryPayment.mutate()}
+          disabled={$queryPayment.isLoading}
+        >
           Regler le solde en {resum.balance > 0
             ? 'faveur du client'
             : 'votre faveur'}
