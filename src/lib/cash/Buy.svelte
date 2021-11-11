@@ -6,6 +6,7 @@
   import Loader from '$lib/util/Loader.svelte'
   import { api } from '$lib/api'
   import type { Article } from 'types'
+  import { troc } from '$lib/troc/store'
 
   export let subscribeId: string
 
@@ -36,7 +37,11 @@
 
 <Template
   bind:pendingItems
-  queryParams={{ ne_exact_providerSubId: subscribeId, exact_statut: 'valided' }}
+  queryParams={{
+    exact_trocId: $troc._id,
+    ne_exact_providerSubId: subscribeId,
+    exact_statut: 'valided',
+  }}
   placeholder="Articles disponibles"
   message="Sélectionner des articles disponible pour les vendres au client."
 >
