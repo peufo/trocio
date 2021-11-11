@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { Button } from 'svelte-materialify'
+  import { Button, Table } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import { faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -169,15 +169,28 @@
       count={resum.purchasesCount || 0}
       sum={-(resum.purchasesSum || 0)}
     >
-      {#each resum.purchases || [] as article}
-        <div class="d-flex">
-          <div>#{article.ref}</div>
-          <div class="flex-grow-1">{article.name}</div>
-          <div>{renderAmount(article.price)}</div>
-        </div>
-      {:else}
-        <div class="text-center pa-12 text--secondary">Aucun achat</div>
-      {/each}
+      <Table class="pb-2">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Nom</th>
+            <th>Date de l'achat</th>
+            <th>Prix</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each resum.purchases || [] as article}
+            <tr>
+              <td>{article.ref}</td>
+              <td>{article.name}</td>
+              <td>{new Date(article.sold || '').toLocaleString()}</td>
+              <td align="right">{renderAmount(article.price)}</td>
+            </tr>
+          {:else}
+            <tr class="text-center pa-12 text--secondary">Aucun achat</tr>
+          {/each}
+        </tbody>
+      </Table>
     </DetailCard>
 
     <br />
@@ -190,15 +203,26 @@
       free
       show={paymentShow}
     >
-      {#each resum.payments || [] as payment}
-        <div class="d-flex">
-          <div>{new Date(payment.createdAt).toLocaleString()}</div>
-          <div class="flex-grow-1">{payment.message}</div>
-          <div>{renderAmount(payment.amount)}</div>
-        </div>
-      {:else}
-        <div class="text-center pa-12 text--secondary">Aucun paiement</div>
-      {/each}
+      <Table>
+        <thead>
+          <tr>
+            <th>Date du paiement</th>
+            <th>Commentaire</th>
+            <th>Montant</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each resum.payments || [] as payment}
+            <tr>
+              <td>{new Date(payment.createdAt).toLocaleString()}</td>
+              <td>{payment.message || '-'}</td>
+              <td align="right">{renderAmount(payment.amount)}</td>
+            </tr>
+          {:else}
+            <tr class="text-center pa-12 text--secondary">Aucun paiement</tr>
+          {/each}
+        </tbody>
+      </Table>
     </DetailCard><br />
 
     <!--
