@@ -1,5 +1,6 @@
 <script lang="ts">
   import { fade, scale } from 'svelte/transition'
+  import { flip } from 'svelte/animate'
   import { Button, Icon } from 'svelte-materialify'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { mdiTextBoxCheckOutline } from '@mdi/js'
@@ -114,6 +115,7 @@
             {#each pendingItems as article, index (article._id)}
               <div
                 transition:scale|local
+                animate:flip={{ duration: 200 }}
                 class="d-flex simple-card pl-2 pr-2 pt-1 pb-1 ma-1"
                 style="min-width: 200px; max-width: calc(50% - 8px);"
               >
