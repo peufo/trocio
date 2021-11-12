@@ -4,7 +4,7 @@
   import { faSun } from '@fortawesome/free-solid-svg-icons'
 
   // TODO: User Terme dialog
-  import { troc } from '$lib/stores'
+  import { troc } from '$lib/troc/store'
   import { user } from '$lib/user/store'
   import { trocNavigationActive, isDarkTheme } from '$lib/store/layout'
 

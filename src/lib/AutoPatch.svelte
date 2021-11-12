@@ -2,7 +2,7 @@
   // TODO: Can become a simple module
   import { onMount } from 'svelte'
 
-  import { troc } from '$lib/stores'
+  import { troc } from '$lib/troc/store'
   import { getHeader } from '$lib/utils'
   import notify from '$lib/notify'
 

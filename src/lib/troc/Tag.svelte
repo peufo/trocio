@@ -24,6 +24,8 @@
   class:border={tag.border}
   class:useTagPrinter={tag.useTagPrinter}
   style={`
+    color: black;
+    background: white;
     width: ${tag.width}mm;
     height: ${tag.height}mm;
     padding: ${tag.padding}mm;

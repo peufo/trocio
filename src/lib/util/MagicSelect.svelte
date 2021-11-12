@@ -12,7 +12,6 @@
   export let inputElement: HTMLInputElement | undefined = undefined
   export let selectedItem: any = null
   export let queryParams: object = {}
-
   export let searchValue = ''
 
   /** Url path for search items */
@@ -118,19 +117,24 @@
 </script>
 
 <div style="position: relative; min-width: 200px;">
-  <SearchTextField
-    bind:inputElement
-    bind:search={searchValue}
-    on:keydown={handleKeydown}
-    on:focus={handleFocus}
-    on:blur={handleBlur}
-    autocomplete="off"
-    placeholder={keepValue && !!selectedItem ? ' ' : ''}
-    class="mt-2"
-    {...$$restProps}
-  >
-    {label}
-  </SearchTextField>
+  <div class="d-flex">
+    <SearchTextField
+      bind:inputElement
+      bind:search={searchValue}
+      on:keydown={handleKeydown}
+      on:focus={handleFocus}
+      on:blur={handleBlur}
+      autocomplete="off"
+      placeholder={keepValue && !!selectedItem ? ' ' : ''}
+      class="mt-2"
+      {...$$restProps}
+    >
+      {label}
+    </SearchTextField>
+
+    <slot name="action" />
+  </div>
+
   {#if flatMode}
     <div class="elevation-1 rounded mt-1">
       <List dense>

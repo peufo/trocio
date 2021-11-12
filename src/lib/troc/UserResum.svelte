@@ -186,11 +186,13 @@
               <td>{new Date(article.sold || '').toLocaleString()}</td>
               <td align="right">{renderAmount(article.price)}</td>
             </tr>
-          {:else}
-            <tr class="text-center pa-12 text--secondary">Aucun achat</tr>
           {/each}
         </tbody>
       </Table>
+
+      {#if !resum.purchases?.length}
+        <div class="text-center pa-12 text--secondary">Aucun achat</div>
+      {/if}
     </DetailCard>
 
     <br />
@@ -218,11 +220,12 @@
               <td>{payment.message || '-'}</td>
               <td align="right">{renderAmount(payment.amount)}</td>
             </tr>
-          {:else}
-            <tr class="text-center pa-12 text--secondary">Aucun paiement</tr>
           {/each}
         </tbody>
       </Table>
+      {#if !resum?.payments?.length}
+        <div class="text-center pa-12 text--secondary">Aucun paiement</div>
+      {/if}
     </DetailCard><br />
 
     <!--

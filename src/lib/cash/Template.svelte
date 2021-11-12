@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition'
-  import { Button } from 'svelte-materialify'
+  import { fade, scale } from 'svelte/transition'
+  import { Button, Icon } from 'svelte-materialify'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
+  import { mdiTextBoxCheckOutline } from '@mdi/js'
+  import { faTimes } from '@fortawesome/free-solid-svg-icons'
+
   import { renderAmount } from '$lib/utils'
   import { troc } from '$lib/troc/store'
   import { api } from '$lib/api'
   import type { Article } from 'types'
-  import { faTimes } from '@fortawesome/free-solid-svg-icons'
   import IconLink from '$lib/util/IconLink.svelte'
   import notify from '$lib/notify'
   import Loader from '$lib/util/Loader.svelte'
@@ -67,29 +69,33 @@
         getValue2={(art) => renderAmount(art.price, $troc.currency)}
         exepted={pendingItems.map((art) => art._id)}
         on:select={handleSelect}
-      />
+      >
+        <div slot="action">
+          {#if canSelectAll}
+            {#await selectAllPromise}
+              <Button fab size="small" disabled>
+                <Icon path={mdiTextBoxCheckOutline} />
+              </Button>
+            {:then}
+              <Button
+                fab
+                size="small"
+                title="Tout sélectioner"
+                depressed
+                on:click={() => (selectAllPromise = handleSelectAll())}
+              >
+                <Icon path={mdiTextBoxCheckOutline} />
+              </Button>
+            {/await}
+          {/if}
+        </div>
+      </MagicSelect>
     </div>
 
     <!-- Selection -->
     <div class="flex-grow-1">
       <!-- Selection actions -->
       <div class="d-flex">
-        {#if canSelectAll}
-          {#await selectAllPromise}
-            <Button disabled class="mt-1" style="width: 190px;">
-              <Loader />
-            </Button>
-          {:then}
-            <Button
-              class="mt-1 ml-1"
-              depressed
-              on:click={() => (selectAllPromise = handleSelectAll())}
-            >
-              Tout sélectionner
-            </Button>
-          {/await}
-        {/if}
-
         <div class="flex-grow-1" />
 
         {#if pendingItems.length}
@@ -97,14 +103,17 @@
             <slot name="actions" />
           </div>
         {/if}
+
+        <slot name="actions-permanent" />
       </div>
 
       <!-- Basket -->
       <div class="mt-2">
         {#if pendingItems.length}
           <div in:fade|local class="d-flex flex-wrap">
-            {#each pendingItems as article, index}
+            {#each pendingItems as article, index (article._id)}
               <div
+                transition:scale|local
                 class="d-flex simple-card pl-2 pr-2 pt-1 pb-1 ma-1"
                 style="min-width: 200px; max-width: calc(50% - 8px);"
               >

@@ -41,7 +41,7 @@
       groupActive: false,
     },
     { ref: 'tag', label: 'Etiquetage', icon: faTag },
-    { ref: 'statistic', label: 'Statistique', icon: faChartPie },
+    { ref: 'statistic', label: 'Statistiques', icon: faChartPie },
     {
       ref: 'management',
       label: 'Gestion',
