@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte'
   import { fade, slide } from 'svelte/transition'
   import { Dialog, Button, Textarea, TextField } from 'svelte-materialify'
 
@@ -25,6 +26,12 @@
   let listArticles: ArticleCreate[] = []
   let listArticlesError = ''
 
+  const dispatch =
+    createEventDispatcher<{
+      createArticle: Article
+      createArticles: Article[]
+    }>()
+
   let textareaDesignation: HTMLTextAreaElement | undefined
 
   $: listPlaceHolder = `\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${
@@ -45,7 +52,8 @@
         success: 'Article ajouté',
       }),
     {
-      onSuccess: () => {
+      onSuccess: (article) => {
+        dispatch('createArticle', article)
         newName = ''
         newPrice = ''
         textareaDesignation?.focus()
@@ -66,7 +74,8 @@
         } ajouté${articles.length > 1 ? 's' : ''}`,
       }),
     {
-      onSuccess: () => {
+      onSuccess: (articles) => {
+        dispatch('createArticles', articles)
         newArticles = ''
         listArticles = []
         listArticlesError = ''

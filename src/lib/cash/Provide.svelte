@@ -53,7 +53,13 @@
 
 <TagsPrint id="testPrint" articles={pendingItems} tag={$troc.tag} />
 
-<ArticleCreateDialog {subscribeId} bind:active={articleCreateDialogActive} />
+<ArticleCreateDialog
+  {subscribeId}
+  bind:active={articleCreateDialogActive}
+  on:createArticle={({ detail }) => (pendingItems = [...pendingItems, detail])}
+  on:createArticles={({ detail }) =>
+    (pendingItems = [...pendingItems, ...detail])}
+/>
 
 <Template
   bind:pendingItems
