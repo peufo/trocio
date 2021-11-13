@@ -68,7 +68,11 @@ export const resetpwd: RequestHandler = async (req, res, next) => {
   try {
     const user = await User.findOne({ mail: req.body.mail }).exec()
     if (!user) return next('User not found')
-    let unchiffredPwd = new Array(3).fill(randomize('0000')).join('-')
+    let unchiffredPwd = [
+      randomize('0000'),
+      randomize('0000'),
+      randomize('0000'),
+    ].join('-')
     user.password = unchiffredPwd
     await user.save()
     await mail.resetpwd(user, unchiffredPwd)
