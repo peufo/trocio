@@ -97,6 +97,8 @@
     <div class="flex-grow-1">
       <!-- Selection actions -->
       <div class="d-flex">
+        <slot name="actions-permanent-left" />
+
         <div class="flex-grow-1" />
 
         {#if pendingItems.length}
@@ -105,7 +107,7 @@
           </div>
         {/if}
 
-        <slot name="actions-permanent" />
+        <slot name="actions-permanent-right" />
       </div>
 
       <!-- Basket -->

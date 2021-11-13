@@ -121,15 +121,17 @@
         <!-- Provide button -->
         <span style="margin-left: 30px;">
           <!-- Bonton pour proposer un articles -->
-          <Button
-            text
-            dense
-            on:click={clickOpenCreateArticle}
-            disabled={isClosed}
-          >
-            <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
-            article
-          </Button>
+          {#if !modeAdmin}
+            <Button
+              text
+              dense
+              on:click={clickOpenCreateArticle}
+              disabled={isClosed}
+            >
+              <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
+              article
+            </Button>
+          {/if}
 
           <!-- Bonton pour proposer un articles -->
           <Button text dense on:click={clickOpenTarifInfo}>

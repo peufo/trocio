@@ -82,12 +82,16 @@ export const createArticle: RequestHandler<void, any, IArticle | IArticle[]> =
           art.providerId = sub.userId
           art.trocId = sub.trocId
 
-          if (accessorIsAdminOrCashier) {
-            art.valided = now
-            art.fee = getFee(art, tarif)
-            art.validatorId = accessor.userId
-            art.validatorSubId = accessor._id
-          }
+          // Validation automatique complique l'impression des étiquettes
+          /*
+            if (accessorIsAdminOrCashier) {
+              art.valided = now
+              art.fee = getFee(art, tarif)
+              art.validatorId = accessor.userId
+              art.validatorSubId = accessor._id
+            }
+          */
+
           /** Création de l'article */
           const article = new Article(art)
           if (!article.ref) article.ref = String(newRef + nbAttributedRef++)
