@@ -16,7 +16,6 @@
     RoleEnum,
     ParamsSubscribeAPI,
     ISubscribe,
-    SubscribeLookup,
   } from 'types'
   import { useInfinitApi } from '$lib/api'
   import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
@@ -155,6 +154,11 @@
     getKey: (sub: SubscribeLookup) => sub._id || '',
     solo: true,
     icon: faUser,
+  }
+
+  const magicSelectPropsWithGlobalUser = {
+    ...magicSelectProps,
+    queryParams: { exact_trocId: $troc._id, includGlobalUser: true },
   }
 </script>
 
@@ -363,7 +367,7 @@
         <MagicSelect
           placeholder="Inviter un nouveau particiant"
           on:select={assignRoleHandler('basic')}
-          {...magicSelectProps}
+          {...magicSelectPropsWithGlobalUser}
         />
       {/if}
     </div>

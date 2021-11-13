@@ -44,14 +44,14 @@
 
   function print() {
     printJS({
-      printable: 'testPrint',
+      printable: 'providedTags',
       type: 'html',
       targetStyles: ['*'],
     })
   }
 </script>
 
-<TagsPrint id="testPrint" articles={pendingItems} tag={$troc.tag} />
+<TagsPrint id="providedTags" articles={pendingItems} tag={$troc.tag} />
 
 <ArticleCreateDialog
   {subscribeId}

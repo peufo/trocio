@@ -75,7 +75,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     includResum = false,
     includTarif = false,
     /** Active une recherche d'utilisateur au delà du troc */
-    includSGlobalUser = false,
+    includGlobalUser = false,
   } = req.query
   try {
     if (!trocId && !exact_trocId)
@@ -120,7 +120,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     const subscribes = await aggregate.skip(skip).limit(limit).exec()
 
     // inclue la recherche au delà du troc si le nombre de subscribes est inférieur à la limite
-    if (q && includSGlobalUser && limit > subscribes.length) {
+    if (q && includGlobalUser && limit > subscribes.length) {
       const users = await User.aggregate()
         .match({
           $or: [{ name: new RegExp(q, 'i') }, { mail: new RegExp(q, 'i') }],

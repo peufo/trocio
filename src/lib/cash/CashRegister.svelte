@@ -2,7 +2,11 @@
   import { onMount } from 'svelte'
   import { fade } from 'svelte/transition'
   import { params, redirect } from '@roxi/routify'
-  import { faUserAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons'
+  import {
+    faCashRegister,
+    faUserAlt,
+    faUserPlus,
+  } from '@fortawesome/free-solid-svg-icons'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { api } from '$lib/api'
   import { Button, Tabs, Tab } from 'svelte-materialify'
@@ -24,9 +28,9 @@
   let container: HTMLDivElement
 
   const TABS = [
-    { ref: 'provide', label: 'Fourni', component: Provide },
-    { ref: 'recover', label: 'Récupère', component: Recover },
-    { ref: 'buy', label: 'Achète', component: Buy },
+    { ref: 'provide', label: 'Proposition', component: Provide },
+    { ref: 'recover', label: 'Récupèration', component: Recover },
+    { ref: 'buy', label: 'Achat', component: Buy },
     { ref: 'resum', label: 'Compte', component: UserResum },
   ]
 
@@ -119,7 +123,7 @@
           searchKey="q"
           selectKey={clientKey}
           on:select={handleSelectClient}
-          queryParams={{ trocId: $troc._id, includSGlobalUser: true }}
+          queryParams={{ trocId: $troc._id, includGlobalUser: true }}
           getValue={(sub) => sub.user?.name || sub.name}
           getValue2={(sub) => sub.user?.mail || ''}
           getKey={(sub) => sub._id}
@@ -179,6 +183,17 @@
             </div>
           {/if}
         {/each}
+      </div>
+    {:else}
+      <div
+        in:fade|local
+        bind:this={container}
+        class="mt-4 centered"
+        style="min-height: {$layout.innerHeight - container?.offsetTop - 16}px;"
+      >
+        <div>
+          <IconLink icon={faCashRegister} size="3.5em" style="opacity: 0.2;" />
+        </div>
       </div>
     {/if}
   </div>

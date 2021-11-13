@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { Button } from 'svelte-materialify'
+  import { Button, Icon } from 'svelte-materialify'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
+  import printJS from 'print-js'
 
   import Template from '$lib/cash/Template.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import { api } from '$lib/api'
   import type { Article } from 'types'
+  import TagsPrint from '$lib/troc/TagsPrint.svelte'
+  import { troc } from '$lib/troc/store'
+  import { mdiPrinter } from '@mdi/js'
 
   export let subscribeId: string
 
@@ -26,7 +30,17 @@
       },
     }
   )
+
+  function print() {
+    printJS({
+      printable: 'recoverTags',
+      type: 'html',
+      targetStyles: ['*'],
+    })
+  }
 </script>
+
+<TagsPrint id="recoverTags" articles={pendingItems} tag={$troc.tag} />
 
 <Template
   bind:pendingItems
@@ -39,6 +53,16 @@
     {#if $queryRecover.isLoading}
       <Button disabled><Loader /></Button>
     {:else}
+      <Button
+        fab
+        depressed
+        size="small"
+        title="Imprimer les étiquettes de la sélection"
+        on:click={print}
+      >
+        <Icon path={mdiPrinter} />
+      </Button>
+
       <Button
         class="primary-color mt-1"
         on:click={() => $queryRecover.mutate()}
