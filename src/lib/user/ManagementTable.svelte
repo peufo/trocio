@@ -52,7 +52,7 @@
     },
     {
       label: 'Rôle',
-      visible: false,
+      visible: true,
       queryKey: 'role',
       format: 'enum',
       getValue: (sub) =>
