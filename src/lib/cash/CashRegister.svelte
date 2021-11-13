@@ -109,74 +109,80 @@
   }
 </script>
 
-<div class="main-container">
-  <div class="d-flex">
-    <div style="width: 300px;">
-      <MagicSelect
-        bind:this={clientSelector}
-        path="/subscribes"
-        searchKey="q"
-        selectKey={clientKey}
-        on:select={handleSelectClient}
-        queryParams={{ trocId: $troc._id, includSGlobalUser: true }}
-        getValue={(sub) => sub.user?.name || sub.name}
-        getValue2={(sub) => sub.user?.mail || ''}
-        getKey={(sub) => sub._id}
-        icon={faUserAlt}
-        solo
-        keepValue
-        dense
-        placeholder="Chercher un client"
-      />
-    </div>
+{#if $troc}
+  <div class="main-container">
+    <div class="d-flex">
+      <div style="width: 300px;">
+        <MagicSelect
+          bind:this={clientSelector}
+          path="/subscribes"
+          searchKey="q"
+          selectKey={clientKey}
+          on:select={handleSelectClient}
+          queryParams={{ trocId: $troc._id, includSGlobalUser: true }}
+          getValue={(sub) => sub.user?.name || sub.name}
+          getValue2={(sub) => sub.user?.mail || ''}
+          getKey={(sub) => sub._id}
+          icon={faUserAlt}
+          solo
+          keepValue
+          dense
+          placeholder="Chercher un client"
+        />
+      </div>
 
-    <div class="ml-4 mt-2">
-      {#if $createSubscribeAnonym.isLoading}
-        <Button depressed disabled style="height: 40px;">
-          <Loader />
-        </Button>
-      {:else}
-        <Button
-          depressed
-          style="height: 40px;"
-          on:click={() =>
-            $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
-        >
-          <IconLink icon={faUserPlus} opacity class="mr-2" size="1.2em" />
-          Nouveau client
-        </Button>
-      {/if}
-    </div>
-  </div>
-  {#if $params[clientKey]}
-    <div
-      in:fade|local
-      bind:this={container}
-      class="simple-card mt-4"
-      style="min-height: {$layout.innerHeight - container?.offsetTop - 16}px;"
-    >
-      <Tabs grow value={$params[tabIndexKey] || 3} on:change={handleChangeTab}>
-        <div slot="tabs">
-          {#each TABS as { ref, label }}
-            <Tab class="rounded">{label}</Tab>
-          {/each}
-        </div>
-      </Tabs>
-
-      {#each TABS as { component }, index}
-        {#if index == ($params[tabIndexKey] || 3)}
-          <div in:fade|locale class="pl-4 pr-4">
-            <svelte:component
-              this={component}
-              subscribeId={$params[clientKey]}
-              modeAdmin
-            />
-          </div>
+      <div class="ml-4 mt-2">
+        {#if $createSubscribeAnonym.isLoading}
+          <Button depressed disabled style="height: 40px;">
+            <Loader />
+          </Button>
+        {:else}
+          <Button
+            depressed
+            style="height: 40px;"
+            on:click={() =>
+              $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
+          >
+            <IconLink icon={faUserPlus} opacity class="mr-2" size="1.2em" />
+            Nouveau client
+          </Button>
         {/if}
-      {/each}
+      </div>
     </div>
-  {/if}
-</div>
+    {#if $params[clientKey]}
+      <div
+        in:fade|local
+        bind:this={container}
+        class="simple-card mt-4"
+        style="min-height: {$layout.innerHeight - container?.offsetTop - 16}px;"
+      >
+        <Tabs
+          grow
+          value={$params[tabIndexKey] || 3}
+          on:change={handleChangeTab}
+        >
+          <div slot="tabs">
+            {#each TABS as { ref, label }}
+              <Tab class="rounded">{label}</Tab>
+            {/each}
+          </div>
+        </Tabs>
+
+        {#each TABS as { component }, index}
+          {#if index == ($params[tabIndexKey] || 3)}
+            <div in:fade|locale class="pl-4 pr-4">
+              <svelte:component
+                this={component}
+                subscribeId={$params[clientKey]}
+                modeAdmin
+              />
+            </div>
+          {/if}
+        {/each}
+      </div>
+    {/if}
+  </div>
+{/if}
 
 <style>
   :global(.s-tabs) {

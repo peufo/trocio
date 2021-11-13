@@ -241,14 +241,9 @@
     </a>
   {:else if !!$user && troc.subscribe?.role === 'cashier'}
     <a href={`/cashier?trocId=${troc._id}`}>
-      <Button depressed class="ml-2">
+      <Button depressed class="mr-1 ml-1">
         Caisse
-        <IconLink
-          icon={faCashRegister}
-          class="mr-1 ml-1"
-          size="1.2em"
-          opacity
-        />
+        <IconLink icon={faCashRegister} class="ml-2" size="1.2em" opacity />
       </Button>
     </a>
   {/if}
