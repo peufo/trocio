@@ -58,6 +58,7 @@
         depressed
         size="small"
         title="Imprimer les étiquettes de la sélection"
+        class="mr-2"
         on:click={print}
       >
         <Icon path={mdiPrinter} />

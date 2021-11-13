@@ -39,17 +39,6 @@ export declare interface Article extends ArticleCreate {
   sold?: Date
   /** Date de la récupération de l'article par le fournisseur (seller) -> (provider) */
   recover?: Date
-  /** giveback Listes des retours de l'article (si ils sont autorisés) */
-  giveback: {
-    /** Date de la vente qui à été annulé */
-    sold: Date
-    /** Date de retour de l'article */
-    back: Date
-    /** Raison du retour */
-    raison: string
-    /** Client ayant effetué le retour */
-    subscribeId: string
-  }[]
 
   /** ID du sub ayant effectué l'achat */
   buyerSubId?: string
@@ -57,6 +46,23 @@ export declare interface Article extends ArticleCreate {
   validatorSubId?: string
   /** ID du sub de l'organisation ayant vendu ou rendu l'article */
   sellerSubId?: string
+
+  /** Historique des corrections de l'articles */
+  corrections: {
+    timestamp: Date
+    authorId: string
+    authorSubId: string
+    event:
+      | 'edit-name'
+      | 'edit-price'
+      | 'cancel-valided'
+      | 'cancel-refused'
+      | 'cancel-sold'
+      | 'cancel-recover'
+    message?: string
+    oldValue?: any
+    newValue?: any
+  }[]
 
   /** Raccourci vers les utilisateurs pour ne pas passé par les subscribes */
   buyerId: string

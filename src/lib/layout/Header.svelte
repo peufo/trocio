@@ -2,6 +2,7 @@
   import { AppBar, Button, Dialog, Icon } from 'svelte-materialify'
   import { faUser, faMoon } from '@fortawesome/free-regular-svg-icons'
   import { faSun } from '@fortawesome/free-solid-svg-icons'
+  import { params } from '@roxi/routify'
 
   // TODO: User Terme dialog
   import { troc } from '$lib/troc/store'
@@ -46,7 +47,7 @@
 
 <svelte:head>
   <title>
-    Trocio {$troc ? ` - ${$troc.name}` : ''}
+    Trocio {$params.trocId && $troc ? ` - ${$troc.name}` : ''}
   </title>
 </svelte:head>
 
@@ -54,9 +55,7 @@
   <AppBar flat>
     <img slot="icon" src={logoIco} alt="logo Trocio" height="35" class="ml-2" />
     <div slot="title">
-      <a href="/" style="color: var(--theme-text-primary);">
-        TROCIO {$troc ? ` - ${$troc.name}` : ''}
-      </a>
+      <a href="/" style="color: var(--theme-text-primary);">TROCIO</a>
     </div>
 
     <div style="flex-grow: 1;" />

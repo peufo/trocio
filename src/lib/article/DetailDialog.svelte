@@ -1,15 +1,16 @@
 <script lang="ts">
   import { renderAmount } from '$lib/utils'
-
-  import { Dialog, Divider, Button } from 'svelte-materialify'
-
-  import type { ArticleLookup, EventName } from 'types'
-
-  import { getStatut } from '$lib/utils'
+  import { Dialog, Divider, Button, Icon } from 'svelte-materialify'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
+  import printJS from 'print-js'
+  import { mdiPrinter } from '@mdi/js'
+
+  import TagsPrint from '$lib/troc/TagsPrint.svelte'
+  import type { ArticleLookup, EventName } from 'types'
+  import { getStatut } from '$lib/utils'
+  import { troc } from '$lib/troc/store'
   import { api } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
-  import notify from '$lib/notify'
 
   export let active = false
   export let article: ArticleLookup | undefined
@@ -106,10 +107,22 @@
     if (!newPrice || !article) return
     $queryEditPrice.mutate(newPrice)
   }
+
+  function print() {
+    printJS({
+      printable: 'dialogTag',
+      type: 'html',
+      targetStyles: ['*'],
+    })
+  }
 </script>
 
 {#if article}
-  <Dialog bind:active class="pa-4" style="cursor: initial;">
+  {#if modeAdmin && $troc}
+    <TagsPrint id="dialogTag" articles={[article]} tag={$troc?.tag} />
+  {/if}
+
+  <Dialog bind:active class="pa-4" style="cursor: initial;" width="large">
     <div class="d-flex mb-4">
       <div class="text-h6">
         #{article.ref} - {article.name}
@@ -161,6 +174,13 @@
       </div>
     {:else}
       <div class="d-flex flex-wrap">
+        <Button text class="blue-text" on:click={handleEditName}>
+          Modifier le nom
+        </Button>
+        <Button text class="blue-text" on:click={handleEditPrice}>
+          Modifier le prix
+        </Button>
+
         {#if !article.valided && !article.refused}
           <Button
             text
@@ -172,12 +192,6 @@
             Supprimer
           </Button>
         {/if}
-        <Button text class="blue-text" on:click={handleEditName}>
-          Modifier le nom
-        </Button>
-        <Button text class="blue-text" on:click={handleEditPrice}>
-          Modifier le prix
-        </Button>
 
         {#if modeAdmin}
           {#if $queryCancelEvent.isLoading}
@@ -216,12 +230,27 @@
             </Button>
           {/if}
 
-          {#if !article.valided}
-            <Button text on:click={() => notify.info('TODO')}>Valider</Button>
-          {:else if article.valided && !article.sold && !article.refused}
-            <Button text on:click={() => notify.info('TODO')}>Vendre</Button>
-            <Button text on:click={() => notify.info('TODO')}>Rendre</Button>
-          {/if}
+          <Button
+            fab
+            size="small"
+            title="Imprimer l'étiquette"
+            depressed
+            on:click={print}
+          >
+            <Icon path={mdiPrinter} />
+          </Button>
+
+          <!--
+            TODO: Toute les actions accessible directement ici ?
+
+            {#if !article.valided}
+              <Button text on:click={() => notify.info('TODO')}>Valider</Button>
+              <Button text on:click={() => notify.info('TODO')}>Refuser</Button>
+            {:else if article.valided && !article.sold && !article.refused}
+              <Button text on:click={() => notify.info('TODO')}>Vendre</Button>
+              <Button text on:click={() => notify.info('TODO')}>Rendre</Button>
+            {/if}
+          -->
         {/if}
       </div>
     {/if}

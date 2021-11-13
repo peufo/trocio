@@ -1,4 +1,5 @@
-import mongoose, { Schema } from 'mongoose'
+import { model, Schema, Document } from 'mongoose'
+import type { Article } from '../../types'
 const { ObjectId } = Schema.Types
 
 let articleModel = new Schema({
@@ -25,6 +26,29 @@ let articleModel = new Schema({
   refused: Date,
   sold: Date, //ou
   recover: Date,
+  corrections: [
+    {
+      timestamp: Date,
+      authorId: { type: ObjectId, ref: 'user', required: true },
+      authorSubId: { type: ObjectId, ref: 'subscribe', required: true },
+      event: {
+        type: String,
+        enum: [
+          'edit-name',
+          'edit-price',
+          'cancel-valided',
+          'cancel-refused',
+          'cancel-sold',
+          'cancel-recover',
+        ],
+      },
+      message: String,
+      newValue: String,
+      oldValue: String,
+    },
+  ],
+
+  /** @deprecated use corrections */
   giveback: [
     {
       sold: Date,
@@ -63,8 +87,6 @@ let articleModel = new Schema({
 
 articleModel.set('timestamps', true)
 
-//TODO: Add pre('save price') and compute fee and margin
-
 function isValidedOrRefused() {
   return !!this.valided || !!this.refused
 }
@@ -73,4 +95,4 @@ function isSoldOrRecover() {
   return !!this.sold || !!this.recover
 }
 
-export default mongoose.model('article', articleModel)
+export default model<Article & Document>('article', articleModel)

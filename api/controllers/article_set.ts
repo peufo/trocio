@@ -70,7 +70,6 @@ export const createArticle: RequestHandler<void, any, IArticle | IArticle[]> =
       troc.articlelastref += articles.filter((art) => !art.ref).length
       troc.save()
 
-      const now = new Date()
       let nbAttributedRef = 0
       const articlesCreated = await Promise.all(
         articles.map((art) => {
@@ -145,7 +144,7 @@ export const deleteArticle: RequestHandler = async (req, res, next) => {
  */
 export const editName: RequestHandler<
   void,
-  void,
+  any,
   { articleId: string; newName: string }
 > = async (req, res, next) => {
   let { articleId, newName } = req.body
@@ -154,11 +153,28 @@ export const editName: RequestHandler<
     if (!newName) throw 'newName number is required in body'
 
     const article = await Article.findById(articleId).exec()
+    const accessor = await Subscribe.findOne({
+      trocId: article.trocId,
+      userId: req.session.user._id,
+    })
+
     // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
-    if (String(article.providerId) !== req.session.user._id) {
-      const role = await getRole(article.trocId, req.session.user._id)
-      if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
-    }
+    if (
+      String(article.providerId) !== req.session.user._id &&
+      accessor.role !== 'admin' &&
+      accessor.role !== 'cashier'
+    )
+      throw 'Not allowed'
+
+    // Enregistre la l'historique de corrections
+    article.corrections.push({
+      authorId: req.session.user._id,
+      authorSubId: accessor._id,
+      event: 'edit-name',
+      oldValue: article.name,
+      newValue: newName,
+      timestamp: new Date(),
+    })
 
     article.name = newName
     await article.save()
@@ -176,7 +192,7 @@ export const editName: RequestHandler<
  */
 export const editPrice: RequestHandler<
   void,
-  void,
+  any,
   { articleId: string; newPrice: number }
 > = async (req, res, next) => {
   let { articleId, newPrice } = req.body
@@ -187,13 +203,28 @@ export const editPrice: RequestHandler<
     const article = await Article.findById(articleId).exec()
     if (article.sold) throw `Solded article's price can't be edited`
 
-    // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
-    if (String(article.providerId) !== req.session.user._id) {
-      const role = await getRole(article.trocId, req.session.user._id)
-      if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
-    }
+    const accessor = await Subscribe.findOne({
+      trocId: article.trocId,
+      userId: req.session.user._id,
+    })
 
-    // TODO: Avertir l'organisateur si ce n'est pas lui qui la fait la demande et inversément
+    // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
+    if (
+      String(article.providerId) !== req.session.user._id &&
+      accessor.role !== 'admin' &&
+      accessor.role !== 'cashier'
+    )
+      throw 'Not allowed'
+
+    // Enregistre la l'historique de corrections
+    article.corrections.push({
+      authorId: req.session.user._id,
+      authorSubId: accessor._id,
+      event: 'edit-price',
+      oldValue: article.price,
+      newValue: newPrice,
+      timestamp: new Date(),
+    })
 
     article.price = newPrice
     await article.save()
@@ -283,8 +314,14 @@ export const cancelEvent: RequestHandler<any, any, { eventName: EventName }> =
   async (req, res, next) => {
     try {
       // TODO: create an historic
-      let { articles, isArray } = await ensureCanEdit(req)
+      let { articles, isArray, subscribe } = await ensureCanEdit(req)
       const { eventName } = req.body
+
+      const correctionBase = {
+        authorId: req.session.user._id,
+        authorSubId: subscribe._id,
+        timestamp: new Date(),
+      }
 
       articles = await Promise.all(
         articles.map((article) => {
@@ -302,6 +339,11 @@ export const cancelEvent: RequestHandler<any, any, { eventName: EventName }> =
               article.validatorId = undefined
               article.validatorSubId = undefined
               article.fee = undefined
+              article.corrections.push({
+                ...correctionBase,
+                event:
+                  eventName === 'refused' ? 'cancel-refused' : 'cancel-valided',
+              })
               break
             case 'sold':
             case 'recover':
@@ -312,6 +354,10 @@ export const cancelEvent: RequestHandler<any, any, { eventName: EventName }> =
               article.buyerId = undefined
               article.buyerSubId = undefined
               article.margin = undefined
+              article.corrections.push({
+                ...correctionBase,
+                event: eventName === 'sold' ? 'cancel-sold' : 'cancel-recover',
+              })
               break
             default:
               throw `eventName ${eventName} unknow`
