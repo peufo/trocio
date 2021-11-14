@@ -3,12 +3,12 @@
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiPrinter } from '@mdi/js'
   import { faPlus } from '@fortawesome/free-solid-svg-icons'
-  import printJS from 'print-js'
 
   import Template from '$lib/cash/Template.svelte'
   import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import { api } from '$lib/api'
+  import { print } from '$lib/utils'
   import type { Article } from 'types'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import { troc } from '$lib/troc/store'
@@ -34,21 +34,13 @@
       ),
     {
       onSuccess: (articles: Article[]) => {
-        if (autoPrint && articles[0].valided) print()
+        if (autoPrint && articles[0].valided) print('providedTags')
         pendingItems = []
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
       },
     }
   )
-
-  function print() {
-    printJS({
-      printable: 'providedTags',
-      type: 'html',
-      targetStyles: ['*'],
-    })
-  }
 </script>
 
 <TagsPrint id="providedTags" articles={pendingItems} tag={$troc.tag} />

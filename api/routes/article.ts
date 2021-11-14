@@ -13,7 +13,7 @@ import {
   goBackArticle,
   patchArticle,
 } from '../controllers/article_set'
-import { getArticles } from '../controllers/article_get'
+import { getArticles, getArticleCorrection } from '../controllers/article_get'
 import { checkLogin } from '../controllers/user_utils'
 
 router
@@ -25,6 +25,7 @@ router
   .post('/valid', validArticles)
   .post('/sold', soldArticles)
   .post('/cancel-event', cancelEvent)
+  .get('/corrections', getArticleCorrection)
   // TODO: a revoir
   .patch('/', checkLogin, patchArticle)
   .post('/edit', checkLogin, editArticle)

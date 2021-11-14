@@ -1,16 +1,22 @@
 <script lang="ts">
-  import { renderAmount } from '$lib/utils'
+  import { slide } from 'svelte/transition'
   import { Dialog, Divider, Button, Icon } from 'svelte-materialify'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import printJS from 'print-js'
   import { mdiPrinter } from '@mdi/js'
 
+  import { renderAmount, print } from '$lib/utils'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
-  import type { ArticleLookup, EventName } from 'types'
+  import type {
+    ArticleCorrectionsLookup,
+    ArticleLookup,
+    EventName,
+  } from 'types'
   import { getStatut } from '$lib/utils'
   import { troc } from '$lib/troc/store'
-  import { api } from '$lib/api'
+  import { api, useApi } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
+  import IconLink from '$lib/util/IconLink.svelte'
+  import { faHistory } from '@fortawesome/free-solid-svg-icons'
 
   export let active = false
   export let article: ArticleLookup | undefined
@@ -26,6 +32,15 @@
     hour: 'numeric',
     minute: 'numeric',
   })
+
+  let correctionsVisible = false
+  $: if (!active) correctionsVisible = false
+  $: queryCorrections = article
+    ? useApi<{ articleId: string }, ArticleCorrectionsLookup>([
+        'articles/corrections',
+        { articleId: article?._id },
+      ])
+    : null
 
   const queryDelete = useMutation(
     (data: { articleId: string }) =>
@@ -83,7 +98,7 @@
         {
           method: 'post',
           data: { eventName, articleId: article?._id },
-          success: 'Evenement de caisse annulé',
+          success: 'Evenement de correction annulé',
         }
       ),
     {
@@ -106,14 +121,6 @@
     const newPrice = prompt('Nouveau prix', String(article?.price))
     if (!newPrice || !article) return
     $queryEditPrice.mutate(newPrice)
-  }
-
-  function print() {
-    printJS({
-      printable: 'dialogTag',
-      type: 'html',
-      targetStyles: ['*'],
-    })
   }
 </script>
 
@@ -162,6 +169,25 @@
         Récupèré le {intl.format(new Date(article.recover))}
         par <b>{article.seller?.name}</b>
       </p>
+    {/if}
+
+    {#if queryCorrections && $queryCorrections.isSuccess && !$queryCorrections.isLoading && $queryCorrections.data?.corrections?.length}
+      {#if !correctionsVisible}
+        <Button on:click={() => (correctionsVisible = true)} size="small" text>
+          <IconLink icon={faHistory} class="mr-2" size="1em" opacity />
+          {$queryCorrections.data.corrections.length}
+          corrections
+        </Button>
+      {:else}
+        <div in:slide|local>
+          <Divider />
+          {#each $queryCorrections.data.corrections as correction}
+            <div>
+              {correction.author.name}, {correction.event}, {correction.timestamp}
+            </div>
+          {/each}
+        </div>
+      {/if}
     {/if}
 
     <Divider />
@@ -235,7 +261,7 @@
             size="small"
             title="Imprimer l'étiquette"
             depressed
-            on:click={print}
+            on:click={() => print('dialogTag')}
           >
             <Icon path={mdiPrinter} />
           </Button>

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Button, Icon } from 'svelte-materialify'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import printJS from 'print-js'
 
   import Template from '$lib/cash/Template.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import { api } from '$lib/api'
+  import { print } from '$lib/utils'
   import type { Article } from 'types'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import { troc } from '$lib/troc/store'
@@ -30,14 +30,6 @@
       },
     }
   )
-
-  function print() {
-    printJS({
-      printable: 'recoverTags',
-      type: 'html',
-      targetStyles: ['*'],
-    })
-  }
 </script>
 
 <TagsPrint id="recoverTags" articles={pendingItems} tag={$troc.tag} />
@@ -59,7 +51,7 @@
         size="small"
         title="Imprimer les étiquettes de la sélection"
         class="mr-2"
-        on:click={print}
+        on:click={() => print('recoverTags')}
       >
         <Icon path={mdiPrinter} />
       </Button>

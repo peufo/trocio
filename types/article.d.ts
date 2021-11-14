@@ -48,21 +48,7 @@ export declare interface Article extends ArticleCreate {
   sellerSubId?: string
 
   /** Historique des corrections de l'articles */
-  corrections: {
-    timestamp: Date
-    authorId: string
-    authorSubId: string
-    event:
-      | 'edit-name'
-      | 'edit-price'
-      | 'cancel-valided'
-      | 'cancel-refused'
-      | 'cancel-sold'
-      | 'cancel-recover'
-    message?: string
-    oldValue?: any
-    newValue?: any
-  }[]
+  corrections: ArticleCorrection[]
 
   /** Raccourci vers les utilisateurs pour ne pas passé par les subscribes */
   buyerId: string
@@ -77,6 +63,31 @@ export declare interface ArticleLookup extends Article {
   buyerSub?: ISubscribe
   validator?: User
   seller?: User
+}
+
+export interface ArticleCorrection {
+  timestamp: Date
+  authorId: string
+  authorSubId: string
+  event:
+    | 'edit-name'
+    | 'edit-price'
+    | 'cancel-valided'
+    | 'cancel-refused'
+    | 'cancel-sold'
+    | 'cancel-recover'
+  message?: string
+  oldValue?: any
+  newValue?: any
+}
+
+export interface ArticleCorrectionLookup extends ArticleCorrection {
+  author: { _id: string; name: string }
+}
+
+export interface ArticleCorrectionsLookup {
+  _id: string
+  corrections: ArticleCorrectionLookup[]
 }
 
 export type EventName = 'valided' | 'refused' | 'sold' | 'recover'

@@ -18,12 +18,16 @@ export function sortByRecover(a, b) {
   return new Date(b.recover).getTime() - new Date(a.recover).getTime()
 }
 
-export function goPrint(id) {
-  printJS({
+export function print(id: string) {
+  const options = {
     printable: id,
     type: 'html',
     targetStyles: ['*'],
-  })
+    font_size: null,
+  }
+
+  // @ts-ignore
+  printJS(options)
 }
 
 /*
