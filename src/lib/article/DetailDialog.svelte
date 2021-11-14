@@ -7,6 +7,8 @@
   import { renderAmount, print } from '$lib/utils'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import type {
+    Article,
+    ArticleCorrection,
     ArticleCorrectionsLookup,
     ArticleLookup,
     EventName,
@@ -122,6 +124,15 @@
     if (!newPrice || !article) return
     $queryEditPrice.mutate(newPrice)
   }
+
+  const mapCorrectionEvent: { [key in ArticleCorrection['event']]: string } = {
+    'edit-name': 'changé le nom',
+    'edit-price': 'changé le prix',
+    'cancel-recover': 'annulé la récupération',
+    'cancel-refused': 'annulé le refus',
+    'cancel-sold': 'annulé la vente',
+    'cancel-valided': 'annulé la validation',
+  }
 </script>
 
 {#if article}
@@ -173,17 +184,28 @@
 
     {#if queryCorrections && $queryCorrections.isSuccess && !$queryCorrections.isLoading && $queryCorrections.data?.corrections?.length}
       {#if !correctionsVisible}
-        <Button on:click={() => (correctionsVisible = true)} size="small" text>
-          <IconLink icon={faHistory} class="mr-2" size="1em" opacity />
-          {$queryCorrections.data.corrections.length}
-          corrections
-        </Button>
+        <div class="d-flex">
+          <div class="flex-grow-1" />
+          <Button
+            on:click={() => (correctionsVisible = true)}
+            size="small"
+            text
+          >
+            <IconLink icon={faHistory} class="mr-2" size="1em" opacity />
+            {$queryCorrections.data.corrections.length}
+            corrections
+          </Button>
+        </div>
       {:else}
         <div in:slide|local>
-          <Divider />
+          <b>Historique des corrections : </b>
+
           {#each $queryCorrections.data.corrections as correction}
             <div>
-              {correction.author.name}, {correction.event}, {correction.timestamp}
+              {intl.format(new Date(correction.timestamp))} -
+              {correction.author.name}
+              a
+              {mapCorrectionEvent[correction.event]}
             </div>
           {/each}
         </div>
