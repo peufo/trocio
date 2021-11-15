@@ -21,7 +21,7 @@
   export let subscribeId: string
   export let isClosed = false
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
-  export let modeAdmin = false
+  export let { modeAdmin } = false
 
   let articleCreateDialogActive = false
   let tarifInfoDialogActive = false
@@ -90,7 +90,7 @@
     <br />
     <div class="d-flex">
       <div class="flex-grow-1" />
-      {#if modeAdmin && resum.balance !== 0}
+      {#if { modeAdmin } && resum.balance !== 0}
         <Button
           class="primary-color mt-2 mr-4"
           on:click={() => $queryPayment.mutate()}
@@ -121,7 +121,7 @@
         <!-- Provide button -->
         <span style="margin-left: 30px;">
           <!-- Bonton pour proposer un articles -->
-          {#if !modeAdmin}
+          {#if !{ modeAdmin }}
             <Button
               text
               dense
@@ -160,7 +160,7 @@
         </span>
       </span>
 
-      <ArticleProvidedTable modeAdmin {subscribeId} on:openTarifDialog />
+      <ArticleProvidedTable {modeAdmin} {subscribeId} on:openTarifDialog />
     </DetailCard>
 
     <br />

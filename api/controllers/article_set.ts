@@ -158,13 +158,12 @@ export const editName: RequestHandler<
       userId: req.session.user._id,
     })
 
-    // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
-    if (
-      String(article.providerId) !== req.session.user._id &&
-      accessor.role !== 'admin' &&
-      accessor.role !== 'cashier'
-    )
-      throw 'Not allowed'
+    // Test le role de l'utilisateur
+    if (accessor.role !== 'admin' && accessor.role !== 'cashier') {
+      if (String(article.providerId) !== req.session.user._id)
+        throw 'Not allowed'
+      if (article.valided) throw `Valided article can't be edited by provider`
+    }
 
     // Enregistre la l'historique de corrections
     article.corrections.push({
@@ -188,7 +187,6 @@ export const editName: RequestHandler<
  * Modification du prix d'un article permis si
  * - L'article n'est pas vendu
  * - L'utilisateur est le fournisseur de l'article ou un cassier du troc
- * TODO: ne permetre qu'un baisse du prix si l'article est validé ?
  */
 export const editPrice: RequestHandler<
   void,
@@ -208,13 +206,12 @@ export const editPrice: RequestHandler<
       userId: req.session.user._id,
     })
 
-    // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
-    if (
-      String(article.providerId) !== req.session.user._id &&
-      accessor.role !== 'admin' &&
-      accessor.role !== 'cashier'
-    )
-      throw 'Not allowed'
+    // Test le role de l'utilisateur
+    if (accessor.role !== 'admin' && accessor.role !== 'cashier') {
+      if (String(article.providerId) !== req.session.user._id)
+        throw 'Not allowed'
+      if (article.valided) throw `Valided article can't be edited by provider`
+    }
 
     // Enregistre la l'historique de corrections
     article.corrections.push({
@@ -313,7 +310,6 @@ export const soldArticles: RequestHandler = async (req, res, next) => {
 export const cancelEvent: RequestHandler<any, any, { eventName: EventName }> =
   async (req, res, next) => {
     try {
-      // TODO: create an historic
       let { articles, isArray, subscribe } = await ensureCanEdit(req)
       const { eventName } = req.body
 

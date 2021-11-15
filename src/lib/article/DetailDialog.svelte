@@ -184,7 +184,7 @@
 
     {#if queryCorrections && $queryCorrections.isSuccess && !$queryCorrections.isLoading && $queryCorrections.data?.corrections?.length}
       {#if !correctionsVisible}
-        <div class="d-flex">
+        <div out:slide|local class="d-flex">
           <div class="flex-grow-1" />
           <Button
             on:click={() => (correctionsVisible = true)}
@@ -222,12 +222,14 @@
       </div>
     {:else}
       <div class="d-flex flex-wrap">
-        <Button text class="blue-text" on:click={handleEditName}>
-          Modifier le nom
-        </Button>
-        <Button text class="blue-text" on:click={handleEditPrice}>
-          Modifier le prix
-        </Button>
+        {#if modeAdmin || (!article.valided && !article.refused)}
+          <Button text class="blue-text" on:click={handleEditName}>
+            Modifier le nom
+          </Button>
+          <Button text class="blue-text" on:click={handleEditPrice}>
+            Modifier le prix
+          </Button>
+        {/if}
 
         {#if !article.valided && !article.refused}
           <Button
