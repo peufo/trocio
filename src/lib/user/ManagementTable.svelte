@@ -57,7 +57,7 @@
       format: 'enum',
       getValue: (sub) =>
         sub.userId ? ROLES.find((r) => r.queryValue === sub.role)?.label : '',
-      enumOptions: ROLES,
+      enumOptions: [{ queryValue: '', label: 'Tous' }, ...ROLES],
     },
     {
       label: 'Tarif',
