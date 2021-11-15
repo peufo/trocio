@@ -21,7 +21,7 @@
   export let subscribeId: string
   export let isClosed = false
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
-  export let { modeAdmin } = false
+  export let modeAdmin = false
 
   let articleCreateDialogActive = false
   let tarifInfoDialogActive = false
