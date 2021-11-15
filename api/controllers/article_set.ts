@@ -268,7 +268,7 @@ export const validArticles: RequestHandler = async (req, res, next) => {
 
 export const soldArticles: RequestHandler = async (req, res, next) => {
   try {
-    let { articles, subscribe, isArray } = await ensureCanEdit(req)
+    let { articles, subscribe, isArray } = await ensureCanEdit(req, false)
     /** Si buyerSubId est fourni il s'agit d'une vente. Sinon, il s'agit d'une récupération */
     const { buyerSubId } = req.body
 
@@ -373,7 +373,7 @@ export const cancelEvent: RequestHandler<any, any, { eventName: EventName }> =
  * Garantie que l'utilisateur connecté peut gerer la liste d'articles
  * Parse le articlesId ou articleId
  */
-async function ensureCanEdit(req: Request) {
+async function ensureCanEdit(req: Request, needFromSameProvider = true) {
   try {
     if (!req.session.user) throw 'Login required'
     const { articleId, articlesId } = req.body
@@ -399,6 +399,7 @@ async function ensureCanEdit(req: Request) {
 
       // Assure que tout les articles viennent du même fournisseur
       if (
+        needFromSameProvider &&
         articles.map((a) => a.providerId.valueOf()).filter(beUnique).length > 1
       )
         throw 'All article need to come from the same provider'
