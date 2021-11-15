@@ -19,7 +19,8 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
       userId: req.session.user._id,
     }).exec()
 
-    if (!userId && !anonym && accessorSub) throw 'Subscription already exist'
+    if (!userId && !anonym && accessorSub.validedByUser)
+      throw 'Subscription already exist and valided by user'
     if (
       (userId || anonym) &&
       accessorSub.role !== 'admin' &&
@@ -27,13 +28,12 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
     )
       throw 'Create subscribe for other user (or anonym) require admin or cashier right'
 
-    const newSubscribe: Partial<ISubscribe> = {
-      trocId,
-      tarifId: troc.tarif.find((t) => t.bydefault)._id,
-    }
-
     if (userId || anonym) {
       // Création d'un sub pour un client
+      const newSubscribe: Partial<ISubscribe> = {
+        trocId,
+        tarifId: troc.tarif.find((t) => t.bydefault)._id,
+      }
       newSubscribe.validedByTroc = true
       newSubscribe.role = role
       if (role === 'trader') {
@@ -56,16 +56,29 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
           randomize('0000'),
         ].join('-')
       }
+
+      const subscribe = new Subscribe(newSubscribe)
+      await subscribe.save()
+      res.json(subscribe)
     } else {
-      // Création d'un sub sur son propre compte
-      newSubscribe.validedByUser = true
-      newSubscribe.userId = req.session.user._id
+      if (accessorSub) {
+        // Validation de son propre sub
+        accessorSub.validedByUser = true
+        await accessorSub.save()
+        res.json(accessorSub)
+      } else {
+        // Création d'un sub sur son propre compte
+        const newSubscribe: Partial<ISubscribe> = {
+          trocId,
+          tarifId: troc.tarif.find((t) => t.bydefault)._id,
+        }
+        newSubscribe.validedByUser = true
+        newSubscribe.userId = req.session.user._id
+        const subscribe = new Subscribe(newSubscribe)
+        await subscribe.save()
+        res.json(subscribe)
+      }
     }
-
-    const subscribe = new Subscribe(newSubscribe)
-    await subscribe.save()
-
-    res.json(subscribe)
   } catch (error) {
     next(error)
   }

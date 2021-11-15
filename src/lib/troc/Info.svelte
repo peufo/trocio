@@ -66,7 +66,7 @@
       return $goto('/login', {
         callback: `/trocs/${troc._id}`,
       })
-    if (troc.subscribe?.role) activityOpen = !activityOpen
+    if (troc.subscribe?.validedByUser) activityOpen = !activityOpen
     else {
       $createSubscribe.mutate(
         { trocId: troc._id },
@@ -232,23 +232,26 @@
   {/if}
 
   <div class="flex-grow-1" />
-  {#if !!$user && troc.subscribe?.role === 'admin'}
-    <a href={`/admin?trocId=${troc._id}`}>
-      <Button depressed class="mr-1 ml-1">
-        administration
-        <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
-      </Button>
-    </a>
-  {:else if !!$user && troc.subscribe?.role === 'cashier'}
-    <a href={`/cashier?trocId=${troc._id}`}>
-      <Button depressed class="mr-1 ml-1">
-        Caisse
-        <IconLink icon={faCashRegister} class="ml-2" size="1.2em" opacity />
-      </Button>
-    </a>
+  {#if !!$user && troc.subscribe?.validedByUser}
+    {#if troc.subscribe?.role === 'admin'}
+      <a href={`/admin?trocId=${troc._id}`}>
+        <Button depressed class="mr-1 ml-1">
+          administration
+          <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
+        </Button>
+      </a>
+    {:else if troc.subscribe?.role === 'cashier'}
+      <a href={`/cashier?trocId=${troc._id}`}>
+        <Button depressed class="mr-1 ml-1">
+          Caisse
+          <IconLink icon={faCashRegister} class="ml-2" size="1.2em" opacity />
+        </Button>
+      </a>
+    {/if}
   {/if}
+
   <Button on:click={handleClickActivity} depressed class="mr-1 ml-1">
-    {troc.subscribe ? 'Mon activité' : 'Participer au troc'}
+    {troc.subscribe?.validedByUser ? 'Mon activité' : 'Participer au troc'}
     <IconLink
       icon={faChevronRight}
       rotate={activityOpen ? 90 : 0}
