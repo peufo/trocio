@@ -90,7 +90,8 @@
     <br />
     <div class="d-flex">
       <div class="flex-grow-1" />
-      {#if { modeAdmin } && resum.balance !== 0}
+      <!-- Patch en attendant de gerer la monaie correctement dans la DB -->
+      {#if { modeAdmin } && Math.abs(resum.balance) > 0.001}
         <Button
           class="primary-color mt-2 mr-4"
           on:click={() => $queryPayment.mutate()}
