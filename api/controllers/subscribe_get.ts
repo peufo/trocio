@@ -18,6 +18,8 @@ export const getMySubscribes: RequestHandler = async (req, res, next) => {
     const aggregate = Subscribe.aggregate()
     aggregate.match({
       userId: new ObjectId(req.session.user._id),
+      validedByUser: true,
+      // validedByUser: false => invitations
     })
 
     lookupTroc(aggregate)
