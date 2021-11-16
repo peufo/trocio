@@ -39,40 +39,6 @@
       notify.warning('Nom incorrect')
     }
   }
-
-  async function computeSubscriber(trocId: string) {
-    try {
-      let res = await fetch(
-        '/api/root/compute-subscriber',
-        getHeader({ trocId })
-      )
-      let json = await res.json()
-      if (json.error) throw json.message
-      notify.success(json.message)
-    } catch (error) {
-      notify.error(error)
-    }
-  }
-
-  async function computeArticles(trocId: string) {
-    try {
-      let res = await fetch('/api/root/compute-articles', getHeader({ trocId }))
-      let json = await res.json()
-      if (json.error) throw json.message
-      notify.success(json.message)
-    } catch (error) {
-      notify.error(error)
-    }
-  }
-
-  function subscirbesMigration(trocId: string) {
-    api('/api/root/subscribes-migration', {
-      method: 'post',
-      data: { trocId },
-    })
-      .then((res) => notify.success(res.message))
-      .catch(notify.error)
-  }
 </script>
 
 <div class="pt-8" style="width: 800px; margin: auto;">
@@ -82,25 +48,6 @@
     <br />
     {#each trocs as troc}
       <div class="simple-card mt-4 pa-2">
-        <Button
-          class="w3-margin-right"
-          on:click={() => computeSubscriber(troc._id)}
-        >
-          Compter le nombre d'abonnement
-        </Button>
-        <Button
-          class="w3-margin-right"
-          on:click={() => computeArticles(troc._id)}
-        >
-          Compter le nombre d'articles
-        </Button>
-        <Button
-          class="w3-margin-right"
-          on:click={() => subscirbesMigration(troc._id)}
-        >
-          Migration des subscribes
-        </Button>
-
         <Button class="w3-red" on:click={() => removeTroc(troc)}>
           Supprimer
         </Button>

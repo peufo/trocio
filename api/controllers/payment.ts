@@ -62,9 +62,11 @@ export const createPayment: RequestHandler<any, any, PaymentCreate> = async (
     const payment = new Payment({
       trocId: acceded.trocId,
       userSubId,
+      userId: acceded.userId,
+      acceptorSubId: accesor._id,
+      acceptorId: accesor.userId,
       amount,
       message,
-      acceptorSubId: accesor._id,
     })
 
     await payment.save()

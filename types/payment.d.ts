@@ -7,7 +7,9 @@ export declare interface PaymentCreate {
 export declare interface PaymentInterface extends PaymentCreate {
   _id: string
   trocId: string
+  userId: string
   acceptorSubId: string
+  acceptorId: string
   createdAt: Date
   updatedAt: Date
 }

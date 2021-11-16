@@ -1,4 +1,6 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose, { Schema, Document } from 'mongoose'
+
+import type { PaymentInterface } from '../../types'
 const { ObjectId } = Schema.Types
 
 var paymentModel = new Schema({
@@ -7,6 +9,10 @@ var paymentModel = new Schema({
   userSubId: { type: ObjectId, ref: 'subscribe', index: true },
   amount: { required: true, type: Number },
   message: String,
+
+  /** Shortcuts */
+  acceptorId: { type: ObjectId, ref: 'user' },
+  userId: { type: ObjectId, ref: 'user' },
 
   /** @deprecated use acceptorSubId */
   acceptor: { type: ObjectId, ref: 'user' },
@@ -18,4 +24,7 @@ var paymentModel = new Schema({
 
 paymentModel.set('timestamps', true)
 
-export default mongoose.model('payment', paymentModel)
+export default mongoose.model<PaymentInterface & Document>(
+  'payment',
+  paymentModel
+)

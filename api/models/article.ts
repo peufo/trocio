@@ -77,12 +77,6 @@ let articleModel = new Schema({
   validator: { type: ObjectId, ref: 'user' },
   /** @deprecated  */
   seller: { type: ObjectId, ref: 'user' },
-  /** @deprecated */
-  newPriceRequest: {
-    applicant: { type: ObjectId, ref: 'user' },
-    createdAt: Date,
-    price: Number,
-  },
 })
 
 articleModel.set('timestamps', true)

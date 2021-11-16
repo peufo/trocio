@@ -23,20 +23,6 @@ const trocModel = new Schema(
     description: { type: String, required: true },
     creator: { type: ObjectId, ref: 'user', required: true },
 
-    /** @deprecated */
-    admin: [{ type: ObjectId, ref: 'user' }],
-    /** @deprecated */
-    cashier: [{ type: ObjectId, ref: 'user' }],
-    /** @deprecated */
-    trader: [
-      {
-        user: { type: ObjectId, ref: 'user' },
-        prefix: { type: String, uppercase: true },
-      },
-    ],
-    /** @deprecated */
-    provider: [{ type: ObjectId, ref: 'user' }],
-
     schedule: [
       {
         name: {
@@ -51,8 +37,6 @@ const trocModel = new Schema(
     ],
     tarif: [
       {
-        /** @deprecated */
-        apply: [{ type: ObjectId, ref: 'user' }],
         name: { type: String, default: 'Tarif' },
         bydefault: { type: Boolean, default: false },
         margin: { type: Number, default: 0, min: 0, max: 0.4 },
