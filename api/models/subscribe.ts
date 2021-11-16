@@ -37,7 +37,8 @@ let subscribeModel = new Schema({
   user: { type: ObjectId, ref: 'user' },
 })
 
-subscribeModel.index({ trocId: 1, userId: 1 }, { unique: true })
+// incompatible avec les subscribe sans user, dommage
+// subscribeModel.index({ trocId: 1, userId: 1 }, { unique: true })
 
 subscribeModel.set('timestamps', true)
 
