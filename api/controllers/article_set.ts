@@ -397,12 +397,13 @@ async function ensureCanEdit(req: Request, needFromSameProvider = true) {
       if (articles.map((a) => a.trocId.valueOf()).filter(beUnique).length > 1)
         throw 'All article need to come from the same troc'
 
-      // Assure que tout les articles viennent du même fournisseur
+      // Assure que tout les articles viennent du même subscribe de fournisseur
       if (
         needFromSameProvider &&
-        articles.map((a) => a.providerId.valueOf()).filter(beUnique).length > 1
+        articles.map((a) => a.providerSubId.valueOf()).filter(beUnique).length >
+          1
       )
-        throw 'All article need to come from the same provider'
+        throw 'All article need to come from the same provider subscribe'
     }
 
     // Assure que l'utilisateur connecté à le droit de validé les articles
