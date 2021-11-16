@@ -17,7 +17,7 @@ export function login(mail: string, password: string) {
  * Verification de la connexion de l'utilisateur
  */
 export function authenticate() {
-  return api<User>('/api/users/me')
+  return api<User>('/api/users/me', { error: false })
 }
 
 /**

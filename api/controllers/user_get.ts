@@ -1,5 +1,4 @@
 import type { RequestHandler } from 'express'
-import mongoose from 'mongoose'
 import Subscribe from '../models/subscribe'
 import UserModel from '../models/user'
 
