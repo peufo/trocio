@@ -47,7 +47,12 @@ async function cleanUpSubscribes() {
     // detection des doublon subscribe
     const groupSubs = await Subscribe.aggregate()
       .group({
-        _id: { $concat: [{ $toString: '$trocId' }, { $toString: '$userId' }] },
+        _id: {
+          $concat: [
+            { $convert: { input: '$trocId', to: 'string' } },
+            { $convert: { input: '$userId', to: 'string' } },
+          ],
+        },
         count: { $sum: 1 },
         subs: { $push: '$$ROOT' },
       })
@@ -80,7 +85,7 @@ async function migrationArticles() {
     for (const article of articles) {
       // ignore si l'article est déjà migré
       if (!article.troc) {
-        console.log('Article migration ingnored')
+        console.log('Article migration ignored')
         continue
       }
 
@@ -152,7 +157,7 @@ async function migrationPayments() {
     for (const payment of payments) {
       // ignore si le payment est déjà migré
       if (!payment.troc) {
-        console.log('Payment migration ingnored')
+        console.log('Payment migration ignored')
         continue
       }
 
