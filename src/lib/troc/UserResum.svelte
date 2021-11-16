@@ -91,7 +91,7 @@
     <div class="d-flex">
       <div class="flex-grow-1" />
       <!-- Patch en attendant de gerer la monaie correctement dans la DB -->
-      {#if { modeAdmin } && Math.abs(resum.balance) > 0.001}
+      {#if modeAdmin && Math.abs(resum.balance) > 0.001}
         <Button
           class="primary-color mt-2 mr-4"
           on:click={() => $queryPayment.mutate()}
@@ -122,7 +122,7 @@
         <!-- Provide button -->
         <span style="margin-left: 30px;">
           <!-- Bonton pour proposer un articles -->
-          {#if !{ modeAdmin }}
+          {#if !modeAdmin}
             <Button
               text
               dense
