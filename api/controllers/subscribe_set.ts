@@ -19,8 +19,8 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
       userId: req.session.user._id,
     }).exec()
 
-    if (!userId && !anonym && accessorSub.validedByUser)
-      throw 'Subscription already exist and valided by user'
+    if (!userId && !anonym && accessorSub?.validedByUser)
+      throw 'Subscription already exist and is valided by user'
     if (
       (userId || anonym) &&
       accessorSub.role !== 'admin' &&
