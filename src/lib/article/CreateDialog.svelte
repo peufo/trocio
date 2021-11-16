@@ -26,13 +26,12 @@
   let listArticles: ArticleCreate[] = []
   let listArticlesError = ''
 
-  const dispatch =
-    createEventDispatcher<{
-      createArticle: Article
-      createArticles: Article[]
-    }>()
+  const dispatch = createEventDispatcher<{
+    createArticle: Article
+    createArticles: Article[]
+  }>()
 
-  let textareaDesignation: HTMLTextAreaElement | undefined
+  let textarea: HTMLTextAreaElement | undefined
 
   $: listPlaceHolder = `\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${
     prefix ? '[ Référence ] ' : ''
@@ -56,7 +55,7 @@
         dispatch('createArticle', article)
         newName = ''
         newPrice = ''
-        textareaDesignation?.focus()
+        textarea?.focus()
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
         queryClient.invalidateQueries('trocs/byId/counters')
@@ -170,7 +169,7 @@
   }
 </script>
 
-<Dialog bind:active class="pa-4">
+<Dialog bind:active class="pa-4" on:introend={() => textarea?.focus()}>
   <div class="d-flex justify-space-between mb-3">
     <div class="text-h6">
       Proposer {listMode ? `une liste d'` : 'un '}article
@@ -192,6 +191,7 @@
       <Textarea
         on:input={handleInputList}
         bind:value={newArticles}
+        bind:textarea
         rows={10}
         placeholder={listPlaceHolder}
         error={!!listArticlesError}
@@ -230,12 +230,9 @@
     </div>
   {:else}
     <div in:fade|local>
-      <Textarea
-        bind:value={newName}
-        rows={2}
-        autogrow
-        bind:textarea={textareaDesignation}>Désignation</Textarea
-      >
+      <Textarea bind:value={newName} rows={2} autogrow bind:textarea>
+        Désignation
+      </Textarea>
 
       <div class="d-flex mt-3">
         <TextField
