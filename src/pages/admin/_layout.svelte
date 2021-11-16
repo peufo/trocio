@@ -27,7 +27,7 @@
   <div class="centered" style="height: 100px;">
     <span>Oups, une erreur c'est produite.</span>
   </div>
-{:else if $trocQuery.isSuccess}
+{:else if $trocQuery.isSuccess && $troc}
   <NavigationAdmin
     bind:realWidth={navigationWidth}
     on:openTips={() => (tipsActive = !tipsActive)}
@@ -42,7 +42,7 @@
   padding-right: {tipsActive ? tipsWidth : '0px'};"
   >
     <main class="pa-4">
-      {#if $trocQuery?.data?.is_try}
+      {#if $troc.is_try}
         <Alert visible class="orange white-text">Troc d'entrainement</Alert>
       {/if}
       <slot />

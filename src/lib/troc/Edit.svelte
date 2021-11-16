@@ -50,7 +50,7 @@
 
   function validation() {
     error = ''
-    if (!newTroc.is_try) {
+    if (!newTroc?.is_try) {
       if (newTroc.description.length < 10)
         error = `Description trop courte (${newTroc.description.length}/10)`
       else if (!newTroc.address) error = 'Adresse incomplette'
