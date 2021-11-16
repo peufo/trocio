@@ -46,13 +46,11 @@ async function cleanUpSubscribes() {
   try {
     // detection des doublon subscribe
     const groupSubs = await Subscribe.aggregate()
+      .match({
+        userId: { $exists: 1 },
+      })
       .group({
-        _id: {
-          $concat: [
-            { $convert: { input: '$trocId', to: 'string' } },
-            { $convert: { input: '$userId', to: 'string' } },
-          ],
-        },
+        _id: { userId: '$userId', trocId: '$trocId' },
         count: { $sum: 1 },
         subs: { $push: '$$ROOT' },
       })
