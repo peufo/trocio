@@ -41,13 +41,12 @@
   bind:inputElement
   value={initialSearch}
   {placeholder}
-  solo
-  dense
   on:keydown
   on:focus
   on:blur
   on:change={handleSearch}
   on:input={handleSearch}
+  type="search"
   style="max-width: 400px; {style}"
   {...$$restProps}
 >

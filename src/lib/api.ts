@@ -4,10 +4,8 @@ import notify from '$lib/notify'
 import type { BaseResponse, ResponseNotifyOptions } from 'types'
 import {
   GetNextPageParamFunction,
-  InfiniteData,
   QueryFunction,
   QueryFunctionContext,
-  QueryKey,
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   useQuery,
@@ -26,7 +24,7 @@ type ApiOptions<RequestQuery, RequestResult = RequestQuery> = Partial<
   } & ResponseNotifyOptions<RequestResult>
 >
 
-export function api<RequestQuery, RequestResult = RequestQuery>(
+export function api<RequestQuery = any, RequestResult = RequestQuery>(
   url: string,
   options: ApiOptions<RequestQuery, RequestResult> = {}
 ) {

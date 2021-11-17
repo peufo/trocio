@@ -23,16 +23,6 @@ const trocModel = new Schema(
     description: { type: String, required: true },
     creator: { type: ObjectId, ref: 'user', required: true },
 
-    admin: [{ type: ObjectId, ref: 'user' }],
-    cashier: [{ type: ObjectId, ref: 'user' }],
-    trader: [
-      {
-        user: { type: ObjectId, ref: 'user' },
-        prefix: { type: String, uppercase: true },
-      },
-    ],
-    provider: [{ type: ObjectId, ref: 'user' }],
-
     schedule: [
       {
         name: {
@@ -47,7 +37,6 @@ const trocModel = new Schema(
     ],
     tarif: [
       {
-        apply: [{ type: ObjectId, ref: 'user' }], // A supprimer après migration
         name: { type: String, default: 'Tarif' },
         bydefault: { type: Boolean, default: false },
         margin: { type: Number, default: 0, min: 0, max: 0.4 },
@@ -70,8 +59,6 @@ const trocModel = new Schema(
       useTagPrinter: { type: Boolean, default: false },
       useScanner: { type: Boolean, default: false },
     },
-    subscriber: { type: Number, default: 1 },
-    articles: { type: Number, default: 0 },
   },
   {
     toJSON: { virtuals: true },

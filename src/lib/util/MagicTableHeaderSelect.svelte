@@ -7,16 +7,21 @@
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import type { FieldInteface } from 'types'
+
   export let field: Partial<FieldInteface>
+  export let queryParam: { [key: string]: any } = {}
+
+  let key = `exact_${field.queryKey}`
   let inputElement: HTMLInputElement
   let active = false
   let filterLabel = ''
 
   onMount(() => {
     // Très chiant des récupérer un label à partir d'un id ...
-    const queryValue = $params[`exact_${field.queryKey}`]
+    const queryValue = $params[key]
     if (queryValue) {
       filterLabel = 'Filtre actif'
+      queryParam[key] = queryValue
     }
   })
 
@@ -28,6 +33,9 @@
   }
 
   function handleSelect(item: any) {
+    queryParam[key] = field.selectOption?.getKey
+      ? field.selectOption?.getKey(item)
+      : undefined
     filterLabel = field.selectOption?.getValue
       ? field.selectOption?.getValue(item)
       : item['name']
@@ -36,8 +44,9 @@
 
   function handleClear() {
     const query = $params
-    delete query[`exact_${field.queryKey}`]
+    delete query[key]
     $goto($url(), query)
+    queryParam = {}
     filterLabel = ''
     active = false
   }
@@ -64,10 +73,9 @@
     {#if field.selectOption}
       <MagicSelect
         flatMode
-        keepValue
         bind:inputElement
         on:select={({ detail }) => handleSelect(detail)}
-        selectKey="exact_{field.queryKey}"
+        selectKey={key}
         {...field.selectOption}
       />
     {/if}

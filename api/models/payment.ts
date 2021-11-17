@@ -1,14 +1,30 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose, { Schema, Document } from 'mongoose'
+
+import type { PaymentInterface } from '../../types'
 const { ObjectId } = Schema.Types
 
 var paymentModel = new Schema({
-  acceptor: { required: true, type: ObjectId, ref: 'user' },
-  user: { type: ObjectId, ref: 'user', index: true },
-  troc: { required: true, type: ObjectId, ref: 'troc', index: true },
+  trocId: { required: true, type: ObjectId, ref: 'troc', index: true },
+  acceptorSubId: { required: true, type: ObjectId, ref: 'subscribe' },
+  userSubId: { type: ObjectId, ref: 'subscribe', index: true },
   amount: { required: true, type: Number },
   message: String,
+
+  /** Shortcuts */
+  acceptorId: { type: ObjectId, ref: 'user' },
+  userId: { type: ObjectId, ref: 'user' },
+
+  /** @deprecated use acceptorSubId */
+  acceptor: { type: ObjectId, ref: 'user' },
+  /** @deprecated use userSubId */
+  user: { type: ObjectId, ref: 'user' },
+  /** @deprecated use trocId */
+  troc: { type: ObjectId, ref: 'troc' },
 })
 
 paymentModel.set('timestamps', true)
 
-export default mongoose.model('payment', paymentModel)
+export default mongoose.model<PaymentInterface & Document>(
+  'payment',
+  paymentModel
+)

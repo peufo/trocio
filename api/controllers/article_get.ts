@@ -1,119 +1,19 @@
 import Article from '../models/article'
-import User from '../models/user'
-import { Schema } from 'mongoose'
-const { ObjectId } = Schema.Types
+import mongoose from 'mongoose'
 
 import { dynamicQuery } from './utils'
+import { RequestHandler } from 'express'
+import type { Article as IArticle } from '../../types'
 
-export function getArticle(req, res, next) {
-  Article.find({ _id: req.params.articleId }).exec((err, article) => {
-    if (err) return next(err)
-    res.json(article)
-  })
-}
+const { ObjectId } = mongoose.Types
 
-/** @deprecated use searchArticle */
-export function getProvidedArticles(req, res, next) {
-  let {
-    trocId,
-    providerId = req.session.user._id,
-    search = '',
-    skip = 0,
-    limit = 20,
-  } = req.query
-
-  skip = Number(skip)
-  limit = Number(limit)
-  const reg = new RegExp(search, 'i')
-
-  Article.find({
-    troc: trocId,
-    provider: providerId,
-    $or: [{ ref: reg }, { name: reg }],
-  })
-    .skip(skip)
-    .limit(limit)
-    .exec((err, article) => {
-      if (err) return next(err)
-      res.json(article)
-    })
-}
-
-/** @deprecated use searchArticle */
-export function getPurchasesArticles(req, res, next) {
-  let { trocId, buyerId, sellerId, skip = 0, limit = 20 } = req.query
-  if (!buyerId) {
-    // Client anonyme
-    buyerId = { $exists: false }
-    if (!sellerId) sellerId = req.session.user._id
-  }
-  const query = sellerId
-    ? { troc: trocId, buyer: buyerId, seller: sellerId }
-    : { troc: trocId, buyer: buyerId }
-
-  Article.find(query)
-    .skip(skip)
-    .limit(limit)
-    .exec((err, article) => {
-      if (err) return next(err)
-      res.json(article)
-    })
-}
-
-/** @deprecated use searchArticle */
-export function getGivbacksArticles(req, res, next) {
-  const { trocId, userId, skip = 0, limit = 20 } = req.query
-  const query = userId
-    ? { troc: trocId, 'giveback.user': userId }
-    : {
-        troc: trocId,
-        giveback: {
-          $and: [
-            { $size: { $gt: 0 } },
-            { $elemMatch: { user: { $exists: false } } },
-          ],
-        },
-      }
-
-  Article.find(query)
-    .skip(skip)
-    .limit(limit)
-    .exec((err, article) => {
-      if (err) return next(err)
-      res.json(article)
-    })
-}
-
-export async function searchArticle(req, res, next) {
-  let {
-    trocId,
-    limit,
-    skip,
-    exact_statut,
-    provider,
-    providernot,
-    include_without_name,
-  } = req.query
+export const getArticles: RequestHandler = async (req, res, next) => {
+  let { q, exact_statut, include_without_name, limit, skip } = req.query
 
   let { match, sort } = dynamicQuery(req.query, ['exact_statut'])
 
-  // addMatch
+  // add specific match
   if (!include_without_name) match.$and.push({ name: { $ne: '' } })
-
-  if (trocId) match.$and.push({ troc: trocId })
-
-  // Filtre pour un groupe de founisseur
-  if (provider) match.$and.push({ provider: { $in: provider } })
-  if (providernot) match.$and.push({ provider: { $ne: providernot } })
-
-  // Define skip
-  skip = Number(skip)
-  if (!skip) skip = 0
-
-  //Define limit
-  limit = Number(limit)
-  if (!limit) limit = 40
-  else if (limit > 100) limit = 100
 
   //Add filter statut
   switch (exact_statut) {
@@ -137,50 +37,137 @@ export async function searchArticle(req, res, next) {
       break
   }
 
+  if (q && typeof q === 'string') {
+    match.$and.push({
+      $or: [{ name: new RegExp(q, 'i') }, { ref: new RegExp(q, 'i') }],
+    })
+  }
+
   //remove match if is empty
   if (match.$and.length === 0) delete match.$and
   if (match.$or.length === 0) delete match.$or
 
-  Article.find(match)
-    .sort(sort)
-    .skip(skip)
-    .limit(limit)
-    .populate('provider', 'name')
-    .populate('validator', 'name')
-    .populate('seller', 'name')
-    .populate('buyer', 'name')
-    .exec((err, articles) => {
-      if (err) return next(err)
-      res.json(articles)
+  const aggregate = Article.aggregate()
+    .match(match)
+    .skip(+skip || 0)
+    .limit((+limit || 20) > 1000 ? 1000 : +limit || 20)
+
+  if (Object.keys(sort).length) aggregate.sort(sort)
+
+  lookupUsers(aggregate)
+  lookupSubscribe(aggregate, 'provider')
+  lookupSubscribe(aggregate, 'buyer')
+
+  const articles = await aggregate.exec()
+  res.json(articles)
+}
+
+/**
+ * Effectue un loolkup sur les correction d'un article
+ */
+export const getArticleCorrection: RequestHandler = async (req, res, next) => {
+  try {
+    const { articleId } = req.query
+    if (typeof articleId !== 'string') throw 'articleId query is required'
+
+    const aggregate = Article.aggregate().match({
+      _id: new ObjectId(articleId),
+    })
+
+    lookupCorrections(aggregate)
+
+    const [article] = await aggregate.exec()
+
+    res.json(article)
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Generic fun for lookup an user field
+ */
+const populateUser = (key: string) => ({
+  from: 'users',
+  let: { userId: `$${key}Id` },
+  pipeline: [
+    {
+      $match: {
+        $expr: {
+          $eq: ['$$userId', '$_id'],
+        },
+      },
+    },
+    {
+      $project: { name: 1 },
+    },
+  ],
+  as: `${key}`,
+})
+
+/**
+ * Update aggregate for lookup troc from trocId
+ */
+export function lookupUsers(aggregate: mongoose.Aggregate<IArticle[]>): void {
+  aggregate
+    .lookup(populateUser('provider'))
+    .lookup(populateUser('validator'))
+    .lookup(populateUser('seller'))
+    .lookup(populateUser('buyer'))
+    .addFields({
+      provider: { $arrayElemAt: ['$provider', 0] },
+      validator: { $arrayElemAt: ['$validator', 0] },
+      seller: { $arrayElemAt: ['$seller', 0] },
+      buyer: { $arrayElemAt: ['$buyer', 0] },
     })
 }
 
-/*
-interface ArticleState {
-  proposed: 'proposed'
-  valided: 'valided'
-  refused: 'refused'
-  sold: 'sold'
-  recover: 'recover'
+/**
+ * Update aggregate for add author Name
+ */
+export function lookupCorrections(
+  aggregate: mongoose.Aggregate<IArticle[]>
+): void {
+  aggregate
+    .unwind('$corrections')
+    .lookup(populateUser('corrections.author'))
+    .addFields({
+      'corrections.author': { $arrayElemAt: ['$corrections.author', 0] },
+    })
+    .group({
+      _id: '$_id',
+      corrections: {
+        $push: '$corrections',
+      },
+    })
 }
 
-interface SearchArticleQuery {
-  troc: string
-  limit: number
-  skip: number
-  exact_statut: ArticleState
-  provider: string[]
-  providernot: string[]
-  include_without_name: boolean
-}
-*/
-
-// TODO: migration from commonjs to ES6 typscript
-
-export default {
-  getArticle,
-  getProvidedArticles,
-  getPurchasesArticles,
-  getGivbacksArticles,
-  searchArticle,
+/**
+ * Update aggregate for lookup subscribe of provider
+ */
+export function lookupSubscribe(
+  aggregate: mongoose.Aggregate<IArticle[]>,
+  key = 'provider'
+): void {
+  aggregate
+    .lookup({
+      from: 'subscribes',
+      let: { subId: `$${key}SubId` },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ['$$subId', '$_id'],
+            },
+          },
+        },
+        {
+          $project: { name: 1 },
+        },
+      ],
+      as: `${key}Sub`,
+    })
+    .addFields({
+      [`${key}Sub`]: { $arrayElemAt: [`$${key}Sub`, 0] },
+    })
 }

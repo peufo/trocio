@@ -2,11 +2,6 @@ import { RequestHandler } from 'express'
 import Troc from '../models/troc'
 import User from '../models/user'
 import Subscribe from '../models/subscribe'
-import {
-  lookupIfAdmin,
-  populateTrocUser,
-  populateUsers,
-} from '../controllers/troc_utils'
 import { getOpt } from './option'
 
 export const createTroc: RequestHandler = async (req, res, next) => {
@@ -58,7 +53,7 @@ export const createTroc: RequestHandler = async (req, res, next) => {
 
 // TODO: n'utlisé le patch que pour les infos de base.
 // Le reste est fait sur des endpoints plus précis
-
+/** @deprecated */
 export function patchTroc(req, res, next) {
   const { trocId } = req.params
 
@@ -86,11 +81,7 @@ export function patchTroc(req, res, next) {
     }
     troc.save((err) => {
       if (err) return next(err)
-
-      lookupIfAdmin(troc, req.session.user._id.toString(), (err, troc) => {
-        if (err || !troc) return next(err || Error('Not found'))
-        res.json(troc)
-      })
+      res.json(troc)
     })
   })
 }
@@ -276,8 +267,7 @@ export const createTarif: RequestHandler = async (req, res, next) => {
     // @ts-ignore
     troc.tarif.push(newTarif)
     await troc.save()
-    const trocWithUsers = await populateTrocUser(trocId)
-    res.json(trocWithUsers)
+    res.json(troc)
   } catch (error) {
     next(error)
   }
@@ -286,16 +276,30 @@ export const createTarif: RequestHandler = async (req, res, next) => {
 export const deleteTarif: RequestHandler = async (req, res, next) => {
   try {
     const { trocId = '', tarifId = '' } = req.body
+    if (!trocId || !tarifId) throw 'trocId and tarifId is required in the body'
+
     const troc = await Troc.findById(trocId).exec()
-    troc.tarif = troc.tarif.filter((t) => String(t._id) !== tarifId)
-    if (!troc.tarif.filter((t) => t.bydefault).length)
+    if (!troc) throw 'Troc not found'
+
+    const tarifDefault = troc.tarif.find((t) => t.bydefault)
+    if (!tarifDefault) throw 'Tarif by default not found'
+    if (tarifDefault._id.toString() === tarifId)
       throw `Tarif by default can't be removed`
+
+    // Attribute default tarif for all subscribes with deleted tarif
+    const subscribes = await Subscribe.find({ tarifId })
+    await Promise.all(
+      subscribes.map((sub) => {
+        sub.tarifId = tarifDefault._id
+        return sub.save()
+      })
+    )
+
+    // Update troc.tarif
+    troc.tarif = troc.tarif.filter((t) => String(t._id) !== tarifId)
     await troc.save()
 
-    // TODO: Passer les personne attribué au tarif sur le tarif standard
-
-    const trocWithUsers = await populateTrocUser(trocId)
-    res.json(trocWithUsers)
+    res.json(troc)
   } catch (error) {
     next(error)
   }
@@ -315,8 +319,7 @@ export const editTarif: RequestHandler = async (req, res, next) => {
     tarif.fee = fee
     troc.tarif[tarifIndex] = tarif
     await troc.save()
-    const trocWithUsers = await populateTrocUser(trocId)
-    res.json(trocWithUsers)
+    res.json(troc)
   } catch (error) {
     next(error)
   }

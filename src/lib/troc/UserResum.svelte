@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { Button } from 'svelte-materialify'
+  import { Button, Table } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import { faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -14,23 +14,40 @@
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
-  import { useApi } from '$lib/api'
-  import type { SubscribeResum } from 'types'
+  import { api, useApi } from '$lib/api'
+  import type { PaymentCreate, SubscribeResum } from 'types'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
-  export let trocId: string
-  export let userId: string
+  export let subscribeId: string
   export let isClosed = false
-
-  $: queryResum = useApi<{ trocId: string; userId: string }, SubscribeResum>([
-    'subscribes/resum',
-    { trocId, userId },
-  ])
-  $: resum = $queryResum.data?.resum
+  /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
+  export let modeAdmin = false
 
   let articleCreateDialogActive = false
   let tarifInfoDialogActive = false
   let providedShow = false
   let paymentShow = false
+  const queryClient = useQueryClient()
+
+  $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
+    'subscribes/resum',
+    { subscribeId },
+  ])
+  $: resum = $queryResum.data?.resum
+
+  const queryPayment = useMutation(
+    () =>
+      api<PaymentCreate>('/api/payments', {
+        method: 'post',
+        data: { userSubId: subscribeId, amount: -(resum?.balance || 0) },
+        success: 'Solde reglé avec succès',
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('subscribes/resum')
+      },
+    }
+  )
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
@@ -53,7 +70,7 @@
   }
 </script>
 
-<ArticleCreateDialog {trocId} bind:active={articleCreateDialogActive} />
+<ArticleCreateDialog {subscribeId} bind:active={articleCreateDialogActive} />
 
 <TarifInfoDialog
   tarif={$queryResum.data?.tarif}
@@ -73,10 +90,24 @@
     <br />
     <div class="d-flex">
       <div class="flex-grow-1" />
-      <h6 class="mr-1">
-        Solde &nbsp;&nbsp;
-        {renderAmount(resum.balance)}
-      </h6>
+      <!-- Patch en attendant de gerer la monaie correctement dans la DB -->
+      {#if modeAdmin && Math.abs(resum.balance) > 0.001}
+        <Button
+          class="primary-color mt-2 mr-4"
+          on:click={() => $queryPayment.mutate()}
+          disabled={$queryPayment.isLoading}
+        >
+          Regler le solde en {resum.balance > 0
+            ? 'faveur du client'
+            : 'votre faveur'}
+        </Button>
+        <h6>{renderAmount(resum.balance)}</h6>
+      {:else}
+        <h6 class="mr-1">
+          Solde &nbsp;&nbsp;
+          {renderAmount(resum.balance)}
+        </h6>
+      {/if}
     </div>
 
     <br />
@@ -85,21 +116,23 @@
       free
       bind:show={providedShow}
       count={resum.providedCount || 0}
-      sum={(resum.soldSum || 0) + (resum.feeSum || 0) + (resum.marginSum || 0)}
+      sum={(resum.soldSum || 0) - (resum.feeSum || 0) - (resum.marginSum || 0)}
     >
       <span slot="head">
         <!-- Provide button -->
         <span style="margin-left: 30px;">
           <!-- Bonton pour proposer un articles -->
-          <Button
-            text
-            dense
-            on:click={clickOpenCreateArticle}
-            disabled={isClosed}
-          >
-            <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
-            article
-          </Button>
+          {#if !modeAdmin}
+            <Button
+              text
+              dense
+              on:click={clickOpenCreateArticle}
+              disabled={isClosed}
+            >
+              <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
+              article
+            </Button>
+          {/if}
 
           <!-- Bonton pour proposer un articles -->
           <Button text dense on:click={clickOpenTarifInfo}>
@@ -109,7 +142,7 @@
               size="1.1em"
               class="mr-2"
             />
-            Frais
+            Tarif
           </Button>
 
           <!-- Bonton pour télécharger le fichier .csv -->
@@ -128,7 +161,7 @@
         </span>
       </span>
 
-      <ArticleProvidedTable {trocId} {userId} on:openTarifDialog />
+      <ArticleProvidedTable {modeAdmin} {subscribeId} on:openTarifDialog />
     </DetailCard>
 
     <br />
@@ -137,17 +170,32 @@
       title="Achats"
       free
       count={resum.purchasesCount || 0}
-      sum={resum.purchasesSum || 0}
+      sum={-(resum.purchasesSum || 0)}
     >
-      {#each resum.purchases || [] as article}
-        <div class="d-flex">
-          <div>#{article.ref}</div>
-          <div class="flex-grow-1">{article.name}</div>
-          <div>{renderAmount(article.price)}</div>
-        </div>
-      {:else}
+      <Table class="pb-2">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Nom</th>
+            <th>Date de l'achat</th>
+            <th>Prix</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each resum.purchases || [] as article}
+            <tr>
+              <td>{article.ref}</td>
+              <td>{article.name}</td>
+              <td>{new Date(article.sold || '').toLocaleString()}</td>
+              <td align="right">{renderAmount(article.price)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
+
+      {#if !resum.purchases?.length}
         <div class="text-center pa-12 text--secondary">Aucun achat</div>
-      {/each}
+      {/if}
     </DetailCard>
 
     <br />
@@ -160,15 +208,27 @@
       free
       show={paymentShow}
     >
-      {#each resum.payments || [] as payment}
-        <div class="d-flex">
-          <div>{new Date(payment.createdAt).toLocaleString()}</div>
-          <div class="flex-grow-1">{payment.message}</div>
-          <div>{renderAmount(payment.amount)}</div>
-        </div>
-      {:else}
+      <Table>
+        <thead>
+          <tr>
+            <th>Date du paiement</th>
+            <th>Commentaire</th>
+            <th>Montant</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each resum.payments || [] as payment}
+            <tr>
+              <td>{new Date(payment.createdAt).toLocaleString()}</td>
+              <td>{payment.message || '-'}</td>
+              <td align="right">{renderAmount(payment.amount)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
+      {#if !resum?.payments?.length}
         <div class="text-center pa-12 text--secondary">Aucun paiement</div>
-      {/each}
+      {/if}
     </DetailCard><br />
 
     <!--

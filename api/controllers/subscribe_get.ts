@@ -3,7 +3,8 @@ import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Types
 
 import Subscribe from '../models/subscribe'
-import type { ISubscribe } from '../../types'
+import User from '../models/user'
+import type { ISubscribe, SubscribeLookup } from '../../types'
 import { dynamicQuery } from './utils'
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
@@ -17,6 +18,8 @@ export const getMySubscribes: RequestHandler = async (req, res, next) => {
     const aggregate = Subscribe.aggregate()
     aggregate.match({
       userId: new ObjectId(req.session.user._id),
+      validedByUser: true,
+      // validedByUser: false => invitations
     })
 
     lookupTroc(aggregate)
@@ -37,16 +40,23 @@ export const getMySubscribes: RequestHandler = async (req, res, next) => {
  * Resum is compute and tarif is added by default
  */
 export const getResum: RequestHandler = async (req, res, next) => {
-  const { userId, trocId } = req.query
   try {
-    if (typeof userId !== 'string' || typeof trocId !== 'string')
-      throw 'Query "userId" and "trocId" are required (string)'
+    const { userId, trocId, subscribeId } = req.query
+    if (
+      typeof subscribeId !== 'string' &&
+      (typeof userId !== 'string' || typeof trocId !== 'string')
+    )
+      throw 'Query "subscribeId" or "userId" and "trocId" are required'
+
+    const match = subscribeId
+      ? { _id: new ObjectId(subscribeId) }
+      : {
+          userId: new ObjectId(userId),
+          trocId: new ObjectId(trocId),
+        }
 
     const aggregate = Subscribe.aggregate()
-    aggregate.match({
-      userId: new ObjectId(userId),
-      trocId: new ObjectId(trocId),
-    })
+    aggregate.match(match)
     lookupResum(aggregate)
     lookupTarif(aggregate)
 
@@ -60,32 +70,45 @@ export const getResum: RequestHandler = async (req, res, next) => {
 export const getSubscribers: RequestHandler = async (req, res, next) => {
   let {
     trocId,
+    exact_trocId,
     skip = 0,
     limit = 10,
     q = '',
     includResum = false,
     includTarif = false,
+    /** Active une recherche d'utilisateur au delà du troc */
+    includGlobalUser = false,
   } = req.query
   try {
-    if (typeof trocId !== 'string') throw 'Query "trocId" is required (string)'
+    if (!trocId && !exact_trocId)
+      throw 'Query "trocId" or exact_trocId is rquired'
+
     if (typeof q !== 'string') throw 'Query "q" need to be a string'
 
-    const regexp = new RegExp(q, 'i')
     skip = Number(skip)
     limit = Number(limit)
 
     let { match, sort } = dynamicQuery(req.query)
 
-    match.$and.push({ trocId: new ObjectId(trocId) })
+    // Assure de filtrer sur le troc
+    // @ts-ignore
+    if (!exact_trocId) match.$and.push({ trocId: new ObjectId(trocId) })
 
-    // remove match if is empty
+    // remove match $or if is empty
     if (!match.$or.length) delete match.$or
 
     const aggregate = Subscribe.aggregate()
     aggregate.match(match)
 
     lookupUser(aggregate)
-    aggregate.match({ $or: [{ 'user.name': regexp }, { 'user.name': regexp }] })
+    if (q)
+      aggregate.match({
+        $or: [
+          { name: new RegExp(q, 'i') },
+          { 'user.name': new RegExp(q, 'i') },
+          { 'user.mail': new RegExp(q, 'i') },
+        ],
+      })
 
     if (includResum) {
       lookupResum(aggregate)
@@ -93,14 +116,52 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
 
     if (includTarif) lookupTarif(aggregate)
 
-    // Ca fait mal au serveur
+    // Ca fait mal au serveur 😁
     if (Object.keys(sort).length) aggregate.sort(sort)
 
     const subscribes = await aggregate.skip(skip).limit(limit).exec()
-    res.json(subscribes)
+
+    // inclue la recherche au delà du troc si le nombre de subscribes est inférieur à la limite
+    if (q && includGlobalUser && limit > subscribes.length) {
+      const users = await User.aggregate()
+        .match({
+          _id: { $nin: subscribes.map((sub) => sub.userId) },
+          $or: [{ name: new RegExp(q, 'i') }, { mail: new RegExp(q, 'i') }],
+        })
+        .limit(limit - subscribes.length)
+        .project({
+          _id: null,
+          userId: '$_id',
+          user: { _id: '$_id', name: '$name', mail: '$mail' },
+        })
+        .exec()
+
+      res.json(hideMail([...subscribes, ...users]))
+    } else {
+      res.json(hideMail(subscribes))
+    }
   } catch (error) {
     next(error)
   }
+}
+
+/**
+ * Cache le mail d'un subscribe si il n'est pas validé pas un client
+ */
+function hideMail(subscribes: SubscribeLookup[]): SubscribeLookup[] {
+  return subscribes.map((sub) => {
+    if (sub.validedByUser || !sub.userId) return sub
+    const index = sub.user.mail.indexOf('@')
+    if (index > -1) {
+      sub.user.mail = sub.user.mail.replace(
+        sub.user.mail.slice(1, index - 1),
+        '*'.repeat(index - 2)
+      )
+    } else {
+      sub.user.mail = 'Invalid mail'
+    }
+    return sub
+  })
 }
 
 /**
@@ -108,10 +169,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
  */
 export const getSubscribersCount: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId } = req.query
-    if (typeof trocId !== 'string') throw 'Query "trocId" is required (string)'
     let { match } = dynamicQuery(req.query)
-    match.$and.push({ trocId })
     // remove match if is empty
     if (!match.$or.length) delete match.$or
     // @ts-ignore
@@ -239,29 +297,19 @@ export function lookupTarif(
 /**
  * Update aggregate for add user's resum from articles documents
  */
-export function lookupResum(
-  aggregate: mongoose.Aggregate<ISubscribe[]>,
-  userId = '$userId',
-  trocId = '$trocId'
-): void {
-  const letTrocAndUser = { userId, trocId }
-  const matchWith = (userField: 'user' | 'provider' | 'buyer') => ({
-    $match: {
-      $expr: {
-        $and: [
-          { $eq: ['$troc', '$$trocId'] },
-          { $eq: [`$${userField}`, '$$userId'] },
-        ],
-      },
-    },
-  })
-
+export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
   aggregate
     .lookup({
       from: 'articles',
-      let: letTrocAndUser,
+      let: { subscribeId: '$_id' },
       pipeline: [
-        matchWith('provider'),
+        {
+          $match: {
+            $expr: {
+              $eq: ['$$subscribeId', '$providerSubId'],
+            },
+          },
+        },
         {
           $group: {
             _id: null,
@@ -294,9 +342,15 @@ export function lookupResum(
     })
     .lookup({
       from: 'articles',
-      let: letTrocAndUser,
+      let: { subscribeId: '$_id' },
       pipeline: [
-        matchWith('buyer'),
+        {
+          $match: {
+            $expr: {
+              $eq: ['$$subscribeId', '$buyerSubId'],
+            },
+          },
+        },
         {
           $group: {
             _id: null,
@@ -310,9 +364,15 @@ export function lookupResum(
     })
     .lookup({
       from: 'payments',
-      let: letTrocAndUser,
+      let: { subscribeId: '$_id' },
       pipeline: [
-        matchWith('user'),
+        {
+          $match: {
+            $expr: {
+              $eq: ['$$subscribeId', '$userSubId'],
+            },
+          },
+        },
         {
           $group: {
             _id: null,

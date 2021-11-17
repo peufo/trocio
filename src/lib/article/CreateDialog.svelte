@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte'
   import { fade, slide } from 'svelte/transition'
   import { Dialog, Button, Textarea, TextField } from 'svelte-materialify'
 
@@ -13,9 +14,7 @@
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   const queryClient = useQueryClient()
-  export let trocId: string
-  /** Si le client n'est pas définit, c'est l'utilisateur connecté qui est le fournisseur*/
-  export let clientId = ''
+  export let subscribeId: string
   export let active = false
   export let listMode = false
   export let prefix = ''
@@ -27,7 +26,12 @@
   let listArticles: ArticleCreate[] = []
   let listArticlesError = ''
 
-  let textareaDesignation: HTMLTextAreaElement | undefined
+  const dispatch = createEventDispatcher<{
+    createArticle: Article
+    createArticles: Article[]
+  }>()
+
+  let textarea: HTMLTextAreaElement | undefined
 
   $: listPlaceHolder = `\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${
     prefix ? '[ Référence ] ' : ''
@@ -47,12 +51,14 @@
         success: 'Article ajouté',
       }),
     {
-      onSuccess: () => {
+      onSuccess: (article) => {
+        dispatch('createArticle', article)
         newName = ''
         newPrice = ''
-        textareaDesignation?.focus()
+        textarea?.focus()
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
+        queryClient.invalidateQueries('trocs/byId/counters')
       },
     }
   )
@@ -67,7 +73,8 @@
         } ajouté${articles.length > 1 ? 's' : ''}`,
       }),
     {
-      onSuccess: () => {
+      onSuccess: (articles) => {
+        dispatch('createArticles', articles)
         newArticles = ''
         listArticles = []
         listArticlesError = ''
@@ -116,8 +123,7 @@
     listArticles.push({
       name,
       price,
-      troc: trocId,
-      provider: clientId,
+      providerSubId: subscribeId,
     })
   }
 
@@ -158,13 +164,12 @@
       ref,
       name,
       price,
-      troc: trocId,
-      provider: clientId,
+      providerSubId: subscribeId,
     })
   }
 </script>
 
-<Dialog bind:active class="pa-4">
+<Dialog bind:active class="pa-4" on:introend={() => textarea?.focus()}>
   <div class="d-flex justify-space-between mb-3">
     <div class="text-h6">
       Proposer {listMode ? `une liste d'` : 'un '}article
@@ -186,6 +191,7 @@
       <Textarea
         on:input={handleInputList}
         bind:value={newArticles}
+        bind:textarea
         rows={10}
         placeholder={listPlaceHolder}
         error={!!listArticlesError}
@@ -224,19 +230,16 @@
     </div>
   {:else}
     <div in:fade|local>
-      <Textarea
-        bind:value={newName}
-        rows={2}
-        autogrow
-        bind:textarea={textareaDesignation}>Désignation</Textarea
-      >
+      <Textarea bind:value={newName} rows={2} autogrow bind:textarea>
+        Désignation
+      </Textarea>
 
       <div class="d-flex mt-3">
         <TextField
           bind:value={newPrice}
           type="number"
           min="0"
-          rules={[(value) => +value > 0 || 'Le prix doit être positif']}
+          rules={[(value) => +value >= 0 || 'Le prix doit être positif']}
         >
           Prix
         </TextField>
@@ -261,8 +264,7 @@
               $createArticle.mutate({
                 name: newName,
                 price: Number(newPrice),
-                troc: trocId,
-                provider: clientId,
+                providerSubId: subscribeId,
               })}
           >
             Valider

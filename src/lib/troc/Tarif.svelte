@@ -1,12 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import {
-    TextField,
-    Button,
-    CardActions,
-    CardText,
-    Table,
-  } from 'svelte-materialify'
+  import { TextField, Button, CardActions, Table } from 'svelte-materialify'
 
   import type { Tarif, TrocLookup } from 'types'
   import { api, useApi } from '$lib/api'
@@ -29,7 +23,7 @@
   $: isModified = JSON.stringify(tarif) !== JSON.stringify(_tarif)
   $: queryTarifApplyCount = useApi([
     'subscribes/count',
-    { trocId: $troc._id, tarifId: _tarif._id },
+    { exact_trocId: $troc._id, exact_tarifId: _tarif._id },
   ])
 
   $: urlAttribution = $url('management_users', {

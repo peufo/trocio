@@ -37,7 +37,7 @@
 <div class="container pb-16">
   <h6 class="mb-5">Edition des tarifs</h6>
 
-  {#each $troc.tarif as tarif, index (tarif._id)}
+  {#each $troc.tarif as tarif (tarif._id)}
     <Tarif
       {tarif}
       class="mb-3"

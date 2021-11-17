@@ -1,17 +1,27 @@
 import type { User, Troc, Tarif, PaymentInterface, Article } from 'types'
 import type Tarif__SvelteComponent_ from '$lib/troc/Tarif.svelte'
 
+export type RoleEnum = 'basic' | 'trader' | 'cashier' | 'admin'
+
 export interface SubscribeBase {
   trocId: string
-  userId: string
+  /** Logged user user can provide userId */
+  userId?: string
 }
 
-export type RoleEnum = 'basic' | 'trader' | 'cashier' | 'admin'
+/** Réponse lors de recherche de subscribe non participant au troc */
+export interface SubscribeBaseWithUser extends SubscribeBase {
+  user: User
+}
 
 export interface ISubscribe extends SubscribeBase {
   _id: string
   createdAt: date
   updatedAt: date
+
+  /** Util pour les subscribes anonyme*/
+  name: string
+  recoverKey: string
 
   /** Rôle de l'utilsateur sur le troc */
   role: RoleEnum
@@ -31,7 +41,7 @@ export interface ISubscribe extends SubscribeBase {
 
 export interface SubscribeLookup extends ISubscribe {
   troc: Troc
-  user: User
+  user?: User
 }
 
 /** Résumé des interactions d'un utilisateur avec un troc */

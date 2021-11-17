@@ -4,6 +4,7 @@ import type {
   ArticleLookup,
   FieldInteface,
   ISubscribe,
+  SelectOption,
   SubscribeLookup,
   User,
 } from 'types'
@@ -90,55 +91,60 @@ export function getFields(): FieldInteface<Article>[] {
   ]
 }
 
-const selectOptionUser = {
-  path: '/subscribes',
-  searchKey: 'q',
-  getValue: (sub: SubscribeLookup) => sub.user.name,
-  getValue2: (sub: SubscribeLookup) => sub.user.mail,
-  getKey: (sub: SubscribeLookup) => sub.userId,
+function selectOptionUser(trocId: string): SelectOption {
+  return {
+    path: 'subscribes',
+    searchKey: 'q',
+    queryParams: { trocId },
+    getValue: (sub: SubscribeLookup) => sub.user?.name || sub.name,
+    getValue2: (sub: SubscribeLookup) => sub.user?.mail || '',
+    getKey: (sub: SubscribeLookup) => sub._id || '',
+  }
 }
 
 /**
  * Retourne les champs complet
  */
-export function getFieldsLookup(): FieldInteface<Article & ArticleLookup>[] {
+export function getFieldsLookup(
+  trocId: string
+): FieldInteface<Article & ArticleLookup>[] {
   return [
     ...getFields(),
     {
       label: 'Fournisseur',
       visible: true,
-      queryKey: 'provider',
-      getValue: ({ provider }) => provider?.name,
+      queryKey: 'providerSubId',
+      getValue: (art) => art?.provider?.name || art?.providerSub?.name,
       cellWidth: 70,
       format: 'select',
-      selectOption: selectOptionUser,
+      selectOption: selectOptionUser(trocId),
     },
     {
       label: 'Validateur',
       visible: false,
-      queryKey: 'validator',
+      queryKey: 'validatorSubId',
       format: 'select',
-      getValue: ({ validator }) => validator?.name,
+      getValue: (art) => art?.validator?.name,
       cellWidth: 50,
-      selectOption: selectOptionUser,
+      selectOption: selectOptionUser(trocId),
     },
     {
       label: 'Caissier',
       visible: false,
-      queryKey: 'seller',
+      queryKey: 'sellerSubId',
       format: 'select',
-      getValue: ({ seller }) => seller?.name,
+      getValue: (art) => art?.seller?.name,
       cellWidth: 50,
-      selectOption: selectOptionUser,
+      selectOption: selectOptionUser(trocId),
     },
     {
       label: 'Client',
       visible: false,
-      queryKey: 'buyer',
+      queryKey: 'buyerSubId',
       format: 'select',
-      getValue: ({ buyer }) => buyer?.name,
+      getValue: (art) => art.buyer?.name,
       cellWidth: 50,
-      selectOption: selectOptionUser,
+      selectOption: selectOptionUser(trocId),
     },
   ]
 }

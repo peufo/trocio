@@ -1,8 +1,9 @@
 <script lang="ts">
   import notify from '$lib/notify'
 
-  import UserSelect from '$lib/user/Select.svelte'
+  import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { getHeader, syntaxHighlight } from '$lib/utils'
+  import { faUser } from '@fortawesome/free-solid-svg-icons'
   import { Button } from 'svelte-materialify'
   import type { User } from 'types'
 
@@ -42,9 +43,14 @@
   <h6>Utilisateurs</h6>
   <div class="w3-row">
     <div class="w3-col s6">
-      <UserSelect
+      <MagicSelect
         modeSelect
         on:select={(e) => (userSelectedPromise = selectUser(e))}
+        path="/root/users"
+        queryParams={{ limit: 100 }}
+        searchKey="q"
+        solo
+        icon={faUser}
       />
 
       {#await userSelectedPromise}

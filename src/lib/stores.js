@@ -5,9 +5,9 @@ import { userQuery } from './user/store'
 import { addStatutField } from './utils'
 import notify from './notify'
 
-//Troc's meta
-export let troc = trocBuilder()
-export let trocPromise = writable()
+// Troc's meta
+// export let troc = trocBuilder()
+// export let trocPromise = writable()
 
 //Troc's details related of an user
 /**

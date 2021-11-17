@@ -6,68 +6,22 @@ import { lookupTarif } from './subscribe_get'
 import type { Tarif } from '../../types'
 
 const { ObjectId } = mongoose.Types
-const noop: Callback = (err) => {}
 
 type Callback = (err?: Error | null, returnValue?: any) => any
 
-export function checkAdmin(req, res, next) {
-  if (!req.session.user) return next(Error('Login required'))
-  Troc.findOne(
-    { _id: req.params.trocId || req.params.trocId || req.query.troc },
-    { admin: 1 }
-  ).exec((err, troc) => {
-    if (err || !troc) return next(err || Error('troc not found !'))
-    let isAdmin =
-      troc.admin
-        .map((a) => a.toString())
-        .indexOf(req.session.user._id.toString()) != -1
-    if (isAdmin) {
-      next()
-    } else {
-      return next(Error('Sorry, you are not a administrator of this troc'))
-    }
-  })
-}
-
-/** @deprecated */
-export async function populateTrocUser(trocId: string) {
-  return await Troc.findById(trocId)
-    .populate('creator', 'name mail')
-    .populate('admin', 'name mail')
-    .populate('trader.user', 'name mail')
-    .populate('cashier', 'name mail')
-    .populate('tarif.apply', 'name mail')
-    .lean({ virtuals: true })
-    .exec()
-}
-
-export async function getTarif(trocId: string, userId: string): Promise<Tarif> {
+export async function getTarif(
+  subscribeId: string | typeof ObjectId
+): Promise<Tarif> {
   const aggregate = Subscribe.aggregate()
-  aggregate.match({
-    userId: ObjectId(userId),
-    trocId: ObjectId(trocId),
-  })
+  const match =
+    typeof subscribeId === 'string'
+      ? { _id: new ObjectId(subscribeId) }
+      : { _id: subscribeId }
+
+  aggregate.match(match)
   lookupTarif(aggregate)
   const subscribes = await aggregate.exec()
   return subscribes[0].tarif
-}
-
-/**
- * @deprecated please use getTarif
- */
-export async function findSpec(troc, user, cb: Callback = noop) {
-  if (!troc) return cb(Error('troc query is required'))
-  troc = await Troc.findById(troc, { tarif: 1, trader: 1 }).exec()
-  if (!troc) return cb(Error('Troc not found !'))
-  console.log(troc)
-  let tarif =
-    troc.tarif.filter(
-      (t) => t.apply.map((a) => a._id).indexOf(user) != -1
-    )[0] || troc.tarif[0]
-  let prefix = troc.trader.filter((t) => t.user == user)[0]
-  // if (prefix) ({ prefix } = prefix)
-  cb(null, { tarif, prefix })
-  return { tarif, prefix }
 }
 
 export function getFee(art, tarif) {
@@ -88,27 +42,6 @@ export function getMargin(art, tarif) {
   }
 }
 
-/**
- * @deprecated
- */
-export function lookupIfAdmin(troc, userId, cb: Callback) {
-  let isAdmin = troc.admin.map((a) => a.toString()).indexOf(userId) != -1
-  if (isAdmin) {
-    populateTrocUser(troc._id)
-      .then((troc) => {
-        if (!troc) return cb(Error('Not found'))
-        troc.isAdmin = true
-        troc.isCashier = false
-        cb(null, troc)
-      })
-      .catch(cb)
-  } else {
-    troc.isAdmin = false
-    troc.isCashier = troc.cashier.map((c) => c.toString()).indexOf(userId) != -1
-    cb(null, troc)
-  }
-}
-
 //return an error if not OK
 export function scheduleValidation({ schedule }) {
   if (
@@ -122,11 +55,7 @@ export function scheduleValidation({ schedule }) {
 }
 
 export default {
-  checkAdmin,
-  populateTrocUser,
-  findSpec,
   getFee,
   getMargin,
-  lookupIfAdmin,
   scheduleValidation,
 }

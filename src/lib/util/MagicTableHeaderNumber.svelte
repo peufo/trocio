@@ -20,10 +20,15 @@
   export let max = ''
   /** placement of menu*/
   export let isLast = false
+  export let queryParam: { [key: string]: any } = {}
 
   /** Actif query visibility */
   export let filterLabel = ''
   export let sortIcon: IconDefinition | undefined
+
+  let keySort = `sort_${field.queryKey}`
+  let keyMin = `min_${field.queryKey}`
+  let keyMax = `max_${field.queryKey}`
 
   const sortOptions: EnumOption[] = [
     {
@@ -44,12 +49,15 @@
   ]
 
   onMount(() => {
-    const sortValue = Number($params[`sort_${field.queryKey}`])
-    min = $params[`min_${field.queryKey}`] || ''
-    max = $params[`max_${field.queryKey}`] || ''
+    const sortValue = Number($params[keySort])
+    min = $params[keyMin] || ''
+    max = $params[keyMax] || ''
     if (sortValue) {
       sortIcon = sortOptions.find((opt) => opt.queryValue === sortValue)?.icon
+      queryParam[keySort] = sortValue
     }
+    if (min) queryParam[keyMin] = min
+    if (max) queryParam[keyMax] = max
     if (!min && !max) filterLabel = ''
     else filterLabel = `${min} - ${max}`
   })
@@ -58,10 +66,11 @@
     active = false
     if (!field.queryKey) return
     const query = $params
-    const keySort = `sort_${field.queryKey}`
     query[keySort] = option.queryValue
+    queryParam[keySort] = option.queryValue
     if (!option.queryValue) {
       delete query[keySort]
+      delete queryParam[keySort]
       sortIcon = undefined
     } else {
       sortIcon = option.icon
@@ -72,12 +81,17 @@
   function handleChangeFilter() {
     if (!field.queryKey) return
     const query = $params
-    const keyMin = `min_${field.queryKey}`
-    const keyMax = `max_${field.queryKey}`
+
     query[keyMin] = min
     query[keyMax] = max
     if (!min) delete query[keyMin]
     if (!max) delete query[keyMax]
+
+    queryParam[keyMin] = min
+    queryParam[keyMax] = max
+    if (!min) delete queryParam[keyMin]
+    if (!max) delete queryParam[keyMax]
+
     if (!min && !max) filterLabel = ''
     else filterLabel = `${min} - ${max}`
     $goto($url(), query)

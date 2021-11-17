@@ -27,12 +27,12 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import { user } from '$lib/user/store'
   import ArticleList from '$lib/article/List.svelte'
-  import ArticleSearchTextField from '$lib/article/SearchTextField.svelte'
+  import SearchTextField from '$lib/util/SearchTextField.svelte'
   import UserResum from '$lib/troc/UserResum.svelte'
   import Share from '$lib/troc/Share.svelte'
   import type { SubscribeBase, SubscribeLookup, TrocLookup } from 'types'
   import { useMutation } from '@sveltestack/svelte-query'
-  import { api } from '$lib/api'
+  import { api, useApi } from '$lib/api'
 
   export let troc: TrocLookup
 
@@ -48,7 +48,7 @@
     recovery: faSignOutAlt,
     sale: faShoppingBasket,
   }
-  const createSubscribe = useMutation((data) =>
+  const createSubscribe = useMutation((data: SubscribeBase) =>
     api<SubscribeBase, SubscribeLookup>('/api/subscribes', {
       method: 'post',
       data,
@@ -56,19 +56,24 @@
     })
   )
 
+  $: queryCounters = useApi<
+    { trocId: string },
+    { articlesCount: number; subscribesCount: number }
+  >(['trocs/byId/counters', { trocId: troc._id }])
+
   function handleClickActivity() {
     if (!$user)
       return $goto('/login', {
         callback: `/trocs/${troc._id}`,
       })
-    if (troc.role) activityOpen = !activityOpen
+    if (troc.subscribe?.validedByUser) activityOpen = !activityOpen
     else {
       $createSubscribe.mutate(
         { trocId: troc._id },
         {
           onSuccess: (subscribe) => {
             // TODO: manage subscribe already exist
-            if (subscribe._id) troc.role = 'basic'
+            if (subscribe) troc.subscribe = subscribe
             activityOpen = !activityOpen
           },
         }
@@ -84,12 +89,16 @@
     <!-- Chips infos -->
     <Chip size="small" outlined class="text--secondary">
       <IconLink icon={faChild} size=".7em" />
-      <span>{troc.subscriber}</span>
+      <span>
+        {$queryCounters.isSuccess ? $queryCounters.data.subscribesCount : '∿'}
+      </span>
     </Chip>
 
     <Chip size="small" outlined class="text--secondary">
       <IconLink icon={faCubes} size=".7em" />
-      <span>{troc.articles}</span>
+      <span>
+        {$queryCounters.isSuccess ? $queryCounters.data.articlesCount : '∿'}
+      </span>
     </Chip>
 
     {#if troc.is_try}
@@ -158,7 +167,7 @@
       </div>
     {/if}
 
-    {#if troc.schedule}
+    {#if troc.schedule?.length}
       <div class="d-flex pt-5">
         <IconLink icon={faCalendarAlt} opacity />
         <div class="pl-4">
@@ -214,32 +223,35 @@
   style="min-height: 56px;"
 >
   {#if !activityOpen}
-    <ArticleSearchTextField bind:search={articleSearch} class="mr-1 ml-1" />
+    <SearchTextField
+      bind:search={articleSearch}
+      class="mr-1 ml-1"
+      placeholder="Chercher un article"
+      style="max-width: 200px;"
+    />
   {/if}
 
   <div class="flex-grow-1" />
-  {#if !!$user && troc.role === 'admin'}
-    <a href={`/admin?trocId=${troc._id}`}>
-      <Button depressed class="mr-1 ml-1">
-        administration
-        <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
-      </Button>
-    </a>
-  {:else if !!$user && troc.role === 'cashier'}
-    <a href={`/cashier?trocId=${troc._id}`}>
-      <Button depressed class="ml-2">
-        Caisse
-        <IconLink
-          icon={faCashRegister}
-          class="mr-1 ml-1"
-          size="1.2em"
-          opacity
-        />
-      </Button>
-    </a>
+  {#if !!$user && troc.subscribe?.validedByUser}
+    {#if troc.subscribe?.role === 'admin'}
+      <a href={`/admin?trocId=${troc._id}`}>
+        <Button depressed class="mr-1 ml-1">
+          administration
+          <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
+        </Button>
+      </a>
+    {:else if troc.subscribe?.role === 'cashier'}
+      <a href={`/cashier?trocId=${troc._id}`}>
+        <Button depressed class="mr-1 ml-1">
+          Caisse
+          <IconLink icon={faCashRegister} class="ml-2" size="1.2em" opacity />
+        </Button>
+      </a>
+    {/if}
   {/if}
+
   <Button on:click={handleClickActivity} depressed class="mr-1 ml-1">
-    {troc.role ? 'Mon activité' : 'Participer au troc'}
+    {troc.subscribe?.validedByUser ? 'Mon activité' : 'Participer au troc'}
     <IconLink
       icon={faChevronRight}
       rotate={activityOpen ? 90 : 0}
@@ -252,11 +264,10 @@
   <Share {troc} class="mr-1 ml-1" />
 </div>
 
-{#if activityOpen}
+{#if activityOpen && troc.subscribe}
   <div transition:slide|local>
     <UserResum
-      trocId={troc._id}
-      userId={$user._id}
+      subscribeId={troc.subscribe._id}
       isClosed={troc.isClosed && !troc.is_try}
     />
     <Divider />
@@ -264,7 +275,12 @@
 {/if}
 
 {#if activityOpen}
-  <ArticleSearchTextField bind:search={articleSearch} class="pt-4" />
+  <SearchTextField
+    bind:search={articleSearch}
+    class="pt-4"
+    placeholder="Chercher un article"
+    style="max-width: 200px;"
+  />
 {/if}
 
 <ArticleList

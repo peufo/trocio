@@ -1,16 +1,28 @@
 <script lang="ts">
-  import { renderAmount } from '$lib/utils'
-
-  import { Dialog, Divider, Button } from 'svelte-materialify'
-
-  import type { ArticleLookup } from 'types'
-  import { getStatut } from '$lib/utils'
+  import { slide } from 'svelte/transition'
+  import { Dialog, Divider, Button, Icon } from 'svelte-materialify'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { api } from '$lib/api'
+  import { mdiPrinter } from '@mdi/js'
+
+  import { renderAmount, print } from '$lib/utils'
+  import TagsPrint from '$lib/troc/TagsPrint.svelte'
+  import type {
+    Article,
+    ArticleCorrection,
+    ArticleCorrectionsLookup,
+    ArticleLookup,
+    EventName,
+  } from 'types'
+  import { getStatut } from '$lib/utils'
+  import { troc } from '$lib/troc/store'
+  import { api, useApi } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
+  import IconLink from '$lib/util/IconLink.svelte'
+  import { faHistory } from '@fortawesome/free-solid-svg-icons'
 
   export let active = false
   export let article: ArticleLookup | undefined
+  export let modeAdmin = false
 
   const queryClient = useQueryClient()
 
@@ -22,6 +34,15 @@
     hour: 'numeric',
     minute: 'numeric',
   })
+
+  let correctionsVisible = false
+  $: if (!active) correctionsVisible = false
+  $: queryCorrections = article
+    ? useApi<{ articleId: string }, ArticleCorrectionsLookup>([
+        'articles/corrections',
+        { articleId: article?._id },
+      ])
+    : null
 
   const queryDelete = useMutation(
     (data: { articleId: string }) =>
@@ -41,10 +62,10 @@
   )
 
   const queryEditName = useMutation(
-    (data: { articleId: string; newName: string }) =>
+    (newName: string) =>
       api('/api/articles/edit-name', {
         method: 'post',
-        data,
+        data: { articleId: article?._id, newName },
         success: 'Nom modifé',
       }),
     {
@@ -57,10 +78,10 @@
   )
 
   const queryEditPrice = useMutation(
-    (data: { articleId: string; newPrice: string }) =>
+    (newPrice: string) =>
       api('/api/articles/edit-price', {
         method: 'post',
-        data,
+        data: { articleId: article?._id, newPrice },
         success: 'Prix mis à jour',
       }),
     {
@@ -72,21 +93,54 @@
     }
   )
 
+  const queryCancelEvent = useMutation(
+    (eventName: EventName) =>
+      api<{ articleId: string; eventName: EventName }, ArticleLookup>(
+        '/api/articles/cancel-event',
+        {
+          method: 'post',
+          data: { eventName, articleId: article?._id },
+          success: 'Evenement de correction annulé',
+        }
+      ),
+    {
+      onSuccess: (articleUpdated) => {
+        // TODO: lookup subscribe
+        article = articleUpdated
+        queryClient.invalidateQueries('articles')
+        queryClient.invalidateQueries('subscribes/resum')
+      },
+    }
+  )
+
   function handleEditName() {
     const newName = prompt('Nouveau nom', article?.name)
     if (!newName || !article) return
-    $queryEditName.mutate({ articleId: article._id, newName })
+    $queryEditName.mutate(newName)
   }
 
   function handleEditPrice() {
-    const newPrice = prompt('Nouveau prix', article?.price)
+    const newPrice = prompt('Nouveau prix', String(article?.price))
     if (!newPrice || !article) return
-    $queryEditPrice.mutate({ articleId: article._id, newPrice })
+    $queryEditPrice.mutate(newPrice)
+  }
+
+  const mapCorrectionEvent: { [key in ArticleCorrection['event']]: string } = {
+    'edit-name': 'changé le nom',
+    'edit-price': 'changé le prix',
+    'cancel-recover': 'annulé la récupération',
+    'cancel-refused': 'annulé le refus',
+    'cancel-sold': 'annulé la vente',
+    'cancel-valided': 'annulé la validation',
   }
 </script>
 
 {#if article}
-  <Dialog bind:active class="pa-4" style="cursor: initial;">
+  {#if modeAdmin && $troc}
+    <TagsPrint id="dialogTag" articles={[article]} tag={$troc?.tag} />
+  {/if}
+
+  <Dialog bind:active class="pa-4" style="cursor: initial;" width="large">
     <div class="d-flex mb-4">
       <div class="text-h6">
         #{article.ref} - {article.name}
@@ -98,11 +152,65 @@
       </div>
     </div>
 
-    <div>
-      Proposé {intl.format(new Date(article.createdAt))}
-      par {article.provider?.name}
-      pour {renderAmount(article.price)}
-    </div>
+    <p>
+      Proposé le {intl.format(new Date(article.createdAt))}
+      par <b>{article.provider?.name || article.providerSub?.name}</b>
+      pour <b>{renderAmount(article.price)}</b>
+    </p>
+    {#if article.valided}
+      <p>
+        Validé le {intl.format(new Date(article.valided))}
+        par <b>{article.validator?.name}</b>
+      </p>
+    {:else if article.refused}
+      <p>
+        Refusé le {intl.format(new Date(article.refused))}
+        par <b>{article.validator?.name}</b>
+      </p>
+    {/if}
+
+    {#if article.sold}
+      <p>
+        Vendu le {intl.format(new Date(article.sold))}
+        par <b>{article.seller?.name}</b>
+        à <b>{article.buyer?.name || article.buyerSub?.name}</b>
+      </p>
+    {:else if article.recover}
+      <p>
+        Récupèré le {intl.format(new Date(article.recover))}
+        par <b>{article.seller?.name}</b>
+      </p>
+    {/if}
+
+    {#if queryCorrections && $queryCorrections.isSuccess && !$queryCorrections.isLoading && $queryCorrections.data?.corrections?.length}
+      {#if !correctionsVisible}
+        <div out:slide|local class="d-flex">
+          <div class="flex-grow-1" />
+          <Button
+            on:click={() => (correctionsVisible = true)}
+            size="small"
+            text
+          >
+            <IconLink icon={faHistory} class="mr-2" size="1em" opacity />
+            {$queryCorrections.data.corrections.length}
+            corrections
+          </Button>
+        </div>
+      {:else}
+        <div in:slide|local>
+          <b>Historique des corrections : </b>
+
+          {#each $queryCorrections.data.corrections as correction}
+            <div>
+              {intl.format(new Date(correction.timestamp))} -
+              {correction.author.name}
+              a
+              {mapCorrectionEvent[correction.event]}
+            </div>
+          {/each}
+        </div>
+      {/if}
+    {/if}
 
     <Divider />
 
@@ -113,17 +221,87 @@
         </Button>
       </div>
     {:else}
-      <div class="d-flex">
-        <Button
-          text
-          class="red-text mr-2"
-          on:click={() =>
-            $queryDelete.mutate({ articleId: article?._id || '' })}
-        >
-          Supprimer
-        </Button>
-        <Button text on:click={handleEditName}>Modifier le nom</Button>
-        <Button text on:click={handleEditPrice}>Modifier le prix</Button>
+      <div class="d-flex flex-wrap">
+        {#if modeAdmin || (!article.valided && !article.refused)}
+          <Button text class="blue-text" on:click={handleEditName}>
+            Modifier le nom
+          </Button>
+          <Button text class="blue-text" on:click={handleEditPrice}>
+            Modifier le prix
+          </Button>
+        {/if}
+
+        {#if !article.valided && !article.refused}
+          <Button
+            text
+            class="red-text mr-2"
+            on:click={() =>
+              confirm('Etes vous sur ?') &&
+              $queryDelete.mutate({ articleId: article?._id || '' })}
+          >
+            Supprimer
+          </Button>
+        {/if}
+
+        {#if modeAdmin}
+          {#if $queryCancelEvent.isLoading}
+            <Button disabled text><Loader /></Button>
+          {:else if article.sold}
+            <Button
+              text
+              class="red-text"
+              on:click={() => $queryCancelEvent.mutate('sold')}
+            >
+              Annuler la vente
+            </Button>
+          {:else if article.recover}
+            <Button
+              text
+              class="red-text"
+              on:click={() => $queryCancelEvent.mutate('recover')}
+            >
+              Annuler la récupération
+            </Button>
+          {:else if article.valided}
+            <Button
+              text
+              class="red-text"
+              on:click={() => $queryCancelEvent.mutate('valided')}
+            >
+              Annuler la validation
+            </Button>
+          {:else if article.refused}
+            <Button
+              text
+              class="red-text"
+              on:click={() => $queryCancelEvent.mutate('refused')}
+            >
+              Annuler le refus
+            </Button>
+          {/if}
+
+          <Button
+            fab
+            size="small"
+            title="Imprimer l'étiquette"
+            depressed
+            on:click={() => print('dialogTag')}
+          >
+            <Icon path={mdiPrinter} />
+          </Button>
+
+          <!--
+            TODO: Toute les actions accessible directement ici ?
+
+            {#if !article.valided}
+              <Button text on:click={() => notify.info('TODO')}>Valider</Button>
+              <Button text on:click={() => notify.info('TODO')}>Refuser</Button>
+            {:else if article.valided && !article.sold && !article.refused}
+              <Button text on:click={() => notify.info('TODO')}>Vendre</Button>
+              <Button text on:click={() => notify.info('TODO')}>Rendre</Button>
+            {/if}
+          -->
+        {/if}
       </div>
     {/if}
   </Dialog>

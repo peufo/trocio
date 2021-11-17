@@ -20,9 +20,6 @@ export type DynamicQuerySubscribe = Partial<
 >
 
 export interface ParamsAPI {
-  trocId?: string
-  /** tarif à ne pas afficher */
-  filtredTarifs?: string[]
   /** query */
   q?: string
   limit?: number
@@ -34,6 +31,8 @@ export interface ParamsSubscribeAPI extends DynamicQuerySubscribe, ParamsAPI {
   includResum?: boolean
   /** Inclue les détails du tarif attribué au client */
   includTarif?: boolean
+  /** Ajoute un resultat de recherche sur la base utilisateur global */
+  includGlobalUser?: boolean
 }
 
 export interface ParamsArticleAPI extends DynamicQueryArticle, ParamsAPI {

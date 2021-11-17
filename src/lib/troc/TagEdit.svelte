@@ -4,11 +4,11 @@
   import { mdiOverscan, mdiFormatSize } from '@mdi/js'
   import IconLink from '$lib/util/IconLink.svelte'
   import { faArrowsAltV, faArrowsAltH } from '@fortawesome/free-solid-svg-icons'
-  import printJS from 'print-js'
 
   import { troc, useUpdateTroc } from '$lib/troc/store'
   import type { Article, TagInterface } from 'types'
   import notify from '$lib/notify'
+  import { print } from '$lib/utils'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
 
   const updateTroc = useUpdateTroc()
@@ -29,6 +29,7 @@
   $: if (!tag.padding) tag.padding = 0
 
   $: isModified = JSON.stringify(tag) !== JSON.stringify($troc.tag)
+  // @ts-ignore
 </script>
 
 <div class="container">
@@ -115,12 +116,7 @@
 
     <div class="d-flex mt-4">
       <Button
-        on:click={() =>
-          printJS({
-            printable: 'testPrint',
-            type: 'html',
-            targetStyles: ['*'],
-          })}
+        on:click={() => print('testPrint')}
         outlined
         class="green green-text"
       >

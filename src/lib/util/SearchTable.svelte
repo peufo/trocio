@@ -11,7 +11,7 @@
     Menu,
   } from 'svelte-materialify'
 
-  import { troc } from '$lib/stores.js'
+  import { troc } from '$lib/troc/store'
   import { addStatutField, getFields } from '$lib/utils'
   import RowsPromise from '$lib/util/RowsPromise.svelte'
   //import SearchUser from '$lib/SearchUser.svelte'

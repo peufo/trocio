@@ -1,30 +1,34 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
-  import { useApi, useInfinitApi } from '$lib/api'
+
+  import { useInfinitApi } from '$lib/api'
   import MagicTable from '$lib/util/MagicTable.svelte'
   import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
-  import type { FieldInteface, SubscribeLookup } from 'types'
+  import type {
+    FieldInteface,
+    SubscribeLookup,
+    ParamsSubscribeAPI,
+  } from 'types'
   import layout from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc } from '$lib/troc/store'
-  import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
   import { ROLES } from '$lib/user/roles'
+  import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
   let subscribeMenu: SubscribeMenu
 
   let searchValue = ''
+  let queryParams = {}
 
-  interface QueryParams {
-    trocId: string
-    q?: string
-    lookupTarif?: boolean
-    includResum?: boolean
-  }
-
-  $: query = useInfinitApi<QueryParams, SubscribeLookup[]>([
+  $: query = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup[]>([
     'subscribes',
-    { trocId: $params.trocId, q: searchValue, ...$params, includResum: true },
+    {
+      exact_trocId: $params.trocId,
+      q: searchValue,
+      includResum: true,
+      ...queryParams,
+    },
   ])
 
   let fields: FieldInteface[] = [
@@ -35,7 +39,7 @@
       queryKey: 'name',
       format: 'string',
       cellWidth: 50,
-      getValue: (sub) => sub.user.name,
+      getValue: (sub) => sub.user?.name || sub.name,
     },
     {
       label: 'mail',
@@ -44,15 +48,16 @@
       queryKey: 'mail',
       format: 'string',
       cellWidth: 50,
-      getValue: (sub) => sub.user.mail,
+      getValue: (sub) => sub.user?.mail || '',
     },
     {
       label: 'Rôle',
-      visible: false,
+      visible: true,
       queryKey: 'role',
       format: 'enum',
-      getValue: (sub) => ROLES.find((r) => r.queryValue === sub.role)?.label,
-      enumOptions: ROLES,
+      getValue: (sub) =>
+        sub.userId ? ROLES.find((r) => r.queryValue === sub.role)?.label : '',
+      enumOptions: [{ queryValue: '', label: 'Tous' }, ...ROLES],
     },
     {
       label: 'Tarif',
@@ -60,11 +65,11 @@
       queryKey: 'tarifId',
       format: 'enum',
       getValue: (sub) =>
-        $troc.tarif.find((tarif) => tarif._id === sub.tarifId)?.name,
+        $troc?.tarif.find((tarif) => tarif._id === sub.tarifId)?.name,
       enumOptions: [
         { queryValue: '', label: 'Tous' },
         // @ts-ignore tarif._id can be undefined ...
-        ...$troc.tarif.map((tarif) => ({
+        ...$troc?.tarif.map((tarif) => ({
           label: tarif.name,
           queryValue: tarif._id,
         })),
@@ -171,10 +176,12 @@
             bind:search={searchValue}
             placeholder="Chercher un participant"
             flat
+            solo
+            dense
           />
         </th>
 
-        <MagicTableHeaders {fields} />
+        <MagicTableHeaders {fields} bind:queryParams />
       </tr>
     </thead>
 

@@ -9,65 +9,61 @@ import Subscribe from '../models/subscribe'
 
 const { ObjectId } = mongoose.Types
 
-export async function getRole(trocId: string, userId: string) {
-  const subscribe = await Subscribe.findOne({
-    trocId,
-    userId,
-  })
-  return subscribe?.role || null
-}
-
 /**
  * Return tous les infos nécéssaire au graphique
  */
-export function getStats(req, res, next) {
-  const { trocId } = req.params
-  const { userId, view } = req.query
+export const getStats: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId } = req.params
+    const { subscribeId, view } = req.query
 
-  if (view === 'user' && !userId)
-    return next(Error('Query userId is required when view=user'))
+    if (view === 'subscribe' && !subscribeId)
+      return next(Error('Query userId is required when view=user'))
 
-  TrocModel.findOne({ _id: trocId }).exec((err, troc) => {
-    if (err || !troc) return next(err || Error('Troc not found'))
+    TrocModel.findOne({ _id: trocId }).exec((err, troc) => {
+      if (err || !troc) return next(err || Error('Troc not found'))
 
-    let query: FilterQuery<Troc & Document> = { troc: troc._id }
+      let query: FilterQuery<Troc & Document> = { troc: troc._id }
 
-    if (view === 'traders') {
-      query.provider = { $in: troc.trader.map((t) => t.user) }
-    } else if (view === 'privates') {
-      query.provider = { $nin: troc.trader.map((t) => t.user) }
-    } else if (view === 'user') {
-      query.provider = userId
-    }
+      if (view === 'traders') {
+        query.provider = { $in: troc.trader.map((t) => t.user) }
+      } else if (view === 'privates') {
+        query.provider = { $nin: troc.trader.map((t) => t.user) }
+      } else if (view === 'subscribe') {
+        query.provider = userId
+      }
 
-    Article.find(query)
-      .sort({ createdAt: 1 })
-      .lean()
-      .exec((err, articlesProposed) => {
-        if (err) return next(err)
+      Article.find(query)
+        .sort({ createdAt: 1 })
+        .lean()
+        .exec((err, articlesProposed) => {
+          if (err) return next(err)
 
-        if (view !== 'global') query.buyer = query.provider
-        delete query.provider
-        query.sold = { $exists: true }
-        Article.find(query)
-          .sort({ createdAt: 1 })
-          .lean()
-          .exec((err, articlesBuyed) => {
-            if (err) return next(err)
+          if (view !== 'global') query.buyer = query.provider
+          delete query.provider
+          query.sold = { $exists: true }
+          Article.find(query)
+            .sort({ createdAt: 1 })
+            .lean()
+            .exec((err, articlesBuyed) => {
+              if (err) return next(err)
 
-            delete query.buyer
-            delete query.sold
-            if (view === 'user') query.user = userId
-            Payment.find(query)
-              .sort({ createdAt: 1 })
-              .lean()
-              .exec((err, payments) => {
-                if (err) return next(err)
-                res.json({ articlesProposed, articlesBuyed, payments })
-              })
-          })
-      })
-  })
+              delete query.buyer
+              delete query.sold
+              if (view === 'subscribe') query.user = userId
+              Payment.find(query)
+                .sort({ createdAt: 1 })
+                .lean()
+                .exec((err, payments) => {
+                  if (err) return next(err)
+                  res.json({ articlesProposed, articlesBuyed, payments })
+                })
+            })
+        })
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
 export const search: RequestHandler = async (req, res, next) => {
@@ -117,20 +113,25 @@ export const search: RequestHandler = async (req, res, next) => {
 
   addComputedFields(aggregate)
 
-  if (req.session.user) lookupRole(aggregate, req.session.user._id)
+  if (req.session.user) lookupSubscribe(aggregate, req.session.user._id)
 
   const trocs = await aggregate.exec()
   res.json(trocs)
 }
 
 export const getTroc: RequestHandler = async (req, res, next) => {
-  const { trocId } = req.params
-  const aggregate = TrocModel.aggregate().match({ _id: ObjectId(trocId) })
-  if (req.session.user) lookupRole(aggregate, req.session.user._id)
-  addComputedFields(aggregate)
-  const trocs = await aggregate.exec()
-  if (!trocs.length) return next(Error('Not found'))
-  res.json(trocs[0])
+  try {
+    const { trocId } = req.query
+    if (!trocId) throw 'query "trocId" is required'
+    const aggregate = TrocModel.aggregate().match({ _id: new ObjectId(trocId) })
+    if (req.session.user) lookupSubscribe(aggregate, req.session.user._id)
+    addComputedFields(aggregate)
+    const trocs = await aggregate.exec()
+    if (!trocs.length) return next(Error('Not found'))
+    res.json(trocs[0])
+  } catch (error) {
+    next(error)
+  }
 }
 
 /**
@@ -151,7 +152,7 @@ export function addComputedFields(aggregate: mongoose.Aggregate<any[]>) {
 /**
  * Add user role from subscribe document
  */
-export function lookupRole(
+export function lookupSubscribe(
   aggregate: mongoose.Aggregate<Troc[]>,
   userId?: string
 ): void {
@@ -165,19 +166,34 @@ export function lookupRole(
             $expr: {
               $and: [
                 { $eq: ['$trocId', '$$trocId'] },
-                { $eq: ['$userId', ObjectId(userId)] },
+                { $eq: ['$userId', new ObjectId(userId)] },
               ],
             },
           },
         },
-        {
-          $project: { role: 1 },
-        },
       ],
       as: 'subscribe',
     })
-    .replaceRoot({
-      $mergeObjects: [{ $arrayElemAt: ['$subscribe', 0] }, '$$ROOT'],
+    .addFields({
+      subscribe: { $arrayElemAt: ['$subscribe', 0] },
     })
-    .project({ subscribe: 0 })
+}
+
+/**
+ * Retourne le compte des subscribes et des articles proposé
+ */
+export const getTrocCounter: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId } = req.query
+    if (!trocId) throw 'Query "trocId" is required'
+
+    const [articlesCount, subscribesCount] = await Promise.all([
+      Article.countDocuments({ trocId }),
+      Subscribe.countDocuments({ trocId, validedByUser: true }),
+    ])
+
+    res.json({ articlesCount, subscribesCount })
+  } catch (error) {
+    next(error)
+  }
 }

@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import mongoose from 'mongoose'
+import Subscribe from '../models/subscribe'
 import UserModel from '../models/user'
 
 export const getMe: RequestHandler = async (req, res, next) => {
@@ -39,11 +39,20 @@ export function searchUser(req, res, next) {
 
 export const getUserName: RequestHandler = async (req, res, next) => {
   try {
-    const { userId } = req.query
-    if (!mongoose.isValidObjectId(userId))
-      throw 'Query "userId" need to be a valid ObjectId'
-    const user = await UserModel.findOne({ _id: userId }, 'name').exec()
-    res.json(user)
+    const { userId, subscribeId } = req.query
+    if (typeof userId !== 'string' && typeof subscribeId !== 'string')
+      throw 'Query "userId" or "subscribeId" need to be a valid ObjectId'
+
+    if (userId) {
+      const user = await UserModel.findOne({ _id: userId }, 'name').exec()
+      res.json(user)
+    } else {
+      const sub = await Subscribe.findOne({ _id: subscribeId }).populate(
+        'userId',
+        'name'
+      )
+      res.json(sub.userId || sub)
+    }
   } catch (error) {
     next(error)
   }

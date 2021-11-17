@@ -2,7 +2,6 @@ import { writable } from 'svelte/store'
 import type { AxiosError } from 'axios'
 import L from 'leaflet'
 import {
-  useQuery,
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   useMutation,
@@ -13,7 +12,6 @@ import {
   getTroc,
   searchTrocs,
   getsubscribes,
-  getTrocUserResum,
   addAdmin,
   removeAdmin,
   addCashier,
@@ -36,14 +34,7 @@ import {
  * Get troc
  * Info détaillé d'un troc + liste des participants
  */
-export const troc = writable<TrocLookup>(null)
-export const useTrocOptions = (trocId: string) => ({
-  queryFn: getTroc,
-  queryKey: ['troc', trocId],
-  onSuccess: (t) => troc.set(t),
-})
-export const useTroc = (trocId: string) =>
-  useQuery<Troc, AxiosError>(useTrocOptions(trocId))
+export const troc = writable<TrocLookup>(undefined)
 
 /**
  * Search Subscribers
@@ -54,18 +45,6 @@ interface SearchSubscribersQuery {
   filtredTarifs?: string[]
 }
 export const subscribes = writable<SubscribeLookup[]>([])
-export function useSubscribesOptions(
-  query: SearchSubscribersQuery
-): UseInfiniteQueryOptions<SubscribeLookup[], AxiosError> {
-  return {
-    queryFn: getsubscribes,
-    queryKey: ['subscribes', query],
-    getNextPageParam,
-    refetchOnWindowFocus: false,
-  }
-}
-export const useSubscribes = (query: SearchSubscribersQuery) =>
-  useInfiniteQuery<SubscribeLookup[], AxiosError>(useSubscribesOptions(query))
 
 /**
  * Search trocs
@@ -84,6 +63,8 @@ export const query = writable<SearchTrocsQuery>({})
 export const trocs = writable<Troc[]>([])
 export const trocsElement = writable<HTMLElement[]>([])
 export const map = writable<L.Map>()
+
+/** @deprecated */
 export function useSearchTrocsOptions(
   query: SearchTrocsQuery
 ): UseInfiniteQueryOptions<Troc[], AxiosError> {
@@ -148,6 +129,7 @@ export const useRemoveApply = () => useMutation(removeApply, { onSuccess })
 /**
  * Update troc on success
  */
+/** @deprecated */
 function onSuccess(newTroc: TrocLookup) {
   troc.set(newTroc)
 }

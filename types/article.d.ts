@@ -1,10 +1,12 @@
+import type { ISubscribe } from './subscribe'
 import { User } from './user'
 
 export declare interface ArticleCreate {
-  /** ID du troc auquel l'article proposé */
-  troc: string
-  /** ID de l'utilisateur qui propose l'article */
-  provider: string
+  /** ID du subscribe de l'utilisateur qui propose l'article */
+  providerSubId: string
+  /** Shortcuts */
+  trocId?: string
+  providerId?: string
   /** Reference lisible et unique de l'article TODO: rendre unique */
   ref?: string
   /** Nom ou désignation de l'article*/
@@ -18,6 +20,7 @@ export declare interface Article extends ArticleCreate {
   _id: string
   createdAt: Date
   updatedAt: Date
+
   /**
    * Frais prise par l'organisation sur l'article lors de sa validation.
    * Elle est calculé sur le prix en fonction du tarif décidé pour le fournisseur.
@@ -36,28 +39,55 @@ export declare interface Article extends ArticleCreate {
   sold?: Date
   /** Date de la récupération de l'article par le fournisseur (seller) -> (provider) */
   recover?: Date
-  /** giveback Listes des retours de l'article (si ils sont autorisés) */
-  giveback: {
-    /** Date de la vente qui à été annulé */
-    sold: Date
-    /** Date de retour de l'article */
-    back: Date
-    /** Raison du retour */
-    raison: string
-    /** Client ayant effetué le retour */
-    user: string
-  }[]
-  /** ID du client ayant effectué l'achat */
-  buyer?: string
-  /** ID du membre de l'organisation ayant validé ou refusé l'article */
-  validator?: string
-  /** ID du membre de l'organisation ayant vendu ou rendu l'article */
-  seller?: string
+
+  /** ID du sub ayant effectué l'achat */
+  buyerSubId?: string
+  /** ID du sub de l'organisation ayant validé ou refusé l'article */
+  validatorSubId?: string
+  /** ID du sub de l'organisation ayant vendu ou rendu l'article */
+  sellerSubId?: string
+
+  /** Historique des corrections de l'articles */
+  corrections: ArticleCorrection[]
+
+  /** Raccourci vers les utilisateurs pour ne pas passé par les subscribes */
+  buyerId: string
+  validatorId: string
+  sellerId: string
 }
 
 export declare interface ArticleLookup extends Article {
   provider?: User
+  providerSub?: ISubscribe
   buyer?: User
+  buyerSub?: ISubscribe
   validator?: User
   seller?: User
 }
+
+export interface ArticleCorrection {
+  timestamp: Date
+  authorId: string
+  authorSubId: string
+  event:
+    | 'edit-name'
+    | 'edit-price'
+    | 'cancel-valided'
+    | 'cancel-refused'
+    | 'cancel-sold'
+    | 'cancel-recover'
+  message?: string
+  oldValue?: any
+  newValue?: any
+}
+
+export interface ArticleCorrectionLookup extends ArticleCorrection {
+  author: { _id: string; name: string }
+}
+
+export interface ArticleCorrectionsLookup {
+  _id: string
+  corrections: ArticleCorrectionLookup[]
+}
+
+export type EventName = 'valided' | 'refused' | 'sold' | 'recover'

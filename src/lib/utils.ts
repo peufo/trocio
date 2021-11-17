@@ -1,6 +1,5 @@
 import { quintOut, cubicOut } from 'svelte/easing'
 import printJS from 'print-js'
-import { troc } from './stores.js'
 import type { Article, ArticleLookup } from 'types'
 
 /** @deprecated */
@@ -12,15 +11,6 @@ export function getHeader(body, verb = 'POST') {
   }
 }
 
-export function updateTroc(json, cb) {
-  if (json.success) {
-    troc.refresh(json.message)
-    if (cb) cb()
-  } else {
-    alert(json.message)
-  }
-}
-
 export function sortByUpdatedAt(a, b) {
   return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
 }
@@ -28,12 +18,16 @@ export function sortByRecover(a, b) {
   return new Date(b.recover).getTime() - new Date(a.recover).getTime()
 }
 
-export function goPrint(id) {
-  printJS({
+export function print(id: string) {
+  const options = {
     printable: id,
     type: 'html',
     targetStyles: ['*'],
-  })
+    font_size: null,
+  }
+
+  // @ts-ignore
+  printJS(options)
 }
 
 /*
