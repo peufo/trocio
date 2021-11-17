@@ -9,12 +9,8 @@ import {
   validArticles,
   soldArticles,
   cancelEvent,
-  editArticle,
-  goBackArticle,
-  patchArticle,
 } from '../controllers/article_set'
 import { getArticles, getArticleCorrection } from '../controllers/article_get'
-import { checkLogin } from '../controllers/user_utils'
 
 router
   .get('/', getArticles)
@@ -26,9 +22,5 @@ router
   .post('/sold', soldArticles)
   .post('/cancel-event', cancelEvent)
   .get('/corrections', getArticleCorrection)
-  // TODO: a revoir
-  .patch('/', checkLogin, patchArticle)
-  .post('/edit', checkLogin, editArticle)
-  .post('/giveback', checkLogin, goBackArticle)
 
 export default router

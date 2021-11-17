@@ -12,11 +12,6 @@ const {
   TROCIO_GOOGLE_CLIENT_SECRET,
 } = config
 
-export function checkLogin(req, res, next) {
-  if (!req.session.user) return next(createError(401))
-  next()
-}
-
 export function checkSuperAdmin(req, res, next) {
   if (!req.session.user) return next(createError(401))
   if (!TROCIO_ADMIN)
@@ -112,7 +107,6 @@ export function logout(req, res, next) {
 }
 
 export default {
-  checkLogin,
   checkSuperAdmin,
   login,
   logout,

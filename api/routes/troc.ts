@@ -10,17 +10,11 @@ import {
 import {
   createTroc,
   patchTroc,
-  editTraderPrefix,
   createTarif,
   deleteTarif,
   editTarif,
-  addApply,
-  removeApply,
 } from '../controllers/troc_set'
-// import { checkAdmin } from '../controllers/troc_utils'
 import { ensureUserIsAdmin } from '../controllers/subscribe_util'
-
-import { resTrocUser } from '../res/troc'
 
 router
   .get('/', search)
@@ -32,26 +26,7 @@ router
   .get('/byId/counters', getTrocCounter)
 
   /** TODO: not use params */
-  .patch('/:trocId', ensureUserIsAdmin, patchTroc)
   .get('/:trocId/stats', ensureUserIsAdmin, getStats)
-
-  .post(
-    '/:trocId/trader/:userId/prefix',
-    ensureUserIsAdmin,
-    editTraderPrefix,
-    resTrocUser
-  )
-  .post(
-    '/:trocId/tarif/:tarifId/apply/:userId',
-    ensureUserIsAdmin,
-    addApply,
-    resTrocUser
-  )
-  .delete(
-    '/:trocId/tarif/:tarifId/apply/:userId',
-    ensureUserIsAdmin,
-    removeApply,
-    resTrocUser
-  )
+  .patch('/:trocId', ensureUserIsAdmin, patchTroc)
 
 export default router
