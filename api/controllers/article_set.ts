@@ -153,7 +153,7 @@ export const editName: RequestHandler<
     if (!newName) throw 'newName number is required in body'
 
     const article = await Article.findById(articleId).exec()
-    
+
     // Test le role de l'utilisateur
     if (accessor.role !== 'admin' && accessor.role !== 'cashier') {
       if (String(article.providerId) !== req.session.user._id)
@@ -197,11 +197,17 @@ export const editPrice: RequestHandler<
     const article = await Article.findById(articleId).exec()
     if (article.sold) throw `Solded article's price can't be edited`
 
+    const accessor = await Subscribe.findOne({
+      trocId: article.trocId,
+      userId: req.session.user._id,
+    })
+
     // Test le role de l'utilisateur
     if (accessor.role !== 'admin' && accessor.role !== 'cashier') {
       if (String(article.providerId) !== req.session.user._id)
         throw 'Not allowed'
       if (article.valided) throw `Valided article can't be edited by provider`
+    }
 
     // Enregistre la l'historique de corrections
     article.corrections.push({
