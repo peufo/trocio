@@ -42,7 +42,7 @@
 
   <a href="/">
     <Button>
-      <Icon class="fas fa-home" />&nbsp; Retour à l'acceuil
+      <Icon class="fas fa-home" />&nbsp; Retour à l'accueil
     </Button>
   </a>
 </div>

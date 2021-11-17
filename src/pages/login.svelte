@@ -28,7 +28,7 @@
       <a href="/" class="mr-2">
         <Button>
           <Icon class="fas fa-home mr-2" />
-          acceuil
+          accueil
         </Button>
       </a>
 
