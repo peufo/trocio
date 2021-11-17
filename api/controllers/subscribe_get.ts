@@ -125,6 +125,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     if (q && includGlobalUser && limit > subscribes.length) {
       const users = await User.aggregate()
         .match({
+          _id: { $nin: subscribes.map((sub) => sub.userId) },
           $or: [{ name: new RegExp(q, 'i') }, { mail: new RegExp(q, 'i') }],
         })
         .limit(limit - subscribes.length)
