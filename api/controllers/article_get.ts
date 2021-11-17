@@ -12,6 +12,8 @@ export const getArticles: RequestHandler = async (req, res, next) => {
 
   let { match, sort } = dynamicQuery(req.query, ['exact_statut'])
 
+  console.log({ sort })
+
   // add specific match
   if (!include_without_name) match.$and.push({ name: { $ne: '' } })
 
@@ -47,12 +49,10 @@ export const getArticles: RequestHandler = async (req, res, next) => {
   if (match.$and.length === 0) delete match.$and
   if (match.$or.length === 0) delete match.$or
 
-  const aggregate = Article.aggregate()
-    .match(match)
-    .skip(+skip || 0)
-    .limit((+limit || 20) > 1000 ? 1000 : +limit || 20)
+  const aggregate = Article.aggregate().match(match)
 
   if (Object.keys(sort).length) aggregate.sort(sort)
+  aggregate.skip(+skip || 0).limit((+limit || 20) > 1000 ? 1000 : +limit || 20)
 
   lookupUsers(aggregate)
   lookupSubscribe(aggregate, 'provider')
