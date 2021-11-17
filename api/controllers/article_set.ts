@@ -58,7 +58,7 @@ export const createArticle: RequestHandler<void, any, IArticle | IArticle[]> =
       // Controle la limite du nombre d'article
       const articlesCount = await Article.countDocuments({
         trocId: sub.trocId,
-        provider: sub.userId,
+        providerSubId: sub._id,
       })
       if (articlesCount + articles.length > tarif.maxarticles)
         throw `The limit of ${tarif.maxarticles} articles is reached`
