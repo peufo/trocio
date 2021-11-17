@@ -29,7 +29,7 @@
 
   // Selections
   let selectedView = 'global'
-  let selectedUser = ''
+  let selectedSubscribeId = ''
   let searchUser = ''
 
   // Donnée
@@ -37,7 +37,7 @@
 
   const queryKey = [
     'trocStats',
-    { trocId: $troc._id, view: selectedView, userId: selectedUser },
+    { trocId: $troc._id, view: selectedView, subscribeId: selectedSubscribeId },
   ]
 
   const queryStats = useQuery({
@@ -48,20 +48,20 @@
   })
 
   function load() {
-    if (selectedView === 'user' && !selectedUser) return
+    if (selectedView === 'subscribe' && !selectedSubscribeId) return
     queryKey[1] = {
       trocId: $troc._id,
       view: selectedView,
-      userId: selectedUser,
+      subscribeId: selectedSubscribeId,
     }
     $queryStats.refetch()
   }
 
   $: if (selectedView) load()
 
-  function selectUser(e: { detail: { _id: string } }) {
-    selectedView = 'user'
-    selectedUser = e.detail._id
+  function selectUserSub(e: { detail: { _id: string } }) {
+    selectedView = 'subscribe'
+    selectedSubscribeId = e.detail._id
     load()
   }
 
@@ -74,10 +74,10 @@
 <div style="max-width: 1000px; margin: auto; padding-bottom: 250px;">
   <h6 class="mb-5">Statistique du troc</h6>
   <div class="d-flex">
-    <Radio bind:group={selectedView} value="user">
+    <Radio bind:group={selectedView} value="subscribe">
       <MagicSelect
         modeSelect
-        on:select={selectUser}
+        on:select={selectUserSub}
         bind:search={searchUser}
         path="/subscribes"
         searchKey="q"
@@ -86,6 +86,7 @@
         getValue2={(sub) => sub.user?.mail || ''}
         getKey={(sub) => sub._id || ''}
         solo
+        keepValue
         icon={faUser}
       />
     </Radio>

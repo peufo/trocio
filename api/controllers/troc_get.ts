@@ -12,54 +12,58 @@ const { ObjectId } = mongoose.Types
 /**
  * Return tous les infos nécéssaire au graphique
  */
-export function getStats(req, res, next) {
-  const { trocId } = req.params
-  const { userId, view } = req.query
+export const getStats: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId } = req.params
+    const { subscribeId, view } = req.query
 
-  if (view === 'user' && !userId)
-    return next(Error('Query userId is required when view=user'))
+    if (view === 'subscribe' && !subscribeId)
+      return next(Error('Query userId is required when view=user'))
 
-  TrocModel.findOne({ _id: trocId }).exec((err, troc) => {
-    if (err || !troc) return next(err || Error('Troc not found'))
+    TrocModel.findOne({ _id: trocId }).exec((err, troc) => {
+      if (err || !troc) return next(err || Error('Troc not found'))
 
-    let query: FilterQuery<Troc & Document> = { troc: troc._id }
+      let query: FilterQuery<Troc & Document> = { troc: troc._id }
 
-    if (view === 'traders') {
-      query.provider = { $in: troc.trader.map((t) => t.user) }
-    } else if (view === 'privates') {
-      query.provider = { $nin: troc.trader.map((t) => t.user) }
-    } else if (view === 'user') {
-      query.provider = userId
-    }
+      if (view === 'traders') {
+        query.provider = { $in: troc.trader.map((t) => t.user) }
+      } else if (view === 'privates') {
+        query.provider = { $nin: troc.trader.map((t) => t.user) }
+      } else if (view === 'subscribe') {
+        query.provider = userId
+      }
 
-    Article.find(query)
-      .sort({ createdAt: 1 })
-      .lean()
-      .exec((err, articlesProposed) => {
-        if (err) return next(err)
+      Article.find(query)
+        .sort({ createdAt: 1 })
+        .lean()
+        .exec((err, articlesProposed) => {
+          if (err) return next(err)
 
-        if (view !== 'global') query.buyer = query.provider
-        delete query.provider
-        query.sold = { $exists: true }
-        Article.find(query)
-          .sort({ createdAt: 1 })
-          .lean()
-          .exec((err, articlesBuyed) => {
-            if (err) return next(err)
+          if (view !== 'global') query.buyer = query.provider
+          delete query.provider
+          query.sold = { $exists: true }
+          Article.find(query)
+            .sort({ createdAt: 1 })
+            .lean()
+            .exec((err, articlesBuyed) => {
+              if (err) return next(err)
 
-            delete query.buyer
-            delete query.sold
-            if (view === 'user') query.user = userId
-            Payment.find(query)
-              .sort({ createdAt: 1 })
-              .lean()
-              .exec((err, payments) => {
-                if (err) return next(err)
-                res.json({ articlesProposed, articlesBuyed, payments })
-              })
-          })
-      })
-  })
+              delete query.buyer
+              delete query.sold
+              if (view === 'subscribe') query.user = userId
+              Payment.find(query)
+                .sort({ createdAt: 1 })
+                .lean()
+                .exec((err, payments) => {
+                  if (err) return next(err)
+                  res.json({ articlesProposed, articlesBuyed, payments })
+                })
+            })
+        })
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
 export const search: RequestHandler = async (req, res, next) => {
