@@ -121,6 +121,7 @@ export const deleteArticle: RequestHandler = async (req, res, next) => {
     if (article.valided) throw `Valided article can't be delete`
 
     // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
+
     if (String(article.providerId) !== req.session.user._id) {
       const role = await getRole(article.trocId, req.session.user._id)
       if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
@@ -152,11 +153,7 @@ export const editName: RequestHandler<
     if (!newName) throw 'newName number is required in body'
 
     const article = await Article.findById(articleId).exec()
-    const accessor = await Subscribe.findOne({
-      trocId: article.trocId,
-      userId: req.session.user._id,
-    })
-
+    
     // Test le role de l'utilisateur
     if (accessor.role !== 'admin' && accessor.role !== 'cashier') {
       if (String(article.providerId) !== req.session.user._id)
@@ -200,17 +197,11 @@ export const editPrice: RequestHandler<
     const article = await Article.findById(articleId).exec()
     if (article.sold) throw `Solded article's price can't be edited`
 
-    const accessor = await Subscribe.findOne({
-      trocId: article.trocId,
-      userId: req.session.user._id,
-    })
-
     // Test le role de l'utilisateur
     if (accessor.role !== 'admin' && accessor.role !== 'cashier') {
       if (String(article.providerId) !== req.session.user._id)
         throw 'Not allowed'
       if (article.valided) throw `Valided article can't be edited by provider`
-    }
 
     // Enregistre la l'historique de corrections
     article.corrections.push({
