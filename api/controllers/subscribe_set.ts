@@ -21,15 +21,16 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
 
     if (!userId && !anonym && accessorSub?.validedByUser)
       throw 'Subscription already exist and is valided by user'
+
     if (
       (userId || anonym) &&
-      accessorSub.role !== 'admin' &&
-      accessorSub.role !== 'cashier'
+      accessorSub?.role !== 'admin' &&
+      accessorSub?.role !== 'cashier'
     )
       throw 'Create subscribe for other user (or anonym) require admin or cashier right'
 
     if (userId || anonym) {
-      // Création d'un sub pour un client
+      // Création d'un sub pour un client depuis la caisse
       const newSubscribe: Partial<ISubscribe> = {
         trocId,
         tarifId: troc.tarif.find((t) => t.bydefault)._id,
@@ -42,6 +43,9 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
       }
 
       if (userId) {
+        const sub = await Subscribe.findOne({ trocId, userId })
+        if (sub) throw 'Subscribe already exist'
+
         newSubscribe.userId = userId
       } else {
         // Création d'un sub pour un client anonyme
