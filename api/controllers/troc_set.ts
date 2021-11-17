@@ -2,7 +2,6 @@ import { RequestHandler } from 'express'
 import Troc from '../models/troc'
 import User from '../models/user'
 import Subscribe from '../models/subscribe'
-import { populateUsers } from '../controllers/troc_utils'
 import { getOpt } from './option'
 
 export const createTroc: RequestHandler = async (req, res, next) => {
@@ -277,13 +276,28 @@ export const createTarif: RequestHandler = async (req, res, next) => {
 export const deleteTarif: RequestHandler = async (req, res, next) => {
   try {
     const { trocId = '', tarifId = '' } = req.body
-    const troc = await Troc.findById(trocId).exec()
-    troc.tarif = troc.tarif.filter((t) => String(t._id) !== tarifId)
-    if (!troc.tarif.filter((t) => t.bydefault).length)
-      throw `Tarif by default can't be removed`
-    await troc.save()
+    if (!trocId || !tarifId) throw 'trocId and tarifId is required in the body'
 
-    // TODO: Passer les personne attribué au tarif sur le tarif standard
+    const troc = await Troc.findById(trocId).exec()
+    if (!troc) throw 'Troc not found'
+
+    const tarifDefault = troc.tarif.find((t) => t.bydefault)
+    if (!tarifDefault) throw 'Tarif by default not found'
+    if (tarifDefault._id.toString() === tarifId)
+      throw `Tarif by default can't be removed`
+
+    // Attribute default tarif for all subscribes with deleted tarif
+    const subscribes = await Subscribe.find({ tarifId })
+    await Promise.all(
+      subscribes.map((sub) => {
+        sub.tarifId = tarifDefault._id
+        return sub.save()
+      })
+    )
+
+    // Update troc.tarif
+    troc.tarif = troc.tarif.filter((t) => String(t._id) !== tarifId)
+    await troc.save()
 
     res.json(troc)
   } catch (error) {
