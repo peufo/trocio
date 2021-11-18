@@ -153,6 +153,10 @@ export const editName: RequestHandler<
     if (!newName) throw 'newName number is required in body'
 
     const article = await Article.findById(articleId).exec()
+    const accessor = await Subscribe.findOne({
+      trocId: article.trocId,
+      userId: req.session.user._id,
+    })
 
     // Test le role de l'utilisateur
     if (accessor.role !== 'admin' && accessor.role !== 'cashier') {
