@@ -1,4 +1,4 @@
-import type { RequestHandler, Request } from 'express'
+import type { RequestHandler, Request, Response } from 'express'
 import Subscribe from '../models/subscribe'
 
 export async function getRole(trocId: string, userId: string) {
@@ -17,7 +17,7 @@ interface SubscribeQuery {
 
 export const ensureUserIsAdmin: RequestHandler = async (req, res, next) => {
   try {
-    const { accessor } = await getAccessedAndAssecor(req)
+    const { accessor } = await getAccessedAndAssecor(req, res)
     if (accessor.role !== 'admin') throw `User is not admin of troc`
     return next()
   } catch (error) {
@@ -27,7 +27,7 @@ export const ensureUserIsAdmin: RequestHandler = async (req, res, next) => {
 
 export const ensureUserIsCashier: RequestHandler = async (req, res, next) => {
   try {
-    const { accessor } = await getAccessedAndAssecor(req)
+    const { accessor } = await getAccessedAndAssecor(req, res)
     if (accessor.role !== 'admin' && accessor.role !== 'cashier')
       throw `User is not admin of troc`
 
@@ -43,7 +43,7 @@ export const ensureUserCanAccessResum: RequestHandler = async (
   next
 ) => {
   try {
-    const { accessed, accessor } = await getAccessedAndAssecor(req)
+    const { accessed, accessor } = await getAccessedAndAssecor(req, res)
     if (
       accessed._id !== accessor._id &&
       accessor.role !== 'admin' &&
@@ -58,7 +58,11 @@ export const ensureUserCanAccessResum: RequestHandler = async (
   }
 }
 
-async function getAccessedAndAssecor(req: Request) {
+/**
+ * Récupère et le subscribe accédé et accédant
+ * set res.locals
+ */
+async function getAccessedAndAssecor(req: Request, res: Response) {
   try {
     if (!req.session.user._id) throw 'Login required'
     const { subscribeId, trocId } = parseRequest(req)
@@ -79,6 +83,10 @@ async function getAccessedAndAssecor(req: Request) {
             userId: req.session.user._id,
           })
     if (!accessor) throw 'Editor subscriber not found'
+
+    res.locals.accessed = accessed
+    res.locals.accessor = accessor
+
     return { accessed, accessor }
   } catch (error) {
     throw error

@@ -9,15 +9,14 @@
     faList,
     faPlus,
   } from '@fortawesome/free-solid-svg-icons'
-  import type { Article, ArticleCreate } from 'types'
-  import { api } from '$lib/api'
+  import type { Article, ArticleCreate, ISubscribe } from 'types'
+  import { api, useApi } from '$lib/api'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   const queryClient = useQueryClient()
   export let subscribeId: string
   export let active = false
   export let listMode = false
-  export let prefix = ''
 
   let newName = ''
   let newPrice = ''
@@ -32,6 +31,9 @@
   }>()
 
   let textarea: HTMLTextAreaElement | undefined
+
+  $: querySubscribe = useApi<{subscribeId: string}, ISubscribe>(['subscribes/byId', {subscribeId}])
+  $: prefix = $querySubscribe.data?.prefix || ''
 
   $: listPlaceHolder = `\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${
     prefix ? '[ Référence ] ' : ''
