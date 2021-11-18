@@ -9,6 +9,7 @@ import {
 import {
   getMySubscribes,
   getSubscribers,
+  getSubscribe,
   getSubscribersCount,
   getResum,
 } from '../controllers/subscribe_get'
@@ -21,6 +22,7 @@ import {
 router
   .post('/', createSubscribe)
   .get('/', ensureUserIsCashier, getSubscribers)
+  .get('/byId', ensureUserIsCashier, getSubscribe)
   .get('/count', ensureUserIsCashier, getSubscribersCount)
   .get('/resum', ensureUserCanAccessResum, getResum)
   .get('/me', getMySubscribes)

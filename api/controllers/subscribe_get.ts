@@ -67,6 +67,14 @@ export const getResum: RequestHandler = async (req, res, next) => {
   }
 }
 
+export const getSubscribe: RequestHandler = async (req, res, next) => {
+  try {
+    res.json(res.locals.accessed)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const getSubscribers: RequestHandler = async (req, res, next) => {
   let {
     trocId,
