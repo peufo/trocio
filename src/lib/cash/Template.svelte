@@ -116,7 +116,7 @@
           <div in:fade|local class="d-flex flex-wrap">
             {#each pendingItems as article, index (article._id)}
               <div
-                transition:scale|local
+                in:scale|local
                 animate:flip={{ duration: 200 }}
                 class="d-flex simple-card pl-2 pr-2 pt-1 pb-1 ma-1"
                 style="min-width: 200px; max-width: calc(50% - 8px);"

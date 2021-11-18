@@ -5,13 +5,15 @@
 
   export let active = false
   export let tarif: Tarif | undefined
+  export let modeAdmin = false
 </script>
 
 <Dialog bind:active class="pa-4">
   {#if tarif}
     <div>
       <h6>
-        Le tarif <b>{tarif.name}</b> vous est attirbué
+        Le tarif <b>{tarif.name}</b>
+        {modeAdmin ? 'est attribué au client' : 'vous est attribué'}
       </h6>
 
       <div class="mb-4">
