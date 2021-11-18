@@ -75,6 +75,7 @@
 <TarifInfoDialog
   tarif={$queryResum.data?.tarif}
   bind:active={tarifInfoDialogActive}
+  {modeAdmin}
 />
 
 {#if $queryResum.isLoading}
