@@ -57,12 +57,6 @@ userSchema.pre<UserDocument>('save', async function (next) {
   }
 })
 
-userSchema.post<UserDocument>('save', async function (next) {
-  if (this.isModified('mail') && !this.isNew) {
-    mail.sendValidMail(this)
-  }
-})
-
 userSchema.methods.comparePassword = function (
   this: UserDocument,
   candidatePassword: string
