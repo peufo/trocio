@@ -39,7 +39,11 @@
     () =>
       api<PaymentCreate>('/api/payments', {
         method: 'post',
-        data: { userSubId: subscribeId, amount: -(resum?.balance || 0) },
+        data: {
+          userSubId: subscribeId,
+          amount: -(resum?.balance || 0),
+          message: 'Règlement du solde',
+        },
         success: 'Solde reglé avec succès',
       }),
     {

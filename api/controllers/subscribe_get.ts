@@ -1,11 +1,14 @@
 import type { RequestHandler } from 'express'
 import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Types
+require('svelte/register')
 
 import Subscribe from '../models/subscribe'
 import User from '../models/user'
+import Article from '../models/article'
 import type { ISubscribe, SubscribeLookup } from '../../types'
 import { dynamicQuery } from './utils'
+const ResumPdf = require('../lib/ResumPdf.svelte').default
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
   try {
@@ -42,10 +45,11 @@ export const getMySubscribes: RequestHandler = async (req, res, next) => {
 export const getResum: RequestHandler = async (req, res, next) => {
   try {
     const { userId, trocId, subscribeId } = req.query
-    if (
-      typeof subscribeId !== 'string' &&
-      (typeof userId !== 'string' || typeof trocId !== 'string')
-    )
+    if (subscribeId && typeof subscribeId !== 'string')
+      throw 'subscribeId need to be a string'
+    if (userId && typeof userId !== 'string') throw 'userId need to be a string'
+    if (trocId && typeof trocId !== 'string') throw 'trocId need to be a string'
+    if (subscribeId && (userId || trocId))
       throw 'Query "subscribeId" or "userId" and "trocId" are required'
 
     const match = subscribeId
@@ -62,6 +66,41 @@ export const getResum: RequestHandler = async (req, res, next) => {
 
     const subscribes = await aggregate.exec()
     res.json(subscribes[0])
+  } catch (error) {
+    next(error)
+  }
+}
+export const getResumePdf: RequestHandler = async (req, res, next) => {
+  try {
+    const { subscribeId } = req.query
+    if (typeof subscribeId !== 'string') throw 'subscribeId query is required'
+
+    const aggregate = Subscribe.aggregate()
+    aggregate.match({ _id: new ObjectId(subscribeId) })
+    lookupResum(aggregate)
+    lookupTarif(aggregate)
+    lookupUser(aggregate)
+    lookupTroc(aggregate)
+    const [subscribe] = await aggregate.exec()
+    if (!subscribe) throw 'subscribe not found'
+
+    const articles = await Article.find({
+      providerSubId: subscribeId,
+      valided: { $exists: true },
+    })
+
+    const validedArticles = articles.filter((art) => !art.sold && !art.recover)
+    const soldArticles = articles.filter((art) => art.sold)
+    const recoverArticles = articles.filter((art) => art.recover)
+
+    const { html } = ResumPdf.render({
+      sub: subscribe,
+      validedArticles,
+      soldArticles,
+      recoverArticles,
+    })
+
+    res.send(html)
   } catch (error) {
     next(error)
   }
@@ -246,6 +285,7 @@ export function lookupTroc(
           $project: {
             name: 1,
             description: 1,
+            currency: 1,
             address: 1,
             location: 1,
             schedule: 1,

@@ -82,7 +82,7 @@ async function getAccessedAndAssecor(req: Request, res: Response) {
             trocId: accessed.trocId,
             userId: req.session.user._id,
           })
-    if (!accessor) throw 'Editor subscriber not found'
+    if (!accessor) throw 'Accessor subscriber not found'
 
     res.locals.accessed = accessed
     res.locals.accessor = accessor
