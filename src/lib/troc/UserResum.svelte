@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { Button, Table } from 'svelte-materialify'
+  import { Button, Icon, Table } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import { faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -17,6 +17,7 @@
   import { api, useApi } from '$lib/api'
   import type { PaymentCreate, SubscribeResum } from 'types'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
+  import { mdiPrinter } from '@mdi/js'
 
   export let subscribeId: string
   export let isClosed = false
@@ -56,8 +57,19 @@
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
-  function print() {
-    console.log('TODO, server endpoint provid resum.pdf')
+  async function printResum() {
+    const winPrint = window.open(
+      `/api/subscribes/resum/print?subscribeId=${subscribeId}`,
+      '',
+      'width=4000,height=4000'
+    )
+    if (winPrint) {
+      winPrint.onload = () => {
+        winPrint.focus()
+        winPrint.print()
+        setTimeout(() => winPrint.close(), 100)
+      }
+    }
   }
 
   function clickDownladCSV() {
@@ -94,6 +106,17 @@
   <div in:fade|local>
     <br />
     <div class="d-flex">
+      <Button
+        text
+        size="small"
+        style="opacity: 0.6;"
+        class="mt-4"
+        on:click={printResum}
+      >
+        <Icon path={mdiPrinter} size="1.1em" class="mr-2" />
+        Imprimer le compte
+      </Button>
+
       <div class="flex-grow-1" />
       <!-- Patch en attendant de gerer la monaie correctement dans la DB -->
       {#if modeAdmin && Math.abs(resum.balance) > 0.001}
@@ -234,14 +257,9 @@
       {#if !resum?.payments?.length}
         <div class="text-center pa-12 text--secondary">Aucun paiement</div>
       {/if}
-    </DetailCard><br />
+    </DetailCard>
 
-    <!--
-      <div on:click={print} class="w3-opacity w3-small underline-div w3-right">
-        <i class="fa fa-print" />
-        <span class="underline-span">imprimer</span>
-      </div>
-    -->
+    <br />
     <br />
   </div>
 {/if}

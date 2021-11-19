@@ -8,7 +8,7 @@ import User from '../models/user'
 import Article from '../models/article'
 import type { ISubscribe, SubscribeLookup } from '../../types'
 import { dynamicQuery } from './utils'
-const ResumPdf = require('../lib/ResumPdf.svelte').default
+const ResumPrint = require('../lib/ResumPrint.svelte').default
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
   try {
@@ -70,7 +70,7 @@ export const getResum: RequestHandler = async (req, res, next) => {
     next(error)
   }
 }
-export const getResumePdf: RequestHandler = async (req, res, next) => {
+export const getResumePrint: RequestHandler = async (req, res, next) => {
   try {
     const { subscribeId } = req.query
     if (typeof subscribeId !== 'string') throw 'subscribeId query is required'
@@ -93,7 +93,7 @@ export const getResumePdf: RequestHandler = async (req, res, next) => {
     const soldArticles = articles.filter((art) => art.sold)
     const recoverArticles = articles.filter((art) => art.recover)
 
-    const { html } = ResumPdf.render({
+    const { html } = ResumPrint.render({
       sub: subscribe,
       validedArticles,
       soldArticles,
