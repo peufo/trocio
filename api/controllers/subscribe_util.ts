@@ -29,7 +29,7 @@ export const ensureUserIsCashier: RequestHandler = async (req, res, next) => {
   try {
     const { accessor } = await getAccessedAndAssecor(req, res)
     if (accessor.role !== 'admin' && accessor.role !== 'cashier')
-      throw `User is not admin of troc`
+      throw `User is not admin or cashier of troc`
 
     return next()
   } catch (error) {
