@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express'
 import mongoose, { FilterQuery, Mongoose } from 'mongoose'
 
-import type { Troc } from '../../types'
+import type { Troc, Article as IArticle } from '../../types'
 import TrocModel from '../models/troc'
 import Article from '../models/article'
 import Payment from '../models/payment'
@@ -14,53 +14,27 @@ const { ObjectId } = mongoose.Types
  */
 export const getStats: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId } = req.params
-    const { subscribeId, view } = req.query
+    const { trocId = '', subscribeId = '' } = req.query
+    if (!trocId && !subscribeId) throw 'trocId or subscribeId is required'
+    if (typeof trocId !== 'string') throw 'trocId query need to be a string'
+    if (typeof subscribeId !== 'string')
+      throw 'subscribeId query need to be a string'
 
-    if (view === 'subscribe' && !subscribeId)
-      return next(Error('Query userId is required when view=user'))
-
-    TrocModel.findOne({ _id: trocId }).exec((err, troc) => {
-      if (err || !troc) return next(err || Error('Troc not found'))
-
-      let query: FilterQuery<Troc & Document> = { troc: troc._id }
-
-      if (view === 'traders') {
-        query.provider = { $in: troc.trader.map((t) => t.user) }
-      } else if (view === 'privates') {
-        query.provider = { $nin: troc.trader.map((t) => t.user) }
-      } else if (view === 'subscribe') {
-        query.provider = userId
-      }
-
-      Article.find(query)
-        .sort({ createdAt: 1 })
-        .lean()
-        .exec((err, articlesProposed) => {
-          if (err) return next(err)
-
-          if (view !== 'global') query.buyer = query.provider
-          delete query.provider
-          query.sold = { $exists: true }
-          Article.find(query)
-            .sort({ createdAt: 1 })
-            .lean()
-            .exec((err, articlesBuyed) => {
-              if (err) return next(err)
-
-              delete query.buyer
-              delete query.sold
-              if (view === 'subscribe') query.user = userId
-              Payment.find(query)
-                .sort({ createdAt: 1 })
-                .lean()
-                .exec((err, payments) => {
-                  if (err) return next(err)
-                  res.json({ articlesProposed, articlesBuyed, payments })
-                })
-            })
-        })
-    })
+    if (subscribeId) {
+      const [articlesProposed, articlesBuyed, payments] = await Promise.all([
+        Article.find({ providerSubId: subscribeId }),
+        Article.find({ buyerSubId: subscribeId }),
+        Payment.find({ userSubId: subscribeId }),
+      ])
+      res.json({ articlesProposed, articlesBuyed, payments })
+    } else {
+      const [articlesProposed, articlesBuyed, payments] = await Promise.all([
+        Article.find({ trocId }),
+        Article.find({ trocId, sold: { $exists: true } }),
+        Payment.find({ trocId }),
+      ])
+      res.json({ articlesProposed, articlesBuyed, payments })
+    }
   } catch (error) {
     next(error)
   }
