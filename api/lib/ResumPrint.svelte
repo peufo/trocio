@@ -38,7 +38,7 @@
     </span>
     <br /><br />
     <span style="font-size: 1.5em;">
-      Activité de <b>{sub.user?.name || sub.name}</b>
+      Compte de <b>{sub.user?.name || sub.name}</b>
     </span>
   </header>
 
