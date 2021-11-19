@@ -39,7 +39,7 @@ const trocModel = new Schema(
       {
         name: { type: String, default: 'Tarif' },
         bydefault: { type: Boolean, default: false },
-        margin: { type: Number, default: 0, min: 0, max: 0.4 },
+        margin: { type: Number, default: 0, min: 0, max: 1 },
         fee: [
           {
             price: { type: Number, default: 0, min: 0, max: 100000 },
