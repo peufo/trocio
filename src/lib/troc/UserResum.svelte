@@ -61,7 +61,7 @@
     const winPrint = window.open(
       `/api/subscribes/resum/print?subscribeId=${subscribeId}`,
       '',
-      'width=4000,height=4000'
+      'width=4000,height=4000,location=no'
     )
     if (winPrint) {
       winPrint.onload = () => {
