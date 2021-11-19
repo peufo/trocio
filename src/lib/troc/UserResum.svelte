@@ -59,15 +59,13 @@
 
   async function printResum() {
     const winPrint = window.open(
-      `/api/subscribes/resum/print?subscribeId=${subscribeId}`,
+      `/print-subscribe?subscribeId=${subscribeId}`,
       '',
       'width=4000,height=4000,location=no'
     )
     if (winPrint) {
       winPrint.onload = () => {
-        winPrint.focus()
-        winPrint.print()
-        setTimeout(() => winPrint.close(), 100)
+        setTimeout(() => winPrint.close(), 3000)
       }
     }
   }
