@@ -18,11 +18,6 @@ export const getNextPageParam = createGetNextPageParam(FIRST_LIMIT, NEXT_LIMIT)
 export function getTroc({ queryKey }: { queryKey: ['troc', string] }) {
   return api<Troc>(`/api/trocs/${queryKey[1]}`)
 }
-/** @deprecated */
-export function getTrocStats({ queryKey }) {
-  const { trocId = '' } = queryKey[1]
-  return api<TrocStats>(`/api/trocs/${trocId}/stats`, { params: queryKey[1] })
-}
 
 export function searchTrocs({ pageParam = 0, queryKey }) {
   const params = {

@@ -12,8 +12,6 @@ export const getArticles: RequestHandler = async (req, res, next) => {
 
   let { match, sort } = dynamicQuery(req.query, ['exact_statut'])
 
-  console.log({ sort })
-
   // add specific match
   if (!include_without_name) match.$and.push({ name: { $ne: '' } })
 

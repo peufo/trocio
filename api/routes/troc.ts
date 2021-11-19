@@ -24,9 +24,9 @@ router
   .patch('/tarif', ensureUserIsAdmin, editTarif)
   .get('/byId', getTroc)
   .get('/byId/counters', getTrocCounter)
+  .get('/byId/stats', ensureUserIsAdmin, getStats)
 
   /** TODO: not use params */
-  .get('/:trocId/stats', ensureUserIsAdmin, getStats)
   .patch('/:trocId', ensureUserIsAdmin, patchTroc)
 
 export default router

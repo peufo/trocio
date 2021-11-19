@@ -15,7 +15,6 @@
     SubscribeLookup,
   } from 'types'
   import type { TrocStatsFormatted } from './formatStats'
-  import { getTrocStats } from '$lib/troc/api'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import { troc } from '$lib/troc/store'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
@@ -26,80 +25,46 @@
   import PlotCash from './PlotCash.svelte'
   import { formatStats } from './formatStats'
   import { renderAmount } from '$lib/utils'
+  import { useApi } from '$lib/api'
 
-  // Selections
-  let selectedView = 'global'
   let selectedSubscribeId = ''
-  let searchUser = ''
-
-  // Donnée
   let stats: TrocStatsFormatted | null = null
 
-  const queryKey = [
-    'trocStats',
-    { trocId: $troc._id, view: selectedView, subscribeId: selectedSubscribeId },
-  ]
-
-  const queryStats = useQuery({
-    queryFn: getTrocStats,
-    queryKey,
-    onSuccess,
+  $: queryStats = useApi<{ trocId: string; subscribeId?: string }, TrocStats>({
+    queryKey: [
+      'trocs/byId/stats',
+      {
+        trocId: $troc._id,
+        subscribeId: selectedSubscribeId,
+      },
+    ],
+    onSuccess: (statsBrut) => {
+      stats = formatStats(statsBrut)
+    },
     refetchOnWindowFocus: false,
   })
 
-  function load() {
-    if (selectedView === 'subscribe' && !selectedSubscribeId) return
-    queryKey[1] = {
-      trocId: $troc._id,
-      view: selectedView,
-      subscribeId: selectedSubscribeId,
-    }
-    $queryStats.refetch()
-  }
-
-  $: if (selectedView) load()
-
   function selectUserSub(e: { detail: { _id: string } }) {
-    selectedView = 'subscribe'
     selectedSubscribeId = e.detail._id
-    load()
-  }
-
-  /** Callback sur la réponse du server */
-  function onSuccess(statsBrut: TrocStats) {
-    stats = formatStats(statsBrut)
   }
 </script>
 
 <div style="max-width: 1000px; margin: auto; padding-bottom: 250px;">
   <h6 class="mb-5">Statistique du troc</h6>
   <div class="d-flex">
-    <Radio bind:group={selectedView} value="subscribe">
-      <MagicSelect
-        modeSelect
-        on:select={selectUserSub}
-        bind:search={searchUser}
-        path="/subscribes"
-        searchKey="q"
-        queryParams={{ exact_trocId: $troc._id }}
-        getValue={(sub) => sub.user?.name || sub.name}
-        getValue2={(sub) => sub.user?.mail || ''}
-        getKey={(sub) => sub._id || ''}
-        solo
-        keepValue
-        icon={faUser}
-      />
-    </Radio>
-    <div style="width: 36px;" />
-    <Radio bind:group={selectedView} value="global">
-      Tous les participants
-    </Radio>
-    <div style="width: 36px;" />
-
-    <Radio bind:group={selectedView} value="traders">Commerçants</Radio>
-    <div style="width: 36px;" />
-
-    <Radio bind:group={selectedView} value="privates">Particuliers</Radio>
+    <MagicSelect
+      modeSelect
+      on:select={selectUserSub}
+      path="/subscribes"
+      searchKey="q"
+      queryParams={{ exact_trocId: $troc._id }}
+      getValue={(sub) => sub.user?.name || sub.name}
+      getValue2={(sub) => sub.user?.mail || ''}
+      getKey={(sub) => sub._id || ''}
+      solo
+      keepValue
+      icon={faUser}
+    />
   </div>
 
   <br /><br />
