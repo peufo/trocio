@@ -1,14 +1,12 @@
 import type { RequestHandler } from 'express'
 import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Types
-require('svelte/register')
 
 import Subscribe from '../models/subscribe'
 import User from '../models/user'
 import Article from '../models/article'
 import type { ISubscribe, SubscribeLookup } from '../../types'
 import { dynamicQuery } from './utils'
-const ResumPrint = require('../lib/ResumPrint.svelte').default
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
   try {
@@ -70,7 +68,7 @@ export const getResum: RequestHandler = async (req, res, next) => {
     next(error)
   }
 }
-export const getResumePrint: RequestHandler = async (req, res, next) => {
+export const getResumePrintData: RequestHandler = async (req, res, next) => {
   try {
     const { subscribeId } = req.query
     if (typeof subscribeId !== 'string') throw 'subscribeId query is required'
@@ -93,14 +91,12 @@ export const getResumePrint: RequestHandler = async (req, res, next) => {
     const soldArticles = articles.filter((art) => art.sold)
     const recoverArticles = articles.filter((art) => art.recover)
 
-    const { html } = ResumPrint.render({
-      sub: subscribe,
+    res.json({
+      subscribe,
       validedArticles,
       soldArticles,
       recoverArticles,
     })
-
-    res.send(html)
   } catch (error) {
     next(error)
   }

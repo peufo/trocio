@@ -1,17 +1,11 @@
-<script>
-  import { renderAmount } from './utils'
+<script lang="ts">
+  import { renderAmount } from '$lib/utils'
+  import type { SubscribeResum, SubscribeLookup, Article } from 'types'
 
-  /*
-  import type { SubscribeResum, SubscribeLookup, Article } from '../../types'
-  export let sub: SubscribeResum & SubscribeLookup
+  export let subscribe: SubscribeResum & SubscribeLookup
   export let validedArticles: Article[]
   export let soldArticles: Article[]
   export let recoverArticles: Article[]
-  */
-  export let sub
-  export let validedArticles
-  export let soldArticles
-  export let recoverArticles
 
   const dateFormat = new Intl.DateTimeFormat(undefined, {
     day: 'numeric',
@@ -21,7 +15,7 @@
     minute: 'numeric',
   }).format
 
-  function sumOf(arr) {
+  function sumOf(arr: number[]) {
     if (!arr.length) return 0
     return arr.reduce((acc, cur) => (acc += cur))
   }
@@ -29,16 +23,16 @@
 
 <main style="font-family: monospace;">
   <header>
-    <span style="font-size: 2em;">{sub.troc.name}</span>
+    <span style="font-size: 2em;">{subscribe.troc.name}</span>
     <span>
-      {#if sub.troc.society}
-        {sub.troc.society} -
+      {#if subscribe.troc.society}
+        {subscribe.troc.society} -
       {/if}
-      {new Date(sub.troc.open).toLocaleDateString()}
+      {new Date(subscribe.troc.open).toLocaleDateString()}
     </span>
     <br /><br />
-    <span style="font-size: 1.5em;">
-      Compte de <b>{sub.user?.name || sub.name}</b>
+    <span class="h2">
+      Compte de <b>{subscribe.user?.name || subscribe.name}</b>
     </span>
   </header>
 
@@ -46,21 +40,23 @@
 
   <div style="display: flex;">
     <div>
-      <h2>Solde</h2>
+      <span class="h2">Solde</span>
     </div>
     <div style="flex-grow: 1;" />
     <div>
-      <h2>{renderAmount(sub.resum.balance, sub.troc.currency)}</h2>
+      <span class="h2"
+        >{renderAmount(subscribe.resum.balance, subscribe.troc.currency)}</span
+      >
     </div>
   </div>
 
-  {#if sub.resum.paymentsCount}
+  {#if subscribe.resum.paymentsCount}
     <hr />
     <br />
 
     <section>
-      <h3>{sub.resum.paymentsCount} - Paiements</h3>
-
+      <span class="h3">{subscribe.resum.paymentsCount} - Paiements</span>
+      <br /><br />
       <table style="width: 100%;">
         <thead>
           <tr>
@@ -75,7 +71,7 @@
         </thead>
 
         <tbody>
-          {#each sub.resum.payments || [] as payment}
+          {#each subscribe.resum.payments || [] as payment}
             <tr>
               <td style="padding: 2px 0px;">
                 {dateFormat(new Date(payment.createdAt || ''))}
@@ -84,7 +80,7 @@
                 {payment.message || '-'}
               </td>
               <td style="padding: 2px 0px;" align="right">
-                {renderAmount(payment.amount, sub.troc.currency)}
+                {renderAmount(payment.amount, subscribe.troc.currency)}
               </td>
             </tr>
           {/each}
@@ -95,7 +91,10 @@
               align="right"
             >
               <b>
-                {renderAmount(sub.resum.paymentsSum, sub.troc.currency)}
+                {renderAmount(
+                  subscribe.resum.paymentsSum,
+                  subscribe.troc.currency
+                )}
               </b>
             </td>
           </tr>
@@ -104,14 +103,14 @@
     </section>
   {/if}
 
-  {#if sub.resum.purchasesCount}
+  {#if subscribe.resum.purchasesCount}
     <br />
     <hr />
     <br />
 
     <section>
-      <h3>{sub.resum.purchasesCount} - Achats</h3>
-
+      <span class="h3">{subscribe.resum.purchasesCount} - Achats</span>
+      <br /><br />
       <table style="width: 100%;">
         <thead>
           <tr>
@@ -125,7 +124,7 @@
         </thead>
 
         <tbody>
-          {#each sub.resum.purchases || [] as purchase}
+          {#each subscribe.resum.purchases || [] as purchase}
             <tr>
               <td style="padding: 2px 0px;">
                 {dateFormat(new Date(purchase.sold || ''))}
@@ -135,7 +134,7 @@
                 >{purchase.name}</td
               >
               <td style="padding: 2px 0px;" align="right">
-                {renderAmount(-purchase.price, sub.troc.currency)}
+                {renderAmount(-purchase.price, subscribe.troc.currency)}
               </td>
             </tr>
           {/each}
@@ -147,8 +146,8 @@
             >
               <b>
                 {renderAmount(
-                  -(sub.resum.purchasesSum || 0),
-                  sub.troc.currency
+                  -(subscribe.resum.purchasesSum || 0),
+                  subscribe.troc.currency
                 )}
               </b>
             </td>
@@ -164,8 +163,8 @@
     <br />
 
     <section>
-      <h3>{soldArticles.length} - Ventes</h3>
-
+      <span class="h3">{soldArticles.length} - Ventes</span>
+      <br /><br />
       <table style="width: 100%;">
         <thead>
           <tr>
@@ -190,13 +189,13 @@
               <td style="padding: 2px 8px; max-width: 500px;">{article.name}</td
               >
               <td style="padding: 2px 0px;" align="right">
-                {renderAmount(-article.fee, sub.troc.currency)}
+                {renderAmount(-article.fee, subscribe.troc.currency)}
               </td>
               <td style="padding: 2px 0px;" align="right">
-                {renderAmount(-article.margin, sub.troc.currency)}
+                {renderAmount(-article.margin, subscribe.troc.currency)}
               </td>
               <td style="padding: 2px 0px;" align="right">
-                {renderAmount(article.price, sub.troc.currency)}
+                {renderAmount(article.price, subscribe.troc.currency)}
               </td>
             </tr>
           {/each}
@@ -209,7 +208,7 @@
               <b>
                 {renderAmount(
                   -sumOf(soldArticles.map((a) => a.fee)),
-                  sub.troc.currency
+                  subscribe.troc.currency
                 )}
               </b>
             </td>
@@ -220,7 +219,7 @@
               <b>
                 {renderAmount(
                   -sumOf(soldArticles.map((a) => a.margin)),
-                  sub.troc.currency
+                  subscribe.troc.currency
                 )}
               </b>
             </td>
@@ -231,7 +230,7 @@
               <b>
                 {renderAmount(
                   sumOf(soldArticles.map((a) => a.price)),
-                  sub.troc.currency
+                  subscribe.troc.currency
                 )}
               </b>
             </td>
@@ -247,8 +246,8 @@
     <br />
 
     <section>
-      <h3>{validedArticles.length} - Dépots</h3>
-
+      <span class="h3">{validedArticles.length} - Dépots</span>
+      <br /><br />
       <table style="width: 100%;">
         <thead>
           <tr>
@@ -272,10 +271,10 @@
               <td style="padding: 2px 8px; max-width: 500px;">{article.name}</td
               >
               <td style="padding: 2px 0px;" align="right">
-                {renderAmount(-article.fee, sub.troc.currency)}
+                {renderAmount(-article.fee, subscribe.troc.currency)}
               </td>
               <td style="padding: 2px 0px;" align="right">
-                {renderAmount(article.price, sub.troc.currency)}
+                {renderAmount(article.price, subscribe.troc.currency)}
               </td>
             </tr>
           {/each}
@@ -288,7 +287,7 @@
               <b>
                 {renderAmount(
                   -sumOf(validedArticles.map((a) => a.fee)),
-                  sub.troc.currency
+                  subscribe.troc.currency
                 )}
               </b>
             </td>
@@ -304,8 +303,8 @@
     <br />
 
     <section>
-      <h3>{recoverArticles.length} - Récupérations</h3>
-
+      <span class="h3">{recoverArticles.length} - Récupérations</span>
+      <br /><br />
       <table style="width: 100%;">
         <thead>
           <tr>
@@ -329,10 +328,10 @@
               <td style="padding: 2px 8px; max-width: 500px;">{article.name}</td
               >
               <td style="padding: 2px 0px;" align="right">
-                {renderAmount(-article.fee, sub.troc.currency)}
+                {renderAmount(-article.fee, subscribe.troc.currency)}
               </td>
               <td style="padding: 2px 0px;" align="right">
-                {renderAmount(article.price, sub.troc.currency)}
+                {renderAmount(article.price, subscribe.troc.currency)}
               </td>
             </tr>
           {/each}
@@ -345,7 +344,7 @@
               <b>
                 {renderAmount(
                   -sumOf(recoverArticles.map((a) => a.fee)),
-                  sub.troc.currency
+                  subscribe.troc.currency
                 )}
               </b>
             </td>
@@ -355,3 +354,20 @@
     </section>
   {/if}
 </main>
+
+<style>
+  main {
+    font-size: medium;
+    line-height: normal;
+    max-width: 900px;
+    margin: auto;
+    padding-top: 20px;
+    padding-bottom: 80px;
+  }
+  .h2 {
+    font-size: 1.5em;
+  }
+  .h3 {
+    font-size: 1.3em;
+  }
+</style>

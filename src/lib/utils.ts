@@ -75,9 +75,10 @@ export function formatPrice(node) {
 }
 
 export function renderAmount(
-  amount: number | string,
+  amount?: number | string,
   currency?: string
 ): string {
+  if (amount === undefined) return '-'
   amount = +amount
   if (isNaN(amount)) return '-'
 
