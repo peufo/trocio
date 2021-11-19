@@ -23,8 +23,8 @@ import {
 router
   .post('/', createSubscribe)
   .get('/', ensureUserIsCashier, getSubscribers)
-  .get('/byId', ensureUserIsCashier, getSubscribe)
   .get('/count', ensureUserIsCashier, getSubscribersCount)
+  .get('/byId', ensureUserCanAccessResum, getSubscribe)
   .get('/resum/printdata', ensureUserCanAccessResum, getResumePrintData)
   .get('/resum', ensureUserCanAccessResum, getResum)
   .get('/me', getMySubscribes)
