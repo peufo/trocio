@@ -114,22 +114,8 @@ export function getStatut(article: Article | ArticleLookup) {
   return STATUTS[0]
 }
 
-//TODO: This is a copy from ../api/models/troc (virtual)
-export function addIsClosed(trocs) {
-  let isArray = Array.isArray(trocs)
-  trocs = isArray ? trocs : [trocs]
-  trocs = trocs.map((troc) => {
-    troc.isClosed =
-      troc.schedule &&
-      !!troc.schedule[0] &&
-      new Date(troc.schedule[troc.schedule.length - 1].close).getTime() <
-        new Date().getTime()
-    return troc
-  })
-  return isArray ? trocs : trocs[0]
-}
-
 //TODO: This is a copy from ../api/controllers/troc_utils
+/** @deprecated */
 export function getFee(art, tarif) {
   if (tarif && tarif.fee.length && art.price > 0) {
     return (art.fee = tarif.fee
@@ -141,6 +127,7 @@ export function getFee(art, tarif) {
 }
 
 //TODO: This is a copy from ../api/controllers/troc_utils
+/** @deprecated */
 export function getMargin(art, tarif) {
   if (tarif && art.price) {
     return (art.margin = tarif.margin * art.price)

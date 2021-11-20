@@ -106,12 +106,15 @@
         <IconLink icon={faTableTennis} size=".7em" />
         <span>Entrainement</span>
       </Chip>
-    {/if}
-
-    {#if troc.isClosed && !troc.is_try}
+    {:else if troc.isClosed}
       <Chip size="small" label class="deep-orange darken-3 white-text">
         <IconLink icon={faStoreAltSlash} size=".7em" />
         <span>Terminé</span>
+      </Chip>
+    {:else if troc.isOpen}
+      <Chip size="small" label class="green darken-1 white-text">
+        <IconLink icon={faStoreAlt} size=".7em" />
+        <span>En cours</span>
       </Chip>
     {/if}
 

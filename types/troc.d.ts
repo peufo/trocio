@@ -61,11 +61,13 @@ export declare interface Troc extends TrocBase {
   createdAt: string
   updatedAt: string
   __v: 0
-  isClosed: boolean
   id: string
   isAdmin: boolean
   isCashier: boolean
   isSubscribed: boolean
+  // Computed from schedule
+  isClosed: boolean
+  isOpen: boolean
 }
 
 /** Information complette avec les informations collaborateurs */

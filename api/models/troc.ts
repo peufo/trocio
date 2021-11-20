@@ -66,6 +66,7 @@ const trocModel = new Schema(
   }
 )
 
+/*
 trocModel.virtual('isClosed').get(function () {
   if (!this.schedule[this.schedule.length - 1]) return undefined
   return (
@@ -73,6 +74,7 @@ trocModel.virtual('isClosed').get(function () {
     new Date().getTime()
   )
 })
+*/
 
 trocModel.plugin(mongooseLeanVirtuals)
 

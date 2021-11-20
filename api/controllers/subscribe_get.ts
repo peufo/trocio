@@ -290,7 +290,15 @@ export function lookupTroc(
             is_try: 1,
             subscriber: 1,
             open: { $min: `$schedule.open` },
-            isClosed: { $gt: [NOW, { $max: `$schedule.close` }] },
+            close: { $max: `$schedule.close` },
+          },
+        },
+        {
+          $addFields: {
+            isClosed: { $gt: [NOW, '$close'] },
+            isOpen: {
+              $and: [{ $lt: [NOW, '$close'] }, { $gt: [NOW, '$open'] }],
+            },
           },
         },
       ],

@@ -48,6 +48,10 @@
             <Chip size="x-small" label outlined class="deep-orange-text ml-2">
               <span>Terminé</span>
             </Chip>
+          {:else if troc.isOpen}
+            <Chip size="x-small" label outlined class="green-text">
+              <span>En cours</span>
+            </Chip>
           {/if}
           <span slot="subtitle">
             {#if !troc.is_try}

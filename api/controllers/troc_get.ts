@@ -109,7 +109,7 @@ export const getTroc: RequestHandler = async (req, res, next) => {
 }
 
 /**
- * Add computed fields
+ * Add computed fields from schedule
  */
 export function addComputedFields(aggregate: mongoose.Aggregate<any[]>) {
   const NOW = new Date()
@@ -120,6 +120,7 @@ export function addComputedFields(aggregate: mongoose.Aggregate<any[]>) {
     })
     .addFields({
       isClosed: { $gt: [NOW, '$close'] },
+      isOpen: { $and: [{ $lt: [NOW, '$close'] }, { $gt: [NOW, '$open'] }] },
     })
 }
 
