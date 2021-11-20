@@ -9,10 +9,10 @@
 
   import IconLink from '$lib/util/IconLink.svelte'
   import type { SubscribeLookup, ISubscribe, RoleEnum } from 'types'
-  import notify from '$lib/notify'
   import { troc } from '$lib/troc/store'
   import { api } from '$lib/api'
   import { ROLES } from '$lib/user/roles'
+  import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
 
   export let active = false
   export let state: 'main' | 'role' | 'tarif' = 'main'
@@ -21,6 +21,8 @@
   let position = { x: 0, y: 0 }
   let mouseIn = false
   const queryClient = useQueryClient()
+
+  let paymentDialog: PaymentDialog
 
   export function open(event: MouseEvent, sub: SubscribeLookup) {
     position = { x: event.pageX - 20, y: event.pageY - 20 }
@@ -83,6 +85,8 @@
   )
 </script>
 
+<PaymentDialog bind:this={paymentDialog} />
+
 {#if active}
   <div
     class="s-menu"
@@ -137,7 +141,12 @@
               <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
             </span>
           </ListItem>
-          <ListItem disabled on:click={() => notify.info('TODO')}>
+          <ListItem
+            on:click={() => {
+              paymentDialog.open(subscribe, 'Correction du solde')
+              active = false
+            }}
+          >
             Corriger le solde
           </ListItem>
         </div>
