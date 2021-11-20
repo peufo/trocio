@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Radio } from 'svelte-materialify'
+  import { Divider, Radio } from 'svelte-materialify'
   import { useQuery } from '@sveltestack/svelte-query'
   import {
     faCashRegister,
@@ -8,12 +8,7 @@
     faUser,
   } from '@fortawesome/free-solid-svg-icons'
 
-  import type {
-    TrocStats,
-    PaymentInterface,
-    Article,
-    SubscribeLookup,
-  } from 'types'
+  import type { TrocStats } from 'types'
   import type { TrocStatsFormatted } from './formatStats'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import { troc } from '$lib/troc/store'
@@ -54,6 +49,7 @@
   <div class="d-flex">
     <MagicSelect
       modeSelect
+      placeholder="Participant"
       on:select={selectUserSub}
       path="/subscribes"
       searchKey="q"
@@ -64,7 +60,12 @@
       solo
       keepValue
       icon={faUser}
+      class="mr-3"
     />
+
+    <Divider vertical />
+
+    <div class="pa-4">TODO: filtre par tarif et par rôle</div>
   </div>
 
   <br /><br />
