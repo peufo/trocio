@@ -13,7 +13,7 @@
       { subscribeId: $params.subscribeId },
     ],
     onSuccess: () => {
-      setTimeout(() => window.print(), 200)
+      // setTimeout(() => window.print(), 200)
     },
   })
 </script>
