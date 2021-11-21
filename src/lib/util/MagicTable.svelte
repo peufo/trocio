@@ -23,6 +23,12 @@
   $: if (mode === 'scroll' && $query.isSuccess)
     setTimeout(() => testScrollPosition(true), 0)
 
+  // reset le compteur de sécurité quand le query change
+  $: if (query) {
+    noGrowOffsetHeigthCount = 0
+    lastOffsetHeight = 0
+  }
+
   /** Sécurité pour évité de fetchNextPage() à l'infini si le rendu n'augmente pas la taille du container */
   const MAX_NO_GROW_OFFSET_HEIGHT = 5
   let lastOffsetHeight = 0
@@ -34,7 +40,7 @@
   }
 
   function testScrollPosition(isSuccessCallback = false) {
-    const { offsetHeight, scrollTop, scrollHeight } = wrapper
+    const { scrollTop, scrollHeight, offsetHeight } = wrapper
     const scrollButtom = offsetHeight + scrollTop
     const isInButtom = scrollButtom + 50 > scrollHeight
 
@@ -45,7 +51,7 @@
         noGrowOffsetHeigthCount = 0
       }
       lastOffsetHeight = offsetHeight
-
+      error = ''
       if (noGrowOffsetHeigthCount > MAX_NO_GROW_OFFSET_HEIGHT) {
         error = `Le rendu ne s'effectue pas correctement et ne permet la gestion du scroll`
         return
