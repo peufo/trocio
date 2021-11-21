@@ -39,6 +39,7 @@
       }),
     {
       onSuccess: () => {
+        active = false
         queryClient.invalidateQueries('subscribes')
         queryClient.invalidateQueries('subscribes/resum')
       },
