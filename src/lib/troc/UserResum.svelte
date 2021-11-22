@@ -57,6 +57,7 @@
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
+  /** @deprecated use a simple link instead */
   async function printResum() {
     const winPrint = window.open(
       `/print-subscribe?subscribeId=${subscribeId}`,
@@ -104,24 +105,24 @@
   <div in:fade|local>
     <br />
     <div class="d-flex">
+      <a href={`/print-subscribe?subscribeId=${subscribeId}`} target="_blank">
+        <Button text size="small" style="opacity: 0.6;" class="mt-4">
+          <Icon path={mdiPrinter} size="1.1em" class="mr-2" />
+          Version imprimable
+        </Button>
+      </a>
       <!--
-        <a href={`/print-subscribe?subscribeId=${subscribeId}`} target="_blank">
-          <Button text size="small" style="opacity: 0.6;" class="mt-4">
-            <Icon path={mdiPrinter} size="1.1em" class="mr-2" />
-            Imprimer
-          </Button>
-        </a>
-      -->
-      <Button
+        <Button
         text
         size="small"
         style="opacity: 0.6;"
         class="mt-4"
         on:click={printResum}
-      >
+        >
         <Icon path={mdiPrinter} size="1.1em" class="mr-2" />
         Imprimer
       </Button>
+    -->
 
       <div class="flex-grow-1" />
       <!-- Patch en attendant de gerer la monaie correctement dans la DB -->
