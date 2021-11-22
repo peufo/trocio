@@ -18,6 +18,7 @@
   import type { PaymentCreate, SubscribeResum } from 'types'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
+  import notify from '$lib/notify'
 
   export let subscribeId: string
   export let isClosed = false
@@ -72,7 +73,7 @@
   }
 
   function clickDownladCSV() {
-    console.log('TODO, server endpoint provid provided-articles.csv')
+    notify.info('Fonctionnalité à venir')
   }
 
   function clickOpenCreateArticle() {
