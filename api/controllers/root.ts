@@ -4,6 +4,7 @@ import config from '../../config'
 import Subscribe from '../models/subscribe'
 import Payment from '../models/payment'
 import Article from '../models/article'
+import { getMargin } from './article_utils'
 
 const { TROCIO_DB, TROCIO_BACKUP } = config
 
@@ -20,7 +21,7 @@ export async function migration() {
 }
 
 /**
- * Faut un dump de la DB
+ * Fait un dump de la DB
  */
 async function backup() {
   return new Promise((resolve, reject) => {
@@ -203,4 +204,29 @@ function handleError(error: any, label = 'MIGRATION FAILED') {
   console.log('')
   console.error(error)
   throw error
+}
+
+/**
+ * Recalcule les marges sur tout les articles
+ * Nécéssaire suite à l'erreur d'utilisation des mauvais tarifs lors de l'achats d'un groupe d'articles
+ */
+export async function cleanUpArticlesMargin() {
+  try {
+    await backup()
+
+    const soldArticles = await Article.find({
+      sold: { $exists: true },
+    })
+    await Promise.all(
+      soldArticles.map(async (art) => {
+        art.margin = await getMargin(art)
+        return art.save()
+      })
+    )
+
+    console.log(`${soldArticles.length} article margin computed`)
+    return
+  } catch (error) {
+    handleError(error)
+  }
 }

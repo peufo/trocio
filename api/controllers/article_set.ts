@@ -1,7 +1,7 @@
 import Article from '../models/article'
 import Troc from '../models/troc'
 
-import { getTarif, getFee, getMargin } from './troc_utils'
+import { getTarif, getFee, getMargin } from './article_utils'
 import { RequestHandler, Request } from 'express'
 import { getRole } from './subscribe_util'
 import type { Article as IArticle, EventName } from '../../types'
@@ -79,16 +79,6 @@ export const createArticle: RequestHandler<void, any, IArticle | IArticle[]> =
           art.providerSubId = sub._id
           art.providerId = sub.userId
           art.trocId = sub.trocId
-
-          // Validation automatique complique l'impression des étiquettes
-          /*
-            if (accessorIsAdminOrCashier) {
-              art.valided = now
-              art.fee = getFee(art, tarif)
-              art.validatorId = accessor.userId
-              art.validatorSubId = accessor._id
-            }
-          */
 
           /** Création de l'article */
           const article = new Article(art)
@@ -244,13 +234,12 @@ export const validArticles: RequestHandler = async (req, res, next) => {
       throw 'Articles status no permit this operation'
 
     const now = new Date()
-    const tarif = await getTarif(articles[0].providerSubId)
 
     articles = await Promise.all(
-      articles.map((article) => {
+      articles.map(async (article) => {
         if (valided) {
           article.valided = now
-          article.fee = getFee(article, tarif)
+          article.fee = await getFee(article)
         } else {
           article.refused = now
         }
@@ -279,19 +268,18 @@ export const soldArticles: RequestHandler = async (req, res, next) => {
       throw 'Articles status no permit this operation'
 
     const now = new Date()
-    const tarif = await getTarif(articles[0].providerSubId)
     const buyerSub = buyerSubId
       ? await Subscribe.findById(buyerSubId)
       : undefined
     if (buyerSubId && !buyerSub) throw 'buyerSub not found'
 
     articles = await Promise.all(
-      articles.map((article) => {
+      articles.map(async (article) => {
         if (buyerSubId) {
           article.sold = now
           article.buyerId = buyerSub.userId
           article.buyerSubId = buyerSubId
-          article.margin = getMargin(article, tarif)
+          article.margin = await getMargin(article)
         } else {
           article.recover = now
         }

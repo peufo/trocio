@@ -3,7 +3,7 @@
   import { Button, Icon, Table } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
-  import { faPlus } from '@fortawesome/free-solid-svg-icons'
+  import { faFileDownload, faPlus } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
   import 'dayjs/locale/fr'
 
@@ -17,7 +17,7 @@
   import { api, useApi } from '$lib/api'
   import type { PaymentCreate, SubscribeResum } from 'types'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { mdiPrinter } from '@mdi/js'
+  import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
 
   export let subscribeId: string
   export let isClosed = false
@@ -71,7 +71,7 @@
   }
 
   function clickDownladCSV() {
-    console.log('TODO, server endpoint provid resum.csv')
+    console.log('TODO, server endpoint provid provided-articles.csv')
   }
 
   function clickOpenCreateArticle() {
@@ -170,28 +170,23 @@
 
           <!-- Bonton pour proposer un articles -->
           <Button text dense on:click={clickOpenTarifInfo}>
-            <IconLink
-              icon={faQuestionCircle}
-              opacity
-              size="1.1em"
-              class="mr-2"
-            />
+            <IconLink icon={faQuestionCircle} size="1.1em" class="mr-2" />
             Tarif
           </Button>
 
           <!-- Bonton pour télécharger le fichier .csv -->
-          <!--
-            {#if resum.providedCount}
-              <IconLink
-                clickable
-                icon={faFileDownload}
-                on:click={clickDownladCSV}
-                opacity
-                size=".7em"
-                tip="Télécharger les données"
-              />
-            {/if}
-          -->
+          {#if resum.providedCount}
+            <Button
+              fab
+              text
+              size="x-small"
+              on:click={clickDownladCSV}
+              title="Télécharger les données des articles proposés"
+              style="opacity: .8;"
+            >
+              <Icon size="1.1em" path={mdiFileDownloadOutline} />
+            </Button>
+          {/if}
         </span>
       </span>
 
