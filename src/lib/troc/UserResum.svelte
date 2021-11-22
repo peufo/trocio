@@ -159,8 +159,8 @@
           <!-- Bonton pour proposer un articles -->
           {#if !modeAdmin}
             <Button
-              text
               dense
+              depressed
               on:click={clickOpenCreateArticle}
               disabled={isClosed}
             >
