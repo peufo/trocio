@@ -5,8 +5,6 @@ import Troc from '../models/troc'
 import Article from '../models/article'
 import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
-import type { Document } from 'mongoose'
-import type { ISubscribe as SubscribeInterface } from '../../types'
 import { getOptions, setOption } from '../controllers/option'
 import { migration, cleanUpArticlesMargin } from '../controllers/root'
 
