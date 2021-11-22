@@ -9,7 +9,7 @@
 
   $: query = useApi<{ subscribeId: string }, ResumData>({
     queryKey: [
-      'subscribes/resum/printdata',
+      'subscribes/resum/fulldata',
       { subscribeId: $params.subscribeId },
     ],
     onSuccess: () => {

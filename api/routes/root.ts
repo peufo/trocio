@@ -8,7 +8,7 @@ import Subscribe from '../models/subscribe'
 import type { Document } from 'mongoose'
 import type { ISubscribe as SubscribeInterface } from '../../types'
 import { getOptions, setOption } from '../controllers/option'
-import { migration } from '../controllers/root'
+import { migration, cleanUpArticlesMargin } from '../controllers/root'
 
 const router = Router()
 
@@ -89,6 +89,14 @@ router
     try {
       await migration()
       res.json({ success: true, message: 'The migration is done successfully' })
+    } catch (error) {
+      next(error)
+    }
+  })
+  .post('/cleanUpArticlesMargin', async (req, res, next) => {
+    try {
+      await cleanUpArticlesMargin()
+      res.json({ success: true, message: 'Articles margin cleanup' })
     } catch (error) {
       next(error)
     }

@@ -114,7 +114,7 @@ export function getStatut(article: Article | ArticleLookup) {
   return STATUTS[0]
 }
 
-//TODO: This is a copy from ../api/controllers/troc_utils
+//TODO: This is a copy from ../api/controllers/article_utils
 /** @deprecated */
 export function getFee(art, tarif) {
   if (tarif && tarif.fee.length && art.price > 0) {
@@ -126,7 +126,7 @@ export function getFee(art, tarif) {
   } else return art.fee || 0
 }
 
-//TODO: This is a copy from ../api/controllers/troc_utils
+//TODO: This is a copy from ../api/controllers/article_utils
 /** @deprecated */
 export function getMargin(art, tarif) {
   if (tarif && art.price) {
