@@ -115,7 +115,7 @@
                 exact_buyerSubId: subscribe?._id,
               })}
           >
-            Voir les achats
+            Vers les achats
           </ListItem>
           <ListItem
             on:click={() =>
@@ -125,7 +125,17 @@
                 exact_providerSubId: subscribe?._id,
               })}
           >
-            Voir les propositions
+            Vers les propositions
+          </ListItem>
+          <ListItem
+            on:click={() =>
+              $goto($url('/admin/cash_register'), {
+                trocId: $params.trocId,
+                tab_admin: 'cash_register',
+                client_subscribe_id: subscribe?._id,
+              })}
+          >
+            Vers la caisse
           </ListItem>
           {#if subscribe?.userId}
             <ListItem on:click={() => (state = 'role')}>
