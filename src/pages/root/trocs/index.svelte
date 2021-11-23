@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { api } from '$lib/api'
+  import { useInfinitApi } from '$lib/api'
   import notify from '$lib/notify'
   import { getHeader, syntaxHighlight } from '$lib/utils'
   import { Button } from 'svelte-materialify'
@@ -13,14 +13,8 @@
   let searchTroc = ''
   let trocs: TrocShow[] = []
 
-  async function fetchTrocs() {
-    try {
-      let res = await fetch(`/api/root/trocs?${searchTroc}`)
-      trocs = await res.json()
-    } catch (error) {
-      notify.error(error)
-    }
-  }
+  $: query = useInfinitApi<{}, TrocShow[]>([`root/trocs?${searchTroc}`, {}])
+  $: trocs = $query.data?.pages.flat() || []
 
   async function removeTroc(troc: Troc) {
     if (prompt(`Tapez "${troc.name}" pour le supprimer`) === troc.name) {
@@ -44,13 +38,16 @@
 <div class="pt-8" style="width: 800px; margin: auto;">
   <h6>Trocs</h6>
   <div class="w3-row">
-    <input bind:value={searchTroc} on:input={fetchTrocs} class="w3-input" />
+    <input bind:value={searchTroc} class="w3-input" />
     <br />
     {#each trocs as troc}
       <div class="simple-card mt-4 pa-2">
         <Button class="w3-red" on:click={() => removeTroc(troc)}>
           Supprimer
         </Button>
+        <a href="trocs/subscribes?trocId={troc._id}">
+          <Button>Subscribes</Button>
+        </a>
 
         <h6 on:click={() => (troc.show = !troc.show)}>
           {troc.name}

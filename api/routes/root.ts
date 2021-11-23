@@ -1,5 +1,7 @@
-import config from '../../config'
 import { Router } from 'express'
+import mongoose from 'mongoose'
+
+import config from '../../config'
 import User from '../models/user'
 import Troc from '../models/troc'
 import Article from '../models/article'
@@ -9,6 +11,7 @@ import { getOptions, setOption } from '../controllers/option'
 import { migration, cleanUpArticlesMargin } from '../controllers/root'
 
 const router = Router()
+const { ObjectId } = mongoose.Types
 
 router
   .get('/', (req, res, next) => {
@@ -77,11 +80,44 @@ router
       res.send(str)
     })
   })
-  .get('/subscribes', (req, res, next) => {
-    Subscribe.find(req.query, (err, subscribes) => {
-      if (err) return next(err)
+  .get('/subscribes', async (req, res, next) => {
+    try {
+      const { trocId } = req.query
+      if (typeof trocId !== 'string') throw 'trocId is required'
+
+      const subscribes = await Subscribe.aggregate()
+        .match({ trocId: new ObjectId(trocId) })
+        .lookup({
+          from: 'users',
+          let: { userId: '$userId' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$$userId', '$_id'],
+                },
+              },
+            },
+            {
+              $project: { name: 1, mail: 1 },
+            },
+          ],
+          as: 'user',
+        })
+        .addFields({
+          user: { $arrayElemAt: ['$user', 0] },
+        })
+        .addFields({
+          user_name: '$user.name',
+          user_mail: '$user.mail',
+        })
+        .project({ user: 0 })
+        .exec()
+
       res.json(subscribes)
-    })
+    } catch (error) {
+      next(error)
+    }
   })
   .post('/migration', async (req, res, next) => {
     try {
