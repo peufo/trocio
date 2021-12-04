@@ -188,7 +188,7 @@
   >
     <div slot="append">
       {#await fetchPromise}
-        <Icon class="fas fa-spinner w3-spin" />
+        <Icon class="fas fa-spinner" spin />
       {:then}
         <Icon class="fas fa-map-marker-alt" />
       {/await}
