@@ -1,4 +1,5 @@
 <script lang="ts">
+  // import { Button } from 'svelte-materialify/src'
   import { Button } from 'svelte-materialify'
 
   import { api } from '$lib/api'
@@ -8,7 +9,7 @@
 <h3>TODO: MONITORING 😎</h3>
 
 <Button
-  class="red white-text"
+  class="primary-color"
   on:click={() => {
     api('/api/root/migration', {
       method: 'post',

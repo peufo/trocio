@@ -13,7 +13,7 @@ export default defineConfig({
         mdsvex({ extension: '.md' }),
         sveltePreprocess({
           scss: {
-            includePaths: ['theme'],
+            includePaths: ['src/theme'],
           },
         }),
       ],
