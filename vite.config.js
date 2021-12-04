@@ -1,10 +1,24 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
+import sveltePreprocess from 'svelte-preprocess'
+import { mdsvex } from 'mdsvex'
 import fs from 'fs'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [
+    svelte({
+      extensions: ['.svelte', '.md'],
+      preprocess: [
+        mdsvex({ extension: '.md' }),
+        sveltePreprocess({
+          scss: {
+            includePaths: ['theme'],
+          },
+        }),
+      ],
+    }),
+  ],
   clearScreen: false,
   resolve: {
     alias: {

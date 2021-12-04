@@ -1,6 +1,6 @@
 <!-- routify:options isFooterDisplay=true -->
 <script>
-  import TermsOfUse from '$lib/layout/Terms-of-use.svelte'
+  import TermsOfUse from '$lib/layout/Terms-of-use.md'
 </script>
 
 <main>
