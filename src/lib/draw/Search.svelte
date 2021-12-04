@@ -75,7 +75,7 @@
     />
   {/each}
 
-  <div class="w3-large search">
+  <div class="search">
     <i class="fas fa-search" />
     <input
       type="text"

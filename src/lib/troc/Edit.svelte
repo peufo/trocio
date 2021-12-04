@@ -221,7 +221,7 @@
     {#if newTroc?.is_try}
       <div class="icon-container">
         <br />
-        <span class="w3-text-orange">
+        <span style="opacity: .5;">
           Les trocs d'entrainements n'ont pas d'horaire
         </span>
         <i class="far fa-calendar-alt" />
@@ -234,7 +234,7 @@
         clickHandler={handleUpdateTroc}
       />
       <br />
-      <span class="w3-opacity w3-text-orange">
+      <span class="text-caption">
         L'horaire n'est plus modifiable une fois que l'évenement a débuté.
       </span>
     {/if}
@@ -242,7 +242,7 @@
 
   <div class="society">
     <h6>
-      Organisation <span class="w3-small w3-opacity">Optionnel</span>
+      Organisation <span class="text-caption">Optionnel</span>
     </h6>
     <br />
     <TextField

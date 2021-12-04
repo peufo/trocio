@@ -84,25 +84,25 @@
     <path
       d="M 240 47 L 240 56 Q 240 90 206 90 L 190 90"
       marker-end="url(#arrow)"
-      class="w3-opacity"
+      class="opacity"
     />
 
     <!-- Validé - Rendu -->
     <path
       d="M 240 185 L 240 189 Q 240 225 206 225 L 190 225"
       marker-end="url(#arrow)"
-      class="w3-opacity"
+      class="opacity"
     />
 
     <!-- Refusé - Provider -->
     <path
       d="M 120 112 L 120 122 Q 120 156 86 156 L 59 156 Q 25 156 25 122 L 25 62"
       marker-end="url(#arrow)"
-      class="w3-opacity"
+      class="opacity"
     />
 
     <!-- Rendu - Provider -->
-    <path d="M 120 198 L 120 180 Q 120 156 86 156" class="w3-opacity" />
+    <path d="M 120 198 L 120 180 Q 120 156 86 156" class="opacity" />
   </svg>
 </div>
 
@@ -132,6 +132,10 @@
 
   .icon-buyer {
     transform: translate(87%, 69%) scale(0.08);
+  }
+
+  .opacity {
+    opacity: 0.4;
   }
 
   line,

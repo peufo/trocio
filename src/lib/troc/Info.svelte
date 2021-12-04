@@ -203,7 +203,6 @@
 
           {#if !!troc.societyweb}
             <a
-              class="w3-opacity"
               style="line-height: 2.5;"
               href={`http://${troc.societyweb}`}
               rel="noreferrer"

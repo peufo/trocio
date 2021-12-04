@@ -187,38 +187,36 @@
         <span class="title">Caisse</span>
         <p>Trouvez et séléctionnez votre client grâce au champ de recherche.</p>
         <p>Pensez à utiliser les raccourcis clavier :</p>
-        <div class="w3-row">
-          <span class="w3-col s7"> Champ de recherche client </span>
-          <span class="w3-col s5 shortcut">
-            Ctrl + <i class="fas fa-backspace" />
-          </span>
-        </div>
-        <div class="w3-row">
-          <span class="w3-col s7"> Choix du client </span>
-          <span class="w3-col s5 shortcut">
-            <i class="fas fa-arrow-up" />&nbsp;|&nbsp;<i
-              class="fas fa-arrow-down"
-            />
-          </span>
-        </div>
-        <div class="w3-row">
-          <span class="w3-col s7"> Sélection d'un client </span>
-          <span class="w3-col s5 shortcut">Enter</span>
-        </div>
-        <div class="w3-row">
-          <span class="w3-col s7"> Client anonyme </span>
-          <span class="w3-col s5 shortcut">
-            Ctrl + <i class="fas fa-backspace" />,<i class="fas fa-backspace" />
-          </span>
-        </div>
-        <div class="w3-row">
-          <span class="w3-col s7"> Changer d'onglet </span>
-          <span class="w3-col s5 shortcut">
-            Ctrl + <i class="fas fa-arrow-left" />&nbsp;|&nbsp;<i
-              class="fas fa-arrow-right"
-            />
-          </span>
-        </div>
+
+        <span class="shortcut mr-2">
+          Ctrl + <i class="fas fa-backspace" />
+        </span>
+        Champ de recherche client
+        <br />
+
+        <span class="shortcut mr-2">
+          <i class="fas fa-arrow-up" /> |
+          <i class="fas fa-arrow-down" />
+        </span>
+        Choix du client
+        <br />
+
+        <span class="shortcut mr-2">Enter</span>
+        Sélection d'un client <br />
+
+        <span class="shortcut mr-2">
+          Ctrl + <i class="fas fa-backspace" />,<i class="fas fa-backspace" />
+        </span>
+        Client anonyme
+        <br />
+
+        <span class="shortcut mr-2">
+          Ctrl + <i class="fas fa-arrow-left" />&nbsp;|&nbsp;<i
+            class="fas fa-arrow-right"
+          />
+        </span>
+        Changer d'onglet
+        <br />
 
         <p>
           Si le solde du client sélectioné n'est pas nul, vous pouvez le regler
@@ -228,18 +226,17 @@
           la raccourcis suivants :
         </p>
 
-        <div class="w3-row">
-          <span class="w3-col s6">Régler le solde</span>
-          <span class="w3-col s6 shortcut">Ctrl + Shift + Enter</span>
-        </div>
-        <div class="w3-row">
-          <span class="w3-col s6">Valider</span>
-          <span class="w3-col s6 shortcut">Enter</span>
-        </div>
-        <div class="w3-row">
-          <span class="w3-col s6">Abandonner</span>
-          <span class="w3-col s6 shortcut">Esc</span>
-        </div>
+        <span class="shortcut mr-2">Ctrl + Shift + Enter</span>
+        Régler le solde
+        <br />
+
+        <span class="shortcut mr-2">Enter</span>
+        Valider
+        <br />
+
+        <span class="shortcut mr-2">Esc</span>
+        Abandonner
+        <br />
 
         <p>
           Attention, en fonction du solde, il peut vous être demandé, soit de
@@ -404,6 +401,8 @@
   }
 
   .shortcut {
+    padding-left: 3px;
+    padding-right: 3px;
     text-align: center;
     background: var(--theme-chips);
     border-radius: 4px;
