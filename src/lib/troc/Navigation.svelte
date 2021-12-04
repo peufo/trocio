@@ -1,7 +1,13 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
+  import { onDestroy } from 'svelte'
   import { slide } from 'svelte/transition'
-  import { ListItem, TextField, Icon, List } from 'svelte-materialify'
+  import {
+    TextField,
+    List,
+    ListItem,
+    Divider,
+    Subheader,
+  } from 'svelte-materialify'
   import Litepicker from 'litepicker'
   import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
@@ -103,6 +109,8 @@
         <TextField
           clearable
           placeholder="Recherche"
+          solo
+          flat
           class="pa-2 pb-5"
           bind:inputElement={searchElement}
           on:input={handleSearch}
@@ -133,6 +141,8 @@
       </div>
     {/if}
 
+    <Divider />
+
     <a href="{!$user ? '/login?callback=' : ''}/trocs/create">
       <ListItem>
         <span slot="prepend"><IconLink icon={faPlus} /></span>
@@ -140,15 +150,8 @@
       </ListItem>
     </a>
 
-    <ListItem
-      disabled
-      on:click={() => console.log('TODO: page with my trocs ?')}
-    >
-      <span slot="prepend">
-        <Icon {...logo} />
-      </span>
-      Mes trocs
-    </ListItem>
+    <Divider />
+    <Subheader>Mes trocs</Subheader>
 
     {#if !$user}
       <ListItem disabled>

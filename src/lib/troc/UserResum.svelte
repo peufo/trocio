@@ -3,10 +3,13 @@
   import { Button, Icon, Table } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
-  import { faFileDownload, faPlus } from '@fortawesome/free-solid-svg-icons'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
+  import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
+  import { faPlus } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
   import 'dayjs/locale/fr'
 
+  import type { PaymentCreate, SubscribeResum } from 'types'
   import { renderAmount } from '$lib/utils'
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
@@ -15,9 +18,6 @@
   import DetailCard from '$lib/util/DetailCard.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import { api, useApi } from '$lib/api'
-  import type { PaymentCreate, SubscribeResum } from 'types'
-  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
   import notify from '$lib/notify'
 
   export let subscribeId: string
@@ -27,8 +27,8 @@
 
   let articleCreateDialogActive = false
   let tarifInfoDialogActive = false
-  let providedShow = false
-  let paymentShow = false
+  let providedOpen = false
+  let paymentOpen = false
   const queryClient = useQueryClient()
 
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
@@ -77,7 +77,7 @@
   }
 
   function clickOpenCreateArticle() {
-    providedShow = true
+    providedOpen = true
     articleCreateDialogActive = true
   }
 
@@ -149,15 +149,14 @@
     <br />
     <DetailCard
       title="Ventes"
-      free
-      bind:show={providedShow}
+      bind:open={providedOpen}
       count={resum.providedCount || 0}
       sum={(resum.soldSum || 0) - (resum.feeSum || 0) - (resum.marginSum || 0)}
     >
       <span slot="head">
         <!-- Provide button -->
         <span style="margin-left: 30px;">
-          <!-- Bonton pour proposer un articles -->
+          <!-- Bouton pour proposer un articles -->
           {#if !modeAdmin}
             <Button
               dense
@@ -170,23 +169,23 @@
             </Button>
           {/if}
 
-          <!-- Bonton pour proposer un articles -->
+          <!-- Bouton pour proposer un articles -->
           <Button text dense on:click={clickOpenTarifInfo}>
             <IconLink icon={faQuestionCircle} size="1.1em" class="mr-2" />
             Tarif
           </Button>
 
-          <!-- Bonton pour télécharger le fichier .csv -->
+          <!-- Bouton pour télécharger le fichier .csv -->
           {#if resum.providedCount}
             <Button
               fab
               text
-              size="x-small"
+              size="small"
               on:click={clickDownladCSV}
               title="Télécharger les données des articles proposés"
               style="opacity: .8;"
             >
-              <Icon size="1.1em" path={mdiFileDownloadOutline} />
+              <Icon size=".8em" path={mdiFileDownloadOutline} />
             </Button>
           {/if}
         </span>
@@ -199,7 +198,6 @@
 
     <DetailCard
       title="Achats"
-      free
       count={resum.purchasesCount || 0}
       sum={-(resum.purchasesSum || 0)}
     >
@@ -235,9 +233,7 @@
       title="Paiements"
       count={resum.paymentsCount || 0}
       sum={resum.paymentsSum || 0}
-      nonInteractive
-      free
-      show={paymentShow}
+      open={paymentOpen}
     >
       <Table>
         <thead>

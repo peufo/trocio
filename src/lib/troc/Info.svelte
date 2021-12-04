@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '@roxi/routify'
-  import { slide } from 'svelte/transition'
+  import { slide, fade } from 'svelte/transition'
   import {
     faChild,
     faCubes,
@@ -222,16 +222,20 @@
 <Divider />
 
 <div
-  class="d-flex flex-wrap align-center justify-space-between"
+  class="pt-1 d-flex flex-wrap align-center justify-space-between"
   style="min-height: 56px;"
 >
   {#if !activityOpen}
-    <SearchTextField
-      bind:search={articleSearch}
-      class="mr-1 ml-1"
-      placeholder="Chercher un article"
-      style="max-width: 200px;"
-    />
+    <div in:fade|local>
+      <SearchTextField
+        bind:search={articleSearch}
+        class="mr-1 ml-1"
+        solo
+        flat
+        placeholder="Chercher un article"
+        style="max-width: 200px;"
+      />
+    </div>
   {/if}
 
   <div class="flex-grow-1" />
@@ -278,12 +282,16 @@
 {/if}
 
 {#if activityOpen}
-  <SearchTextField
-    bind:search={articleSearch}
-    class="pt-4"
-    placeholder="Chercher un article"
-    style="max-width: 200px;"
-  />
+  <div>
+    <SearchTextField
+      bind:search={articleSearch}
+      class="pt-4"
+      solo
+      flat
+      placeholder="Chercher un article"
+      style="max-width: 200px;"
+    />
+  </div>
 {/if}
 
 <ArticleList
