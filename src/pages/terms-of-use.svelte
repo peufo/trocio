@@ -6,7 +6,7 @@
 <main>
   <br />
   <br />
-  <h4 class="w3-center">Conditions d'utilisation</h4>
+  <h4 class="text-center">Conditions d'utilisation</h4>
   <br />
   <div class="pa-3">
     <TermsOfUse />

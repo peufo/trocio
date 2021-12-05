@@ -2,7 +2,7 @@
   import { useInfinitApi } from '$lib/api'
   import notify from '$lib/notify'
   import { getHeader, syntaxHighlight } from '$lib/utils'
-  import { Button } from 'svelte-materialify'
+  import { Button, TextField } from 'svelte-materialify'
   import { slide } from 'svelte/transition'
   import type { Troc } from 'types'
 
@@ -37,12 +37,12 @@
 
 <div class="pt-8" style="width: 800px; margin: auto;">
   <h6>Trocs</h6>
-  <div class="w3-row">
-    <input bind:value={searchTroc} class="w3-input" />
+  <div class="d-flex">
+    <TextField bind:value={searchTroc}>Recherche</TextField>
     <br />
     {#each trocs as troc}
       <div class="simple-card mt-4 pa-2">
-        <Button class="w3-red" on:click={() => removeTroc(troc)}>
+        <Button class="red white-text" on:click={() => removeTroc(troc)}>
           Supprimer
         </Button>
         <a href="trocs/subscribes?trocId={troc._id}">

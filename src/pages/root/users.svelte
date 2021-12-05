@@ -41,8 +41,8 @@
 
 <div class="pt-8" style="width: 800px; margin: auto;">
   <h6>Utilisateurs</h6>
-  <div class="w3-row">
-    <div class="w3-col s6">
+  <div class="d-flex">
+    <div>
       <MagicSelect
         modeSelect
         on:select={(e) => (userSelectedPromise = selectUser(e))}
@@ -61,14 +61,11 @@
             </pre>
       {/await}
     </div>
-    <div class="w3-col s6">
+    <div>
       {#await addCreditPromise}
         en cours...
       {:then}
-        <Button
-          on:click={() => (addCreditPromise = addCredit())}
-          class="w3-right"
-        >
+        <Button on:click={() => (addCreditPromise = addCredit())}>
           +1 crédit
         </Button>
       {/await}
