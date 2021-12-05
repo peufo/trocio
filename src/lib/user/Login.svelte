@@ -3,16 +3,14 @@
   import { createEventDispatcher } from 'svelte'
   const dispatch = createEventDispatcher()
   import { afterPageLoad } from '@roxi/routify'
-  import { Button, TextField, Icon } from 'svelte-materialify'
+  import { Button, TextField, Icon, Divider } from 'svelte-materialify'
 
   import { isDarkTheme } from '$lib/store/layout'
-  import { user, userQuery } from '$lib/user/store'
+  import { userQuery } from '$lib/user/store'
   import notify from '$lib/notify'
   import RULES from '$lib/rules'
 
-  // TODO: Gestion des création d'utilisateur par un caissier
-
-  export let mailInput: HTMLInputElement = null // For focus
+  export let mailInput: Element // For focus
 
   let state = 1
   const LOGIN = 1
@@ -28,6 +26,8 @@
   ]
 
   let error = ''
+  let innerWidth: number
+
   function checkForm() {
     error = checkRules(RULES.MAIL, mail)
     if (!error && state === REGISTER)
@@ -36,7 +36,7 @@
         checkRules(RULES.NEW_PASSWORD, password) ||
         checkRules(RULE_NEW_PASSWORD2)
   }
-  function checkRules(rules, value = undefined) {
+  function checkRules(rules: ((v: string) => any)[], value = '') {
     return rules.map((r) => r(value)).filter((r) => typeof r === 'string')[0]
   }
   $: state && checkForm()
@@ -82,19 +82,17 @@
         break
     }
   }
-
-  let innerWidth
 </script>
 
 <svelte:window bind:innerWidth />
 
 <div style={`width: ${innerWidth > 500 ? '360px' : 'auto'}`}>
   {#if state === REGISTER}
-    <h5 class="w3-center" in:fade>Nouveau compte</h5>
+    <h5 class="text-center" in:fade>Nouveau compte</h5>
   {:else if state === RECOVER}
-    <h5 class="w3-center" in:fade>Oubli</h5>
+    <h5 class="text-center" in:fade>Oubli</h5>
   {:else if state === LOGIN}
-    <h5 class="w3-center" in:fade>Login</h5>
+    <h5 class="text-center" in:fade>Login</h5>
   {/if}
 
   <br />
@@ -106,7 +104,7 @@
         solo
         bind:value={name}
         on:input={checkForm}
-        on:keyup={(e) => e.key == 'Enter' && submit()}
+        on:keyup={(e) => e.key === 'Enter' && submit()}
       >
         <div slot="prepend">
           <Icon class="far fa-user" />
@@ -122,7 +120,7 @@
     bind:inputElement={mailInput}
     bind:value={mail}
     on:input={checkForm}
-    on:keyup={(e) => e.key == 'Enter' && submit()}
+    on:keyup={(e) => e.key === 'Enter' && submit()}
   >
     <div slot="prepend">
       <Icon class="far fa-envelope" />
@@ -156,7 +154,7 @@
         type="password"
         bind:value={password2}
         on:input={checkForm}
-        on:keyup={(e) => e.key == 'Enter' && submit()}
+        on:keyup={(e) => e.key === 'Enter' && submit()}
       >
         <div slot="prepend">
           <Icon class="fas fa-key" />
@@ -165,57 +163,44 @@
     </div>
   {/if}
 
-  <div>
-    <div class="w3-margin-top w3-small w3-center">
-      {#if state !== REGISTER}
-        <div
-          on:click={() => (state = REGISTER)}
-          class="underline-div w3-padding"
-        >
-          <span class="underline-span">Nouveau compte</span>
-        </div>
-      {/if}
+  <div class="d-flex mt-4">
+    {#if state !== REGISTER}
+      <Button on:click={() => (state = REGISTER)} text>Nouveau</Button>
+    {/if}
 
-      {#if state !== RECOVER}
-        <div
-          on:click={() => (state = RECOVER)}
-          class="underline-div w3-padding"
-        >
-          <span class="underline-span">Oubli</span>
-        </div>
-      {/if}
+    {#if state !== RECOVER}
+      <Button on:click={() => (state = RECOVER)} text>Oubli</Button>
+    {/if}
 
-      {#if state !== LOGIN}
-        <div on:click={() => (state = LOGIN)} class="underline-div w3-padding">
-          <span class="underline-span">Login</span>
-        </div>
-      {/if}
+    {#if state !== LOGIN}
+      <Button on:click={() => (state = LOGIN)} text>login</Button>
+    {/if}
 
-      {#await $userQuery}
-        <Button text disabled>
-          <i class="fas fa-circle-notch w3-spin" />
-        </Button>
-      {:then}
-        <Button text on:click={submit}>Envoyer</Button>
-      {:catch}
-        <Button text on:click={submit}>Envoyer</Button>
-      {/await}
-    </div>
+    <div class="flex-grow-1" />
+
+    {#await $userQuery}
+      <Button disabled>
+        <Icon class="fas fa-circle-notch" spin />
+      </Button>
+    {:then}
+      <Button on:click={submit}>Envoyer</Button>
+    {:catch}
+      <Button on:click={submit}>Envoyer</Button>
+    {/await}
   </div>
 
-  {#if !$user}
-    <br /><br />
-    <div class="w3-center w3-border-top">
-      <div class="or {$isDarkTheme ? 'grey darken-4' : ''}">
-        <span>OU</span>
-      </div>
-      <a href={googleAuthApi}>
-        <Button text>
-          <i class="fab fa-google" />&nbsp; Login avec Google
-        </Button>
-      </a>
+  <br />
+  <Divider />
+  <div class="text-center">
+    <div class="or {$isDarkTheme ? 'grey darken-4' : ''}">
+      <span>ou</span>
     </div>
-  {/if}
+    <a href={googleAuthApi}>
+      <Button text>
+        <i class="fab fa-google" />&nbsp; Login avec Google
+      </Button>
+    </a>
+  </div>
 </div>
 
 <style>
@@ -225,13 +210,5 @@
     width: 35px;
     margin: auto;
     padding: 5px;
-  }
-
-  .underline-span {
-    text-transform: uppercase;
-  }
-
-  .underline-div {
-    display: inline-block;
   }
 </style>

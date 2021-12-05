@@ -1,6 +1,8 @@
 <script>
   import { slide } from 'svelte/transition'
   import { Button, TextField, Icon, Card } from 'svelte-materialify'
+
+  import Loader from '$lib/util/Loader.svelte'
   import { user, userQuery, userStatus } from '$lib/user/store'
 
   import RULES from '$lib/rules'
@@ -61,15 +63,14 @@
       </TextField>
 
       {#if userName !== $user.name}
-        <div transition:slide|local>
+        <div transition:slide|local class="d-flex">
+          <div class="flex-grow-1" />
           <Button
             on:click={() => userQuery.update({ name: userName })}
             disabled={userNameError || $userStatus.isLoading}
-            class="w3-right"
           >
             {#await $userQuery}
-              <i class="fas fa-circle-notch w3-spin" />
-              &nbsp;Validation ...
+              <Loader />
             {:then}
               Valider la modification
             {/await}
@@ -92,15 +93,14 @@
       </TextField>
 
       {#if userMail !== $user.mail}
-        <div transition:slide|local>
+        <div transition:slide|local class="d-flex">
+          <div class="flex-grow-1" />
           <Button
             on:click={() => userQuery.update({ mail: userMail })}
             disabled={userMailError || $userStatus.isLoading}
-            class="w3-right"
           >
             {#await $userQuery}
-              <i class="fas fa-circle-notch w3-spin" />
-              &nbsp;Validation ...
+              <Loader />
             {:then}
               Valider la modification
             {/await}
@@ -108,43 +108,41 @@
           <br /><br />
         </div>
       {/if}
-      <br />
 
       {#if !$user.mailvalided}
         {#if mailValidationSent}
           <span> Un mail de validation vous à été envoyé. </span>
         {:else}
-          {#await sendValidationMailPromise}
-            <Button text disabled class="w3-right">
-              <i class="fas fa-circle-notch w3-spin" />&nbsp;Envoie du mail ...
-            </Button>
-          {:then}
+          <div class="d-flex">
             <div
-              class="w3-text-red w3-left"
+              class="red-text text-caption"
               style="transform: translateY(6px);"
             >
               <i class="fas fa-exclamation-triangle" />
               mail non validé
             </div>
 
-            <Button text on:click={handleSendValidationMail} class="w3-right">
-              Envoyer un mail de validation ?
-            </Button>
-          {/await}
+            <div class="flex-grow-1" />
+            {#await sendValidationMailPromise}
+              <Button text disabled>
+                <Loader title="Envoie du mail" />
+              </Button>
+            {:then}
+              <Button text on:click={handleSendValidationMail}>
+                Envoyer un mail de validation
+              </Button>
+            {/await}
+          </div>
         {/if}
       {/if}
 
-      <br /><br /><br />
+      <br />
 
       {#if !changePassword}
-        <div out:slide|local>
-          <Button
-            on:click={() => (changePassword = true)}
-            text
-            color="secondary"
-            class="w3-margin-top w3-right"
-          >
-            Changer votre mot de passe ?
+        <div out:slide|local class="d-flex">
+          <div class="flex-grow-1" />
+          <Button on:click={() => (changePassword = true)} text>
+            Changer votre mot de passe
           </Button>
           <br />
         </div>
@@ -186,46 +184,40 @@
             Confirmation
           </TextField>
 
-          <br />
-          {#await changePasswordPromise}
-            <Button text disabled class="w3-right">
-              <i class="fas fa-circle-notch w3-spin" />&nbsp;Modification du mot
-              de passe...
-            </Button>
-          {:then}
-            <Button
-              variant="raised"
-              on:click={handleChangePassword}
-              disabled={!newPassword || newPasswordError || newPassword2Error}
-              class="w3-margin-top w3-right"
-            >
-              Valider la modification
-            </Button>
-          {:catch}
-            <Button
-              variant="raised"
-              on:click={handleChangePassword}
-              disabled={!newPassword || newPasswordError || newPassword2Error}
-              class="w3-margin-top w3-right"
-            >
-              Valider la modification
-            </Button>
-          {/await}
-
-          <br />
+          <div class="d-flex">
+            <div class="flex-grow-1" />
+            {#await changePasswordPromise}
+              <Button text disabled>
+                <Loader title="Modification du mot de passe..." />
+              </Button>
+            {:then}
+              <Button
+                variant="raised"
+                on:click={handleChangePassword}
+                disabled={!newPassword || newPasswordError || newPassword2Error}
+              >
+                Valider la modification
+              </Button>
+            {:catch}
+              <Button
+                variant="raised"
+                on:click={handleChangePassword}
+                disabled={!newPassword || newPasswordError || newPassword2Error}
+              >
+                Valider la modification
+              </Button>
+            {/await}
+          </div>
         </div>
       {/if}
-      <br /><br /><br />
 
-      <Button
-        on:click={userQuery.logout}
-        color="secondary"
-        class="w3-margin-top w3-right"
-      >
+      <br />
+
+      <Button on:click={userQuery.logout} text class="red-text">
         Déconnexion
       </Button>
 
-      <br /><br /><br />
+      <br />
     </div>
   </Card>
 

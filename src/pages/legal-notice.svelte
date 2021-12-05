@@ -3,62 +3,73 @@
 <main>
   <br />
   <br />
-  <h4 class="w3-center">Mentions légales</h4>
+  <h4 class="text-center">Mentions légales</h4>
   <br />
   <br />
 
-  <div class="w3-row">
-    <div class="w3-col s6">
-      <b class="w3-right">Exploitation</b>
+  <section>
+    <div class="text-right">
+      <b>Exploitation</b>
     </div>
-    <div class="w3-col s6">
+    <div>
       <span>Jonas Voisard</span><br />
       <span>Rue Pierre-péquignat 15</span><br />
       <span>2900 Porrentruy</span><br />
       <span>Suisse</span><br />
     </div>
-  </div>
+  </section>
 
-  <div class="w3-row">
-    <div class="w3-col s6">
-      <b class="w3-right">Domaines</b>
+  <br />
+
+  <section>
+    <div class="text-right">
+      <b>Domaines</b>
     </div>
-    <div class="w3-col s6">
+    <div>
       <span>troc.io</span><br />
       <span>trocio.ch</span><br />
-      <span class="w3-opacity">trocio.fr</span><br />
-      <span class="w3-opacity">trocio.org</span>
+      <span class="opacity">trocio.fr</span><br />
+      <span class="opacity">trocio.org</span>
     </div>
-  </div>
+  </section>
 
-  <div class="w3-row">
-    <div class="w3-col s6">
-      <b class="w3-right">Hébergement</b>
+  <br />
+
+  <section>
+    <div class="text-right">
+      <b>Hébergement</b>
     </div>
-    <div class="w3-col s6">
+    <div>
       <span>Infomaniak</span><br />
     </div>
-  </div>
+  </section>
 
-  <div class="w3-row">
-    <div class="w3-col s6">
-      <b class="w3-right">Licence</b>
+  <br />
+
+  <section>
+    <div class="text-right">
+      <b>Licence</b>
     </div>
-    <div class="w3-col s6">
+    <div>
       <span>GPL-3.0</span><br />
     </div>
-  </div>
-
-  <br /><br /><br />
+  </section>
 </main>
 
 <style>
-  .w3-col {
-    padding: 1em;
-  }
   main {
     max-width: 800px;
     margin: auto;
     text-align: justify;
+  }
+
+  section {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    column-gap: 2em;
+  }
+
+  .opacity {
+    opacity: 0.6;
   }
 </style>
