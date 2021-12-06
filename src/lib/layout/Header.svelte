@@ -55,7 +55,7 @@
   <AppBar flat>
     <img slot="icon" src={logoIco} alt="logo Trocio" height="35" class="ml-2" />
     <div slot="title">
-      <a href="/" style="color: var(--theme-text-primary);">TROCIO</a>
+      <a href="/" class="title">Troc.io</a>
     </div>
 
     <div style="flex-grow: 1;" />
@@ -122,3 +122,10 @@
 	</Actions>
 </Dialog>
 -->
+<style>
+  .title {
+    color: var(--theme-text-primary);
+    font-family: Dongle;
+    font-size: 2em;
+  }
+</style>

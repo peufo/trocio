@@ -30,12 +30,12 @@ a {
 }
 
 .theme--light a > button {
-  color: #000 !important;
+  color: #000;
 }
 
 .theme--dark a > button,
 .theme--dark input {
-  color: #fff !important;
+  color: #fff;
 }
 
 .clickable {
@@ -205,12 +205,6 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.title {
-  font-size: 1.5em;
-  font-weight: 500;
-  letter-spacing: 0.0125em;
 }
 
 /* Compatible dark theme */

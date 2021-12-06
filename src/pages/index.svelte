@@ -4,41 +4,30 @@
   import DrawingSearch from '$lib/draw/Search.svelte'
   import DrawingSold from '$lib/draw/Sold.svelte'
   import Logo from '$lib/draw/LogoV2.svelte'
-  import Rayons from '$lib/draw/Rayons.svelte'
 
   //Ralentie considerablement l'animation de départ
   //import { prefetch } from '@roxi/routify'
   //prefetch('/search', { validFor: 60 * 1 })
-
-  let footerHeight: number
-  //TODO: Verifier que footerHeight soit valide
 </script>
 
-<main style={`min-height: calc(100% - ${footerHeight}px)`}>
-  <br /><br />
-  <div class="w3-jumbo w3-center">TROCIO</div>
-  <br /><br /><br />
+<main>
+  <div class="d-flex align-center justify-space-between flex-wrap">
+    <div class="title mr-6">Troc.io</div>
 
-  <div class="w3-row">
-    <div class="w3-col l6">
-      <div class="logo">
-        <Rayons />
+    <a href="/trocs">
+      <Button flat class="primary-color text-white" style="z-index: 2;">
+        Trouver un troc
+      </Button>
+    </a>
+  </div>
 
-        <Logo duration={20} cubeSize={50} />
-      </div>
+  <div class="mt-3 mb-6 d-flex flex-wrap">
+    <div class="logo" style="width: 460px; height: 230px; z-index: 2;">
+      <Logo duration={40} cubeSize={50} />
     </div>
 
-    <div class="w3-col l6">
-      <a href="/trocs">
-        <Button
-          style="transform: translate(0px, 60px); z-index: 2;"
-          class="w3-right w3-large w3-margin"
-        >
-          Trouver un troc
-        </Button>
-      </a>
-
-      <Card class="pa-4" style="margin-top: 100px;">
+    <div style="max-width: 630px; margin: auto;">
+      <Card class="pa-4" style="z-index: 2;">
         <CardText>
           <p>
             Trocio est un outil simple et efficace pour échanger vos objets.
@@ -53,43 +42,31 @@
             permettent de gagner un temps précieux, d'éviter des erreurs et
             d'être informé en temps réel.
           </p>
-
-          <span class="warning">
-            <i class="fas fa-exclamation-triangle" />&nbsp; La plateforme est en
-            phase beta.
-          </span>
         </CardText>
       </Card>
     </div>
   </div>
 
-  <br /><br /><br />
-
-  <div class="w3-center w3-xlarge hideIfVerySmall">
+  <div class="mt-16 mb-16 pt-16 pb-16 text-center hideIfVerySmall">
     <i class="fas fa-arrow-down" style="margin-right: 40px;" />
     <a href="#discover">
-      <Button text class="w3-large" style="width: 130px;">Découvrir</Button>
+      <Button text size="large" style="width: 130px;">Découvrir</Button>
     </a>
     <a href="#propose">
-      <Button text class="w3-large" style="width: 130px;">Proposer</Button>
+      <Button text size="large" style="width: 130px;">Proposer</Button>
     </a>
     <a href="#organize">
-      <Button text class="w3-large" style="width: 130px;">Organiser</Button>
+      <Button text size="large" style="width: 130px;">Organiser</Button>
     </a>
 
     <i class="fas fa-arrow-down" style="margin-left: 40px;" />
-
-    <br /><br /><br />
   </div>
 
-  <hr />
   <section id="discover">
-    <span class="w3-xlarge">Découvrir</span>
+    <div class="d-flex wrap-660">
+      <div class="mb-8">
+        <h3>Découvrir</h3>
 
-    <br /><br />
-
-    <div class="w3-row">
-      <div class="w3-col l6">
         <br />
 
         <p>
@@ -104,35 +81,22 @@
           l'évènement.
         </p>
       </div>
-
-      <div class="w3-col l6">
+      <div class="flex-grow-1 centered ml-6 mr-6">
         <DrawingSearch />
       </div>
     </div>
-
-    <br /><br />
-
-    <div class="w3-center">
-      <a href="/trocs">
-        <Button class="w3-large">Trouver un troc</Button>
-      </a>
-    </div>
   </section>
 
-  <br />
-  <hr />
+  <br /><br /><br /><br />
 
   <section id="propose">
-    <span class="w3-xlarge">Proposer</span>
-
-    <br /><br />
-
-    <div class="w3-row">
-      <div class="w3-col l6">
+    <div class="d-flex wrap-1000">
+      <div class="mb-8">
+        <h3>Proposer</h3>
         <br />
         <p>
-          Proposez vos articles avant l'évènement et faites gagner du temps à
-          tout le monde ainsi qu'à vous même.
+          Proposez vos articles avant l'évènement pour gagner du temps lors de
+          votre dépôt.
         </p>
         <p>
           Rendez-vous à l'ouverture de l'évènement pour fournir vos objets à
@@ -142,157 +106,140 @@
         <p>Récupérez vos gains et vos invendus quand vous le souhaitez.</p>
       </div>
 
-      <div class="w3-col l6">
+      <div class="flex-grow-1 centered ml-6 mr-6" style="min-width: 350px;">
         <DrawingSold />
       </div>
     </div>
-
-    <br /><br />
-
-    <div class="w3-center">
-      <a href="/trocs">
-        <Button class="w3-large">Trouver un troc</Button>
-      </a>
-    </div>
   </section>
 
-  <br />
-  <hr />
+  <br /><br /><br /><br />
 
   <section id="organize">
-    <span class="w3-xlarge">Organiser</span>
+    <h3>Organiser</h3>
 
     <br /><br /><br />
-    <div class="w3-row">
-      <div class="w3-col l6">
-        <div class="feature">
-          <div class="feature-title">
-            <i class="far fa-calendar-alt" />
-            <span>Planification</span>
-          </div>
-          <div class="feature-content">
-            <p>Définisez un nom, un lieu et un horaire.</p>
-            <p>Deux minutes suffisent pour créer votre troc.</p>
-          </div>
+
+    <div class="d-flex flex-wrap justify-space-around">
+      <div class="feature">
+        <div class="feature-title">
+          <i class="far fa-calendar-alt" />
+          <span>Planification</span>
         </div>
-        <div class="feature">
-          <div class="feature-title">
-            <i class="fas fa-coins" />
-            <span>Tarifications</span>
-          </div>
-          <div class="feature-content">
-            <p>
-              Définisez votre part sur les articles vendus ainsi que les frais
-              de traitement.
-            </p>
-            <p>Établissez la liste des utilisateurs soumis à un tarif.</p>
-          </div>
+        <div class="feature-content">
+          <p>Définisez un nom, un lieu et un horaire.</p>
+          <p>Deux minutes suffisent pour créer votre troc.</p>
         </div>
-        <div class="feature">
-          <div class="feature-title">
-            <i class="fas fa-eraser" />
-            <span>Gestion</span>
-          </div>
-          <div class="feature-content">
-            <p>
-              Identifiez et gerer facilement de nombreux cas comme les
-              changements de prix, les erreurs d'étiquetages et les soldes
-              impayés.
-              <span class="warning">
-                <i class="fas fa-exclamation-triangle" />&nbsp; En développement
-              </span>
-            </p>
-          </div>
+      </div>
+      <div class="feature">
+        <div class="feature-title">
+          <i class="fas fa-coins" />
+          <span>Tarifications</span>
         </div>
-        <div class="feature">
-          <div class="feature-title">
-            <i class="fas fa-chart-pie" />
-            <span>Statistique</span>
-          </div>
-          <div class="feature-content">
-            <p>Ayez une vue d'ensemble sur l'activité de votre troc.</p>
-            <p>
-              Fournissez de précieux rapport à votre équipe pour vous améliorer.
-            </p>
-          </div>
+        <div class="feature-content">
+          <p>
+            Définisez votre part sur les articles vendus ainsi que les frais de
+            traitement.
+          </p>
+          <p>Établissez la liste des utilisateurs soumis à un tarif.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-title">
+          <i class="fas fa-eraser" />
+          <span>Gestion</span>
+        </div>
+        <div class="feature-content">
+          <p>
+            Identifiez et gerer facilement de nombreux cas comme les changements
+            de prix, les erreurs d'étiquetages et les soldes impayés.
+            <span class="warning">
+              <i class="fas fa-exclamation-triangle" />&nbsp; En développement
+            </span>
+          </p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-title">
+          <i class="fas fa-chart-pie" />
+          <span>Statistique</span>
+        </div>
+        <div class="feature-content">
+          <p>Ayez une vue d'ensemble sur l'activité de votre troc.</p>
+          <p>
+            Fournissez de précieux rapport à votre équipe pour vous améliorer.
+          </p>
         </div>
       </div>
 
-      <div class="w3-col l6">
-        <div class="feature">
-          <div class="feature-title">
-            <i class="fas fa-users" />
-            <span>Collaborateurs</span>
-          </div>
-          <div class="feature-content">
-            <p>
-              Attribuez des droits d'accès à la page d'administration aux
-              responsables.
-            </p>
-            <p>Désignez des caissiers.</p>
-            <p>
-              Listez vos plus gros commerçants et permettez-leur d'utiliser un
-              préfixe dans la réference de leurs articles.
-            </p>
-          </div>
+      <div class="feature">
+        <div class="feature-title">
+          <i class="fas fa-users" />
+          <span>Collaborateurs</span>
         </div>
-
-        <div class="feature">
-          <div class="feature-title">
-            <i class="fas fa-tags" />
-            <span>Étiquetage</span>
-          </div>
-          <div class="feature-content">
-            <p>
-              Paramétrez le format de vos étiquettes pour qu'elles correspondent
-              à vos imprimantes.
-            </p>
-            <p>
-              Utilisez votre téléphone comme scanner pour réduire les temps de
-              passage en caisse.
-              <span class="warning">
-                <i class="fas fa-exclamation-triangle" />&nbsp; En développement
-              </span>
-            </p>
-          </div>
-        </div>
-        <div class="feature">
-          <div class="feature-title">
-            <i class="fas fa-cash-register" />
-            <span>Caisse</span>
-          </div>
-          <div class="feature-content">
-            <p>Validez les articles proposés par vos fournisseurs.</p>
-            <p>Vendez ou rendez votre stock.</p>
-            <p>
-              Visualisez le compte de vos clients et effectuez des paiements
-            </p>
-          </div>
+        <div class="feature-content">
+          <p>
+            Attribuez des droits d'accès à la page d'administration aux
+            responsables.
+          </p>
+          <p>Désignez des caissiers.</p>
+          <p>
+            Listez vos plus gros commerçants et permettez-leur d'utiliser un
+            préfixe dans la réference de leurs articles.
+          </p>
         </div>
       </div>
-    </div>
 
-    <div class="feature center">
-      <div class="feature-title">
-        <i class="fas fa-dumbbell" />
-        <span>Zone d'entrainement</span>
+      <div class="feature">
+        <div class="feature-title">
+          <i class="fas fa-tags" />
+          <span>Étiquetage</span>
+        </div>
+        <div class="feature-content">
+          <p>
+            Paramétrez le format de vos étiquettes pour qu'elles correspondent à
+            vos imprimantes.
+          </p>
+          <p>
+            Utilisez votre téléphone comme scanner pour réduire les temps de
+            passage en caisse.
+            <span class="warning">
+              <i class="fas fa-exclamation-triangle" />&nbsp; En développement
+            </span>
+          </p>
+        </div>
       </div>
-      <div class="feature-content">
-        <p>Testez l'application de manière libre et privée.</p>
-        <p>Formez vos caissiers afin qu'ils soient parés le jour J.</p>
+      <div class="feature">
+        <div class="feature-title">
+          <i class="fas fa-cash-register" />
+          <span>Caisse</span>
+        </div>
+        <div class="feature-content">
+          <p>Validez les articles proposés par vos fournisseurs.</p>
+          <p>Vendez ou rendez votre stock.</p>
+          <p>Visualisez le compte de vos clients et effectuez des paiements</p>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-title">
+          <i class="fas fa-dumbbell" />
+          <span>Zone d'entrainement</span>
+        </div>
+        <div class="feature-content">
+          <p>Testez l'application de manière libre et privée.</p>
+          <p>Formez vos caissiers afin qu'ils soient parés le jour J.</p>
+        </div>
       </div>
     </div>
 
-    <br /><br />
-
-    <div class="w3-center">
+    <div class="text-center mt-16">
       <Card class="pa-4" style="max-width: 500px; margin: auto;">
         <p>
-          L'organisation d'un troc est <b class="w3-text-green">gratuite</b>.
+          L'organisation d'un troc est <b class="green-text">gratuite</b>.
         </p>
         <p>
           Seul les bénéfices réalisés sont prélevés à hauteur de <b
-            class="w3-text-orange">2%</b
+            class="orange-text">2%</b
           >.
         </p>
         <p>Nous souhaitons ainsi soutenir les trocs à but non lucratif.</p>
@@ -300,30 +247,54 @@
 
       <br /><br />
       <a href="/trocs/create">
-        <Button class="w3-large">Organiser un troc</Button>
+        <Button class="primary-color white-text">Organiser un troc</Button>
       </a>
     </div>
   </section>
 </main>
 
+<div class="background-grey" />
+
 <style>
+  .title {
+    font-family: Dongle;
+    font-size: 8em;
+  }
+
   main {
     text-align: justify;
     font-size: 1.1em;
   }
 
   section {
+    margin-top: 160px;
     padding: 40px 0px;
-  }
-
-  section .w3-row .w3-col {
-    margin-top: 30px;
-    margin-bottom: 30px;
   }
 
   main {
     max-width: 1200px;
     margin: auto;
+  }
+
+  .background-grey {
+    position: absolute;
+    top: 0px;
+    width: 150%;
+    height: 580px;
+    background: rgba(204, 204, 204, 0.404);
+    transform-origin: bottom left;
+    transform: rotate(-10deg);
+  }
+
+  @media only screen and (max-width: 660px) {
+    .wrap-660 {
+      flex-wrap: wrap;
+    }
+  }
+  @media only screen and (max-width: 1000px) {
+    .wrap-1000 {
+      flex-wrap: wrap;
+    }
   }
 
   @media only screen and (min-width: 850px) {
@@ -336,9 +307,10 @@
       padding: 10px;
     }
   }
-  @media only screen and (max-width: 992px) {
+
+  @media only screen and (max-width: 1250px) {
     .logo {
-      height: 200px !important;
+      display: none;
     }
   }
 
@@ -395,18 +367,7 @@
 
   .feature {
     margin: 0 3em 4em 2em;
-  }
-  @media only screen and (min-width: 992px) {
-    .feature.center {
-      margin: auto;
-      max-width: 470px;
-    }
-  }
-
-  .logo {
-    position: relative;
-    height: 500px;
-    /*z-index: -10;*/
+    max-width: 360px;
   }
 
   @media only screen and (max-width: 600px) {
