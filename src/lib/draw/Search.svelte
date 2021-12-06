@@ -5,6 +5,8 @@
 
   import marker from '$assets/images/marker-icon-2x.png'
 
+  let klass = ''
+  export { klass as class }
   const WRITE_WAIT = 200
   const ERASE_WAIT = 100
   const WORDS = ['Ski de rando', 'Légo en vrac', 'Vélo enduro']
@@ -64,7 +66,7 @@
   }
 </script>
 
-<div class="container">
+<div class="container {klass}">
   {#each icons as { x, y }, i}
     <img
       class="icon"
@@ -88,10 +90,8 @@
 
 <style>
   .container {
-    width: 80%;
-    max-width: 400px;
+    width: 320px;
     height: 300px;
-    margin: auto;
     margin-top: 30px;
     position: relative;
     border-radius: 10px;
