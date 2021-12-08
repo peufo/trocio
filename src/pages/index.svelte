@@ -63,7 +63,7 @@
   </div>
 
   <section id="discover">
-    <div class="d-flex wrap-660">
+    <div class="d-flex wrap-660" style="gap: 36px;">
       <div class="mb-8">
         <h3>Découvrir</h3>
 
@@ -81,7 +81,7 @@
           l'évènement.
         </p>
       </div>
-      <div class="flex-grow-1 centered ml-6 mr-6">
+      <div class="flex-grow-1 centered">
         <DrawingSearch />
       </div>
     </div>
@@ -90,7 +90,7 @@
   <br /><br /><br /><br />
 
   <section id="propose">
-    <div class="d-flex wrap-1000">
+    <div class="d-flex wrap-1000" style="gap: 36px;">
       <div class="mb-8">
         <h3>Proposer</h3>
         <br />
@@ -106,7 +106,7 @@
         <p>Récupérez vos gains et vos invendus quand vous le souhaitez.</p>
       </div>
 
-      <div class="flex-grow-1 centered ml-6 mr-6" style="min-width: 350px;">
+      <div class="flex-grow-1 centered" style="min-width: 350px;">
         <DrawingSold />
       </div>
     </div>
