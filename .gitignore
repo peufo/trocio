@@ -5,6 +5,6 @@ dist
 server
 web_modules
 node_modules
-localhost.crt
-localhost.key
+localhost-key.pem
+localhost.pem
 dump

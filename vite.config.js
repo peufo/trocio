@@ -38,8 +38,8 @@ export default defineConfig({
       },
     },
     https: {
-      key: readIfExists('localhost.key'),
-      cert: readIfExists('localhost.crt'),
+      key: readIfExists('localhost-key.pem'),
+      cert: readIfExists('localhost.pem'),
     },
   },
 })
