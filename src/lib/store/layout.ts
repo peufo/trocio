@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store'
 
-export let isDarkTheme = writable(false)
+export let isDarkTheme = writable(localStorage.getItem('isDarkTheme') === 'true')
+isDarkTheme.subscribe(value => localStorage.setItem('isDarkTheme', String(value)))
 
 export const layout = writable({
   headerHeight: 0,
