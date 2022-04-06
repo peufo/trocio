@@ -28,6 +28,7 @@
 <main>
   <br />
   <br />
+
   <h4 class="text-center">Contact</h4>
   <br />
   <br />
@@ -36,11 +37,17 @@
     <div>
       <Textarea outlined autogrow bind:value={content}>Votre message</Textarea>
 
-      <div class="d-flex mt-4">
+      <div class="d-flex mt-4 flex-wrap">
         {#if $user}
           <div>De la part de {$user.name}</div>
         {:else}
-          <TextField type="mail" outlined dense bind:value={authorMail}>
+          <TextField
+            type="mail"
+            outlined
+            dense
+            bind:value={authorMail}
+            style="max-width: 300px;"
+          >
             Votre email
           </TextField>
         {/if}
