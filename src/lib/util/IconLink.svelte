@@ -17,8 +17,8 @@
   export let target = '_self'
 
   $: style = opacity
-    ? style + 'opacity: 0.6;'
-    : style.replace('opacity: 0.6;', '')
+    ? style + 'opacity: 0.5;'
+    : style.replace('opacity: 0.5;', '')
 </script>
 
 {#if !!tip}

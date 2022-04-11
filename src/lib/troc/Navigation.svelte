@@ -7,6 +7,7 @@
     ListItem,
     Divider,
     Subheader,
+    Button,
   } from 'svelte-materialify'
   import Litepicker from 'litepicker'
   import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -105,13 +106,12 @@
 
   <List nav>
     {#if $isActive('/trocs/index')}
-      <div transition:slide|local>
+      <div transition:slide|local class="border">
         <TextField
           clearable
           placeholder="Recherche"
           solo
           flat
-          class="pa-2 pb-5"
           bind:inputElement={searchElement}
           on:input={handleSearch}
           on:change={handleSearch}
@@ -119,7 +119,7 @@
           <span slot="prepend"><IconLink icon={faSearch} /></span>
         </TextField>
 
-        <div class="d-flex pa-2">
+        <div class="d-flex pa-2" style="gap: 15px;">
           <TextField value={initialStart} bind:inputElement={startElement}>
             A partir du
           </TextField>
@@ -141,17 +141,15 @@
       </div>
     {/if}
 
-    <Divider />
-
-    <a href="{!$user ? '/login?callback=' : ''}/trocs/create">
-      <ListItem>
-        <span slot="prepend"><IconLink icon={faPlus} /></span>
-        Organiser un troc
-      </ListItem>
-    </a>
-
-    <Divider />
-    <Subheader>Mes trocs</Subheader>
+    <div class="pt-4 pb-3 d-flex justify-space-between">
+      <h6>Mes trocs</h6>
+      <a href="{!$user ? '/login?callback=' : ''}/trocs/create">
+        <Button>
+          <IconLink icon={faPlus} class="mr-2" opacity />
+          Organiser
+        </Button>
+      </a>
+    </div>
 
     {#if !$user}
       <ListItem disabled>
@@ -167,3 +165,10 @@
     {/if}
   </List>
 </NavigationDrawer>
+
+<style>
+  .border {
+    border: solid 1px var(--theme-text-fields-border);
+    border-radius: 5px;
+  }
+</style>
