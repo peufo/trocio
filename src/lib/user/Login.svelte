@@ -86,7 +86,10 @@
 
 <svelte:window bind:innerWidth />
 
-<div style={`width: ${innerWidth > 500 ? '360px' : 'auto'}`}>
+<form
+  on:submit|preventDefault={submit}
+  style={`width: ${innerWidth > 500 ? '360px' : 'auto'}`}
+>
   {#if state === REGISTER}
     <h5 class="text-center" in:fade>Nouveau compte</h5>
   {:else if state === RECOVER}
@@ -104,7 +107,6 @@
         solo
         bind:value={name}
         on:input={checkForm}
-        on:keyup={(e) => e.key === 'Enter' && submit()}
       >
         <div slot="prepend">
           <Icon class="far fa-user" />
@@ -120,7 +122,6 @@
     bind:inputElement={mailInput}
     bind:value={mail}
     on:input={checkForm}
-    on:keyup={(e) => e.key === 'Enter' && submit()}
   >
     <div slot="prepend">
       <Icon class="far fa-envelope" />
@@ -137,7 +138,6 @@
         type="password"
         bind:value={password}
         on:input={checkForm}
-        on:keyup={(e) => e.key === 'Enter' && submit()}
       >
         <div slot="prepend">
           <Icon class="fas fa-key" />
@@ -154,7 +154,6 @@
         type="password"
         bind:value={password2}
         on:input={checkForm}
-        on:keyup={(e) => e.key === 'Enter' && submit()}
       >
         <div slot="prepend">
           <Icon class="fas fa-key" />
@@ -183,9 +182,9 @@
         <Icon class="fas fa-circle-notch" spin />
       </Button>
     {:then}
-      <Button on:click={submit}>Envoyer</Button>
+      <Button type="submit">Envoyer</Button>
     {:catch}
-      <Button on:click={submit}>Envoyer</Button>
+      <Button type="submit">Envoyer</Button>
     {/await}
   </div>
 
@@ -201,7 +200,7 @@
       </Button>
     </a>
   </div>
-</div>
+</form>
 
 <style>
   .or {
