@@ -5,9 +5,9 @@
   import DrawingSold from '$lib/draw/Sold.svelte'
   import Logo from '$lib/draw/LogoV2.svelte'
 
-  //Ralentie considerablement l'animation de départ
-  //import { prefetch } from '@roxi/routify'
-  //prefetch('/search', { validFor: 60 * 1 })
+  // Ralentie considerablement l'animation de départ
+  // import { prefetch } from '@roxi/routify'
+  // prefetch('/search', { validFor: 60 * 1 })
 </script>
 
 <main>
@@ -256,6 +256,10 @@
 <div class="background-grey" />
 
 <style>
+  :global #app {
+    overflow-x: hidden;
+  }
+
   .title {
     font-family: Dongle;
     font-size: 8em;
@@ -278,7 +282,8 @@
 
   .background-grey {
     position: absolute;
-    top: 0px;
+    top: 0;
+    left: 0;
     width: 150%;
     height: 580px;
     background: rgba(204, 204, 204, 0.404);
