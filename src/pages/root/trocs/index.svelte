@@ -26,7 +26,7 @@
         let json = await res.json()
         if (json.error) throw json.message
         notify.success(json.message)
-      } catch (error) {
+      } catch (error: any) {
         notify.error(error)
       }
     } else {
@@ -37,8 +37,8 @@
 
 <div class="pt-8" style="width: 800px; margin: auto;">
   <h6>Trocs</h6>
-  <div class="d-flex">
-    <TextField bind:value={searchTroc}>Recherche</TextField>
+  <TextField bind:value={searchTroc}>Recherche</TextField>
+  <div class="d-flex flex-wrap">
     <br />
     {#each trocs as troc}
       <div class="simple-card mt-4 pa-2">
@@ -53,8 +53,7 @@
           {troc.name}
         </h6>
         {#if troc.show}
-          <pre
-            transition:slide>
+          <pre transition:slide>
                 {@html syntaxHighlight(JSON.stringify(troc, null, 2))}
           </pre>
         {/if}

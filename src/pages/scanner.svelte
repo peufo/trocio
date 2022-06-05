@@ -1,34 +1,56 @@
-<script>
+<script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import QrScanner from 'qr-scanner'
 
+  import beepUrl from '$assets/beep.mp3'
+
   let result = ''
 
-  let video
-  let qrScanner
+  let video: HTMLVideoElement
+  let audio: HTMLAudioElement
+  let qrScanner: QrScanner
 
-  onMount(() => {
+  onMount(async () => {
     if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-        video.srcObject = stream
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
       })
+      video.srcObject = stream
     }
-    qrScanner = new QrScanner(video, (res) => (result = res))
+    qrScanner = new QrScanner(video, handleResult)
     qrScanner.start()
     //console.log(qrScanner.hasCamera())
   })
+
+  function handleResult(scanResult: string) {
+    result = scanResult
+    audio.play()
+    qrScanner.stop()
+    setTimeout(() => {
+      qrScanner.start()
+    }, 2000)
+  }
 
   onDestroy(() => {
     qrScanner.destroy()
   })
 </script>
 
-<video autoplay bind:this={video} kind="caption">
-  <track kind="captions" />
-</video>
+<div class="container">
+  <video autoplay bind:this={video} kind="caption" height="350">
+    <track kind="captions" />
+  </video>
+  <audio src={beepUrl} bind:this={audio} />
+</div>
 
 {#if result}
   <h1><a href={result}>{result}</a></h1>
 {:else}
   <h1>Scan en cours...</h1>
 {/if}
+
+<style>
+  .container {
+    width: 100vw;
+  }
+</style>
