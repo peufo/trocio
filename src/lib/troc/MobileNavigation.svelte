@@ -1,44 +1,110 @@
 <script lang="ts">
-  import { fly } from 'svelte/transition'
-  import { mdiEarth, mdiPlus } from '@mdi/js'
+  import { fly, crossfade } from 'svelte/transition'
+  import {
+    mdiArrowLeft,
+    mdiEarth,
+    mdiPlus,
+    mdiSwapHorizontal,
+    mdiTagMultipleOutline,
+  } from '@mdi/js'
   import { page, redirect } from '@roxi/routify'
-  import { Tabs, Tab, Icon } from 'svelte-materialify'
+  import { Tabs, Tab, Icon, Button } from 'svelte-materialify'
 
   import { isKeyboardOpen } from '$lib/store/layout'
   import logo from '$assets/logo'
 
-  const TABS = [
-    { icon: { path: mdiEarth }, label: 'Découvrir' },
-    { icon: logo, label: 'Mes trocs', href: 'my' },
-    { icon: { path: mdiPlus }, label: 'Nouveau', href: 'create' },
-  ]
-  const foundTabIndex = TABS.findIndex((tab) => $page.title === tab.href)
-  let tabIndex = foundTabIndex > 0 ? foundTabIndex : 0
+  const [send, receive] = crossfade({ duration: 250 })
 
-  function handleChange(event: { detail: number }) {
-    tabIndex = event.detail
-    $redirect(`./${TABS[tabIndex].href || ''}`)
+  const TABS_TROCS = [
+    { icon: { path: mdiEarth }, label: 'Découvrir', page: 'trocs' },
+    { icon: logo, label: 'Mes trocs', href: './my', page: 'my' },
+    {
+      icon: { path: mdiPlus },
+      label: 'Nouveau',
+      href: './create',
+      page: 'create',
+    },
+  ]
+  let foundTabIndexTrocs = TABS_TROCS.findIndex(
+    (tab) => $page.title === tab.page
+  )
+  let tabIndexTrocs = foundTabIndexTrocs > 0 ? foundTabIndexTrocs : 0
+  function handleChangeTabsTrocs(event: { detail: number }) {
+    tabIndexTrocs = event.detail
+    $redirect(TABS_TROCS[tabIndexTrocs].href || '')
   }
+
+  const TABS_TROC = [
+    { icon: logo, label: 'Le troc', href: './my', page: 'my' },
+    { icon: { path: mdiSwapHorizontal }, label: 'Activité', page: 'trocs' },
+    {
+      icon: { path: mdiTagMultipleOutline },
+      label: 'Articles',
+      href: './create',
+      page: 'create',
+    },
+  ]
 </script>
 
 {#if !$isKeyboardOpen}
   <nav in:fly|local={{ y: 72 }}>
-    <Tabs
-      icons
-      grow
-      class="secondary-color theme--dark"
-      on:change={handleChange}
-      value={tabIndex}
-    >
-      <div slot="tabs">
-        {#each TABS as tab}
-          <Tab>
-            <Icon {...tab.icon} />
-            {tab.label}
-          </Tab>
-        {/each}
+    {#if $page.title !== ':trocId'}
+      <div in:receive={{ key: 'tabsNested' }} out:send={{ key: 'tabsNested' }}>
+        <Tabs
+          icons
+          grow
+          class="secondary-color theme--dark"
+          on:change={handleChangeTabsTrocs}
+          value={tabIndexTrocs}
+        >
+          <div slot="tabs">
+            {#each TABS_TROCS as tab}
+              <Tab>
+                <Icon {...tab.icon} />
+                {tab.label}
+              </Tab>
+            {/each}
+          </div>
+        </Tabs>
       </div>
-    </Tabs>
+    {/if}
+
+    {#if $page.title === ':trocId'}
+      <div
+        class="returnButton"
+        in:receive={{ key: 'tabsNested' }}
+        out:send={{ key: 'tabsNested' }}
+      >
+        <Button
+          fab
+          class="secondary-color"
+          on:click={() => window.history.back()}
+        >
+          <Icon path={mdiArrowLeft} />
+        </Button>
+      </div>
+    {/if}
+
+    {#if $page.title === ':trocId'}
+      <div in:fly|local={{ y: 72, duration: 250 }}>
+        <Tabs
+          icons
+          grow
+          class="secondary-color theme--dark"
+          on:change={handleChangeTabsTrocs}
+          value={tabIndexTrocs}
+        >
+          <div slot="tabs">
+            {#each TABS_TROC as tab}
+              <Tab>
+                <Icon {...tab.icon} />
+                {tab.label}
+              </Tab>
+            {/each}
+          </div>
+        </Tabs>
+      </div>
+    {/if}
   </nav>
 {/if}
 
@@ -47,5 +113,12 @@
     position: fixed;
     bottom: 0;
     width: 100%;
+    height: 72px;
+  }
+
+  .returnButton {
+    position: fixed;
+    bottom: 80px;
+    left: 8px;
   }
 </style>
