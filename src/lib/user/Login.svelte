@@ -10,7 +10,7 @@
   import notify from '$lib/notify'
   import RULES from '$lib/rules'
 
-  export let mailInput: Element // For focus
+  let mailInput: Element | undefined = undefined
 
   let state = 1
   const LOGIN = 1

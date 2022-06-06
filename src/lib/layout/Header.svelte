@@ -4,45 +4,25 @@
   import { faSun } from '@fortawesome/free-solid-svg-icons'
   import { params } from '@roxi/routify'
 
-  // TODO: User Terme dialog
   import { troc } from '$lib/troc/store'
   import { user } from '$lib/user/store'
-  import { trocNavigationActive, isDarkTheme } from '$lib/store/layout'
+  import {
+    trocNavigationActive,
+    isDarkTheme,
+    isMobile,
+  } from '$lib/store/layout'
 
+  import MobileMenu from '$lib/layout/MobileMenu.svelte'
   import logo from '$assets/logo'
   import logoIco from '$assets/favicon.ico'
   import IconLink from '$lib/util/IconLink.svelte'
   import Login from '$lib/user/Login.svelte'
-  import notify from '$lib/notify'
-  import { getHeader } from '$lib/utils'
 
   export let offsetHeight = 0
   let offsetWidth = 0
-  $: mobileMode = offsetWidth < 540
+  $: $isMobile = offsetWidth < 540
 
-  let dialogLoginIsActive
-  //let dialogAcceptTerms
-  let mailInput
-
-  //$: if (!!$user && !$user.acceptTerms && !!dialogAcceptTerms.open) dialogAcceptTerms.open()
-
-  async function acceptTerms() {
-    try {
-      let res = await fetch(
-        '/api/users/me',
-        getHeader({ acceptTerms: true }, 'PATCH')
-      )
-      let json = await res.json()
-      if (json.error) return notify.error(json.message)
-      //$user.acceptTerms = true
-      notify.success({
-        title: 'Merci et bienvenue !',
-        text: `Vous avez accepté nos conditions d'utilisations`,
-      })
-    } catch (error) {
-      notify.error(error)
-    }
-  }
+  let dialogLoginIsActive = false
 </script>
 
 <svelte:head>
@@ -60,68 +40,43 @@
 
     <div style="flex-grow: 1;" />
 
-    <a href="/trocs">
-      <Button
-        text
-        fab={mobileMode}
-        on:click={() => ($trocNavigationActive = true)}
-      >
-        <Icon {...logo} />
-        {#if !mobileMode}&nbsp;&nbsp;Les trocs{/if}
-      </Button>
-    </a>
-
-    {#if $user}
-      <a href="/profile">
-        <Button text fab={mobileMode}>
-          <IconLink icon={faUser} />
-          {#if !mobileMode}&nbsp;&nbsp;{$user.name}{/if}
+    {#if $isMobile}
+      <MobileMenu />
+    {:else}
+      <a href="/trocs">
+        <Button text on:click={() => ($trocNavigationActive = true)}>
+          <Icon {...logo} class="mr-2" />
+          Les trocs
         </Button>
       </a>
-    {:else}
-      <Button
-        on:click={() => (dialogLoginIsActive = true)}
-        text
-        fab={mobileMode}
-        class="mr-1"
-      >
-        <IconLink icon={faUser} />
-        {#if !mobileMode}&nbsp;&nbsp;Connexion{/if}
+
+      {#if $user}
+        <a href="/profile">
+          <Button text>
+            <IconLink icon={faUser} class="mr-2" />
+            {$user.name}
+          </Button>
+        </a>
+      {:else}
+        <Button on:click={() => (dialogLoginIsActive = true)} text class="mr-1">
+          <IconLink icon={faUser} />
+          Connexion
+        </Button>
+      {/if}
+
+      <Button text fab on:click={() => ($isDarkTheme = !$isDarkTheme)}>
+        <IconLink icon={$isDarkTheme ? faMoon : faSun} />
       </Button>
     {/if}
-
-    <Button text fab on:click={() => ($isDarkTheme = !$isDarkTheme)}>
-      <IconLink icon={$isDarkTheme ? faSun : faMoon} />
-    </Button>
   </AppBar>
 </div>
 
-<Dialog
-  bind:active={dialogLoginIsActive}
-  on:introend={() => mailInput && mailInput.focus()}
-  class="pa-6"
->
+<Dialog bind:active={dialogLoginIsActive} class="pa-6">
   <div class="d-flex justify-center">
-    <Login on:close={() => (dialogLoginIsActive = false)} bind:mailInput />
+    <Login on:close={() => (dialogLoginIsActive = false)} />
   </div>
 </Dialog>
 
-<!--
-<Dialog bind:this={dialogAcceptTerms} escapeKeyAction='' scrimClickAction=''>
-	<TitleDialog>Conditions d'utilisation</TitleDialog>
-	<Content>
-		<TermsOfUse/>
-	</Content>
-	<Actions>
-		<Button on:click={user.logout} color="secondary">
-			Refuser
-		</Button>
-		<Button on:click={acceptTerms}>
-			Accepter
-		</Button>
-	</Actions>
-</Dialog>
--->
 <style>
   .title {
     color: var(--theme-text-primary);

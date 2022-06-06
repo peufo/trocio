@@ -1,7 +1,13 @@
-import { writable } from 'svelte/store'
+import { derived, writable } from 'svelte/store'
 
-export let isDarkTheme = writable(localStorage.getItem('isDarkTheme') === 'true')
-isDarkTheme.subscribe(value => localStorage.setItem('isDarkTheme', String(value)))
+export let isDarkTheme = writable(
+  localStorage.getItem('isDarkTheme') === 'true'
+)
+isDarkTheme.subscribe((value) =>
+  localStorage.setItem('isDarkTheme', String(value))
+)
+
+export let isMobile = writable(document.body.offsetWidth < 540)
 
 export const layout = writable({
   headerHeight: 0,
