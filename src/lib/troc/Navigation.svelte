@@ -15,7 +15,6 @@
   import debounce from 'debounce'
   import { isActive, afterPageLoad } from '@roxi/routify'
 
-  import logo from '$assets/logo'
   import { query } from '$lib/troc/store'
   import layout from '$lib/store/layout'
   import { user } from '$lib/user/store'
