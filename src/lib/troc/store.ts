@@ -1,13 +1,8 @@
 import { writable } from 'svelte/store'
-import type { AxiosError } from 'axios'
 import type L from 'leaflet'
-import {
-  useInfiniteQuery,
-  UseInfiniteQueryOptions,
-  useMutation,
-} from '@sveltestack/svelte-query'
-import type { SubscribeLookup, Troc, TrocLookup, SearchTrocsQuery } from 'types'
+import { useMutation } from '@sveltestack/svelte-query'
 
+import type { SubscribeLookup, Troc, TrocLookup, SearchTrocsQuery } from 'types'
 import {
   getTroc,
   searchTrocs,
@@ -55,20 +50,6 @@ export const queryTrocsParams = writable<SearchTrocsQuery>({})
 export const trocs = writable<TrocLookup[]>([])
 export const trocsElement = writable<{ [key: string]: HTMLElement }>({})
 export const map = writable<L.Map>()
-
-/** @deprecated */
-export function useSearchTrocsOptions(
-  query: SearchTrocsQuery
-): UseInfiniteQueryOptions<Troc[], AxiosError> {
-  return {
-    queryKey: ['searchTroc', query],
-    queryFn: searchTrocs,
-    getNextPageParam,
-  }
-}
-/** @deprecated */
-export const useSearchTrocs = (query: SearchTrocsQuery) =>
-  useInfiniteQuery<Troc[], AxiosError>(useSearchTrocsOptions(query))
 
 /**
  * Creation

@@ -6,14 +6,7 @@
   import TrocInfo from '$lib/troc/Info.svelte'
   import Loader from '$lib/util/Loader.svelte'
 
-  import {
-    queryTrocsParams,
-    trocs,
-    trocsElement,
-    map,
-    useSearchTrocs,
-    useSearchTrocsOptions,
-  } from '$lib/troc/store'
+  import { queryTrocsParams, trocs, trocsElement, map } from '$lib/troc/store'
   import { useInfinitApi } from '$lib/api'
   import type { SearchTrocsQuery, Troc, TrocLookup } from 'types'
 
