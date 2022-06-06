@@ -7,12 +7,9 @@
   import TrocInfo from '$lib/troc/Info.svelte'
   import type { Troc } from 'types'
 
-  $: console.log($params.trocId)
-
-  $: trocQuery = useApi<{ trocId: string }, Troc>([
-    'trocs/byId',
-    { trocId: $params.trocId },
-  ])
+  $: trocQuery = useApi<{ trocId: string }, Troc>({
+    queryKey: ['trocs/byId', { trocId: $params.trocId }],
+  })
 
   // Nécéssaire pour mettre à jour le point sur la map
   $: $trocs = $trocQuery.data ? [$trocQuery.data] : []
@@ -22,6 +19,10 @@
 
 {#if $trocQuery.isLoading}
   <Loader />
+{:else if $trocQuery.isError}
+  <span>Aucun troc ne correspond à l'ID "{$params.trocId}"</span>
+  <br />
+  <a href="/trocs">Retour</a>
 {:else}
   <div class="pa-4" style="max-width: 1000px; margin: auto;">
     <TrocInfo troc={$trocs[0]} />

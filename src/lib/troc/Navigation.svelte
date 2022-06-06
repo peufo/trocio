@@ -1,26 +1,18 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte'
   import { slide } from 'svelte/transition'
-  import {
-    TextField,
-    List,
-    ListItem,
-    Divider,
-    Subheader,
-    Button,
-  } from 'svelte-materialify'
-  import Litepicker from 'litepicker'
-  import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
-  import dayjs from 'dayjs'
-  import debounce from 'debounce'
-  import { isActive, afterPageLoad } from '@roxi/routify'
+  import { List, ListItem, Button } from 'svelte-materialify'
 
+  import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
+  import { isActive } from '@roxi/routify'
+
+  import type { ITimeFilter } from 'types'
   import { query } from '$lib/troc/store'
   import layout from '$lib/store/layout'
   import { user } from '$lib/user/store'
   import IconLink from '$lib/util/IconLink.svelte'
   import NavigationDrawer from '$lib/util/NavigationDrawer.svelte'
   import TrocMap from '$lib/troc/Map.svelte'
+  import TrocSearch from '$lib/troc/Search.svelte'
   import UserSubscribes from '$lib/troc/UserSubscribes.svelte'
 
   export let active = true
@@ -30,56 +22,10 @@
   let scrollY = 0
 
   let search = ''
-  let searchElement: undefined | HTMLInputElement
+  let timeFilter: ITimeFilter = {}
   let mapFilter = {}
-  let timeFilter: { start?: string; end?: string } = {}
-  const initialStart = dayjs().format('YYYY-MM-DD')
-  const initialEnd = dayjs().add(2, 'month').format('YYYY-MM-DD')
-  let startElement: HTMLInputElement
-  let endElement: HTMLInputElement
-  let picker: Litepicker
-
-  $afterPageLoad(() => {
-    if (!mobileMode && $isActive('/trocs/index'))
-      setTimeout(() => searchElement?.focus(), 200)
-    if ($isActive('/trocs/index')) {
-      timeFilter = { start: initialStart, end: initialEnd }
-      initTimePicker()
-    }
-  })
-
-  onDestroy(() => {
-    picker?.destroy()
-  })
-
-  function initTimePicker() {
-    picker?.destroy()
-    picker = new Litepicker({
-      element: startElement,
-      elementEnd: endElement,
-      // Nécéssaire pour traquer le theme
-      parentEl: document.querySelector<HTMLDivElement>('#app .s-app'),
-      singleMode: false,
-      allowRepick: true,
-      lang: navigator.language,
-      numberOfMonths: 3,
-      numberOfColumns: 3,
-      setup: (picker) => {
-        picker.on('selected', (date1, date2) => {
-          timeFilter = {
-            start: dayjs(date1.dateInstance).format('YYYY-MM-DD'),
-            end: dayjs(date2.dateInstance).format('YYYY-MM-DD'),
-          }
-        })
-      },
-    })
-  }
 
   $: $query = { search, ...timeFilter, ...mapFilter }
-
-  const handleSearch = debounce((event: any) => {
-    search = event.target.value
-  }, 300)
 </script>
 
 <svelte:window bind:scrollY />
@@ -106,26 +52,7 @@
   <List nav>
     {#if $isActive('/trocs/index')}
       <div transition:slide|local class="border">
-        <TextField
-          clearable
-          placeholder="Recherche"
-          solo
-          flat
-          bind:inputElement={searchElement}
-          on:input={handleSearch}
-          on:change={handleSearch}
-        >
-          <span slot="prepend"><IconLink icon={faSearch} /></span>
-        </TextField>
-
-        <div class="d-flex pa-2" style="gap: 15px;">
-          <TextField value={initialStart} bind:inputElement={startElement}>
-            A partir du
-          </TextField>
-          <TextField value={initialEnd} bind:inputElement={endElement}>
-            Jusqu'au
-          </TextField>
-        </div>
+        <TrocSearch bind:search bind:timeFilter />
       </div>
     {:else}
       <div transition:slide|local>

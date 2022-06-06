@@ -7,7 +7,9 @@ isDarkTheme.subscribe((value) =>
   localStorage.setItem('isDarkTheme', String(value))
 )
 
-export let isMobile = writable(document.body.offsetWidth < 540)
+export let isMobile = writable(
+  navigator.userAgentData?.mobile || document.body.offsetWidth < 640
+)
 
 export const layout = writable({
   headerHeight: 0,

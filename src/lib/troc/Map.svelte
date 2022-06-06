@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount, onDestroy, createEventDispatcher } from 'svelte'
-  import { Switch } from 'svelte-materialify'
   import L from 'leaflet'
   import 'leaflet/dist/leaflet.css'
   import debounce from 'debounce'

@@ -1,183 +1,75 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
-  import { TextField, Switch, Icon } from 'svelte-materialify'
+  import { onMount } from 'svelte'
+  import { TextField } from 'svelte-materialify'
+  import { debounce } from 'debounce'
+  import { faSearch } from '@fortawesome/free-solid-svg-icons'
+  import Litepicker from 'litepicker'
   import dayjs from 'dayjs'
-  import L from 'leaflet'
-  import 'leaflet/dist/leaflet.css'
-  import debounce from 'debounce'
 
-  import markerIcon from '$assets/images/marker-icon.png'
-  import markerIcon2X from '$assets/images/marker-icon-2x.png'
+  import type { ITimeFilter } from 'types'
+  import IconLink from '$lib/util/IconLink.svelte'
 
-  import { query, trocs, trocsElement, map } from '$lib/troc/store'
+  const initialStart = dayjs().format('YYYY-MM-DD')
+  const initialEnd = dayjs().add(2, 'month').format('YYYY-MM-DD')
+  let startElement: HTMLInputElement
+  let endElement: HTMLInputElement
+  let picker: Litepicker
 
-  let search = ''
-  let timeFilter: { start?: string; end?: string } = {}
-  let mapFilter: {
-    north?: number
-    east?: number
-    sud?: number
-    west?: number
-  } = {}
-
-  $: $query = { search, ...timeFilter, ...mapFilter }
-
-  $: $trocs && updateMarkers()
-
-  let timeFilterChecked = false
-  let start = dayjs().format('YYYY-MM-DD')
-  let end = dayjs().add(6, 'month').format('YYYY-MM-DD')
-  $: timeFilter = timeFilterChecked ? { start, end } : {}
-
-  let mapFilterChecked = true
-  let north
-  let east
-  let sud
-  let west
-  $: mapFilter = mapFilterChecked ? { north, east, sud, west } : {}
-
-  let mapId = 'map' + Math.random()
-  let markers = []
-  const icon = L.icon({
-    iconUrl: markerIcon,
-    iconRetinaUrl: markerIcon2X,
-    iconSize: [28, 42],
-    iconAnchor: [14, 42],
-    tooltipAnchor: [14, -30],
-  })
+  export let search = ''
+  export let timeFilter: ITimeFilter = { start: initialStart, end: initialEnd }
 
   onMount(() => {
-    $map = L.map(mapId, {
-      center: [47.4013048812248, 7.076493501663209],
-      zoom: 6,
-      watch: true,
+    initTimePicker()
+    timeFilter = { start: initialStart, end: initialEnd }
+    return () => {
+      picker?.destroy()
+    }
+  })
+
+  function initTimePicker() {
+    picker?.destroy()
+    picker = new Litepicker({
+      element: startElement,
+      elementEnd: endElement,
+      // Nécéssaire pour traquer le theme
+      parentEl: document.querySelector<HTMLDivElement>('#app .s-app'),
+      singleMode: false,
+      allowRepick: true,
+      lang: navigator.language,
+      numberOfMonths: 3,
+      numberOfColumns: 3,
+      setup: (picker) => {
+        picker.on('selected', (date1, date2) => {
+          timeFilter = {
+            start: dayjs(date1.dateInstance).format('YYYY-MM-DD'),
+            end: dayjs(date2.dateInstance).format('YYYY-MM-DD'),
+          }
+        })
+      },
     })
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo($map)
-
-    loadBounds()
-    $map.on('move', (event) => !!event.originalEvent && handleMoveMap())
-    $map.on('zoom', handleMoveMap)
-  })
-
-  onDestroy(() => {
-    $map.remove()
-  })
-
-  const handleMoveMap = debounce(loadBounds, 200)
-
-  function loadBounds() {
-    let sw = $map.getBounds()._southWest
-    let ne = $map.getBounds()._northEast
-    north = ne.lat
-    east = ne.lng
-    sud = sw.lat
-    west = sw.lng
   }
 
-  const handleSearch = debounce((event) => {
+  const handleSearch = debounce((event: any) => {
     search = event.target.value
   }, 300)
-
-  function updateMarkers() {
-    // For HMR
-    if (!$map?._panes?.mapPane) return
-
-    $trocs.slice(0, markers.length).forEach((troc, i) => {
-      markers[i].off('click')
-      markers[i]
-        .setLatLng(troc.location)
-        .bindTooltip(troc.name)
-        .on('click', () => clickMarker(troc))
-    })
-    if ($trocs.length > markers.length) {
-      $trocs.slice(markers.length).forEach((troc) => {
-        markers.push(
-          L.marker(troc.location, { icon })
-            .addTo($map)
-            .bindTooltip(troc.name)
-            .on('click', () => clickMarker(troc))
-        )
-      })
-    } else {
-      markers.slice($trocs.length).forEach((m) => m.remove())
-      markers.splice($trocs.length)
-    }
-  }
-
-  /** Scroll et attire l'attention sur le bon troc quand on click sur un marker. */
-  function clickMarker(troc) {
-    const trocElement = $trocsElement[troc._id]
-    if (!trocElement) return
-    const positionTarget = trocElement.offsetTop - 265
-    window.scrollTo({
-      top: positionTarget || 0,
-      behavior: 'smooth',
-    })
-
-    function animate() {
-      trocElement.classList.add('animate__animated', 'animate__shakeX')
-      setTimeout(() => {
-        trocElement.classList.remove('animate__animated', 'animate__shakeX')
-      }, 500)
-    }
-
-    /* Déclenche l'animation dés que le scroll est static */
-    let position = null
-    const checkIfScrollIsStatic = setInterval(() => {
-      if (position === window.scrollY) {
-        clearInterval(checkIfScrollIsStatic)
-        animate()
-      }
-      position = window.scrollY
-    }, 50)
-  }
 </script>
 
-<!-- Search -->
 <TextField
-  on:input={handleSearch}
-  on:change={handleSearch}
   clearable
   placeholder="Recherche"
+  solo
+  flat
+  on:input={handleSearch}
+  on:change={handleSearch}
 >
-  <div slot="prepend">
-    <Icon class="fas fa-search" size="1em" />
-  </div>
+  <span slot="prepend"><IconLink icon={faSearch} /></span>
 </TextField>
 
-<br />
-<br />
-
-<!-- Time filter -->
-<Switch bind:checked={timeFilterChecked} color="grey">
-  Filtrer sur une période
-</Switch>
-<br />
-
-<div class="d-flex">
-  <TextField bind:value={start} type="date">A partir du</TextField>
-
-  <TextField bind:value={end} type="date">Jusqu'au</TextField>
+<div class="d-flex pa-2" style="gap: 15px;">
+  <TextField value={initialStart} bind:inputElement={startElement}>
+    A partir du
+  </TextField>
+  <TextField value={initialEnd} bind:inputElement={endElement}>
+    Jusqu'au
+  </TextField>
 </div>
-
-<br />
-<br />
-
-<!-- Map filter -->
-<Switch bind:checked={mapFilterChecked} color="grey">
-  Filtrer sur la carte
-</Switch>
-
-<div class="map" id={mapId} />
-
-<style>
-  .map {
-    height: 280px;
-    border-radius: 5px;
-    z-index: 0;
-  }
-</style>

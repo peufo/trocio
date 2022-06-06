@@ -1,46 +1,42 @@
 <script lang="ts">
-  import { Overlay } from 'svelte-materialify'
   import { afterPageLoad, isActive } from '@roxi/routify'
 
-  import TrocNavigation from '$lib/troc/Navigation.svelte'
-  import { trocNavigationActive } from '$lib/store/layout'
+  import Navigation from '$lib/troc/Navigation.svelte'
+  import NavigationMobile from '$lib/troc/NavigationMobile.svelte'
+  import { trocNavigationActive, isMobile } from '$lib/store/layout'
 
-  let offsetWidth
   let navigationWidth = '360px'
 
-  $: mobileMode = offsetWidth < 1000
-  $: $trocNavigationActive = !mobileMode
-  $: overlayActive = $trocNavigationActive && mobileMode
+  $: $trocNavigationActive = !$isMobile
   $afterPageLoad(() => {
     // Hide navigation for create form
     if ($isActive('./create')) $trocNavigationActive = false
-    else if (!mobileMode) $trocNavigationActive = true
+    else if (!$isMobile) $trocNavigationActive = true
     else if ($isActive('./index')) $trocNavigationActive = true
   })
 </script>
 
 <div
   class="layout"
-  bind:offsetWidth
-  style="padding-left: {$trocNavigationActive && !mobileMode
+  style="padding-left: {$trocNavigationActive && !$isMobile
     ? navigationWidth
     : '0px'}"
 >
-  <TrocNavigation
-    bind:active={$trocNavigationActive}
-    width={navigationWidth}
-    {mobileMode}
-  />
-
-  <Overlay
-    index={2}
-    active={overlayActive}
-    on:click={() => ($trocNavigationActive = false)}
-  />
+  {#if !$isMobile}
+    <Navigation
+      bind:active={$trocNavigationActive}
+      width={navigationWidth}
+      mobileMode={false}
+    />
+  {/if}
 
   <div class="pa-4 pb-16" style="width: 100%;">
     <slot />
   </div>
+
+  {#if $isMobile}
+    <NavigationMobile />
+  {/if}
 </div>
 
 <style>
