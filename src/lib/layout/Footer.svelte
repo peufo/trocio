@@ -28,7 +28,7 @@
 
   <span>
     <i class="far fa-copyright" />
-    2018 - 2021 Jonas Voisard
+    2018 - 2022 Jonas Voisard
   </span>
 </footer>
 
