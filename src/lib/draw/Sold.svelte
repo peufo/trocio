@@ -21,8 +21,6 @@
     { x: 120, y: 90, text: 'Refusé', color: '#ffe6e6' },
     { x: 120, y: 225, text: 'Rendu', color: '#fff4e3' },
   ]
-
-  console.log(faChild.icon[4])
 </script>
 
 <div class="container">

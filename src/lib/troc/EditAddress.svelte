@@ -43,7 +43,6 @@
   let fetchPromise: Promise<ResultLocation[]>
 
   function setLocation(loc: ResultLocation) {
-    console.log({ loc })
     location = loc.location
     address = loc.address.split(', ').join('\n')
     currency = loc.currency

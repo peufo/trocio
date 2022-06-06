@@ -15,12 +15,8 @@
   const RD = (2 * R ** 2) ** 0.5
   const AY = Math.atan(R / RD)
   let aX = 0
-  let aY = 0
-  let aZ = 0
 
   let phase = 0
-
-  //$: console.log({aX, aY, aZ})
 
   $: phase = Math.floor((aX % (Math.PI * 2)) / (Math.PI / 2))
 

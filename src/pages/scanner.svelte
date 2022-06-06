@@ -19,7 +19,6 @@
     }
     qrScanner = new QrScanner(video, handleResult)
     qrScanner.start()
-    //console.log(qrScanner.hasCamera())
   })
 
   function handleResult(scanResult: string) {
