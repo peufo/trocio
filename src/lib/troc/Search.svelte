@@ -12,6 +12,7 @@
 
   const initialStart = dayjs().format('YYYY-MM-DD')
   const initialEnd = dayjs().add(1, 'month').format('YYYY-MM-DD')
+  let searchElement: HTMLInputElement
   let startElement: HTMLInputElement
   let endElement: HTMLInputElement
   let picker: Litepicker
@@ -58,6 +59,7 @@
       ...query,
       search: event.target.value,
     }))
+    if (event.type === 'change') searchElement.blur()
   }, 300)
 </script>
 
@@ -67,6 +69,7 @@
   solo
   flat
   value={$queryTrocsParams.search || ''}
+  bind:inputElement={searchElement}
   on:input={handleSearch}
   on:change={handleSearch}
 >
