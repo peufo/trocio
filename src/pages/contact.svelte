@@ -25,7 +25,7 @@
   }
 </script>
 
-<main>
+<main class="pa-4">
   <br />
   <br />
 
