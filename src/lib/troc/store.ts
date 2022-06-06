@@ -1,12 +1,12 @@
 import { writable } from 'svelte/store'
 import type { AxiosError } from 'axios'
-import L from 'leaflet'
+import type L from 'leaflet'
 import {
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   useMutation,
 } from '@sveltestack/svelte-query'
-import type { SubscribeLookup, Troc, TrocLookup } from 'types'
+import type { SubscribeLookup, Troc, TrocLookup, SearchTrocsQuery } from 'types'
 
 import {
   getTroc,
@@ -50,18 +50,9 @@ export const subscribes = writable<SubscribeLookup[]>([])
  * Search trocs
  * Liste de trocs selon un recherche
  */
-interface SearchTrocsQuery {
-  _id?: string
-  search?: string
-  start?: string
-  end?: string
-  north?: number
-  east?: number
-  sud?: number
-  west?: number
-}
-export const query = writable<SearchTrocsQuery>({})
-export const trocs = writable<Troc[]>([])
+
+export const queryTrocsParams = writable<SearchTrocsQuery>({})
+export const trocs = writable<TrocLookup[]>([])
 export const trocsElement = writable<{ [key: string]: HTMLElement }>({})
 export const map = writable<L.Map>()
 

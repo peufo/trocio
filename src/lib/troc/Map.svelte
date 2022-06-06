@@ -4,17 +4,10 @@
   import 'leaflet/dist/leaflet.css'
   import debounce from 'debounce'
 
-  import { query } from '$lib/troc/store'
+  import { queryTrocsParams } from '$lib/troc/store'
   import markerIcon from '$assets/images/marker-icon.png'
   import markerIcon2X from '$assets/images/marker-icon-2x.png'
   import { trocs, trocsElement, map } from '$lib/troc/store'
-
-  let north: number
-  let east: number
-  let sud: number
-  let west: number
-
-  $: if (isChanged()) $query = { ...$query, north, east, sud, west }
 
   $: $trocs && updateMarkers()
 
@@ -32,17 +25,6 @@
 
   // Flag util pour s'assuré de l'origine des zoom et move de la map
   let isUserAction = false
-
-  function isChanged(): boolean {
-    console.log('TEST MAP CHANGED')
-    const conditions = [
-      $query.east !== east,
-      $query.north !== north,
-      $query.sud !== sud,
-      $query.west !== west,
-    ]
-    return conditions.filter(Boolean).length > 0
-  }
 
   onMount(() => {
     $map = L.map(mapId, {
@@ -68,17 +50,20 @@
   const handleMoveMap = debounce(loadBounds, 200)
 
   function loadBounds() {
-    let sw = $map.getBounds()._southWest
-    let ne = $map.getBounds()._northEast
-    north = ne.lat
-    east = ne.lng
-    sud = sw.lat
-    west = sw.lng
+    let sw = $map.getBounds().getSouthWest()
+    let ne = $map.getBounds().getNorthEast()
+    queryTrocsParams.update((query) => ({
+      ...query,
+      north: ne.lat,
+      east: ne.lng,
+      sud: sw.lat,
+      west: sw.lng,
+    }))
   }
 
   function updateMarkers() {
     // For HMR
-    if (!$map?._panes?.mapPane) return
+    if (!$map?.getPanes()?.mapPane) return
 
     $trocs.slice(0, markers.length).forEach((troc, i) => {
       if (!troc.location) return
@@ -86,7 +71,7 @@
       markers[i]
         .setLatLng(troc.location)
         .bindTooltip(troc.name)
-        .on('click', () => clickMarker(troc))
+        .on('click', () => clickMarker(troc._id))
     })
     if ($trocs.length > markers.length) {
       $trocs.slice(markers.length).forEach((troc) => {
@@ -95,7 +80,7 @@
           L.marker(troc.location, { icon })
             .addTo($map)
             .bindTooltip(troc.name)
-            .on('click', () => clickMarker(troc))
+            .on('click', () => clickMarker(troc._id))
         )
       })
     } else {
@@ -105,9 +90,9 @@
   }
 
   /** Scroll et attire l'attention sur le bon troc quand on click sur un marker. */
-  function clickMarker(troc) {
+  function clickMarker(trocId: string) {
     dispatch('clickMarker')
-    const trocElement = $trocsElement[troc._id]
+    const trocElement = $trocsElement[trocId]
     if (!trocElement) return
     const positionTarget = trocElement.offsetTop - 10
     window.scrollTo({
@@ -123,7 +108,7 @@
     }
 
     /* Déclenche l'animation dés que le scroll est static */
-    let position = null
+    let position: number | null = null
     const checkIfScrollIsStatic = setInterval(() => {
       if (position === window.scrollY) {
         clearInterval(checkIfScrollIsStatic)

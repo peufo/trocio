@@ -101,3 +101,19 @@ export declare interface TrocStats {
   articlesBuyed: Article[]
   payments: PaymentInterface[]
 }
+
+interface ITrocsMapQuery {
+  north?: number
+  east?: number
+  sud?: number
+  west?: number
+}
+interface ITrocsFilterQuery {
+  search?: string
+  start?: string
+  end?: string
+}
+
+interface SearchTrocsQuery extends ITrocsMapQuery, ITrocsFilterQuery {
+  _id?: string
+}

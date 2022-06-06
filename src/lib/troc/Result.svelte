@@ -7,23 +7,27 @@
   import Loader from '$lib/util/Loader.svelte'
 
   import {
-    query,
+    queryTrocsParams,
     trocs,
     trocsElement,
     map,
     useSearchTrocs,
     useSearchTrocsOptions,
   } from '$lib/troc/store'
+  import { useInfinitApi } from '$lib/api'
+  import type { SearchTrocsQuery, Troc, TrocLookup } from 'types'
 
-  const queryTrocs = useSearchTrocs($query)
-  $: queryTrocs.setOptions(useSearchTrocsOptions($query))
+  $: queryTrocs = useInfinitApi<SearchTrocsQuery, TrocLookup[]>({
+    queryKey: ['trocs', $queryTrocsParams],
+  })
   $: $trocs = $queryTrocs.data ? $queryTrocs.data.pages.flat() : []
 
   /** Charge les résultat suivant en cas de scroll */
   const handleScroll = debounce(() => {
     if ($queryTrocs.hasNextPage && !$queryTrocs.isFetchingNextPage) {
       const { scrollY, innerHeight } = window
-      const appElement: HTMLElement = document.querySelector('#app')
+      const appElement = document.querySelector<HTMLDivElement>('#app')
+      if (!appElement) return
       const { offsetHeight } = appElement
       if (scrollY && scrollY + innerHeight > offsetHeight - 100) {
         $queryTrocs.fetchNextPage()

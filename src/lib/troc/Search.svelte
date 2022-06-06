@@ -6,7 +6,7 @@
   import Litepicker from 'litepicker'
   import dayjs from 'dayjs'
 
-  import { query } from '$lib/troc/store'
+  import { queryTrocsParams } from '$lib/troc/store'
   import IconLink from '$lib/util/IconLink.svelte'
 
   const initialStart = dayjs().format('YYYY-MM-DD')
@@ -15,27 +15,17 @@
   let endElement: HTMLInputElement
   let picker: Litepicker
 
-  let search = ''
-  let start = initialStart
-  let end = initialEnd
-
-  $: if (isChanged()) $query = { ...$query, search, start, end }
-
   onMount(() => {
     initTimePicker()
+    queryTrocsParams.update((query) => ({
+      start: initialStart,
+      end: initialEnd,
+      ...query,
+    }))
     return () => {
       picker?.destroy()
     }
   })
-
-  function isChanged(): boolean {
-    const conditions = [
-      $query.search !== search,
-      $query.start !== start,
-      $query.end !== end,
-    ]
-    return conditions.filter(Boolean).length > 0
-  }
 
   function initTimePicker() {
     picker?.destroy()
@@ -51,15 +41,21 @@
       numberOfColumns: 3,
       setup: (picker) => {
         picker.on('selected', (date1, date2) => {
-          start = dayjs(date1.dateInstance).format('YYYY-MM-DD')
-          end = dayjs(date2.dateInstance).format('YYYY-MM-DD')
+          queryTrocsParams.update((query) => ({
+            ...query,
+            start: dayjs(date1.dateInstance).format('YYYY-MM-DD'),
+            end: dayjs(date2.dateInstance).format('YYYY-MM-DD'),
+          }))
         })
       },
     })
   }
 
   const handleSearch = debounce((event: any) => {
-    search = event.target.value
+    queryTrocsParams.update((query) => ({
+      ...query,
+      search: event.target.value,
+    }))
   }, 300)
 </script>
 
@@ -68,7 +64,7 @@
   placeholder="Recherche"
   solo
   flat
-  value={search || ''}
+  value={$queryTrocsParams.search || ''}
   on:input={handleSearch}
   on:change={handleSearch}
 >
@@ -76,10 +72,16 @@
 </TextField>
 
 <div class="d-flex pa-2" style="gap: 15px;">
-  <TextField value={initialStart} bind:inputElement={startElement}>
+  <TextField
+    value={$queryTrocsParams.start || initialStart}
+    bind:inputElement={startElement}
+  >
     A partir du
   </TextField>
-  <TextField value={initialEnd} bind:inputElement={endElement}>
+  <TextField
+    value={$queryTrocsParams.end || initialEnd}
+    bind:inputElement={endElement}
+  >
     Jusqu'au
   </TextField>
 </div>
