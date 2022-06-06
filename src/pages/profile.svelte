@@ -1,4 +1,3 @@
-<!-- routify:options isFooterDisplay=true -->
 <script>
   import { redirect } from '@roxi/routify'
 
