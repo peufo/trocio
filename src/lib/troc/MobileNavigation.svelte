@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { fly } from 'svelte/transition'
   import { mdiEarth, mdiPlus } from '@mdi/js'
   import { page, redirect } from '@roxi/routify'
-
   import { Tabs, Tab, Icon } from 'svelte-materialify'
+
+  import { isKeyboardOpen } from '$lib/store/layout'
   import logo from '$assets/logo'
 
   const TABS = [
@@ -19,24 +21,26 @@
   }
 </script>
 
-<nav>
-  <Tabs
-    icons
-    grow
-    class="secondary-color theme--dark"
-    on:change={handleChange}
-    value={tabIndex}
-  >
-    <div slot="tabs">
-      {#each TABS as tab}
-        <Tab>
-          <Icon {...tab.icon} />
-          {tab.label}
-        </Tab>
-      {/each}
-    </div>
-  </Tabs>
-</nav>
+{#if !$isKeyboardOpen}
+  <nav in:fly|local={{ y: 72 }}>
+    <Tabs
+      icons
+      grow
+      class="secondary-color theme--dark"
+      on:change={handleChange}
+      value={tabIndex}
+    >
+      <div slot="tabs">
+        {#each TABS as tab}
+          <Tab>
+            <Icon {...tab.icon} />
+            {tab.label}
+          </Tab>
+        {/each}
+      </div>
+    </Tabs>
+  </nav>
+{/if}
 
 <style>
   nav {

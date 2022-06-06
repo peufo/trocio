@@ -18,6 +18,10 @@ export const layout = writable({
   innerHeight: 0,
 })
 
+export const isKeyboardOpen = derived(layout, ({ innerHeight }) => {
+  return window.screen.height - innerHeight > 300
+})
+
 /** Contrôle de l'affichage de du volet de navigation */
 export const trocNavigationActive = writable(true)
 
