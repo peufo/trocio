@@ -52,6 +52,7 @@ export const subscribes = writable<SubscribeLookup[]>([])
  */
 interface SearchTrocsQuery {
   _id?: string
+  search?: string
   start?: string
   end?: string
   north?: number
@@ -61,7 +62,7 @@ interface SearchTrocsQuery {
 }
 export const query = writable<SearchTrocsQuery>({})
 export const trocs = writable<Troc[]>([])
-export const trocsElement = writable<HTMLElement[]>([])
+export const trocsElement = writable<{ [key: string]: HTMLElement }>({})
 export const map = writable<L.Map>()
 
 /** @deprecated */

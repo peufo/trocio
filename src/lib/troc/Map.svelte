@@ -4,24 +4,17 @@
   import 'leaflet/dist/leaflet.css'
   import debounce from 'debounce'
 
+  import { query } from '$lib/troc/store'
   import markerIcon from '$assets/images/marker-icon.png'
   import markerIcon2X from '$assets/images/marker-icon-2x.png'
-
   import { trocs, trocsElement, map } from '$lib/troc/store'
 
-  export let mapFilter: {
-    north?: number
-    east?: number
-    sud?: number
-    west?: number
-  } = {}
-  // TODO: remove mapFilterChecked ?
-  let mapFilterChecked = true
-  let north
-  let east
-  let sud
-  let west
-  $: mapFilter = mapFilterChecked ? { north, east, sud, west } : {}
+  let north: number
+  let east: number
+  let sud: number
+  let west: number
+
+  $: if (isChanged()) $query = { ...$query, north, east, sud, west }
 
   $: $trocs && updateMarkers()
 
@@ -39,6 +32,17 @@
 
   // Flag util pour s'assuré de l'origine des zoom et move de la map
   let isUserAction = false
+
+  function isChanged(): boolean {
+    console.log('TEST MAP CHANGED')
+    const conditions = [
+      $query.east !== east,
+      $query.north !== north,
+      $query.sud !== sud,
+      $query.west !== west,
+    ]
+    return conditions.filter(Boolean).length > 0
+  }
 
   onMount(() => {
     $map = L.map(mapId, {

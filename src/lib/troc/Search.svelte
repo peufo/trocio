@@ -6,7 +6,7 @@
   import Litepicker from 'litepicker'
   import dayjs from 'dayjs'
 
-  import type { ITimeFilter } from 'types'
+  import { query } from '$lib/troc/store'
   import IconLink from '$lib/util/IconLink.svelte'
 
   const initialStart = dayjs().format('YYYY-MM-DD')
@@ -15,16 +15,29 @@
   let endElement: HTMLInputElement
   let picker: Litepicker
 
-  export let search = ''
-  export let timeFilter: ITimeFilter = { start: initialStart, end: initialEnd }
+  let search = ''
+  let start = initialStart
+  let end = initialEnd
+
+  $: if (isChanged()) $query = { ...$query, search, start, end }
 
   onMount(() => {
     initTimePicker()
-    timeFilter = { start: initialStart, end: initialEnd }
+    start = initialStart
+    end = initialEnd
     return () => {
       picker?.destroy()
     }
   })
+
+  function isChanged(): boolean {
+    const conditions = [
+      $query.search !== search,
+      $query.start !== start,
+      $query.end !== end,
+    ]
+    return conditions.filter(Boolean).length > 0
+  }
 
   function initTimePicker() {
     picker?.destroy()
@@ -40,10 +53,8 @@
       numberOfColumns: 3,
       setup: (picker) => {
         picker.on('selected', (date1, date2) => {
-          timeFilter = {
-            start: dayjs(date1.dateInstance).format('YYYY-MM-DD'),
-            end: dayjs(date2.dateInstance).format('YYYY-MM-DD'),
-          }
+          start = dayjs(date1.dateInstance).format('YYYY-MM-DD')
+          end = dayjs(date2.dateInstance).format('YYYY-MM-DD')
         })
       },
     })

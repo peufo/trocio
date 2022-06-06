@@ -8,7 +8,6 @@ export * from './params'
 export * from './magic'
 export * from './message'
 export * from './option'
-export * from './util'
 
 /*
 export declare function createEventDispatcher<T>(

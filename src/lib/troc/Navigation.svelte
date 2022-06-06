@@ -5,8 +5,6 @@
   import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
   import { isActive } from '@roxi/routify'
 
-  import type { ITimeFilter } from 'types'
-  import { query } from '$lib/troc/store'
   import layout from '$lib/store/layout'
   import { user } from '$lib/user/store'
   import IconLink from '$lib/util/IconLink.svelte'
@@ -21,38 +19,26 @@
 
   let scrollY = 0
 
-  let search = ''
-  let timeFilter: ITimeFilter = {}
-  let mapFilter = {}
-
-  $: $query = { search, ...timeFilter, ...mapFilter }
+  $: drawerStyle = `
+    width: ${width};
+    height: ${$layout.innerHeight}px;
+    padding-top: ${
+      scrollY > $layout.headerHeight ? 0 : $layout.headerHeight - scrollY
+    }px;
+  `
 </script>
 
 <svelte:window bind:scrollY />
 
-<NavigationDrawer
-  {active}
-  transition={() => ({ duration: 0, css: (t) => '' })}
-  fixed
-  style="
-    width: {width};
-    height: {$layout.innerHeight}px;
-    padding-top: {scrollY > $layout.headerHeight
-    ? 0
-    : $layout.headerHeight - scrollY}px;
-  "
->
+<NavigationDrawer {active} fixed style={drawerStyle}>
   <div class="pa-2">
-    <TrocMap
-      bind:mapFilter
-      on:clickMarker={() => mobileMode && (active = false)}
-    />
+    <TrocMap on:clickMarker={() => mobileMode && (active = false)} />
   </div>
 
   <List nav>
     {#if $isActive('/trocs/index')}
       <div transition:slide|local class="border">
-        <TrocSearch bind:search bind:timeFilter />
+        <TrocSearch />
       </div>
     {:else}
       <div transition:slide|local>
