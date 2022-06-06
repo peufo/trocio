@@ -2,7 +2,7 @@
   import { afterPageLoad, isActive } from '@roxi/routify'
 
   import Navigation from '$lib/troc/Navigation.svelte'
-  import NavigationMobile from '$lib/troc/NavigationMobile.svelte'
+  import MobileNavigation from '$lib/troc/MobileNavigation.svelte'
   import { trocNavigationActive, isMobile } from '$lib/store/layout'
 
   let navigationWidth = '360px'
@@ -35,7 +35,7 @@
   </div>
 
   {#if $isMobile}
-    <NavigationMobile />
+    <MobileNavigation />
   {/if}
 </div>
 

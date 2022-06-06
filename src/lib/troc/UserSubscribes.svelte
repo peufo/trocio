@@ -14,6 +14,7 @@
   import Loader from '$lib/util/Loader.svelte'
   import { useInfinitApi } from '$lib/api'
   import type { SubscribeLookup } from 'types'
+  import { isMobile } from '$lib/store/layout'
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
@@ -31,7 +32,7 @@
 </script>
 
 {#if $querySubscribes.isSuccess}
-  <List dense>
+  <List dense={!$isMobile}>
     {#each subscribes as { troc }}
       <a href={`/trocs/${troc._id}`}>
         <ListItem

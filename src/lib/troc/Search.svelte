@@ -23,8 +23,6 @@
 
   onMount(() => {
     initTimePicker()
-    start = initialStart
-    end = initialEnd
     return () => {
       picker?.destroy()
     }
@@ -70,6 +68,7 @@
   placeholder="Recherche"
   solo
   flat
+  value={search || ''}
   on:input={handleSearch}
   on:change={handleSearch}
 >

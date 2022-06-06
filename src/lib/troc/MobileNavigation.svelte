@@ -1,20 +1,19 @@
 <script lang="ts">
-  import { mdiMagnify, mdiPlus } from '@mdi/js'
-  import { redirect } from '@roxi/routify'
+  import { mdiEarth, mdiPlus } from '@mdi/js'
+  import { goto, redirect } from '@roxi/routify'
 
   import { Tabs, Tab, Icon } from 'svelte-materialify'
   import logo from '$assets/logo'
 
   const TABS = [
-    { icon: { path: mdiMagnify }, label: 'Découvrir', href: 'discover' },
-    { icon: logo, label: 'Mes trocs', href: 'my' },
-    { icon: { path: mdiPlus }, label: 'Nouveau', href: 'create' },
+    { icon: { path: mdiEarth }, label: 'Découvrir', href: './' },
+    { icon: logo, label: 'Mes trocs', href: './my' },
+    { icon: { path: mdiPlus }, label: 'Nouveau', href: './create' },
   ]
 
   function handleChange(event: { detail: number }) {
     const tabIndex = event.detail
-    const href = `/trocs/${TABS[tabIndex].href}`
-    $redirect(href, {})
+    $goto(TABS[tabIndex].href, {})
   }
 </script>
 
