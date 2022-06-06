@@ -67,7 +67,7 @@
     "http2-proxy": "^5.0.53",
     "json-2-csv": "^3.14.4",
     "leaflet": "^1.7.1",
-    "litepicker": "^2.0.11",
+    "litepicker": "^2.0.12",
     "mdsvex": "^0.9.8",
     "mongoose": "^6.0.12",
     "mongoose-lean-virtuals": "^0.9.0",

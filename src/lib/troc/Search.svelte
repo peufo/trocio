@@ -4,13 +4,14 @@
   import { debounce } from 'debounce'
   import { faSearch } from '@fortawesome/free-solid-svg-icons'
   import Litepicker from 'litepicker'
+  import 'litepicker/dist/plugins/mobilefriendly'
   import dayjs from 'dayjs'
 
   import { queryTrocsParams } from '$lib/troc/store'
   import IconLink from '$lib/util/IconLink.svelte'
 
   const initialStart = dayjs().format('YYYY-MM-DD')
-  const initialEnd = dayjs().add(2, 'month').format('YYYY-MM-DD')
+  const initialEnd = dayjs().add(1, 'month').format('YYYY-MM-DD')
   let startElement: HTMLInputElement
   let endElement: HTMLInputElement
   let picker: Litepicker
@@ -36,9 +37,10 @@
       parentEl: document.querySelector<HTMLDivElement>('#app .s-app'),
       singleMode: false,
       allowRepick: true,
+      numberOfColumns: 2,
+      numberOfMonths: 2,
       lang: navigator.language,
-      numberOfMonths: 3,
-      numberOfColumns: 3,
+      plugins: ['mobilefriendly'],
       setup: (picker) => {
         picker.on('selected', (date1, date2) => {
           queryTrocsParams.update((query) => ({
