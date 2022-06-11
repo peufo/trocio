@@ -2,13 +2,24 @@
   import { onMount, onDestroy } from 'svelte'
   import QrScanner from 'qr-scanner'
 
-  import beepUrl from '$assets/beep.mp3'
+  import sound1 from '$assets/sounds/Pristine.wav'
+  import sound2 from '$assets/sounds/Badam.wav'
+  import sound3 from '$assets/sounds/Rose_Wood.wav'
+  import sound4 from '$assets/sounds/Oxygen.wav'
 
   let result = ''
 
   let video: HTMLVideoElement
   let audio: HTMLAudioElement
   let qrScanner: QrScanner
+  let offsetWidth: number
+
+  const sounds = {
+    Pristine: sound1,
+    Badam: sound2,
+    Rose_Wood: sound3,
+    Oxygen: sound4,
+  }
 
   onMount(async () => {
     if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
@@ -35,11 +46,11 @@
   })
 </script>
 
-<div class="container">
-  <video autoplay bind:this={video} kind="caption" height="350">
+<div class="container" bind:offsetWidth>
+  <video autoplay bind:this={video} kind="caption" width={offsetWidth - 20}>
     <track kind="captions" />
   </video>
-  <audio src={beepUrl} bind:this={audio} />
+  <audio src={sounds.Badam} bind:this={audio} />
 </div>
 
 {#if result}
@@ -49,7 +60,13 @@
 {/if}
 
 <style>
+  video {
+    border-radius: 10px;
+    filter: grayscale(80%);
+  }
   .container {
     width: 100vw;
+    padding: 10px;
+    overflow: hidden;
   }
 </style>
