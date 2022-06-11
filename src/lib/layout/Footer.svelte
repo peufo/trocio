@@ -9,42 +9,37 @@
   bind:offsetHeight
 >
   <div>
-    <div class="underline-div">
-      <a class="underline-span" href="/contact">Contact</a>
+    <div class="links">
+      <div class="underline-div">
+        <a class="underline-span" href="/contact">Contact</a>
+      </div>
+      <div class="underline-div">
+        <a class="underline-span" href="/terms-of-use">
+          Conditions d'utilisation
+        </a>
+      </div>
+      <div class="underline-div">
+        <a class="underline-span" href="/legal-notice"> Mentions légales </a>
+      </div>
     </div>
-    <div class="underline-div">
-      <a class="underline-span" href="/terms-of-use">
-        Conditions d'utilisation
-      </a>
-    </div>
-    <div class="underline-div">
-      <a class="underline-span" href="/legal-notice"> Mentions légales </a>
-    </div>
-  </div>
 
-  <span>
-    <i class="far fa-copyright" />
-    2018 - 2022 Jonas Voisard
-  </span>
+    <span>
+      <i class="far fa-copyright" />
+      2018 - 2022 Jonas Voisard
+    </span>
+  </div>
 </footer>
 
 <style>
   footer {
     background: #efefef;
-    height: 150px;
-  }
-
-  footer > div {
     height: 100px;
-    padding-top: 40px;
+    display: grid;
+    place-items: center;
   }
 
-  footer > div > div {
-    display: inline-block;
-    padding: 5px 10px;
-  }
-
-  footer > div > div:not(:first-child) {
-    border-left: solid 1px rgba(0, 0, 0, 0.1);
+  .links {
+    display: flex;
+    gap: 15px;
   }
 </style>
