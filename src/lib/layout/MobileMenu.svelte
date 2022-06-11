@@ -8,17 +8,11 @@
   import IconLink from '$lib/util/IconLink.svelte'
 </script>
 
-{#if $user}
-  <a href="/profile">
-    <Button fab depressed class="mr-2">
-      <IconLink icon={faUser} />
-    </Button>
-  </a>
-{:else}
-  <Button fab depressed>
+<a href="/profile">
+  <Button fab depressed class="mr-2">
     <IconLink icon={faUser} />
   </Button>
-{/if}
+</a>
 
 <Button fab depressed on:click={() => ($isDarkTheme = !$isDarkTheme)}>
   <IconLink icon={$isDarkTheme ? faMoon : faSun} />

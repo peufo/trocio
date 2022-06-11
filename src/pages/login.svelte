@@ -21,30 +21,12 @@
 
 {#if !$user}
   <div
-    class="d-flex flex-wrap justify-space-around align-center"
+    class="d-flex align-center justify-center"
     style="height: {scoped.mainHeight}px;"
   >
-    <div class="text-center">
-      <a href="/" class="mr-2">
-        <Button>
-          <Icon class="fas fa-home mr-2" />
-          accueil
-        </Button>
-      </a>
-
-      <a href="/trocs">
-        <Button>
-          <Icon class="fas fa-search mr-2" />
-          Trocs
-        </Button>
-      </a>
-    </div>
-
-    <div class="half">
-      <Card class="pa-4">
-        <Login on:done={handleLoginDone} />
-      </Card>
-    </div>
+    <Card class="pa-4">
+      <Login on:done={handleLoginDone} />
+    </Card>
   </div>
 {/if}
 
