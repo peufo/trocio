@@ -86,10 +86,7 @@
 
 <svelte:window bind:innerWidth />
 
-<form
-  on:submit|preventDefault={submit}
-  style={`width: ${innerWidth > 500 ? '360px' : 'auto'}`}
->
+<form on:submit|preventDefault={submit}>
   {#if state === REGISTER}
     <h5 class="text-center" in:fade>Nouveau compte</h5>
   {:else if state === RECOVER}
@@ -203,6 +200,10 @@
 </form>
 
 <style>
+  form {
+    min-width: 320px;
+  }
+
   .or {
     transform: translateY(-50%);
     background: #fff;
