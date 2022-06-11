@@ -22,7 +22,7 @@
 {#if !$user}
   <div
     class="d-flex align-center justify-center"
-    style="height: {scoped.mainHeight}px;"
+    style="min-height: {scoped.mainHeight}px;"
   >
     <Card class="pa-4">
       <Login on:done={handleLoginDone} />
