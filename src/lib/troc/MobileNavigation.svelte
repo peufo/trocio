@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fly, crossfade } from 'svelte/transition'
+  import { fly } from 'svelte/transition'
   import {
     mdiArrowLeft,
     mdiEarth,
@@ -10,10 +10,11 @@
   import { page, redirect } from '@roxi/routify'
   import { Tabs, Tab, Icon, Button } from 'svelte-materialify'
 
+  import { crossfade } from '$lib/util/crossfade'
   import { isKeyboardOpen } from '$lib/store/layout'
   import logo from '$assets/logo'
 
-  const [send, receive] = crossfade({ duration: 250 })
+  const [send, receive] = crossfade({ duration: 1000 })
 
   const TABS_TROCS = [
     { icon: { path: mdiEarth }, label: 'Découvrir', page: 'trocs' },
@@ -49,7 +50,11 @@
 {#if !$isKeyboardOpen}
   <nav in:fly|local={{ y: 72 }}>
     {#if $page.title !== ':trocId'}
-      <div in:receive={{ key: 'tabsNested' }} out:send={{ key: 'tabsNested' }}>
+      <div
+        in:receive={{ key: 'tabsNested' }}
+        out:send={{ key: 'tabsNested' }}
+        class="overflow: hidden;"
+      >
         <Tabs
           icons
           grow
@@ -71,9 +76,9 @@
 
     {#if $page.title === ':trocId'}
       <div
-        class="returnButton"
-        in:receive={{ key: 'tabsNested' }}
+        class="returnButton secondary-color"
         out:send={{ key: 'tabsNested' }}
+        in:receive={{ key: 'tabsNested' }}
       >
         <Button
           fab
@@ -120,5 +125,6 @@
     position: fixed;
     bottom: 80px;
     left: 8px;
+    border-radius: 50%;
   }
 </style>

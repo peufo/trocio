@@ -1,7 +1,7 @@
 <script lang="ts">
   import { AppBar, Button, Dialog, Icon } from 'svelte-materialify'
-  import { faUser, faMoon } from '@fortawesome/free-regular-svg-icons'
-  import { faSun } from '@fortawesome/free-solid-svg-icons'
+  import { faUser } from '@fortawesome/free-regular-svg-icons'
+  import { mdiWeatherNight, mdiWhiteBalanceSunny } from '@mdi/js'
   import { params } from '@roxi/routify'
 
   import { troc } from '$lib/troc/store'
@@ -65,7 +65,7 @@
       {/if}
 
       <Button text fab on:click={() => ($isDarkTheme = !$isDarkTheme)}>
-        <IconLink icon={$isDarkTheme ? faMoon : faSun} />
+        <Icon path={$isDarkTheme ? mdiWeatherNight : mdiWhiteBalanceSunny} />
       </Button>
     {/if}
   </AppBar>
