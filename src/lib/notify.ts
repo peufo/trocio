@@ -50,7 +50,10 @@ function formatOptions(
   if (typeof options === 'string') options = { title: options }
   if (!options.icon) options.icon = defaultIcon
   if (isSameAndQuickOptions(options)) return
-  notify(options)
+
+  console.log('TODO')
+
+  // notify(options)
 }
 
 function success(options: Options[1]) {

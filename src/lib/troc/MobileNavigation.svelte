@@ -10,11 +10,8 @@
   import { page, redirect } from '@roxi/routify'
   import { Tabs, Tab, Icon, Button } from 'svelte-materialify'
 
-  import { crossfade } from '$lib/util/crossfade'
   import { isKeyboardOpen } from '$lib/store/layout'
   import logo from '$assets/logo'
-
-  const [send, receive] = crossfade({ duration: 1000 })
 
   const TABS_TROCS = [
     { icon: { path: mdiEarth }, label: 'Découvrir', page: 'trocs' },
@@ -50,11 +47,7 @@
 {#if !$isKeyboardOpen}
   <nav in:fly|local={{ y: 72 }}>
     {#if $page.title !== ':trocId'}
-      <div
-        in:receive={{ key: 'tabsNested' }}
-        out:send={{ key: 'tabsNested' }}
-        class="overflow: hidden;"
-      >
+      <div class="overflow: hidden;">
         <Tabs
           icons
           grow
@@ -75,11 +68,7 @@
     {/if}
 
     {#if $page.title === ':trocId'}
-      <div
-        class="returnButton secondary-color"
-        out:send={{ key: 'tabsNested' }}
-        in:receive={{ key: 'tabsNested' }}
-      >
+      <div class="returnButton secondary-color">
         <Button
           fab
           class="secondary-color"
