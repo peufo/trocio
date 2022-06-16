@@ -35,7 +35,7 @@
     on:outroend
     on:introend={introend}
   >
-    <div class="container notify-{type}">
+    <div class="container elevation-12 notify-{type}">
       <div class="text">
         {#if title}
           <b>{title} - </b>
@@ -82,15 +82,17 @@
   }
 
   .notify-success {
-    border: solid 2px #a7ff9d;
+    outline: solid 2px #a7ff9d;
   }
+  /*
   .notify-info {
-    /* border: solid 2px #fff59d; */
+    outline: solid 2px #fff59d;
   }
+  */
   .notify-warning {
-    border: solid 2px #ffc49d;
+    outline: solid 2px #ffc49d;
   }
   .notify-error {
-    border: solid 2px #f10;
+    outline: solid 2px #f10;
   }
 </style>

@@ -29,7 +29,7 @@
     </Button>
     <br />
     <Button on:click={() => success('YOLO')}>Success</Button>
-    <Button on:click={() => info('YOLO')}>Info</Button>
+    <Button on:click={() => info('asd')}>Info</Button>
     <Button on:click={() => warning('YOLO')}>warning</Button>
     <Button on:click={() => error('YOLO')}>error</Button>
   </Card>
