@@ -5,7 +5,11 @@
   import { Button, Icon } from 'svelte-materialify'
   import { mdiClose } from '@mdi/js'
 
-  export let text = 'prout'
+  type TNotify = 'info' | 'success' | 'warning' | 'error'
+
+  export let type: TNotify = 'info'
+  export let message = 'Hey ✌️'
+  export let title = ''
   export let duration = 3000
   export let transitionParams: ScaleParams = { duration: 300 }
   export let persistent = false
@@ -31,8 +35,13 @@
     on:outroend
     on:introend={introend}
   >
-    <div class="container">
-      <div class="text">{text}</div>
+    <div class="container notify-{type}">
+      <div class="text">
+        {#if title}
+          <b>{title} - </b>
+        {/if}
+        <span>{message}</span>
+      </div>
       {#if persistent}
         <div class="pr-1">
           <Button icon on:click={() => (isActive = false)}>
@@ -57,7 +66,7 @@
   .container {
     display: flex;
     align-items: center;
-    border-radius: 4px;
+    border-radius: 6px;
     color: white;
     background-color: #333233;
   }
@@ -70,5 +79,18 @@
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+  }
+
+  .notify-success {
+    border: solid 2px #a7ff9d;
+  }
+  .notify-info {
+    /* border: solid 2px #fff59d; */
+  }
+  .notify-warning {
+    border: solid 2px #ffc49d;
+  }
+  .notify-error {
+    border: solid 2px #f10;
   }
 </style>

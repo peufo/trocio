@@ -1,6 +1,6 @@
 <script>
   import { Button, Card } from 'svelte-materialify'
-  import { notify } from '$lib/notify/index'
+  import { notify, success, info, warning, error } from '$lib/notify/index'
 
   const text = 'prout'
   const longText = new Array(10).fill(text).join(' ')
@@ -15,7 +15,7 @@
     </Button>
     <Button
       on:click={() => {
-        notify(longText)
+        notify({ message: longText, message: 'Long text', type: 'success' })
       }}
     >
       Long text
@@ -27,6 +27,11 @@
     >
       Extra long text
     </Button>
+    <br />
+    <Button on:click={() => success('YOLO')}>Success</Button>
+    <Button on:click={() => info('YOLO')}>Info</Button>
+    <Button on:click={() => warning('YOLO')}>warning</Button>
+    <Button on:click={() => error('YOLO')}>error</Button>
   </Card>
 </div>
 
