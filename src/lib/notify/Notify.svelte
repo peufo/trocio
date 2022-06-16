@@ -61,6 +61,7 @@
     margin: 0.5rem;
     display: grid;
     justify-content: center;
+    z-index: 1000;
   }
 
   .container {

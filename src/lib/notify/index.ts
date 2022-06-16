@@ -80,3 +80,4 @@ function error(messageOrOptions: string | INotifyOptions, persistent = false) {
 }
 
 export { notify, success, info, warning, error }
+export default { notify, success, info, warning, error }
