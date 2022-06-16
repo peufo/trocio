@@ -33,8 +33,8 @@
 
 <div bind:offsetHeight bind:offsetWidth>
   <AppBar flat>
-    <img slot="icon" src={logoIco} alt="logo Trocio" height="35" class="ml-2" />
-    <div slot="title">
+    <img slot="icon" src={logoIco} alt="logo Trocio" height="45" />
+    <div slot="title" style="transform: translateY(2px);">
       <a href="/" class="title">Troc.io</a>
     </div>
 
