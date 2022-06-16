@@ -1,4 +1,3 @@
-<!-- routify:options isFooterDisplay=true -->
 <script>
   import { Card } from 'svelte-materialify'
   import { redirect, params, afterPageLoad } from '@roxi/routify'
