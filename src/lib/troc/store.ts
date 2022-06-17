@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store'
+import { derived, writable } from 'svelte/store'
 import type L from 'leaflet'
 import { useMutation } from '@sveltestack/svelte-query'
 
@@ -17,7 +17,6 @@ import {
   createTroc,
   updateTroc,
   getNextPageParam,
-  createSubscribe,
   createTarif,
   deleteTarif,
   editTarif,
@@ -56,8 +55,6 @@ export const map = writable<L.Map>()
  * @deprecated
  */
 export const useCreateTroc = () => useMutation(createTroc, { onSuccess })
-/** @deprecated */
-export const useCreateSubscribe = () => useMutation(createSubscribe)
 
 /**
  * Mise à jour

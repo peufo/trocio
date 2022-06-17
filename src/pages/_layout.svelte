@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '@roxi/routify'
-  import { MaterialApp } from 'svelte-materialify'
+  import { MaterialApp } from 'svelte-materialify/src'
 
   import Header from '$lib/layout/Header.svelte'
   import Footer from '$lib/layout/Footer.svelte'

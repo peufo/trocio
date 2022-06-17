@@ -20,7 +20,7 @@
 
   export let offsetHeight = 0
   let offsetWidth = 0
-  $: $isMobile = offsetWidth < 540
+  $: $isMobile = offsetWidth < 900
 
   let dialogLoginIsActive = false
 </script>

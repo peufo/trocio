@@ -8,7 +8,7 @@ isDarkTheme.subscribe((value) =>
 )
 
 export let isMobile = writable(
-  navigator.userAgentData?.mobile || document.body.offsetWidth < 640
+  navigator.userAgentData?.mobile || document.body.offsetWidth < 900
 )
 
 export const layout = writable({

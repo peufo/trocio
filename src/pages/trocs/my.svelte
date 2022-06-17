@@ -10,4 +10,6 @@
   })
 </script>
 
-<UserSubscribes />
+<div class="pa-4">
+  <UserSubscribes />
+</div>

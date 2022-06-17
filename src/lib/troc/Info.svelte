@@ -16,6 +16,8 @@
     faStoreAlt,
     faSignOutAlt,
     faShoppingBasket,
+    faTimes,
+    faMapMarkedAlt,
   } from '@fortawesome/free-solid-svg-icons'
   import { Button, Chip, Divider } from 'svelte-materialify'
   import dayjs from 'dayjs'
@@ -36,9 +38,6 @@
 
   export let troc: TrocLookup
 
-  export let articleSearch = ''
-  export let activityOpen = false
-
   const DESCRIPTION_SIZE = 250
   let sliceDescription = DESCRIPTION_SIZE
 
@@ -47,39 +46,13 @@
     deposit: faSignInAlt,
     recovery: faSignOutAlt,
     sale: faShoppingBasket,
+    delete: faTimes,
   }
-  const createSubscribe = useMutation((data: SubscribeBase) =>
-    api<SubscribeBase, SubscribeLookup>('/api/subscribes', {
-      method: 'post',
-      data,
-      success: 'Nouvelle participation',
-    })
-  )
 
   $: queryCounters = useApi<
     { trocId: string },
     { articlesCount: number; subscribesCount: number }
   >(['trocs/byId/counters', { trocId: troc._id }])
-
-  function handleClickActivity() {
-    if (!$user)
-      return $goto('/login', {
-        callback: `/trocs/${troc._id}`,
-      })
-    if (troc.subscribe?.validedByUser) activityOpen = !activityOpen
-    else {
-      $createSubscribe.mutate(
-        { trocId: troc._id },
-        {
-          onSuccess: (subscribe) => {
-            // TODO: manage subscribe already exist
-            if (subscribe) troc.subscribe = subscribe
-            activityOpen = !activityOpen
-          },
-        }
-      )
-    }
-  }
 </script>
 
 <div class="container">
@@ -139,9 +112,29 @@
         </span>
       {/if}
     </p>
+
+    {#if !!$user && troc.subscribe?.validedByUser}
+      {#if troc.subscribe?.role === 'admin'}
+        <a href={`/admin?trocId=${troc._id}`}>
+          <Button depressed>
+            administration
+            <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
+          </Button>
+        </a>
+      {:else if troc.subscribe?.role === 'cashier'}
+        <a href={`/cashier?trocId=${troc._id}`}>
+          <Button depressed>
+            Caisse
+            <IconLink icon={faCashRegister} class="ml-2" size="1.2em" opacity />
+          </Button>
+        </a>
+      {/if}
+    {/if}
+
+    <Share {troc} />
   </div>
 
-  <div class="pl-5 pb-5">
+  <div>
     {#if troc.address}
       <div class="d-flex pt-5">
         <IconLink icon={faMapMarkerAlt} opacity />
@@ -149,23 +142,6 @@
           {#each troc.address.split(/, |\n/) as segmentAddress}
             {segmentAddress}<br />
           {/each}
-          <!--
-              TODO: Imprecis
-              <a
-              style="line-height: 2.5;"
-              rel="noreferrer"
-              href={`https://www.google.ch/maps/place/${convertDMS(troc.location)}`}
-              target="_blank"
-              title="Ouvrir dans Google Maps"
-              >
-              <IconLink
-              class="ml-1"
-              icon={faMapMarkedAlt}
-              size="1em"
-              style="color: var(--theme-text-link)"
-              />
-            </a>
-          -->
         </div>
       </div>
     {/if}
@@ -183,7 +159,8 @@
           <br />
           {#each troc.schedule as period}
             <IconLink
-              icon={scheduleIcon[period.name] || scheduleIcon.open}
+              icon={(period.name && scheduleIcon[period.name]) ||
+                scheduleIcon.open}
               size="1em"
               opacity
             />
@@ -218,98 +195,19 @@
   </div>
 </div>
 
-<Divider />
-
-<div
-  class="pt-1 d-flex flex-wrap align-center justify-space-between"
-  style="min-height: 56px;"
->
-  {#if !activityOpen}
-    <div in:fade|local>
-      <SearchTextField
-        bind:search={articleSearch}
-        class="mr-1 ml-1"
-        solo
-        flat
-        placeholder="Chercher un article"
-        style="max-width: 200px;"
-      />
-    </div>
-  {/if}
-
-  <div class="flex-grow-1" />
-  {#if !!$user && troc.subscribe?.validedByUser}
-    {#if troc.subscribe?.role === 'admin'}
-      <a href={`/admin?trocId=${troc._id}`}>
-        <Button depressed class="mr-1 ml-1">
-          administration
-          <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
-        </Button>
-      </a>
-    {:else if troc.subscribe?.role === 'cashier'}
-      <a href={`/cashier?trocId=${troc._id}`}>
-        <Button depressed class="mr-1 ml-1">
-          Caisse
-          <IconLink icon={faCashRegister} class="ml-2" size="1.2em" opacity />
-        </Button>
-      </a>
-    {/if}
-  {/if}
-
-  <Button on:click={handleClickActivity} depressed class="mr-1 ml-1">
-    {troc.subscribe?.validedByUser ? 'Mon activité' : 'Participer au troc'}
-    <IconLink
-      icon={faChevronRight}
-      rotate={activityOpen ? 90 : 0}
-      class="ml-2"
-      opacity
-      size="1.1em"
-    />
-  </Button>
-
-  <Share {troc} class="mr-1 ml-1" />
-</div>
-
-{#if activityOpen && troc.subscribe}
-  <div transition:slide|local>
-    <UserResum
-      subscribeId={troc.subscribe._id}
-      isClosed={troc.isClosed && !troc.is_try}
-    />
-    <Divider />
-  </div>
-{/if}
-
-{#if activityOpen}
-  <div>
-    <SearchTextField
-      bind:search={articleSearch}
-      class="pt-4"
-      solo
-      flat
-      placeholder="Chercher un article"
-      style="max-width: 200px;"
-    />
-  </div>
-{/if}
-
-<ArticleList
-  trocId={troc._id}
-  currency={troc.currency}
-  search={articleSearch}
-/>
-
 <style>
   .container {
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1em;
   }
+  /*
   @media only screen and (max-width: 650px) {
     .container {
       display: block;
     }
   }
-
+*/
   .describe {
     word-wrap: break-word;
   }

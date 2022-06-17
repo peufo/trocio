@@ -1,8 +1,13 @@
-$primary-color: #004d26;
-$secondary-color: #ff99cc;
-$error-color: #420420;
-$success-color: #66ff99;
+// @import 'svelte-materialify/src/styles/variables';
+
+$primary-color: #883997;
+$secondary-color: #c8e6c9;
 
 $body-font-family: 'Poppins', 'Segoe UI', sans-serif;
 
-$spacer: 6px !default;
+$material-dark-theme: map-deep-merge(
+  (
+    'cards': rgb(50, 50, 50),
+  ),
+  $material-dark-theme
+);

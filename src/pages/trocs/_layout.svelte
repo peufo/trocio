@@ -1,9 +1,14 @@
 <script lang="ts">
-  import { afterPageLoad, isActive } from '@roxi/routify'
+  import { afterPageLoad, isActive, page } from '@roxi/routify'
+  import { fly } from 'svelte/transition'
 
   import Navigation from '$lib/troc/Navigation.svelte'
-  import MobileNavigation from '$lib/troc/MobileNavigation.svelte'
-  import { trocNavigationActive, isMobile } from '$lib/store/layout'
+  import TabsTrocs from '$lib/troc/TabsTrocs.svelte'
+  import {
+    trocNavigationActive,
+    isMobile,
+    isKeyboardOpen,
+  } from '$lib/store/layout'
 
   let navigationWidth = '360px'
 
@@ -30,17 +35,25 @@
     />
   {/if}
 
-  <div class="pa-4 pb-16" style="width: 100%;">
+  <div class="pb-16" style="width: 100%;">
     <slot />
   </div>
 
-  {#if $isMobile}
-    <MobileNavigation />
+  {#if $isMobile && !$isKeyboardOpen && !$page.path.startsWith('/trocs/:trocId')}
+    <nav transition:fly|local={{ y: 72 }}>
+      <TabsTrocs />
+    </nav>
   {/if}
 </div>
 
 <style>
   .layout {
     transition: padding 0.3s;
+  }
+  nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 72px;
   }
 </style>

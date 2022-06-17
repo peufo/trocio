@@ -7,11 +7,13 @@
   import TrocResult from '$lib/troc/Result.svelte'
 </script>
 
-{#if $isMobile}
-  <Card class="mb-3">
-    <TrocSearch />
-    <TrocMap />
-  </Card>
-{/if}
+<div class="pa-4">
+  {#if $isMobile}
+    <Card class="mb-3">
+      <TrocSearch />
+      <TrocMap />
+    </Card>
+  {/if}
 
-<TrocResult />
+  <TrocResult />
+</div>

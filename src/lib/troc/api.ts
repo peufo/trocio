@@ -38,17 +38,6 @@ export function getsubscribes({ pageParam = 0, queryKey }) {
 }
 
 /** @deprecated */
-export function createSubscribe(
-  subscribeBase: SubscribeBase
-): Promise<SubscribeLookup> {
-  return api<SubscribeBase, SubscribeLookup>('/api/subscribes', {
-    method: 'post',
-    data: subscribeBase,
-    success: 'Nouvelle participation',
-  })
-}
-
-/** @deprecated */
 export function createTroc(trocBase: TrocBase) {
   return api<TrocBase, TrocLookup>('/api/trocs', {
     method: 'post',
