@@ -178,7 +178,7 @@
     </div>
   </CardText>
 
-  <CardActions style="gap: 1em;">
+  <CardActions class="flex-wrap" style="gap: 0.5em;">
     <Share {troc} />
 
     <div class="flex-grow-1" />

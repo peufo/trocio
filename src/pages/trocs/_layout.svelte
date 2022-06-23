@@ -35,7 +35,7 @@
     />
   {/if}
 
-  <div class="pb-16" style="width: 100%;">
+  <div class="pb-16" style="width: 100%; height: 100%;">
     <slot />
   </div>
 
