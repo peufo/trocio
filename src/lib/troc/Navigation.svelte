@@ -11,7 +11,7 @@
   import NavigationDrawer from '$lib/util/NavigationDrawer.svelte'
   import TrocMap from '$lib/troc/Map.svelte'
   import TrocSearch from '$lib/troc/Search.svelte'
-  import UserSubscribes from '$lib/troc/UserSubscribes.svelte'
+  import SubTrocsList from '$lib/sub/TrocsList.svelte'
 
   export let active = true
   export let width = '360px'
@@ -56,7 +56,7 @@
     <div class="pt-4 pb-3 d-flex justify-space-between">
       <h6>Mes trocs</h6>
       <a href="{!$user ? '/login?callback=' : ''}/trocs/create">
-        <Button>
+        <Button depressed class="primary-color">
           <IconLink icon={faPlus} class="mr-2" opacity />
           Organiser
         </Button>
@@ -70,7 +70,7 @@
         </div>
       </ListItem>
     {:else}
-      <UserSubscribes
+      <SubTrocsList
         offset={22}
         on:click={() => mobileMode && (active = false)}
       />

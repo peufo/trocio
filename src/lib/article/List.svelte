@@ -10,6 +10,7 @@
   export let trocId = ''
   export let currency = ''
   export let search = ''
+  export let placeholder = 'Chercher un article'
   let klass = ''
   export { klass as class }
 
@@ -21,7 +22,7 @@
 </script>
 
 <div class={klass}>
-  <SearchTextField bind:search placeholder="Chercher un article" solo flat />
+  <SearchTextField bind:search {placeholder} solo flat />
 
   {#if $queryArticles.isSuccess}
     {#if !articles.length}

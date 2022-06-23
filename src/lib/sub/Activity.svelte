@@ -25,6 +25,9 @@
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
   export let modeAdmin = false
 
+  let klass = ''
+  export { klass as class }
+
   let articleCreateDialogActive = false
   let tarifInfoDialogActive = false
   let providedOpen = false
@@ -103,27 +106,14 @@
     Oups, une erreur est survenu.
   </div>
 {:else if $queryResum.isSuccess && resum}
-  <div in:fade|local>
-    <br />
-    <div class="d-flex">
+  <div in:fade|local class="d-flex flex-column {klass}" style="gap: 1em;">
+    <div class="d-flex align-center">
       <a href={`/print-subscribe?subscribeId=${subscribeId}`} target="_blank">
-        <Button text size="small" style="opacity: 0.6;" class="mt-4">
+        <Button text size="small" style="opacity: 0.6;">
           <Icon path={mdiPrinter} size="1.1em" class="mr-2" />
           Version imprimable
         </Button>
       </a>
-      <!--
-        <Button
-        text
-        size="small"
-        style="opacity: 0.6;"
-        class="mt-4"
-        on:click={printResum}
-        >
-        <Icon path={mdiPrinter} size="1.1em" class="mr-2" />
-        Imprimer
-      </Button>
-    -->
 
       <div class="flex-grow-1" />
       <!-- Patch en attendant de gerer la monaie correctement dans la DB -->
@@ -146,7 +136,6 @@
       {/if}
     </div>
 
-    <br />
     <DetailCard
       title="Ventes"
       bind:open={providedOpen}
@@ -194,8 +183,6 @@
       <ArticleProvidedTable {modeAdmin} {subscribeId} on:openTarifDialog />
     </DetailCard>
 
-    <br />
-
     <DetailCard
       title="Achats"
       count={resum.purchasesCount || 0}
@@ -227,8 +214,6 @@
       {/if}
     </DetailCard>
 
-    <br />
-
     <DetailCard
       title="Paiements"
       count={resum.paymentsCount || 0}
@@ -257,8 +242,5 @@
         <div class="text-center pa-12 text--secondary">Aucun paiement</div>
       {/if}
     </DetailCard>
-
-    <br />
-    <br />
   </div>
 {/if}

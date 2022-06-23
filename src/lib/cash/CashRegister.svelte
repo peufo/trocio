@@ -2,24 +2,24 @@
   import { onMount } from 'svelte'
   import { fade } from 'svelte/transition'
   import { params, redirect } from '@roxi/routify'
+  import { Button, Tabs, Tab } from 'svelte-materialify'
+  import { useMutation } from '@sveltestack/svelte-query'
   import {
     faCashRegister,
     faUserAlt,
     faUserPlus,
   } from '@fortawesome/free-solid-svg-icons'
-  import MagicSelect from '$lib/util/MagicSelect.svelte'
+
+  import type { ISubscribe } from 'types'
   import { api } from '$lib/api'
-  import { Button, Tabs, Tab } from 'svelte-materialify'
-  import IconLink from '$lib/util/IconLink.svelte'
   import { troc } from '$lib/troc/store'
   import { layout } from '$lib/store/layout'
-
+  import MagicSelect from '$lib/util/MagicSelect.svelte'
+  import IconLink from '$lib/util/IconLink.svelte'
   import Provide from '$lib/cash/Provide.svelte'
   import Recover from '$lib/cash/Recover.svelte'
   import Buy from '$lib/cash/Buy.svelte'
-  import UserResum from '$lib/troc/UserResum.svelte'
-  import { useMutation } from '@sveltestack/svelte-query'
-  import type { ISubscribe } from 'types'
+  import SubActivity from '$lib/sub/Activity.svelte'
   import Loader from '$lib/util/Loader.svelte'
 
   let clientSelector: MagicSelect
@@ -31,7 +31,7 @@
     { ref: 'provide', label: 'Proposition', component: Provide },
     { ref: 'recover', label: 'Récupèration', component: Recover },
     { ref: 'buy', label: 'Achat', component: Buy },
-    { ref: 'resum', label: 'Compte', component: UserResum },
+    { ref: 'resum', label: 'Compte', component: SubActivity },
   ]
 
   onMount(() => {
@@ -174,7 +174,7 @@
 
         {#each TABS as { component }, index}
           {#if index == ($params[tabIndexKey] || 3)}
-            <div in:fade|locale class="pl-4 pr-4">
+            <div in:fade|locale class="pa-4">
               <svelte:component
                 this={component}
                 subscribeId={$params[clientKey]}

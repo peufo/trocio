@@ -1,11 +1,11 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
 
-  import ResumPrint from '$lib/sub/ResumPrint.svelte'
+  import SubPrint from '$lib/sub/Print.svelte'
   import { useApi } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
 
-  type ResumData = ConstructorParameters<typeof ResumPrint>[0]['props']
+  type ResumData = ConstructorParameters<typeof SubPrint>[0]['props']
 
   $: query = useApi<{ subscribeId: string }, ResumData>({
     queryKey: [
@@ -24,5 +24,5 @@
 {:else if $query.isLoading}
   <Loader />
 {:else if $query.data}
-  <ResumPrint {...$query.data} />
+  <SubPrint {...$query.data} />
 {/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import UserResum from '$lib/troc/UserResum.svelte'
+  import SubActivity from '$lib/sub/Activity.svelte'
   import { troc } from '$lib/troc/store'
 </script>
 
-<UserResum subscribeId={$troc.subscribe._id} />
+<SubActivity subscribeId={$troc.subscribe._id} />
