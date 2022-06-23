@@ -48,11 +48,13 @@
       </div>
     {/if}
   {:else if $queryArticles.isError}
-    <div in:fade|local class="mt-3">Oups, une erreur est survenue !</div>
+    <div in:fade|local class="centered" style="height: 100px;">
+      Oups, une erreur est survenue !
+    </div>
   {/if}
 
   {#if $queryArticles.isFetching}
-    <div in:fade|local={{ delay: 200 }} class="mt-3">
+    <div in:fade|local={{ delay: 200 }} class="centered" style="height: 100px;">
       <Loader />
     </div>
   {:else if $queryArticles.hasNextPage}

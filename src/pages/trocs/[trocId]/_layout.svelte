@@ -20,11 +20,16 @@
 </script>
 
 {#if $trocQuery.isLoading}
-  <Loader />
+  <div class="centered" style="height: 85vh;">
+    <Loader />
+  </div>
 {:else if $trocQuery.isError}
-  <span>Aucun troc ne correspond à l'ID "{$params.trocId}"</span>
-  <br />
-  <a href="/trocs">Retour</a>
+  <div class="centered" style="height: 85vh;">
+    <div>
+      <p>Aucun troc ne correspond à l'ID "{$params.trocId}"</p>
+      <a href="/trocs">Retour</a>
+    </div>
+  </div>
 {:else}
   <slot />
 {/if}
