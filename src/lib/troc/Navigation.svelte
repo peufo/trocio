@@ -47,7 +47,7 @@
             <span slot="prepend">
               <IconLink icon={faSearch} />
             </span>
-            Recherche
+            Chercher un troc
           </ListItem>
         </a>
       </div>
