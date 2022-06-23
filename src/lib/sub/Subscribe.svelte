@@ -38,7 +38,7 @@
   }
 </script>
 
-{#if troc.subscribe.validedByUser}
+{#if troc.subscribe?.validedByUser}
   <div in:fade|local>
     <SubActivity
       subscribeId={troc.subscribe._id}

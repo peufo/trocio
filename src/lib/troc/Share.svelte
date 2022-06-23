@@ -27,10 +27,16 @@
         notify.error(error)
       })
   }
+
+  function handleClick(event: Event) {
+    // event.stopPropagation()
+    event.preventDefault()
+    open = true
+  }
 </script>
 
 {#if !open}
-  <Button depressed on:click={() => (open = true)} class={klass}>
+  <Button depressed on:click={handleClick} class={klass}>
     {label}
     <IconLink
       icon={faBullhorn}

@@ -23,7 +23,6 @@
     CardActions,
     Button,
     Chip,
-    Divider,
   } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
@@ -39,6 +38,7 @@
   import { useApi } from '$lib/api'
 
   export let troc: TrocLookup
+  export let clickable = false
 
   const DESCRIPTION_SIZE = 250
   let sliceDescription = DESCRIPTION_SIZE
@@ -57,7 +57,7 @@
   >(['trocs/byId/counters', { trocId: troc._id }])
 </script>
 
-<Card class="">
+<Card hover={clickable}>
   <CardTitle>{troc.name}</CardTitle>
   <CardSubtitle>
     <Chip size="small" outlined class="text--secondary">
@@ -158,7 +158,9 @@
           <div class="d-flex align-start">
             <IconLink icon={faUserAlt} opacity />
             <div class="pl-4">
-              {#if troc.society}<b>{troc.society}</b>{/if}
+              {#if !!troc.society}
+                <b>{troc.society}</b>
+              {/if}
 
               {#if !!troc.societyweb}
                 <a

@@ -44,12 +44,13 @@
     {:else}
       <div in:fade class="list">
         {#each $trocs as troc (`nav-${troc._id}`)}
-          <div
+          <a
             bind:this={$trocsElement[troc._id]}
             on:click={() => clickTroc(troc)}
+            href="/trocs/{troc._id}"
           >
-            <TrocCard {troc} on:clickArticles />
-          </div>
+            <TrocCard {troc} on:clickArticles clickable />
+          </a>
         {/each}
       </div>
 
