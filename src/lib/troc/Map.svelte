@@ -101,10 +101,10 @@
     })
 
     function animate() {
-      trocElement.classList.add('animate__animated', 'animate__shakeX')
+      trocElement.classList.add('animate__animated', 'animate__headShake')
       setTimeout(() => {
-        trocElement.classList.remove('animate__animated', 'animate__shakeX')
-      }, 500)
+        trocElement.classList.remove('animate__animated', 'animate__headShake')
+      }, 1500)
     }
 
     /* Déclenche l'animation dés que le scroll est terminé */

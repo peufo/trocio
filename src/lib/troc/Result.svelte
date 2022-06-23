@@ -3,7 +3,7 @@
   import debounce from 'debounce'
 
   import { Card } from 'svelte-materialify'
-  import TrocInfo from '$lib/troc/Info.svelte'
+  import TrocCard from '$lib/troc/Card.svelte'
   import Loader from '$lib/util/Loader.svelte'
 
   import { queryTrocsParams, trocs, trocsElement, map } from '$lib/troc/store'
@@ -42,15 +42,13 @@
     {#if !$trocs.length}
       <div class="centered" in:fade style="height: 200px;">Pas de résultat</div>
     {:else}
-      <div in:fade>
+      <div in:fade class="list">
         {#each $trocs as troc (`nav-${troc._id}`)}
           <div
             bind:this={$trocsElement[troc._id]}
             on:click={() => clickTroc(troc)}
           >
-            <Card class="mb-6 pa-4">
-              <TrocInfo {troc} on:clickArticles />
-            </Card>
+            <TrocCard {troc} on:clickArticles />
           </div>
         {/each}
       </div>
@@ -80,6 +78,12 @@
     margin: auto;
     padding-left: 1em;
     padding-right: 1em;
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6em;
   }
 
   @media only screen and (max-width: 650px) {
