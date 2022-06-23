@@ -21,7 +21,7 @@
 </script>
 
 <div class={klass}>
-  <SearchTextField bind:search placeholder="Chercher un article" solo />
+  <SearchTextField bind:search placeholder="Chercher un article" solo flat />
 
   {#if $queryArticles.isSuccess}
     {#if !articles.length}
