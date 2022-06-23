@@ -34,13 +34,22 @@
 <style>
   .layout {
     padding: 1em;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: auto;
     gap: 1em;
     display: grid;
-    grid-template-columns: 340px 1fr;
+    grid-template-columns: minmax(340px, auto) minmax(600px, auto);
   }
   .troc-card {
     grid-row: 1 / 3;
+  }
+
+  @media only screen and (max-width: 1350px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+    .troc-card {
+      grid-row: 1;
+    }
   }
 </style>
