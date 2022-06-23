@@ -8,7 +8,7 @@
   type TNotify = 'info' | 'success' | 'warning' | 'error'
 
   export let type: TNotify = 'info'
-  export let message = 'Hey ✌️'
+  export let text = 'Hey ✌️'
   export let title = ''
   export let duration = 3000
   export let transitionParams: ScaleParams = { duration: 300 }
@@ -40,7 +40,7 @@
         {#if title}
           <b>{title} - </b>
         {/if}
-        <span>{message}</span>
+        <span>{text}</span>
       </div>
       {#if persistent}
         <div class="pr-1">
