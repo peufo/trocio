@@ -8,7 +8,7 @@
 
   import { queryTrocsParams, trocs, trocsElement, map } from '$lib/troc/store'
   import { useInfinitApi } from '$lib/api'
-  import type { SearchTrocsQuery, Troc, TrocLookup } from 'types'
+  import type { SearchTrocsQuery, TrocLookup } from 'types'
 
   $: queryTrocs = useInfinitApi<SearchTrocsQuery, TrocLookup[]>({
     queryKey: ['trocs', $queryTrocsParams],
@@ -29,7 +29,8 @@
   }, 50)
 
   /** Zoom sur le bon marker de la map quand on click sur un troc. */
-  function clickTroc(troc) {
+  function clickTroc(troc: TrocLookup) {
+    if (!troc.location) return
     $map?.setView(troc.location, 8)
   }
 </script>

@@ -9,7 +9,7 @@
   import markerIcon2X from '$assets/images/marker-icon-2x.png'
   import { trocs, trocsElement, map } from '$lib/troc/store'
 
-  $: $trocs && updateMarkers()
+  trocs.subscribe(updateMarkers)
 
   const dispatch = createEventDispatcher()
 
@@ -71,7 +71,7 @@
       markers[i]
         .setLatLng(troc.location)
         .bindTooltip(troc.name)
-        .on('click', () => clickMarker(troc._id))
+        .on('click', () => handleClickMarker(troc._id))
     })
     if ($trocs.length > markers.length) {
       $trocs.slice(markers.length).forEach((troc) => {
@@ -80,7 +80,7 @@
           L.marker(troc.location, { icon })
             .addTo($map)
             .bindTooltip(troc.name)
-            .on('click', () => clickMarker(troc._id))
+            .on('click', () => handleClickMarker(troc._id))
         )
       })
     } else {
@@ -90,11 +90,11 @@
   }
 
   /** Scroll et attire l'attention sur le bon troc quand on click sur un marker. */
-  function clickMarker(trocId: string) {
+  function handleClickMarker(trocId: string) {
     dispatch('clickMarker')
     const trocElement = $trocsElement[trocId]
     if (!trocElement) return
-    const positionTarget = trocElement.offsetTop - 10
+    const positionTarget = trocElement.offsetTop - 100
     window.scrollTo({
       top: positionTarget || 0,
       behavior: 'smooth',
@@ -107,7 +107,7 @@
       }, 500)
     }
 
-    /* Déclenche l'animation dés que le scroll est static */
+    /* Déclenche l'animation dés que le scroll est terminé */
     let position: number | null = null
     const checkIfScrollIsStatic = setInterval(() => {
       if (position === window.scrollY) {
