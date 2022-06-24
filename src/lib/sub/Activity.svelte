@@ -61,20 +61,6 @@
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
-  /** @deprecated use a simple link instead */
-  async function printResum() {
-    const winPrint = window.open(
-      `/print-subscribe?subscribeId=${subscribeId}`,
-      '',
-      'width=1000,height=800,location=no'
-    )
-    if (winPrint) {
-      winPrint.onload = () => {
-        setTimeout(() => winPrint.close(), 3000)
-      }
-    }
-  }
-
   function clickDownladCSV() {
     notify.info('Fonctionnalité à venir')
   }
@@ -116,7 +102,8 @@
       </a>
 
       <div class="flex-grow-1" />
-      <!-- Patch en attendant de gerer la monaie correctement dans la DB -->
+
+      <!-- TODO: Patch en attendant de gerer la monaie correctement dans la DB -->
       {#if modeAdmin && Math.abs(resum.balance) > 0.001}
         <Button
           class="primary-color mt-2 mr-4"

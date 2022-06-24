@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { params } from '@roxi/routify'
-
   import MagicTable from '$lib/util/MagicTable.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'

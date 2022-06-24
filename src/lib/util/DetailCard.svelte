@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   /**
    * Carte avec entête syntétique
    * Peux se déployer pour révéler des détails
@@ -13,6 +13,7 @@
   export let count = 0
   export let title = ''
   export let sum = 0
+  export let currency: string | undefined = undefined
 
   export let open = false
 
@@ -48,7 +49,7 @@
       <slot name="head" />
     </div>
     <div>
-      {renderAmount(sum)}
+      {renderAmount(sum, currency)}
     </div>
   </div>
 

@@ -2,7 +2,8 @@
   import { redirect } from '@roxi/routify'
 
   import { isMobile } from '$lib/store/layout'
-  import SubActivity from '$lib/sub/Activity.svelte'
+  import SubActivityLean from '$lib/sub/ActivityLean.svelte'
+
   import { troc } from '$lib/troc/store'
 
   isMobile.subscribe((mobile) => {
@@ -10,4 +11,4 @@
   })
 </script>
 
-<SubActivity subscribeId={$troc.subscribe._id} />
+<SubActivityLean subscribeId={$troc.subscribe._id} currency={$troc.currency} />
