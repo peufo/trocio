@@ -21,6 +21,7 @@
     La création d'un troc est une fonctionnalité réservée aux testeurs. Contactez-nous
     si vous souhaitez participer à la beta.
   </Alert>
-
-  <TrocEdit createMode />
+  <div class="pa-2">
+    <TrocEdit createMode />
+  </div>
 {/if}

@@ -1,37 +1,32 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
   import { Button, Card, Icon, Table } from 'svelte-materialify'
+  import { mdiPrinter } from '@mdi/js'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
-  import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
-  import { faPlus } from '@fortawesome/free-solid-svg-icons'
-  import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
   import 'dayjs/locale/fr'
 
   import type { SubscribeResum } from 'types'
   import { renderAmount } from '$lib/utils'
-  import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
+  import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
-  import DetailCard from '$lib/util/DetailCard.svelte'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import { api, useApi } from '$lib/api'
-  import notify from '$lib/notify'
+  import { useApi } from '$lib/api'
 
   export let subscribeId: string
-  export let isClosed = false
   export let currency: string | undefined = undefined
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
   export let modeAdmin = false
+
+  type TOpen = 'sales' | 'buys' | 'paiements'
+  export let open: null | TOpen = null
 
   let klass = ''
   export { klass as class }
 
   let articleCreateDialogActive = false
   let tarifInfoDialogActive = false
-  let providedOpen = false
-  let paymentOpen = false
 
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
     'subscribes/resum',
@@ -41,19 +36,6 @@
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
-
-  function clickDownladCSV() {
-    notify.info('Fonctionnalité à venir')
-  }
-
-  function clickOpenCreateArticle() {
-    providedOpen = true
-    articleCreateDialogActive = true
-  }
-
-  function clickOpenTarifInfo() {
-    tarifInfoDialogActive = true
-  }
 </script>
 
 <ArticleCreateDialog {subscribeId} bind:active={articleCreateDialogActive} />
@@ -83,8 +65,8 @@
     </div>
 
     <!-- Ventes -->
-    <Card outlined class="pa-4">
-      <div class="card-content d-flex">
+    <Card outlined>
+      <div on:click={() => (open = 'sales')} class="card-header d-flex">
         <div>
           {resum.providedCount || 0}
           Vente{(resum.providedCount || 0) > 1 ? 's' : ''}
@@ -97,11 +79,17 @@
           )}
         </div>
       </div>
+
+      {#if open === 'sales'}
+        <div class="card-content">
+          <ArticleProvidedTable {modeAdmin} {subscribeId} on:openTarifDialog />
+        </div>
+      {/if}
     </Card>
 
     <!-- Achats -->
-    <Card outlined class="pa-4">
-      <div class="card-content d-flex">
+    <Card outlined>
+      <div class="card-header d-flex">
         <div>
           {resum.purchasesCount || 0}
           Achat{(resum.purchasesCount || 0) > 1 ? 's' : ''}
@@ -114,8 +102,8 @@
     </Card>
 
     <!-- Paiements -->
-    <Card outlined class="pa-4">
-      <div class="card-content d-flex">
+    <Card outlined>
+      <div class="card-header d-flex">
         <div>
           {resum.paymentsCount || 0}
           Paiement{(resum.paymentsCount || 0) > 1 ? 's' : ''}
@@ -140,7 +128,8 @@
 {/if}
 
 <style>
-  .card-content {
+  .card-header {
     font-size: large;
+    padding: 12px;
   }
 </style>
