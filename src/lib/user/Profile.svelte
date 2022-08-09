@@ -46,8 +46,8 @@
 </script>
 
 {#if $user}
-  <div style="max-width: 850px; margin: auto;">
-    <Card class="pa-8 ma-2">
+  <div class="container pa-2">
+    <Card class="pa-8 pt-16">
       <div style="max-width: 500px; margin: auto;">
         <TextField
           bind:value={userName}
@@ -216,10 +216,10 @@
   </div>
 {/if}
 
-<svelte:head>
-  <style>
-    #waitLoaded {
-      display: none;
-    }
-  </style>
-</svelte:head>
+<style>
+  .container {
+    margin: auto;
+    max-width: 850px;
+    height: 100%;
+  }
+</style>
