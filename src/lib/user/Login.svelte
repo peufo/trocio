@@ -39,6 +39,7 @@
   function checkRules(rules: ((v: string) => any)[], value = '') {
     return rules.map((r) => r(value)).filter((r) => typeof r === 'string')[0]
   }
+
   $: state && checkForm()
 
   const GOOGLE_AUTH_API_PARAMS = new URLSearchParams({
@@ -188,7 +189,7 @@
   <br />
   <Divider />
   <div class="text-center">
-    <div class="or {$isDarkTheme ? 'grey darken-4' : ''}">
+    <div class="or">
       <span>ou</span>
     </div>
     <a href={googleAuthApi}>
@@ -206,7 +207,7 @@
 
   .or {
     transform: translateY(-50%);
-    background: #fff;
+    background: var(--theme-cards);
     width: 35px;
     margin: auto;
     padding: 5px;
