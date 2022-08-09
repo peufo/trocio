@@ -132,7 +132,7 @@
       <span slot="head">
         <!-- Provide button -->
         <span style="margin-left: 30px;">
-          <!-- Bouton pour proposer un articles -->
+          <!-- Bouton pour afficher le dialogue pour ajouter des articles -->
           {#if !modeAdmin}
             <Button
               dense
@@ -145,7 +145,7 @@
             </Button>
           {/if}
 
-          <!-- Bouton pour proposer un articles -->
+          <!-- Bouton pour afficher le tarif -->
           <Button text dense on:click={clickOpenTarifInfo}>
             <IconLink icon={faQuestionCircle} size="1.1em" class="mr-2" />
             Tarif

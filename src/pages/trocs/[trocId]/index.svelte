@@ -10,8 +10,9 @@
 </script>
 
 {#if $isMobile}
-  <!--<div class="centered pa-1" style="height: 85vh;">-->
-  <TrocCard troc={$troc} />
+  <div class="pa-2">
+    <TrocCard troc={$troc} />
+  </div>
 {:else}
   <div class="layout">
     <div class="troc-card">

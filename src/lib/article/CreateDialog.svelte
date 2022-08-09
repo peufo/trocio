@@ -32,7 +32,10 @@
 
   let textarea: HTMLTextAreaElement | undefined
 
-  $: querySubscribe = useApi<{subscribeId: string}, ISubscribe>(['subscribes/byId', {subscribeId}])
+  $: querySubscribe = useApi<{ subscribeId: string }, ISubscribe>([
+    'subscribes/byId',
+    { subscribeId },
+  ])
   $: prefix = $querySubscribe.data?.prefix || ''
 
   $: listPlaceHolder = `\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${
@@ -189,7 +192,10 @@
   </div>
 
   {#if listMode}
-    <div in:fade|local>
+    <form
+      in:fade|local
+      on:submit|preventDefault={() => $createArticles.mutate(listArticles)}
+    >
       <Textarea
         on:input={handleInputList}
         bind:value={newArticles}
@@ -218,10 +224,7 @@
           {:else if $createArticles.isError}
             <div>Oups, une erreur c'est produite</div>
           {:else}
-            <Button
-              class="primary-color"
-              on:click={() => $createArticles.mutate(listArticles)}
-            >
+            <Button class="primary-color" type="submit">
               Valider {listArticles.length > 1
                 ? `les ${listArticles.length} articles`
                 : `l'article`}
@@ -229,9 +232,17 @@
           {/if}
         </div>
       {/if}
-    </div>
+    </form>
   {:else}
-    <div in:fade|local>
+    <form
+      in:fade|local
+      on:submit|preventDefault={() =>
+        $createArticle.mutate({
+          name: newName,
+          price: +newPrice,
+          providerSubId: subscribeId,
+        })}
+    >
       <Textarea bind:value={newName} rows={2} autogrow bind:textarea>
         Désignation
       </Textarea>
@@ -260,19 +271,9 @@
             Chargement
           </Button>
         {:else}
-          <Button
-            class="primary-color"
-            on:click={() =>
-              $createArticle.mutate({
-                name: newName,
-                price: Number(newPrice),
-                providerSubId: subscribeId,
-              })}
-          >
-            Valider
-          </Button>
+          <Button class="primary-color" type="submit">Valider</Button>
         {/if}
       </div>
-    </div>
+    </form>
   {/if}
 </Dialog>
