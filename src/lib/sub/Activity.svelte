@@ -9,7 +9,7 @@
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
   import 'dayjs/locale/fr'
 
-  import type { PaymentCreate, SubscribeResum } from 'types'
+  import type { IPaymentCreate, SubscribeResum } from 'types'
   import { renderAmount } from '$lib/utils'
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
@@ -42,7 +42,7 @@
 
   const queryPayment = useMutation(
     () =>
-      api<PaymentCreate>('/api/payments', {
+      api<IPaymentCreate>('/api/payments', {
         method: 'post',
         data: {
           userSubId: subscribeId,

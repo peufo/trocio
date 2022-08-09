@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express'
 
+import { IPaymentCreate } from '../../types'
 import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
-import type { PaymentCreate } from '../../types'
 
 export const getPaymentByUser: RequestHandler = async (req, res, next) => {
   try {
@@ -36,7 +36,7 @@ export const getPaymentByUser: RequestHandler = async (req, res, next) => {
   }
 }
 
-export const createPayment: RequestHandler<any, any, PaymentCreate> = async (
+export const createPayment: RequestHandler<any, any, IPaymentCreate> = async (
   req,
   res,
   next

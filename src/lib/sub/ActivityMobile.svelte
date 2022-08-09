@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition'
+  import { fade, slide } from 'svelte/transition'
   import { Button, Card, Icon } from 'svelte-materialify'
   import { mdiPrinter } from '@mdi/js'
   import dayjs from 'dayjs'
@@ -59,7 +59,7 @@
     <!-- En-tête -->
     <div class="centered pa-4">
       <div class="text-center">
-        <span style="display: block; transform: translateY(5px);"> Solde </span>
+        <span style="display: block; transform: translateY(5px);">Solde</span>
         <h4>{renderAmount(resum.balance, currency)}</h4>
       </div>
     </div>
@@ -81,7 +81,7 @@
       </div>
 
       {#if open === 'sales'}
-        <div class="card-content">
+        <div class="card-content" transition:slide|local>
           <ArticleProvidedTable {modeAdmin} {subscribeId} on:openTarifDialog />
         </div>
       {/if}
