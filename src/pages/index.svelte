@@ -87,8 +87,6 @@
     </div>
   </section>
 
-  <br /><br /><br /><br />
-
   <section id="propose">
     <div class="d-flex wrap-1000" style="gap: 36px;">
       <div class="mb-8">
@@ -112,14 +110,10 @@
     </div>
   </section>
 
-  <br /><br /><br /><br />
-
   <section id="organize">
     <h3>Organiser</h3>
 
-    <br /><br /><br />
-
-    <div class="d-flex flex-wrap justify-space-around">
+    <div class="mt-8 d-flex flex-wrap justify-space-around">
       <div class="feature">
         <div class="feature-title">
           <i class="far fa-calendar-alt" />
@@ -152,9 +146,6 @@
           <p>
             Identifiez et gerer facilement de nombreux cas comme les changements
             de prix, les erreurs d'étiquetages et les soldes impayés.
-            <span class="warning">
-              <i class="fas fa-exclamation-triangle" />&nbsp; En développement
-            </span>
           </p>
         </div>
       </div>
@@ -234,15 +225,7 @@
 
     <div class="text-center mt-16">
       <Card class="pa-4" style="max-width: 500px; margin: auto;">
-        <p>
-          L'organisation d'un troc est <b class="green-text">gratuite</b>.
-        </p>
-        <p>
-          Seul les bénéfices réalisés sont prélevés à hauteur de <b
-            class="orange-text">2%</b
-          >.
-        </p>
-        <p>Nous souhaitons ainsi soutenir les trocs à but non lucratif.</p>
+        L'organisation d'un troc est <b class="green-text">gratuit</b>
       </Card>
 
       <br /><br />
@@ -293,6 +276,9 @@
   @media only screen and (max-width: 660px) {
     .wrap-660 {
       flex-wrap: wrap;
+    }
+    section {
+      margin-top: 0;
     }
   }
   @media only screen and (max-width: 1000px) {
