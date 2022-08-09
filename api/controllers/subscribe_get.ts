@@ -2,6 +2,7 @@ import type { RequestHandler } from 'express'
 import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Types
 
+import { lookupUser, populateUser } from './lookup'
 import Subscribe from '../models/subscribe'
 import User from '../models/user'
 import Article from '../models/article'
@@ -62,12 +63,13 @@ export const getResum: RequestHandler = async (req, res, next) => {
     lookupResum(aggregate)
     lookupTarif(aggregate)
 
-    const subscribes = await aggregate.exec()
-    res.json(subscribes[0])
+    const [subscribe] = await aggregate.exec()
+    res.json(subscribe)
   } catch (error) {
     next(error)
   }
 }
+
 export const getResumePrintData: RequestHandler = async (req, res, next) => {
   try {
     const { subscribeId } = req.query
@@ -226,6 +228,7 @@ export const getSubscribersCount: RequestHandler = async (req, res, next) => {
 /**
  * Update aggregate for lookup user from userId
  */
+/*
 export function lookupUser(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
   userId = '$userId'
@@ -255,6 +258,7 @@ export function lookupUser(
       user: { $arrayElemAt: ['$user', 0] },
     })
 }
+*/
 
 /**
  * Update aggregate for lookup troc from trocId
@@ -425,6 +429,8 @@ export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
             },
           },
         },
+        { $lookup: populateUser('acceptor') },
+        { $addFields: { acceptor: { $arrayElemAt: ['$acceptor', 0] } } },
         {
           $group: {
             _id: null,

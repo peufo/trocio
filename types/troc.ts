@@ -1,6 +1,6 @@
-import { Article } from 'types'
-import { User } from 'types'
-import type { PaymentInterface } from './payment'
+import type { Article } from 'types'
+import type { User } from 'types'
+import type { IPayment } from './payment'
 import type { ISubscribe } from './subscribe'
 
 /** Période dont est composé l'horaire */
@@ -52,7 +52,7 @@ export declare interface TrocBase {
 }
 
 /** Information complette d'un troc */
-export declare interface Troc extends TrocBase {
+export interface Troc extends TrocBase {
   _id: string
   tag: TagInterface
   articlelastref: number
@@ -71,7 +71,7 @@ export declare interface Troc extends TrocBase {
 }
 
 /** Information complette avec les informations collaborateurs */
-export declare interface TrocLookup extends Troc {
+export interface TrocLookup extends Troc {
   creator: User
   subscribe: ISubscribe
 }
@@ -99,7 +99,7 @@ export declare interface TrocUserResum {
 export declare interface TrocStats {
   articlesProposed: Article[]
   articlesBuyed: Article[]
-  payments: PaymentInterface[]
+  payments: IPayment[]
 }
 
 interface ITrocsMapQuery {

@@ -1,5 +1,4 @@
-import type { User, Troc, Tarif, PaymentInterface, Article } from 'types'
-import type Tarif__SvelteComponent_ from '$lib/troc/Tarif.svelte'
+import type { User, Troc, Tarif, Article, IPaymentLookup } from 'types'
 
 export type RoleEnum = 'basic' | 'trader' | 'cashier' | 'admin'
 
@@ -16,8 +15,8 @@ export interface SubscribeBaseWithUser extends SubscribeBase {
 
 export interface ISubscribe extends SubscribeBase {
   _id: string
-  createdAt: date
-  updatedAt: date
+  createdAt: Date
+  updatedAt: Date
 
   /** Util pour les subscribes anonyme*/
   name: string
@@ -58,7 +57,7 @@ export interface SubscribeResum extends ISubscribe {
     purchases?: Article[]
     paymentsCount?: number
     paymentsSum?: number
-    payments?: PaymentInterface[]
+    payments?: IPaymentLookup[]
   }
   tarif: Tarif
 }

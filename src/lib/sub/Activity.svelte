@@ -178,18 +178,18 @@
       <Table class="pb-2">
         <thead>
           <tr>
+            <th>Date de l'achat</th>
             <th>Référence</th>
             <th>Nom</th>
-            <th>Date de l'achat</th>
             <th>Prix</th>
           </tr>
         </thead>
         <tbody>
           {#each resum.purchases || [] as article}
             <tr>
+              <td>{new Date(article.sold || '').toLocaleString()}</td>
               <td>{article.ref}</td>
               <td>{article.name}</td>
-              <td>{new Date(article.sold || '').toLocaleString()}</td>
               <td align="right">{renderAmount(article.price)}</td>
             </tr>
           {/each}
@@ -211,6 +211,7 @@
         <thead>
           <tr>
             <th>Date du paiement</th>
+            <th>Caissier</th>
             <th>Commentaire</th>
             <th>Montant</th>
           </tr>
@@ -219,6 +220,7 @@
           {#each resum.payments || [] as payment}
             <tr>
               <td>{new Date(payment.createdAt).toLocaleString()}</td>
+              <td>{payment.acceptor.name}</td>
               <td>{payment.message || '-'}</td>
               <td align="right">{renderAmount(payment.amount)}</td>
             </tr>

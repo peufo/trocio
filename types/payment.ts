@@ -1,10 +1,10 @@
-export declare interface PaymentCreate {
+export interface IPaymentCreate {
   userSubId: string
   amount: number
   message?: string
 }
 
-export declare interface PaymentInterface extends PaymentCreate {
+export interface IPayment extends IPaymentCreate {
   _id: string
   trocId: string
   userId: string
@@ -12,4 +12,11 @@ export declare interface PaymentInterface extends PaymentCreate {
   acceptorId: string
   createdAt: Date
   updatedAt: Date
+}
+
+export interface IPaymentLookup extends IPayment {
+  acceptor: {
+    _id: string
+    name: string
+  }
 }

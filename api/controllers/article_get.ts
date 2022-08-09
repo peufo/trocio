@@ -1,6 +1,7 @@
 import Article from '../models/article'
 import mongoose from 'mongoose'
 
+import { populateUser } from './lookup'
 import { dynamicQuery } from './utils'
 import { RequestHandler } from 'express'
 import type { Article as IArticle } from '../../types'
@@ -8,9 +9,16 @@ import type { Article as IArticle } from '../../types'
 const { ObjectId } = mongoose.Types
 
 export const getArticles: RequestHandler = async (req, res, next) => {
-  let { q, exact_statut, include_without_name, limit, skip } = req.query
+  let {
+    q,
+    exact_statut,
+    include_without_name,
+    limit = 20,
+    skip = 0,
+  } = req.query
 
   let { match, sort } = dynamicQuery(req.query, ['exact_statut'])
+  if (!match.$and || !match.$or) throw Error('never')
 
   // add specific match
   if (!include_without_name) match.$and.push({ name: { $ne: '' } })
@@ -81,27 +89,6 @@ export const getArticleCorrection: RequestHandler = async (req, res, next) => {
     next(error)
   }
 }
-
-/**
- * Generic fun for lookup an user field
- */
-const populateUser = (key: string) => ({
-  from: 'users',
-  let: { userId: `$${key}Id` },
-  pipeline: [
-    {
-      $match: {
-        $expr: {
-          $eq: ['$$userId', '$_id'],
-        },
-      },
-    },
-    {
-      $project: { name: 1 },
-    },
-  ],
-  as: `${key}`,
-})
 
 /**
  * Update aggregate for lookup troc from trocId

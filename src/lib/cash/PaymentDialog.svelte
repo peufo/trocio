@@ -4,7 +4,7 @@
 
   import { api } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
-  import type { PaymentCreate, SubscribeLookup } from 'types'
+  import type { IPaymentCreate, SubscribeLookup } from 'types'
 
   export let active = false
 
@@ -28,7 +28,7 @@
 
   const queryPayment = useMutation(
     () =>
-      api<PaymentCreate>('/api/payments', {
+      api<IPaymentCreate>('/api/payments', {
         method: 'post',
         data: {
           userSubId: subscribe?._id,

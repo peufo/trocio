@@ -1,9 +1,9 @@
-import type { Article, PaymentInterface, TrocStats } from 'types'
+import type { Article, IPayment, TrocStats } from 'types'
 
 export type ArticleState = 'createdAt' | 'valided' | 'sold' | 'recover'
 
 export interface TrocEvent {
-  pay?: PaymentInterface
+  pay?: IPayment
   art?: Article
   event: 'payment' | 'buyed' | ArticleState
   date: Date
@@ -27,7 +27,7 @@ export interface StatsPropertiesSum extends StatsPropertiesNumber {
 }
 
 export interface TrocStatsFormatted {
-  payments: PaymentInterface[]
+  payments: IPayment[]
   articlesProposed: Article[]
   articlesProvided: Article[]
   articlesSolded: Article[]
@@ -112,7 +112,7 @@ function getEvents({
   articlesProposed,
   articlesBuyed,
 }: {
-  payments: PaymentInterface[]
+  payments: IPayment[]
   articlesProposed: Article[]
   articlesBuyed: Article[]
 }): TrocEvent[] {

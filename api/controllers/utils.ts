@@ -3,14 +3,16 @@ const { ObjectId } = mongoose.Types
 
 /**
  * Traite les paramètre dynamiquement suivant des règles prédéfini
- * @returns match
  */
 export function dynamicQuery(
   requestQuery: object,
   ignore?: string | string[]
 ): { match: FilterQuery<any>; sort: object } {
-  let match = { $or: [], $and: [] }
-  let sort = {}
+  const match: { $or: FilterQuery<any>[]; $and: FilterQuery<any>[] } = {
+    $or: [],
+    $and: [],
+  }
+  let sort: object = {}
   const QUERY_SEARCH = 'search_'
   const QUERY_OR_SEARCH = 'or_search_'
   const QUERY_SORT = 'sort_'

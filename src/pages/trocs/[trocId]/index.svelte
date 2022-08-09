@@ -4,7 +4,6 @@
   import { isMobile } from '$lib/store/layout'
   import { troc } from '$lib/troc/store'
   import TrocCard from '$lib/troc/Card.svelte'
-  import SubActivity from '$lib/sub/Activity.svelte'
   import Subscribe from '$lib/sub/Subscribe.svelte'
   import ArticlesList from '$lib/article/List.svelte'
 </script>
