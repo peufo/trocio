@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { Button, Icon, Table } from 'svelte-materialify'
+  import { Button, Icon } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
@@ -12,6 +12,8 @@
   import type { IPaymentCreate, SubscribeResum } from 'types'
   import { renderAmount } from '$lib/utils'
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
+  import TablePurchases from './TablePurchases.svelte'
+  import TablePayments from './TablePayments.svelte'
   import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
@@ -103,7 +105,7 @@
 
       <div class="flex-grow-1" />
 
-      <!-- TODO: Patch en attendant de gerer la monaie correctement dans la DB -->
+      <!-- TODO: Arondi en attendant de gerer la monaie correctement dans la DB -->
       {#if modeAdmin && Math.abs(resum.balance) > 0.001}
         <Button
           class="primary-color mt-2 mr-4"
@@ -175,30 +177,7 @@
       count={resum.purchasesCount || 0}
       sum={-(resum.purchasesSum || 0)}
     >
-      <Table class="pb-2">
-        <thead>
-          <tr>
-            <th>Date de l'achat</th>
-            <th>Référence</th>
-            <th>Nom</th>
-            <th>Prix</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each resum.purchases || [] as article}
-            <tr>
-              <td>{new Date(article.sold || '').toLocaleString()}</td>
-              <td>{article.ref}</td>
-              <td>{article.name}</td>
-              <td align="right">{renderAmount(article.price)}</td>
-            </tr>
-          {/each}
-        </tbody>
-      </Table>
-
-      {#if !resum.purchases?.length}
-        <div class="text-center pa-12 text--secondary">Aucun achat</div>
-      {/if}
+      <TablePurchases purchases={resum.purchases || []} />
     </DetailCard>
 
     <DetailCard
@@ -207,29 +186,7 @@
       sum={resum.paymentsSum || 0}
       open={paymentOpen}
     >
-      <Table>
-        <thead>
-          <tr>
-            <th>Date du paiement</th>
-            <th>Caissier</th>
-            <th>Commentaire</th>
-            <th>Montant</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each resum.payments || [] as payment}
-            <tr>
-              <td>{new Date(payment.createdAt).toLocaleString()}</td>
-              <td>{payment.acceptor.name}</td>
-              <td>{payment.message || '-'}</td>
-              <td align="right">{renderAmount(payment.amount)}</td>
-            </tr>
-          {/each}
-        </tbody>
-      </Table>
-      {#if !resum?.payments?.length}
-        <div class="text-center pa-12 text--secondary">Aucun paiement</div>
-      {/if}
+      <TablePayments payments={resum.payments || []} />
     </DetailCard>
   </div>
 {/if}
