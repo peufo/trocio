@@ -1,8 +1,7 @@
-import type { RoleEnum } from 'types'
 import type { Article } from './article'
 import type { ISubscribe } from './subscribe'
 
-export declare type DynamicQuery =
+export type DynamicQuery =
   | 'exact'
   | 'search'
   | 'or_search'
@@ -44,7 +43,7 @@ export interface ParamsArticleAPI extends DynamicQueryArticle, ParamsAPI {
   include_without_name?: boolean
 }
 
-export declare interface ParamsClient extends ParamsAPI {
+export interface ParamsClient extends ParamsAPI {
   tab_admin?: string
   tarif_selected?: string
 }

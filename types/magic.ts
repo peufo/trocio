@@ -1,6 +1,6 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 
-import { DynamicQuery } from 'params'
+// import type { DynamicQuery } from 'params'
 
 /** Option of menu */
 export interface EnumOption<TValue = string | number> {

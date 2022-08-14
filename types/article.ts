@@ -1,7 +1,7 @@
 import type { ISubscribe } from './subscribe'
-import { User } from './user'
+import type { User } from './user'
 
-export declare interface ArticleCreate {
+export interface ArticleCreate {
   /** ID du subscribe de l'utilisateur qui propose l'article */
   providerSubId: string
   /** Shortcuts */
@@ -15,7 +15,7 @@ export declare interface ArticleCreate {
   price: number
 }
 
-export declare interface Article extends ArticleCreate {
+export interface Article extends ArticleCreate {
   /** ID de l'article */
   _id: string
   createdAt: Date
@@ -56,7 +56,7 @@ export declare interface Article extends ArticleCreate {
   sellerId: string
 }
 
-export declare interface ArticleLookup extends Article {
+export interface ArticleLookup extends Article {
   provider?: User
   providerSub?: ISubscribe
   buyer?: User

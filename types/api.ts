@@ -1,10 +1,10 @@
-export declare interface BaseResponse {
+export interface BaseResponse {
   error?: boolean
   success?: boolean
   message?: string
 }
 
-export declare interface ResponseNotifyOptions<Type> {
+export interface ResponseNotifyOptions<Type> {
   /** Notify success message on success (from serveur if true) */
   success?: string | boolean | ((data: Type) => string)
   /** Notify info message on success (from serveur if true) */
