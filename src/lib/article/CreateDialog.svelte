@@ -17,6 +17,7 @@
   export let subscribeId: string
   export let active = false
   export let listMode = false
+  export let disabled = false
 
   let newName = ''
   let newPrice = ''
@@ -26,6 +27,7 @@
   let listArticlesError = ''
 
   const dispatch = createEventDispatcher<{
+    open: null
     createArticle: Article
     createArticles: Article[]
   }>()
@@ -47,6 +49,11 @@
   } Mon deuxième article : 15.35\n${
     prefix ? `${prefix}3 ; ` : ''
   } Mon troisième article ; 5,40\n ...`
+
+  function handleClicOpen() {
+    dispatch('open')
+    active = true
+  }
 
   const createArticle = useMutation(
     (article: ArticleCreate) =>
@@ -173,6 +180,11 @@
     })
   }
 </script>
+
+<Button dense depressed on:click={handleClicOpen} {disabled}>
+  <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
+  article
+</Button>
 
 <Dialog bind:active class="pa-4" on:introend={() => textarea?.focus()}>
   <div class="d-flex justify-space-between mb-3">

@@ -5,7 +5,6 @@
   import relativeTime from 'dayjs/plugin/relativeTime'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
-  import { faPlus } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
   import 'dayjs/locale/fr'
 
@@ -23,14 +22,12 @@
   import notify from '$lib/notify'
 
   export let subscribeId: string
-  export let isClosed = false
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
   export let modeAdmin = false
 
   let klass = ''
   export { klass as class }
 
-  let articleCreateDialogActive = false
   let tarifInfoDialogActive = false
   let providedOpen = false
   let paymentOpen = false
@@ -67,17 +64,10 @@
     notify.info('Fonctionnalité à venir')
   }
 
-  function clickOpenCreateArticle() {
-    providedOpen = true
-    articleCreateDialogActive = true
-  }
-
   function clickOpenTarifInfo() {
     tarifInfoDialogActive = true
   }
 </script>
-
-<ArticleCreateDialog {subscribeId} bind:active={articleCreateDialogActive} />
 
 <TarifInfoDialog
   tarif={$queryResum.data?.tarif}
@@ -136,15 +126,7 @@
         <span style="margin-left: 30px;">
           <!-- Bouton pour afficher le dialogue pour ajouter des articles -->
           {#if !modeAdmin}
-            <Button
-              dense
-              depressed
-              on:click={clickOpenCreateArticle}
-              disabled={isClosed}
-            >
-              <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
-              article
-            </Button>
+            <ArticleCreateDialog {subscribeId} />
           {/if}
 
           <!-- Bouton pour afficher le tarif -->
