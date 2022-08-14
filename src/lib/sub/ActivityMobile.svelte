@@ -13,14 +13,16 @@
   import Loader from '$lib/util/Loader.svelte'
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
   import { useApi } from '$lib/api'
+  import TablePurchases from './TablePurchases.svelte'
+  import TablePayments from './TablePayments.svelte'
 
   export let subscribeId: string
   export let currency: string | undefined = undefined
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
   export let modeAdmin = false
 
-  type TOpen = 'sales' | 'buys' | 'paiements'
-  export let open: null | TOpen = null
+  type OpenType = 'sales' | 'buys' | 'payments'
+  export let open: null | OpenType = null
 
   let klass = ''
   export { klass as class }
@@ -36,6 +38,11 @@
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
+
+  function handleClick(key: OpenType) {
+    if (open === key) open = null
+    else open = key
+  }
 </script>
 
 <ArticleCreateDialog {subscribeId} bind:active={articleCreateDialogActive} />
@@ -66,7 +73,7 @@
 
     <!-- Ventes -->
     <Card outlined>
-      <div on:click={() => (open = 'sales')} class="card-header d-flex">
+      <div on:click={() => handleClick('sales')} class="card-header d-flex">
         <div>
           {resum.providedCount || 0}
           Vente{(resum.providedCount || 0) > 1 ? 's' : ''}
@@ -89,21 +96,27 @@
 
     <!-- Achats -->
     <Card outlined>
-      <div class="card-header d-flex">
+      <div on:click={() => handleClick('buys')} class="card-header d-flex">
         <div>
-          {resum.purchasesCount || 0}
-          Achat{(resum.purchasesCount || 0) > 1 ? 's' : ''}
+          {resum.purchasesCount || 0} Achat{(resum.purchasesCount || 0) > 1
+            ? 's'
+            : ''}
         </div>
         <div class="flex-grow-1" />
         <div>
           {renderAmount(-(resum.purchasesSum || 0), currency)}
         </div>
       </div>
+      {#if open === 'buys'}
+        <div class="card-content" transition:slide|local>
+          <TablePurchases purchases={resum.purchases || []} />
+        </div>
+      {/if}
     </Card>
 
     <!-- Paiements -->
     <Card outlined>
-      <div class="card-header d-flex">
+      <div on:click={() => handleClick('payments')} class="card-header d-flex">
         <div>
           {resum.paymentsCount || 0}
           Paiement{(resum.paymentsCount || 0) > 1 ? 's' : ''}
@@ -113,6 +126,11 @@
           {renderAmount(resum.paymentsSum || 0, currency)}
         </div>
       </div>
+      {#if open === 'payments'}
+        <div class="card-content" transition:slide|local>
+          <TablePayments payments={resum.payments || []} />
+        </div>
+      {/if}
     </Card>
 
     <!-- Fond de page -->
