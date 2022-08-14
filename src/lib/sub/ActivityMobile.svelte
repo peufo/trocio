@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade, slide } from 'svelte/transition'
-  import { Button, Card, Icon } from 'svelte-materialify'
-  import { mdiPrinter } from '@mdi/js'
+  import { Card } from 'svelte-materialify'
+
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
@@ -27,9 +27,6 @@
   let klass = ''
   export { klass as class }
 
-  let articleCreateDialogActive = false
-  let tarifInfoDialogActive = false
-
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
     'subscribes/resum',
     { subscribeId },
@@ -45,14 +42,6 @@
   }
 </script>
 
-<ArticleCreateDialog {subscribeId} bind:active={articleCreateDialogActive} />
-
-<TarifInfoDialog
-  tarif={$queryResum.data?.tarif}
-  bind:active={tarifInfoDialogActive}
-  {modeAdmin}
-/>
-
 {#if $queryResum.isLoading}
   <div in:fade|local class="centered" style="height: 85vh;">
     <Loader />
@@ -63,7 +52,7 @@
   </div>
 {:else if $queryResum.isSuccess && resum}
   <div in:fade|local class="d-flex flex-column {klass} pa-2" style="gap: 1em;">
-    <!-- En-tête -->
+    <!-- Solde total -->
     <div class="centered pa-4">
       <div class="text-center">
         <span style="display: block; transform: translateY(5px);">Solde</span>
@@ -88,8 +77,20 @@
       </div>
 
       {#if open === 'sales'}
-        <div class="card-content" transition:slide|local>
-          <ArticleProvidedTable {modeAdmin} {subscribeId} on:openTarifDialog />
+        <div transition:slide|local>
+          <!-- Nouvelle proposition + tarif-->
+          <div class="d-flex">
+            <div class="flex-grow-1" />
+            <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
+            <ArticleCreateDialog {subscribeId} />
+          </div>
+          <div class="card-content">
+            <ArticleProvidedTable
+              {modeAdmin}
+              {subscribeId}
+              on:openTarifDialog
+            />
+          </div>
         </div>
       {/if}
     </Card>
@@ -132,16 +133,6 @@
         </div>
       {/if}
     </Card>
-
-    <!-- Fond de page -->
-    <div>
-      <a href={`/print-subscribe?subscribeId=${subscribeId}`} target="_blank">
-        <Button text size="small" style="opacity: 0.6;">
-          <Icon path={mdiPrinter} size="1.1em" class="mr-2" />
-          Version imprimable
-        </Button>
-      </a>
-    </div>
   </div>
 {/if}
 

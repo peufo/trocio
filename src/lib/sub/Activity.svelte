@@ -5,7 +5,6 @@
   import relativeTime from 'dayjs/plugin/relativeTime'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
-  import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
   import 'dayjs/locale/fr'
 
   import type { IPaymentCreate, SubscribeResum } from 'types'
@@ -14,21 +13,20 @@
   import TablePurchases from './TablePurchases.svelte'
   import TablePayments from './TablePayments.svelte'
   import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
-  import Loader from '$lib/util/Loader.svelte'
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
+  import Loader from '$lib/util/Loader.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
-  import IconLink from '$lib/util/IconLink.svelte'
   import { api, useApi } from '$lib/api'
   import notify from '$lib/notify'
 
   export let subscribeId: string
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
   export let modeAdmin = false
+  export let isClosed = false
 
   let klass = ''
   export { klass as class }
 
-  let tarifInfoDialogActive = false
   let providedOpen = false
   let paymentOpen = false
   const queryClient = useQueryClient()
@@ -63,17 +61,7 @@
   function clickDownladCSV() {
     notify.info('Fonctionnalité à venir')
   }
-
-  function clickOpenTarifInfo() {
-    tarifInfoDialogActive = true
-  }
 </script>
-
-<TarifInfoDialog
-  tarif={$queryResum.data?.tarif}
-  bind:active={tarifInfoDialogActive}
-  {modeAdmin}
-/>
 
 {#if $queryResum.isLoading}
   <div in:fade|local class="centered" style="height: 160px;">
@@ -124,16 +112,11 @@
       <span slot="head">
         <!-- Provide button -->
         <span style="margin-left: 30px;">
-          <!-- Bouton pour afficher le dialogue pour ajouter des articles -->
           {#if !modeAdmin}
-            <ArticleCreateDialog {subscribeId} />
+            <ArticleCreateDialog {subscribeId} disabled={isClosed} />
           {/if}
 
-          <!-- Bouton pour afficher le tarif -->
-          <Button text dense on:click={clickOpenTarifInfo}>
-            <IconLink icon={faQuestionCircle} size="1.1em" class="mr-2" />
-            Tarif
-          </Button>
+          <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
 
           <!-- Bouton pour télécharger le fichier .csv -->
           {#if resum.providedCount}

@@ -1,12 +1,24 @@
 <script lang="ts">
   import { Dialog, Button } from 'svelte-materialify'
+  import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
+
+  import IconLink from '$lib/util/IconLink.svelte'
   import type { Tarif } from 'types'
   import { renderAmount } from '$lib/utils'
 
   export let active = false
   export let tarif: Tarif | undefined
   export let modeAdmin = false
+
+  function handleClick() {
+    active = true
+  }
 </script>
+
+<Button text dense on:click={handleClick}>
+  <IconLink icon={faQuestionCircle} size="1.1em" class="mr-2" />
+  Tarif
+</Button>
 
 <Dialog bind:active class="pa-4">
   {#if tarif}
