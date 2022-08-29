@@ -207,6 +207,12 @@ a {
   align-items: center;
 }
 
+.alert {
+  padding: 1em;
+  border-radius: 6px;
+  display: flex;
+}
+
 /* Compatible dark theme */
 input[type='date']::-webkit-inner-spin-button,
 input[type='time']::-webkit-calendar-picker-indicator,

@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import { goto, page } from '@roxi/routify'
-  import { Alert, Icon } from 'svelte-materialify'
+  import { Icon } from 'svelte-materialify'
   import { mdiAlert } from '@mdi/js'
 
   import { user } from '$lib/user/store'
@@ -14,14 +14,13 @@
 </script>
 
 {#if !!$user}
-  <Alert class="orange white-text" dismissible>
-    <div slot="icon">
-      <Icon path={mdiAlert} />
-    </div>
-    La création d'un troc est une fonctionnalité réservée aux testeurs. Contactez-nous
-    si vous souhaitez participer à la beta.
-  </Alert>
   <div class="pa-2">
+    <div class="orange white-text alert mb-4">
+      <Icon path={mdiAlert} class="mr-4" />
+
+      La création d'un troc est une fonctionnalité réservée aux testeurs.
+      Contactez-nous si vous souhaitez participer à la beta.
+    </div>
     <TrocEdit createMode />
   </div>
 {/if}

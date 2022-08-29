@@ -1,6 +1,5 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
-  import { Alert } from 'svelte-materialify'
 
   import Loader from '$lib/util/Loader.svelte'
   import NavigationAdmin from '$lib/layout/NavigationAdmin.svelte'
@@ -43,8 +42,9 @@
   >
     <main class="pa-4">
       {#if $troc.is_try}
-        <Alert visible class="orange white-text">Troc d'entrainement</Alert>
+        <div class="orange white-text alert mb-4">Troc d'entrainement</div>
       {/if}
+
       <slot />
     </main>
   </div>
