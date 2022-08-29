@@ -1,7 +1,6 @@
 <script lang="ts">
   import { fade, slide } from 'svelte/transition'
   import { Card } from 'svelte-materialify'
-
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
@@ -18,7 +17,7 @@
 
   export let subscribeId: string
   export let currency: string | undefined = undefined
-  /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
+  /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles */
   export let modeAdmin = false
 
   type OpenType = 'sales' | 'buys' | 'payments'
@@ -60,6 +59,13 @@
       </div>
     </div>
 
+    <!-- Nouvelle proposition + tarif-->
+    <div class="d-flex">
+      <div class="flex-grow-1" />
+      <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
+      <ArticleCreateDialog {subscribeId} fullscreen />
+    </div>
+
     <!-- Ventes -->
     <Card outlined>
       <div on:click={() => handleClick('sales')} class="card-header d-flex">
@@ -77,20 +83,8 @@
       </div>
 
       {#if open === 'sales'}
-        <div transition:slide|local>
-          <!-- Nouvelle proposition + tarif-->
-          <div class="d-flex">
-            <div class="flex-grow-1" />
-            <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
-            <ArticleCreateDialog {subscribeId} />
-          </div>
-          <div class="card-content">
-            <ArticleProvidedTable
-              {modeAdmin}
-              {subscribeId}
-              on:openTarifDialog
-            />
-          </div>
+        <div transition:slide|local class="card-content">
+          <ArticleProvidedTable {modeAdmin} {subscribeId} on:openTarifDialog />
         </div>
       {/if}
     </Card>

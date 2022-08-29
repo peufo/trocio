@@ -2,22 +2,24 @@
   import { createEventDispatcher } from 'svelte'
   import { fade, slide } from 'svelte/transition'
   import { Dialog, Button, Textarea, TextField } from 'svelte-materialify'
-
-  import IconLink from '$lib/util/IconLink.svelte'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import {
     faCircleNotch,
     faList,
     faPlus,
+    faTimes,
   } from '@fortawesome/free-solid-svg-icons'
+
+  import IconLink from '$lib/util/IconLink.svelte'
   import type { Article, ArticleCreate, ISubscribe } from 'types'
   import { api, useApi } from '$lib/api'
-  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   const queryClient = useQueryClient()
   export let subscribeId: string
   export let active = false
   export let listMode = false
   export let disabled = false
+  export let fullscreen = false
 
   let newName = ''
   let newPrice = ''
@@ -28,6 +30,7 @@
 
   const dispatch = createEventDispatcher<{
     open: null
+    close: null
     createArticle: Article
     createArticles: Article[]
   }>()
@@ -53,6 +56,11 @@
   function handleClicOpen() {
     dispatch('open')
     active = true
+  }
+
+  function handleClose() {
+    dispatch('close')
+    active = false
   }
 
   const createArticle = useMutation(
@@ -181,26 +189,31 @@
   }
 </script>
 
-<Button dense depressed on:click={handleClicOpen} {disabled}>
+<Button
+  dense
+  depressed
+  on:click={handleClicOpen}
+  {disabled}
+  class="primary-color"
+>
   <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
   article
 </Button>
 
-<Dialog bind:active class="pa-4" on:introend={() => textarea?.focus()}>
+<Dialog
+  bind:active
+  class="pa-4"
+  on:introend={() => textarea?.focus()}
+  {fullscreen}
+>
   <div class="d-flex justify-space-between mb-3">
     <div class="text-h6">
       Proposer {listMode ? `une liste d'` : 'un '}article
     </div>
-
-    <Button text size="small" on:click={() => (listMode = !listMode)}>
-      <IconLink
-        icon={!listMode ? faList : faPlus}
-        opacity
-        size="1em"
-        class="mr-2"
-      />
-      {!listMode ? 'Charger une liste' : 'Un seul article'}
-    </Button>
+    {#if fullscreen}
+      <div class="flex-grow-1" />
+      <IconLink icon={faTimes} on:click={handleClose} clickable />
+    {/if}
   </div>
 
   {#if listMode}
@@ -288,4 +301,16 @@
       </div>
     </form>
   {/if}
+  <div class="d-flex mt-2">
+    <div class="flex-grow-1" />
+    <Button depressed size="small" on:click={() => (listMode = !listMode)}>
+      <IconLink
+        icon={!listMode ? faList : faPlus}
+        opacity
+        size="1em"
+        class="mr-2"
+      />
+      {!listMode ? 'Charger une liste' : 'Un seul article'}
+    </Button>
+  </div>
 </Dialog>
