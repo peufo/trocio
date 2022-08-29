@@ -51,7 +51,6 @@
     <a
       href={$url('/admin/tarif_attribution', {
         trocId: $params.trocId,
-        tab_admin: 'tarif_attribution',
       })}
     >
       <Button depressed>Gerer l'attribution des tarifs</Button>

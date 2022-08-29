@@ -111,7 +111,6 @@
             on:click={() =>
               $goto($url('/admin/management_articles'), {
                 trocId: $params.trocId,
-                tab_admin: 'management_articles',
                 exact_buyerSubId: subscribe?._id,
               })}
           >
@@ -121,7 +120,6 @@
             on:click={() =>
               $goto($url('/admin/management_articles'), {
                 trocId: $params.trocId,
-                tab_admin: 'management_articles',
                 exact_providerSubId: subscribe?._id,
               })}
           >
@@ -131,7 +129,6 @@
             on:click={() =>
               $goto($url('/admin/cash_register'), {
                 trocId: $params.trocId,
-                tab_admin: 'cash_register',
                 client_subscribe_id: subscribe?._id,
               })}
           >

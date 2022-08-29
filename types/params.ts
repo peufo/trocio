@@ -44,6 +44,5 @@ export interface ParamsArticleAPI extends DynamicQueryArticle, ParamsAPI {
 }
 
 export interface ParamsClient extends ParamsAPI {
-  tab_admin?: string
   tarif_selected?: string
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { params } from '@roxi/routify'
+  import { params, isActive, afterPageLoad } from '@roxi/routify'
   import NavigationDrawer from '$lib/util/NavigationDrawer.svelte'
 
   import IconLink from '$lib/util/IconLink.svelte'
@@ -16,15 +16,16 @@
   let scrollY = 0
   export const width: string = '400px'
 
-  $: if ($params) scrollToActiveSection()
   $: if (active) setTimeout(scrollToActiveSection, 600)
+
+  $afterPageLoad(() => {
+    scrollToActiveSection()
+  })
 
   function scrollToActiveSection() {
     if (active && content) {
-      let section = Array.from(content.querySelectorAll('section')).find(
-        (s) =>
-          $params[s.dataset.query]?.match(new RegExp(`^${s.dataset.value}`)) &&
-          !$params[s.dataset.queryavoid]
+      const section = Array.from(content.querySelectorAll('section')).find(
+        ({ dataset }) => $isActive(dataset.path)
       )
       if (section) content.scrollTo({ top: section.offsetTop - 125 })
     }
@@ -60,7 +61,7 @@
   {#if active}
     <div transition:fade|local class="content pl-2 " bind:this={content}>
       {#if !isCashier}
-        <section data-query="tab_admin" data-value="info">
+        <section data-path="/admin/info">
           <span class="title">Information</span>
           <p>
             C'est ici que vous pouvez mettre à jour les informations publique
@@ -69,11 +70,7 @@
           </p>
         </section>
 
-        <section
-          title="Collaborateurs"
-          data-query="tab_admin"
-          data-value="collab"
-        >
+        <section title="Collaborateurs" data-path="/admin/collab">
           <span class="title">Collaborateurs</span>
           <p>
             Vous pouvez ajouter et supprimer des collaborateurs suivant leur
@@ -91,7 +88,7 @@
           </p>
         </section>
 
-        <section title="Tarification" data-query="tab_admin" data-value="tarif">
+        <section title="Tarification" data-path="/admin/tarif">
           <span class="title">Tarification</span>
           <p>
             Vous pouvez créer ou supprimer des tarifs en plus du tarif standard
@@ -121,7 +118,7 @@
           </p>
         </section>
 
-        <section title="Etiquetage" data-query="tab_admin" data-value="tag">
+        <section title="Etiquetage" data-path="/admin/tag">
           <span class="title">Etiquetage</span>
           <p>
             Ajustez et testez le format de vos étiquettes. Définissez
@@ -135,11 +132,7 @@
           </p>
         </section>
 
-        <section
-          title="Statistique"
-          data-query="tab_admin"
-          data-value="statistic"
-        >
+        <section title="Statistique" data-path="/admin/statistic">
           <span class="title">Statistique</span>
           <p>
             Commencez par séléctioner le groupe d'utilisateur dont vous
@@ -154,7 +147,7 @@
           </p>
         </section>
 
-        <section title="Gestion" data-query="tab_admin" data-value="managment">
+        <section title="Gestion" data-path="/admin/managment">
           <span class="title">Gestion</span>
           <p>
             Ici, vous avez un contrôle complet sur ce qu'il ce passe dans votre
@@ -179,11 +172,7 @@
         </section>
       {/if}
 
-      <section
-        data-query="tab_admin"
-        data-value="cashier"
-        data-queryavoid="client"
-      >
+      <section data-path="./cashier" data-queryavoid="client">
         <span class="title">Caisse</span>
         <p>Trouvez et séléctionnez votre client grâce au champ de recherche.</p>
         <p>Pensez à utiliser les raccourcis clavier :</p>
