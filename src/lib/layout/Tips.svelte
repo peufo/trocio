@@ -61,7 +61,7 @@
   {#if active}
     <div transition:fade|local class="content pl-2 " bind:this={content}>
       {#if !isCashier}
-        <section data-path="/admin/info">
+        <section data-path="/admin/edit">
           <span class="title">Information</span>
           <p>
             C'est ici que vous pouvez mettre à jour les informations publique

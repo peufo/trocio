@@ -23,8 +23,6 @@
   let width: string | undefined
   let mini = false
 
-  $: console.log($url())
-
   /** width updated white according to props mini */
   export let realWidth = mini ? '56px' : width
   $: realWidth = mini ? '56px' : width
@@ -32,7 +30,7 @@
 
   const tabs = [
     { ref: 'home', label: $troc.name, icon: faHouseChimney, isIndex: true },
-    { ref: 'info', label: 'Définition', icon: faInfoCircle },
+    { ref: 'edit', label: 'Définition', icon: faInfoCircle },
     { ref: 'tarif', label: 'Tarifications', icon: faCoins },
     { ref: 'tag', label: 'Etiquetage', icon: faTag },
     { ref: 'statistic', label: 'Statistiques', icon: faChartPie },

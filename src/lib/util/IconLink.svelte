@@ -15,6 +15,7 @@
   export let opacity = false
   export let style = ''
   export let target = '_self'
+  export let title = ''
 
   $: style = opacity
     ? style + 'opacity: 0.5;'
@@ -24,8 +25,8 @@
 {#if !!tip}
   {#if !!href}
     <Tooltip bottom>
-      <span slot="tip">{tip}</span>
-      <a {href} {target}>
+      <span slot="tip" {title}>{tip}</span>
+      <a {href} {target} {title}>
         <Button icon on:click>
           <Icon
             path={icon.icon[4]}
@@ -44,7 +45,7 @@
     </Tooltip>
   {:else}
     <Tooltip bottom>
-      <span slot="tip">{tip}</span>
+      <span slot="tip" {title}>{tip}</span>
       <Button icon on:click>
         <Icon
           path={icon.icon[4]}
@@ -62,7 +63,7 @@
     </Tooltip>
   {/if}
 {:else if !!href}
-  <a {href} {target}>
+  <a {href} {target} {title}>
     <Button icon on:click>
       <Icon
         path={icon.icon[4]}

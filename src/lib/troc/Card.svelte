@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isActive } from '@roxi/routify'
   import {
     faChild,
     faCubes,
@@ -32,13 +33,13 @@
 
   import IconLink from '$lib/util/IconLink.svelte'
   import { user } from '$lib/user/store'
-
   import Share from '$lib/troc/Share.svelte'
   import type { TrocLookup } from 'types'
   import { useApi } from '$lib/api'
 
   export let troc: TrocLookup
   export let clickable = false
+  export let hideAdminButton = false
 
   const DESCRIPTION_SIZE = 250
   let sliceDescription = DESCRIPTION_SIZE
@@ -62,14 +63,14 @@
   <CardSubtitle>
     <Chip size="small" outlined class="text--secondary">
       <IconLink icon={faChild} size=".7em" />
-      <span>
+      <span title="Nombre de participants">
         {$queryCounters.isSuccess ? $queryCounters.data.subscribesCount : '∿'}
       </span>
     </Chip>
 
     <Chip size="small" outlined class="text--secondary">
       <IconLink icon={faCubes} size=".7em" />
-      <span>
+      <span title="Nombre d'articles">
         {$queryCounters.isSuccess ? $queryCounters.data.articlesCount : '∿'}
       </span>
     </Chip>
@@ -184,21 +185,31 @@
     <Share {troc} />
 
     <div class="flex-grow-1" />
-    {#if !!$user && troc.subscribe?.validedByUser}
-      {#if troc.subscribe?.role === 'admin'}
-        <a href={`/admin?trocId=${troc._id}`}>
-          <Button depressed>
-            administration
-            <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
-          </Button>
-        </a>
-      {:else if troc.subscribe?.role === 'cashier'}
-        <a href={`/cashier?trocId=${troc._id}`}>
-          <Button depressed>
-            Caisse
-            <IconLink icon={faCashRegister} class="ml-2" size="1.2em" opacity />
-          </Button>
-        </a>
+
+    <slot name="card-actions" />
+
+    {#if !hideAdminButton}
+      {#if !!$user && troc.subscribe?.validedByUser}
+        {#if troc.subscribe?.role === 'admin'}
+          <a href={`/admin?trocId=${troc._id}`}>
+            <Button depressed>
+              administration
+              <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
+            </Button>
+          </a>
+        {:else if troc.subscribe?.role === 'cashier'}
+          <a href={`/cashier?trocId=${troc._id}`}>
+            <Button depressed>
+              Caisse
+              <IconLink
+                icon={faCashRegister}
+                class="ml-2"
+                size="1.2em"
+                opacity
+              />
+            </Button>
+          </a>
+        {/if}
       {/if}
     {/if}
   </CardActions>
