@@ -85,7 +85,9 @@
     {#if $query.isFetchingNextPage || $query.isLoading}
       <Loader />
     {:else if !$query.hasNextPage}
-      <span class="text--secondary"> Pas plus de résultat </span>
+      <span class="text--secondary">
+        Pas {$query.data?.pages.flat().length ? 'plus' : ''} de résultat
+      </span>
     {:else if mode === 'button'}
       <Button on:click={() => $query.fetchNextPage()} class="ma-2" depressed>
         Afficher plus

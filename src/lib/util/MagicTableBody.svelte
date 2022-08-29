@@ -50,17 +50,6 @@
       {/each}
     </tr>
   {/each}
-
-  {#if !$query?.isLoading && !items.length}
-    <tr class="text-center placeholder">
-      <td
-        class="text--secondary pa-16"
-        colspan={fields.filter((f) => f.visible).length + 2}
-      >
-        {placeholder}
-      </td>
-    </tr>
-  {/if}
 </tbody>
 
 <style>
