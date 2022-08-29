@@ -6,7 +6,7 @@
   import type { Tarif } from 'types'
   import { renderAmount } from '$lib/utils'
 
-  export let active = true
+  export let active = false
   export let tarif: Tarif | undefined
   export let modeAdmin = false
 
