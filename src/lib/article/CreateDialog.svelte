@@ -13,6 +13,7 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import type { Article, ArticleCreate, ISubscribe } from 'types'
   import { api, useApi } from '$lib/api'
+  import notify from '$lib/notify'
 
   const queryClient = useQueryClient()
   export let subscribeId: string
@@ -54,6 +55,7 @@
   } Mon troisième article ; 5,40\n ...`
 
   function handleClicOpen() {
+    if (disabled) return notify.warning(`Ajout d'article impossible`)
     dispatch('open')
     active = true
   }
@@ -189,13 +191,7 @@
   }
 </script>
 
-<Button
-  dense
-  depressed
-  on:click={handleClicOpen}
-  {disabled}
-  class="primary-color"
->
+<Button dense depressed on:click={handleClicOpen} class="primary-color">
   <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
   article
 </Button>

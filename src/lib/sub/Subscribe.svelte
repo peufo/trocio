@@ -40,10 +40,7 @@
 
 {#if troc.subscribe?.validedByUser}
   <div in:fade|local>
-    <SubActivity
-      subscribeId={troc.subscribe._id}
-      isClosed={troc.isClosed && !troc.is_try}
-    />
+    <SubActivity subscribeId={troc.subscribe._id} isClosed={troc.isClosed} />
   </div>
 {:else}
   <div class="button-container">

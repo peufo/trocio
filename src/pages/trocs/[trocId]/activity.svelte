@@ -14,6 +14,7 @@
 <SubActivityMobile
   subscribeId={$troc.subscribe._id}
   currency={$troc.currency}
+  isClosed={$troc.isClosed}
 />
 
 <slot />

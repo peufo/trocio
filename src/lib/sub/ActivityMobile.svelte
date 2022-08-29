@@ -17,6 +17,7 @@
 
   export let subscribeId: string
   export let currency: string | undefined = undefined
+  export let isClosed = false
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles */
   export let modeAdmin = false
 
@@ -63,7 +64,7 @@
     <div class="d-flex">
       <div class="flex-grow-1" />
       <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
-      <ArticleCreateDialog {subscribeId} fullscreen />
+      <ArticleCreateDialog {subscribeId} fullscreen disabled={isClosed} />
     </div>
 
     <!-- Ventes -->
