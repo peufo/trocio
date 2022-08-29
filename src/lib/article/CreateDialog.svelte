@@ -19,7 +19,7 @@
   export let subscribeId: string
   export let active = false
   export let listMode = false
-  export let disabled = false
+  export let trocIsClosed = false
   export let fullscreen = false
 
   let newName = ''
@@ -55,7 +55,8 @@
   } Mon troisième article ; 5,40\n ...`
 
   function handleClicOpen() {
-    if (disabled) return notify.warning(`Ajout d'article impossible`)
+    if (trocIsClosed)
+      return notify.warning(`Ajout d'article impossible, le troc est terminé.`)
     dispatch('open')
     active = true
   }

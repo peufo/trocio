@@ -113,7 +113,7 @@
         <!-- Provide button -->
         <span style="margin-left: 30px;">
           {#if !modeAdmin}
-            <ArticleCreateDialog {subscribeId} disabled={isClosed} />
+            <ArticleCreateDialog {subscribeId} trocIsClosed={isClosed} />
           {/if}
 
           <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />

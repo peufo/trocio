@@ -64,7 +64,7 @@
     <div class="d-flex">
       <div class="flex-grow-1" />
       <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
-      <ArticleCreateDialog {subscribeId} fullscreen disabled={isClosed} />
+      <ArticleCreateDialog {subscribeId} fullscreen trocIsClosed={isClosed} />
     </div>
 
     <!-- Ventes -->
