@@ -3,6 +3,7 @@
   import { createEventDispatcher } from 'svelte'
   import { List, ListItem, Divider, Icon } from 'svelte-materialify'
   import {
+    faHouseChimney,
     faInfoCircle,
     faUsers,
     faCoins,
@@ -32,34 +33,13 @@
   let scrollY = 0
 
   const tabs = [
+    { ref: 'home', label: 'Tableau de bord', icon: faHouseChimney },
     { ref: 'info', label: 'Définition', icon: faInfoCircle },
-    { ref: 'collab', label: 'Collaborateurs', icon: faUsersCog },
-    {
-      ref: 'tarif',
-      label: 'Tarifications',
-      icon: faCoins,
-      groupActive: false,
-    },
+    { ref: 'tarif', label: 'Tarifications', icon: faCoins },
     { ref: 'tag', label: 'Etiquetage', icon: faTag },
     { ref: 'statistic', label: 'Statistiques', icon: faChartPie },
-    {
-      ref: 'management',
-      label: 'Gestion',
-      icon: faTasks,
-      groupActive: false,
-      group: [
-        {
-          ref: 'management_users',
-          label: 'Participants',
-          icon: faUsers,
-        },
-        {
-          ref: 'management_articles',
-          label: 'Articles',
-          icon: faCubes,
-        },
-      ],
-    },
+    { ref: 'management_users', label: 'Participants', icon: faUsers },
+    { ref: 'management_articles', label: 'Articles', icon: faCubes },
     { ref: 'cash_register', label: 'Caisse', icon: faCashRegister },
   ]
 
@@ -94,66 +74,17 @@
     <Divider />
     <List nav>
       {#each tabs as tab}
-        {#if tab.group}
-          <a
-            href={$url(`/admin/${tab.group[0].ref}`, {
-              ...$params,
-              tab_admin: tab.group[0].ref,
-              // Double ref a cause de Tips qui écoute dessus
-            })}
+        <a href={$url(`/admin/${tab.ref}`, { ...$params, tab_admin: tab.ref })}>
+          <ListItem
+            active={$params.tab_admin === tab.ref ||
+              (!$params.tab_admin && tab.ref === 'info')}
           >
-            <ListGroup
-              bind:active={tab.groupActive}
-              offset={mini ? 0 : 32}
-              class={tab.groupActive ? 'pb-2' : ''}
-              activatorClass="mb-0"
-            >
-              <span slot="prepend">
-                <IconLink icon={tab.icon} size="1.1em" />
-              </span>
-              <span slot="activator">{tab.label}</span>
-              <span slot="append">
-                <IconLink
-                  icon={faChevronDown}
-                  size="1.1em"
-                  rotate={tab.groupActive ? 0 : -90}
-                />
-              </span>
-              {#each tab.group as subTab}
-                <a
-                  href={$url(`/admin/${subTab.ref}`, {
-                    ...$params,
-                    tab_admin: subTab.ref,
-                  })}
-                >
-                  <ListItem
-                    active={$params.tab_admin === subTab.ref ||
-                      (!$params.tab_admin && subTab.ref === 'info')}
-                  >
-                    <span slot="prepend">
-                      <IconLink icon={subTab.icon} size="1.1em" />
-                    </span>
-                    {subTab.label}
-                  </ListItem>
-                </a>
-              {/each}
-            </ListGroup>
-          </a>
-        {:else}
-          <a
-            href={$url(`/admin/${tab.ref}`, { ...$params, tab_admin: tab.ref })}
-          >
-            <ListItem
-              active={$params.tab_admin === tab.ref ||
-                (!$params.tab_admin && tab.ref === 'info')}
-            >
-              <span slot="prepend">
-                <IconLink icon={tab.icon} size="1.1em" />
-              </span>
-              {tab.label}
-            </ListItem>
-          </a>
-        {/if}
+            <span slot="prepend">
+              <IconLink icon={tab.icon} size="1.1em" />
+            </span>
+            {tab.label}
+          </ListItem>
+        </a>
       {/each}
     </List>
 

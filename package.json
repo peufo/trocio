@@ -38,13 +38,10 @@
     "vite": "^2.4.4"
   },
   "dependencies": {
-    "@fortawesome/free-brands-svg-icons": "^5.15.3",
-    "@fortawesome/free-regular-svg-icons": "^5.15.3",
-    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/free-brands-svg-icons": "^6.1.2",
+    "@fortawesome/free-regular-svg-icons": "^6.1.2",
+    "@fortawesome/free-solid-svg-icons": "^6.1.2",
     "@mdi/js": "^5.9.55",
-    "@pnotify/animate": "^5.2.0",
-    "@pnotify/font-awesome5": "^5.2.0",
-    "@pnotify/mobile": "^5.2.0",
     "@sveltestack/svelte-query": "^1.4.0",
     "@types/leaflet": "^1.7.5",
     "@types/morgan": "^1.9.3",
