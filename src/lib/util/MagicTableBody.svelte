@@ -51,7 +51,7 @@
     </tr>
   {/each}
 
-  {#if !$query?.isLoading && (!items.length || !$query.hasNextPage)}
+  {#if !$query?.isLoading && !items.length}
     <tr class="text-center placeholder">
       <td
         class="text--secondary pa-16"

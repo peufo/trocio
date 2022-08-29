@@ -80,19 +80,28 @@
   <table class="s-table fixed-header" class:dense>
     <slot />
   </table>
-  {#if $query.isFetchingNextPage || $query.isLoading}
-    <div class="centered" style="height: 300px;">
+
+  <div class="footer centered">
+    {#if $query.isFetchingNextPage || $query.isLoading}
       <Loader />
-    </div>
-  {:else if mode === 'button' && $query.hasNextPage}
-    <div class="centered">
+    {:else if !$query.hasNextPage}
+      <span class="text--secondary"> Pas plus de résultat </span>
+    {:else if mode === 'button'}
       <Button on:click={() => $query.fetchNextPage()} class="ma-2" depressed>
         Afficher plus
       </Button>
-    </div>
-  {/if}
+    {/if}
+  </div>
 
   {#if error}
     {error}
   {/if}
 </div>
+
+<style>
+  .footer {
+    height: 120px;
+    position: sticky;
+    left: 0px;
+  }
+</style>
