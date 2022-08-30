@@ -170,13 +170,13 @@
             </span>
           </ListItem>
 
-          {#each ROLES as { label, icon, queryValue }}
+          {#each ROLES as { label, icon, key }}
             <ListItem
               on:click={() =>
                 subscribe &&
                 $assignRole.mutate({
                   subscribeId: subscribe._id,
-                  role: queryValue,
+                  role: key,
                 })}
             >
               <span slot="prepend">

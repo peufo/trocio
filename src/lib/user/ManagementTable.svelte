@@ -56,8 +56,8 @@
       queryKey: 'role',
       format: 'enum',
       getValue: (sub) =>
-        sub.userId ? ROLES.find((r) => r.queryValue === sub.role)?.label : '',
-      enumOptions: [{ queryValue: '', label: 'Tous' }, ...ROLES],
+        sub.userId ? ROLES.find((r) => r.key === sub.role)?.label : '',
+      enumOptions: [{ key: '', label: 'Tous' }, ...ROLES],
     },
     {
       label: 'Tarif',
@@ -67,11 +67,11 @@
       getValue: (sub) =>
         $troc?.tarif.find((tarif) => tarif._id === sub.tarifId)?.name,
       enumOptions: [
-        { queryValue: '', label: 'Tous' },
+        { key: '', label: 'Tous' },
         // @ts-ignore tarif._id can be undefined ...
         ...$troc?.tarif.map((tarif) => ({
           label: tarif.name,
-          queryValue: tarif._id,
+          key: tarif._id,
         })),
       ],
     },

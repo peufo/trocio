@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { isActive } from '@roxi/routify'
   import {
     faChild,
     faCubes,
@@ -40,6 +39,9 @@
   export let troc: TrocLookup
   export let clickable = false
   export let hideAdminButton = false
+  let klass = ''
+  export { klass as class }
+  export let style = ''
 
   const DESCRIPTION_SIZE = 250
   let sliceDescription = DESCRIPTION_SIZE
@@ -58,7 +60,7 @@
   >(['trocs/byId/counters', { trocId: troc._id }])
 </script>
 
-<Card hover={clickable}>
+<Card hover={clickable} class={klass} {style}>
   <CardTitle>{troc.name}</CardTitle>
   <CardSubtitle>
     <Chip size="small" outlined class="text--secondary">
@@ -183,10 +185,9 @@
 
   <CardActions class="flex-wrap" style="gap: 0.5em;">
     <Share {troc} />
+    <slot name="card-actions" />
 
     <div class="flex-grow-1" />
-
-    <slot name="card-actions" />
 
     {#if !hideAdminButton}
       {#if !!$user && troc.subscribe?.validedByUser}

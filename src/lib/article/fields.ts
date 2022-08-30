@@ -148,33 +148,33 @@ export function getFieldsLookup(
 }
 
 const statutEnumOptions: FieldInteface<Article>['enumOptions'] = [
-  { queryValue: '', label: 'Tous' },
+  { key: '', label: 'Tous' },
   {
-    queryValue: 'proposed',
+    key: 'proposed',
     label: 'Proposé',
     icon: faDotCircle,
     iconStyle: 'color: rgb(158 158 158);',
   },
   {
-    queryValue: 'valided',
+    key: 'valided',
     label: 'Validé',
     icon: faDotCircle,
     iconStyle: 'color: rgb(33 150 243);',
   },
   {
-    queryValue: 'refused',
+    key: 'refused',
     label: 'Refusé',
     icon: faDotCircle,
     iconStyle: 'color: rgb(244 67 54);',
   },
   {
-    queryValue: 'sold',
+    key: 'sold',
     label: 'Vendu',
     icon: faDotCircle,
     iconStyle: 'color: rgb(76 175 80);',
   },
   {
-    queryValue: 'recover',
+    key: 'recover',
     label: 'Récupéré',
     icon: faDotCircle,
     iconStyle: 'color: rgb(255 152 0);',

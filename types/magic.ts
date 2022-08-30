@@ -5,7 +5,7 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 /** Option of menu */
 export interface EnumOption<TValue = string | number> {
   /** Valeur envoyé par la requête */
-  queryValue: TValue
+  key: TValue
   /** Label visible de l'élément */
   label: string
   /** Icon de l'élément */

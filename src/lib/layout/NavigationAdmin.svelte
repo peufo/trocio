@@ -6,12 +6,12 @@
     faHouseChimney,
     faInfoCircle,
     faUsers,
+    faCubes,
     faCoins,
     faTag,
     faChartPie,
     faCashRegister,
     faAngleDoubleLeft,
-    faCubes,
   } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
 

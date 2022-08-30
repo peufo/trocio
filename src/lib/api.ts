@@ -1,6 +1,6 @@
 import axios, { AxiosError, Method } from 'axios'
-import notify from '$lib/notify'
 
+import notify from '$lib/notify'
 import type { BaseResponse, ResponseNotifyOptions } from 'types'
 import {
   GetNextPageParamFunction,
@@ -68,28 +68,35 @@ export function api<RequestQuery = any, RequestResult = RequestQuery>(
     })
 }
 
+type QueryOptions<RequestQuery, RequestResult> =
+  | string
+  | [string, RequestQuery]
+  | UseQueryOptions<
+      RequestResult,
+      AxiosError,
+      RequestResult,
+      [string, RequestQuery]
+    >
+
 export function useApi<RequestQuery, RequestResult>(
-  queryOptions:
-    | [string, RequestQuery]
-    | UseQueryOptions<
-        RequestResult,
-        AxiosError,
-        RequestResult,
-        [string, RequestQuery]
-      >,
+  queryOptions: QueryOptions<RequestQuery, RequestResult>,
   apiOptions: ApiOptions<RequestQuery, RequestResult> = {}
 ) {
-  const queryFn: QueryFunction<RequestResult, [string, RequestQuery]> = (
+  const queryFn: QueryFunction<RequestResult, [string, RequestQuery?]> = (
     context
   ) => {
-    return api<RequestQuery, RequestResult>(`/api/${context.queryKey[0]}`, {
-      params: context.queryKey[1],
+    const url = `/api/${context.queryKey[0]}`
+    const params = context.queryKey[1] || {}
+    return api<RequestQuery, RequestResult>(url, {
+      params,
       ...apiOptions,
     })
   }
 
   if (Array.isArray(queryOptions))
     return useQuery({ queryFn, queryKey: queryOptions })
+  if (typeof queryOptions === 'string')
+    return useQuery({ queryFn, queryKey: [queryOptions] })
   return useQuery({ queryFn, ...queryOptions })
 }
 
