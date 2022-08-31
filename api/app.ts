@@ -58,7 +58,10 @@ app.use(compression({ threshold: 0 }))
 
 app.use('/doc', express.static('api/doc'))
 app.use('/doc-swagger', swaggerUI.serve)
-app.use('/doc-swagger', swaggerUI.setup(null, { swaggerUrl: '/doc/index.yml' }))
+app.use(
+  '/doc-swagger',
+  swaggerUI.setup(undefined, { swaggerUrl: '/doc/index.yml' })
+)
 
 app.use('/', routesIndex)
 app.use('/users', routesUser)
