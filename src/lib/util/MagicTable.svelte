@@ -99,3 +99,9 @@
     {error}
   {/if}
 </div>
+
+<style>
+  :global .s-table__wrapper table thead tr {
+    z-index: 1;
+  }
+</style>
