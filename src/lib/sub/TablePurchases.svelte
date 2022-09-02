@@ -26,7 +26,10 @@
       </tr>
     {/each}
   </tbody>
-  {#if !purchases?.length}
-    <div class="text-center pa-12 text--secondary">Aucun achat</div>
-  {/if}
 </Table>
+
+{#if !purchases?.length}
+  <div class="centered table-footer">
+    <span class="text--secondary">Aucun achat</span>
+  </div>
+{/if}

@@ -207,6 +207,12 @@ a {
   align-items: center;
 }
 
+.table-footer {
+  height: 120px;
+  position: sticky;
+  left: 0px;
+}
+
 .alert {
   padding: 1em;
   border-radius: 6px;

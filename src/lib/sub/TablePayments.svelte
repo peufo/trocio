@@ -26,7 +26,10 @@
       </tr>
     {/each}
   </tbody>
-  {#if !payments?.length}
-    <div class="text-center pa-12 text--secondary">Aucun paiement</div>
-  {/if}
 </Table>
+
+{#if !payments?.length}
+  <div class="centered table-footer">
+    <span class="text--secondary">Aucun paiement</span>
+  </div>
+{/if}

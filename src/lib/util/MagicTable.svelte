@@ -81,7 +81,7 @@
     <slot />
   </table>
 
-  <div class="footer centered">
+  <div class="table-footer centered">
     {#if $query.isFetchingNextPage || $query.isLoading}
       <Loader />
     {:else if !$query.hasNextPage}
@@ -99,11 +99,3 @@
     {error}
   {/if}
 </div>
-
-<style>
-  .footer {
-    height: 120px;
-    position: sticky;
-    left: 0px;
-  }
-</style>

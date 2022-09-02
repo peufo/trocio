@@ -63,10 +63,5 @@
       <MagicTableHeaders {fields} bind:queryParams />
     </tr>
   </thead>
-  <MagicTableBody
-    {fields}
-    query={queryArticles}
-    on:click={handleClick}
-    placeholder="Aucun article"
-  />
+  <MagicTableBody {fields} query={queryArticles} on:click={handleClick} />
 </MagicTable>
