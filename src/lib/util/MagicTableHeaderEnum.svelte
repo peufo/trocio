@@ -28,7 +28,7 @@
     // const key = `exact_${field.queryKey}`
     const query = $params
     query[key] = option.key
-    if (!option.key) {
+    if (option.key === null) {
       delete query[key]
       queryLabel = ''
       queryParam = {}

@@ -3,7 +3,7 @@
   import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
 
   import type { FieldInteface } from 'types'
-  import { renderAmount } from '$lib/utils'
+  import MagicTableCell from './MagicTableCell.svelte'
 
   export let fields: FieldInteface[]
   export let query: UseInfiniteQueryStoreResult<any, any, any, any>
@@ -13,26 +13,6 @@
   const dispatch = createEventDispatcher()
 
   $: items = $query?.data ? $query.data.pages.flat() : []
-
-  function formatCell(item: any, field: FieldInteface) {
-    let value: string =
-      typeof field.getValue === 'function'
-        ? field.getValue(item)
-        : item[field.queryKey]
-
-    if (!value) return '-'
-
-    switch (field.format) {
-      case 'date':
-        value = new Date(value).toLocaleString()
-        break
-      case 'currency':
-        value = renderAmount(value, currency)
-        break
-    }
-
-    return value
-  }
 </script>
 
 <tbody>
@@ -44,7 +24,7 @@
           class:currency={field.format === 'currency'}
           class:number={field.format === 'number'}
         >
-          {formatCell(item, field)}
+          <MagicTableCell {item} {field} {currency} />
         </td>
       {/each}
     </tr>

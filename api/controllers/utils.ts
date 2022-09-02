@@ -27,48 +27,50 @@ export function dynamicQuery(
   for (let key in requestQuery) {
     // prevent key already managed
     if (ignoreIsArray ? ignore.includes(key) : ignore === key) continue
+    let value = requestQuery[key]
+
+    // Seul moyen rapide que j'ai trouver pour les booleans
+    // Un peu dangereux si une string resemble à 'true'... ca ira 👌
+    if (value === 'true') value = true
+    if (value === 'false') value = false
 
     // add matchSearch
     if (key.startsWith(QUERY_SEARCH)) {
       match.$and.push({
-        [key.replace(QUERY_SEARCH, '')]: new RegExp(requestQuery[key], 'i'),
+        [key.replace(QUERY_SEARCH, '')]: new RegExp(value, 'i'),
       })
 
       // add matchOrSearch
     } else if (key.startsWith(QUERY_OR_SEARCH)) {
       match.$or.push({
-        [key.replace(QUERY_OR_SEARCH, '')]: new RegExp(requestQuery[key], 'i'),
+        [key.replace(QUERY_OR_SEARCH, '')]: new RegExp(value, 'i'),
       })
 
       // add match exact (work with ObjectId)
     } else if (key.startsWith(QUERY_EXACT)) {
-      if (mongoose.isValidObjectId(requestQuery[key]))
+      if (mongoose.isValidObjectId(value)) {
         match.$and.push({
-          [key.replace(QUERY_EXACT, '')]: new ObjectId(requestQuery[key]),
+          [key.replace(QUERY_EXACT, '')]: new ObjectId(value),
         })
-      else
-        match.$and.push({ [key.replace(QUERY_EXACT, '')]: requestQuery[key] })
+      } else {
+        match.$and.push({ [key.replace(QUERY_EXACT, '')]: value })
+      }
 
       // add not match exact (work with ObjectId)
     } else if (key.startsWith(QUERY_NE_EXACT)) {
-      if (mongoose.isValidObjectId(requestQuery[key]))
+      if (mongoose.isValidObjectId(value))
         match.$and.push({
           [key.replace(QUERY_NE_EXACT, '')]: {
-            $ne: new ObjectId(requestQuery[key]),
+            $ne: new ObjectId(value),
           },
         })
       else
         match.$and.push({
-          [key.replace(QUERY_NE_EXACT, '')]: { $ne: requestQuery[key] },
+          [key.replace(QUERY_NE_EXACT, '')]: { $ne: value },
         })
 
       // Number and Date test
-    } else if (
-      !isNaN(requestQuery[key]) ||
-      !isNaN(new Date(requestQuery[key]).getTime())
-    ) {
-      const value = requestQuery[key]
-
+    } else if (!isNaN(value) || !isNaN(new Date(value).getTime())) {
       // add sort
       if (key.startsWith(QUERY_SORT)) {
         sort[key.replace(QUERY_SORT, '')] = +value

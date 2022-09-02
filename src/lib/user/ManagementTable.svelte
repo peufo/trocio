@@ -16,6 +16,7 @@
   import { troc } from '$lib/troc/store'
   import { ROLES } from '$lib/user/roles'
   import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
+  import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
   let subscribeMenu: SubscribeMenu
 
   let searchValue = ''
@@ -42,7 +43,7 @@
       getValue: (sub) => sub.user?.name || sub.name,
     },
     {
-      label: 'mail',
+      label: 'Mail',
       visible: true,
       disabled: true,
       queryKey: 'mail',
@@ -51,13 +52,25 @@
       getValue: (sub) => sub.user?.mail || '',
     },
     {
+      label: 'Validé',
+      visible: true,
+      queryKey: 'validedByUser',
+      format: 'enum',
+      cellWidth: 50,
+      enumOptions: [
+        { key: null, label: 'Tous' },
+        { key: true, label: 'Oui', icon: faCheck, iconStyle: 'color: green;' },
+        { key: false, label: 'Non', icon: faTimes, iconStyle: 'color: red;' },
+      ],
+    },
+    {
       label: 'Rôle',
       visible: true,
       queryKey: 'role',
       format: 'enum',
       getValue: (sub) =>
         sub.userId ? ROLES.find((r) => r.key === sub.role)?.label : '',
-      enumOptions: [{ key: '', label: 'Tous' }, ...ROLES],
+      enumOptions: [{ key: null, label: 'Tous' }, ...ROLES],
     },
     {
       label: 'Tarif',
@@ -67,7 +80,7 @@
       getValue: (sub) =>
         $troc?.tarif.find((tarif) => tarif._id === sub.tarifId)?.name,
       enumOptions: [
-        { key: '', label: 'Tous' },
+        { key: null, label: 'Tous' },
         // @ts-ignore tarif._id can be undefined ...
         ...$troc?.tarif.map((tarif) => ({
           label: tarif.name,

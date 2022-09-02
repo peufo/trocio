@@ -35,6 +35,7 @@
           params: {
             exact_trocId: $troc._id,
             exact_role: role.key,
+            exact_validedByUser: true,
           },
         })
       )

@@ -148,7 +148,7 @@ export function getFieldsLookup(
 }
 
 const statutEnumOptions: FieldInteface<Article>['enumOptions'] = [
-  { key: '', label: 'Tous' },
+  { key: null, label: 'Tous' },
   {
     key: 'proposed',
     label: 'Proposé',

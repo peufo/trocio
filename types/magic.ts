@@ -3,7 +3,7 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 // import type { DynamicQuery } from 'params'
 
 /** Option of menu */
-export interface EnumOption<TValue = string | number> {
+export interface EnumOption<TValue = string | number | boolean | null> {
   /** Valeur envoyé par la requête */
   key: TValue
   /** Label visible de l'élément */
