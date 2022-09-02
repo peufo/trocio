@@ -52,7 +52,16 @@
       getValue: (sub) => sub.user?.mail || '',
     },
     {
-      label: 'Validé',
+      label: 'Rôle',
+      visible: true,
+      queryKey: 'role',
+      format: 'enum',
+      getValue: (sub) =>
+        sub.userId ? ROLES.find((r) => r.key === sub.role)?.label : '',
+      enumOptions: [{ key: null, label: 'Tous' }, ...ROLES],
+    },
+    {
+      label: `Validé par l'utilisateur`,
       visible: true,
       queryKey: 'validedByUser',
       format: 'enum',
@@ -62,15 +71,6 @@
         { key: true, label: 'Oui', icon: faCheck, iconStyle: 'color: green;' },
         { key: false, label: 'Non', icon: faTimes, iconStyle: 'color: red;' },
       ],
-    },
-    {
-      label: 'Rôle',
-      visible: true,
-      queryKey: 'role',
-      format: 'enum',
-      getValue: (sub) =>
-        sub.userId ? ROLES.find((r) => r.key === sub.role)?.label : '',
-      enumOptions: [{ key: null, label: 'Tous' }, ...ROLES],
     },
     {
       label: 'Tarif',
