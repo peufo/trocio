@@ -7,7 +7,6 @@
 
   export let fields: FieldInteface[]
   export let query: UseInfiniteQueryStoreResult<any, any, any, any>
-  export let placeholder = 'Aucun élément'
   /** Code ISO 4217 */
   export let currency: string | undefined = undefined
 
@@ -56,9 +55,5 @@
   .currency,
   .number {
     text-align: right;
-  }
-  .placeholder:hover {
-    background: none;
-    cursor: initial;
   }
 </style>
