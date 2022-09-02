@@ -23,7 +23,6 @@ export function checkSuperAdmin(req, res, next) {
 export async function login(req, res, next) {
   const { mail, password } = req.body
   if (!mail || !password) return next(Error('mail and password required'))
-  console.log({ mail, password })
   UserModel.getAuthenticated(mail, password)
     .then((user) => {
       console.log(`Nouvelle connection de ${user.name}`)
