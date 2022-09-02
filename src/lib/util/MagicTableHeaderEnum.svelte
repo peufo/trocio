@@ -19,8 +19,7 @@
     if (queryValue) {
       queryParam[key] = queryValue
       queryLabel =
-        field.enumOptions?.find((opt) => opt.queryValue === queryValue)
-          ?.label || ''
+        field.enumOptions?.find((opt) => opt.key === queryValue)?.label || ''
     }
   })
 
@@ -28,14 +27,14 @@
     if (!field.queryKey) return
     // const key = `exact_${field.queryKey}`
     const query = $params
-    query[key] = option.queryValue
-    if (!option.queryValue) {
+    query[key] = option.key
+    if (!option.key) {
       delete query[key]
       queryLabel = ''
       queryParam = {}
     } else {
       queryLabel = option.label
-      queryParam[key] = option.queryValue
+      queryParam[key] = option.key
     }
     $goto($url(), query)
   }

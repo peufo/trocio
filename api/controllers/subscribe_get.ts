@@ -140,7 +140,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     if (!exact_trocId) match.$and.push({ trocId: new ObjectId(trocId) })
 
     // remove match $or if is empty
-    if (!match.$or.length) delete match.$or
+    if (!match.$or?.length) delete match.$or
 
     const aggregate = Subscribe.aggregate()
     aggregate.match(match)
@@ -195,7 +195,9 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
  */
 function hideMail(subscribes: SubscribeLookup[]): SubscribeLookup[] {
   return subscribes.map((sub) => {
-    if (sub.validedByUser || !sub.userId) return sub
+    if (sub.validedByUser) return sub
+    if (!sub.userId) return sub
+    if (!sub.user?.mail) return sub
     const index = sub.user.mail.indexOf('@')
     if (index > -1) {
       sub.user.mail = sub.user.mail.replace(

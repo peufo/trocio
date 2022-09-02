@@ -7,7 +7,7 @@ import Troc from '../models/troc'
 
 export const createSubscribe: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId, userId, anonym, role, prefix } = req.body
+    const { trocId, userId, isGuest, role, prefix } = req.body
     if (!req.session.user) throw 'Login is required'
     if (!trocId) throw 'trocId string is required on body'
     const troc = await Troc.findById(trocId).exec()
@@ -19,24 +19,25 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
       userId: req.session.user._id,
     }).exec()
 
-    if (!userId && !anonym && accessorSub?.validedByUser)
+    if (!userId && !isGuest && accessorSub?.validedByUser)
       throw 'Subscription already exist and is valided by user'
 
     if (
-      (userId || anonym) &&
+      (userId || isGuest) &&
       accessorSub?.role !== 'admin' &&
       accessorSub?.role !== 'cashier'
     )
-      throw 'Create subscribe for other user (or anonym) require admin or cashier right'
+      throw 'Create subscribe for other user (or isGuest) require admin or cashier right'
 
-    if (userId || anonym) {
+    if (userId || isGuest) {
       // Création d'un sub pour un client depuis la caisse
       const newSubscribe: Partial<ISubscribe> = {
         trocId,
-        tarifId: troc.tarif.find((t) => t.bydefault)._id,
+        tarifId: troc.tarif.find((t) => t.bydefault)?._id,
+        validedByTroc: true,
+        role,
       }
-      newSubscribe.validedByTroc = true
-      newSubscribe.role = role
+
       if (role === 'trader') {
         newSubscribe.prefix =
           prefix || (await findNewPrefix(newSubscribe.trocId))
@@ -48,12 +49,12 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
 
         newSubscribe.userId = userId
       } else {
-        // Création d'un sub pour un client anonyme
-        const anonymSubCount = await Subscribe.countDocuments({
+        // Création d'un sub pour un client invité
+        const guestSubCount = await Subscribe.countDocuments({
           trocId,
           $exists: { userId: 0 },
         })
-        newSubscribe.name = `Client n°${anonymSubCount + 1}`
+        newSubscribe.name = `Client n°${guestSubCount + 1}`
         newSubscribe.recoverKey = [
           randomize('0000'),
           randomize('0000'),
