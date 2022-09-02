@@ -15,8 +15,10 @@
 
   onMount(() => {
     // Charge le queryLabel
-    const queryValue = $params[key]
+    let queryValue = $params[key]
     if (queryValue) {
+      if (queryValue === 'true') queryValue = true
+      if (queryValue === 'false') queryValue = false
       queryParam[key] = queryValue
       queryLabel =
         field.enumOptions?.find((opt) => opt.key === queryValue)?.label || ''

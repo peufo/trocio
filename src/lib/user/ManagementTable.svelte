@@ -62,7 +62,7 @@
     },
     {
       label: `Validé par l'utilisateur`,
-      visible: true,
+      visible: false,
       queryKey: 'validedByUser',
       format: 'enum',
       cellWidth: 50,
