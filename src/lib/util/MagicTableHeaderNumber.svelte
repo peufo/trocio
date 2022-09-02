@@ -34,17 +34,17 @@
     {
       icon: faBars,
       label: 'Non trié',
-      queryValue: '',
+      key: '',
     },
     {
       icon: faSortAmountDownAlt,
       label: field.format === 'date' ? `Plus vieux d'abord` : `Croissant`,
-      queryValue: 1,
+      key: 1,
     },
     {
       icon: faSortAmountDown,
       label: field.format === 'date' ? `Plus récent d'abord` : `Décroissant`,
-      queryValue: -1,
+      key: -1,
     },
   ]
 
@@ -53,7 +53,7 @@
     min = $params[keyMin] || ''
     max = $params[keyMax] || ''
     if (sortValue) {
-      sortIcon = sortOptions.find((opt) => opt.queryValue === sortValue)?.icon
+      sortIcon = sortOptions.find((opt) => opt.key === sortValue)?.icon
       queryParam[keySort] = sortValue
     }
     if (min) queryParam[keyMin] = min
@@ -66,9 +66,9 @@
     active = false
     if (!field.queryKey) return
     const query = $params
-    query[keySort] = option.queryValue
-    queryParam[keySort] = option.queryValue
-    if (!option.queryValue) {
+    query[keySort] = option.key
+    queryParam[keySort] = option.key
+    if (!option.key) {
       delete query[keySort]
       delete queryParam[keySort]
       sortIcon = undefined
