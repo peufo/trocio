@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { url } from '@roxi/routify'
   import { Button, Card, CardText, CardTitle } from 'svelte-materialify'
   import {
     faHouseChimney,
@@ -13,34 +11,12 @@
     faCashRegister,
     faAngleDoubleLeft,
     faEdit,
-    faUserAlt,
-    faUserCog,
-    faUserTag,
-    faUserTie,
   } from '@fortawesome/free-solid-svg-icons'
 
   import { troc } from '$lib/troc/store'
   import TrocCard from '$lib/troc/Card.svelte'
+  import UsersCard from '$lib/troc/home/UsersCard.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
-  import { ROLES } from '$lib/user/roles'
-
-  import { api } from '$lib/api'
-  import type { DynamicQuerySubscribe } from 'types'
-
-  let counts = ROLES.map(() => 0)
-  onMount(async () => {
-    counts = await Promise.all(
-      ROLES.map((role) =>
-        api<DynamicQuerySubscribe, number>('/api/subscribes/count', {
-          params: {
-            exact_trocId: $troc._id,
-            exact_role: role.key,
-            exact_validedByUser: true,
-          },
-        })
-      )
-    )
-  })
 </script>
 
 <div class="grid">
@@ -55,34 +31,7 @@
     </div>
   </TrocCard>
 
-  <!-- Participants  -->
-  <Card>
-    <CardTitle>
-      <IconLink icon={faUsers} class="mr-4" />
-      {counts.reduce((acc, cur) => (acc += cur))}
-      Utilisateurs
-    </CardTitle>
-
-    <div class="pl-4 pr-4 pb-4">
-      {#each ROLES as role, index (role.key)}
-        <a
-          href={$url('/admin/management_users', {
-            trocId: $troc._id,
-            exact_role: role.key,
-          })}
-        >
-          <Button depressed class="mb-2">
-            {#if role.icon}
-              <IconLink icon={role.icon} opacity class="mr-2" size="1.2em" />
-            {/if}
-            {counts[index]}
-            {role.label}
-          </Button>
-        </a>
-        <br />
-      {/each}
-    </div>
-  </Card>
+  <UsersCard trocId={$troc._id} />
 
   <!-- Articles-->
   <Card>

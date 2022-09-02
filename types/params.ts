@@ -11,11 +11,11 @@ export type DynamicQuery =
   | 'max'
 
 export type DynamicQueryArticle = Partial<
-  Record<`${DynamicQuery}_${keyof Article}`, string | number>
+  Record<`${DynamicQuery}_${keyof Article}`, string | number | boolean>
 >
 
 export type DynamicQuerySubscribe = Partial<
-  Record<`${DynamicQuery}_${keyof ISubscribe}`, string | number>
+  Record<`${DynamicQuery}_${keyof ISubscribe}`, string | number | boolean>
 >
 
 export interface ParamsAPI {
