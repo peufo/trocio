@@ -18,7 +18,6 @@
 
   let pendingItems: Article[] = []
   let autoPrint = true
-  let articleCreateDialogActive = false
   const queryClient = useQueryClient()
   const queryValid = useMutation(
     (valided: boolean) =>
@@ -45,14 +44,6 @@
 
 <TagsPrint id="providedTags" articles={pendingItems} tag={$troc.tag} />
 
-<ArticleCreateDialog
-  {subscribeId}
-  bind:active={articleCreateDialogActive}
-  on:createArticle={({ detail }) => (pendingItems = [...pendingItems, detail])}
-  on:createArticles={({ detail }) =>
-    (pendingItems = [...pendingItems, ...detail])}
-/>
-
 <Template
   bind:pendingItems
   queryParams={{ exact_providerSubId: subscribeId, exact_statut: 'proposed' }}
@@ -61,10 +52,13 @@
   message="Sélectionner des articles proposés par le client pour les valider ou les refuser."
 >
   <div slot="actions-permanent-left">
-    <Button depressed dense on:click={() => (articleCreateDialogActive = true)}>
-      <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
-      article
-    </Button>
+    <ArticleCreateDialog
+      {subscribeId}
+      on:createArticle={({ detail }) =>
+        (pendingItems = [...pendingItems, detail])}
+      on:createArticles={({ detail }) =>
+        (pendingItems = [...pendingItems, ...detail])}
+    />
   </div>
 
   <div slot="actions">
