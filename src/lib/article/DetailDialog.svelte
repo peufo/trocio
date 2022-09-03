@@ -212,7 +212,7 @@
       {/if}
     {/if}
 
-    <Divider />
+    <Divider class="mt-4 mb-4" />
 
     {#if $queryDelete.isLoading}
       <div class="text-center">
@@ -221,7 +221,7 @@
         </Button>
       </div>
     {:else}
-      <div class="d-flex flex-wrap">
+      <div class="d-flex flex-wrap" style="gap: 0.5em;">
         {#if modeAdmin || (!article.valided && !article.refused)}
           <Button text class="blue-text" on:click={handleEditName}>
             Modifier le nom
