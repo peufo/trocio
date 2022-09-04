@@ -40,7 +40,7 @@
   queryParams={{
     exact_trocId: $troc._id,
     ne_exact_providerSubId: subscribeId,
-    exact_statut: 'valided',
+    exact_state: 'valided',
   }}
   placeholder="Articles disponibles"
   message="Sélectionner des articles disponible pour les vendres au client."

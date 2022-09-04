@@ -46,7 +46,7 @@
 
 <Template
   bind:pendingItems
-  queryParams={{ exact_providerSubId: subscribeId, exact_statut: 'proposed' }}
+  queryParams={{ exact_providerSubId: subscribeId, exact_state: 'proposed' }}
   placeholder="Articles proposés"
   canSelectAll
   message="Sélectionner des articles proposés par le client pour les valider ou les refuser."

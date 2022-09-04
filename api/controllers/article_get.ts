@@ -4,68 +4,92 @@ import mongoose from 'mongoose'
 import { populateUser } from './lookup'
 import { dynamicQuery } from './utils'
 import { RequestHandler } from 'express'
-import type { Article as IArticle } from '../../types'
+import type { Article as IArticle, ArticleState } from '../../types'
+import { getMatchesByState } from './article_utils'
 
 const { ObjectId } = mongoose.Types
 
 export const getArticles: RequestHandler = async (req, res, next) => {
-  let {
-    q,
-    exact_statut,
-    include_without_name,
-    limit = 20,
-    skip = 0,
-  } = req.query
+  try {
+    let {
+      q,
+      exact_state,
+      include_without_name,
+      limit = 20,
+      skip = 0,
+    } = req.query
 
-  let { match, sort } = dynamicQuery(req.query, ['exact_statut'])
-  if (!match.$and || !match.$or) throw Error('never')
+    let { match, sort } = dynamicQuery(req.query, ['exact_state'])
+    if (!match.$and || !match.$or) throw Error('never')
 
-  // add specific match
-  if (!include_without_name) match.$and.push({ name: { $ne: '' } })
+    // add specific match
+    if (!include_without_name) match.$and.push({ name: { $ne: '' } })
 
-  //Add filter statut
-  switch (exact_statut) {
-    case 'proposed':
-      match.$and.push({ valided: { $exists: false } })
-      match.$and.push({ refused: { $exists: false } })
-      break
-    case 'valided':
-      match.$and.push({ valided: { $exists: true } })
-      match.$and.push({ sold: { $exists: false } })
-      match.$and.push({ recover: { $exists: false } })
-      break
-    case 'refused':
-      match.$and.push({ refused: { $exists: true } })
-      break
-    case 'sold':
-      match.$and.push({ sold: { $exists: true } })
-      break
-    case 'recover':
-      match.$and.push({ recover: { $exists: true } })
-      break
+    if (exact_state) match.$and.push(...getMatchesByState(exact_state))
+
+    if (q && typeof q === 'string') {
+      match.$and.push({
+        $or: [{ name: new RegExp(q, 'i') }, { ref: new RegExp(q, 'i') }],
+      })
+    }
+
+    //remove match if is empty
+    if (match.$and.length === 0) delete match.$and
+    if (match.$or.length === 0) delete match.$or
+
+    const aggregate = Article.aggregate().match(match)
+
+    if (Object.keys(sort).length) aggregate.sort(sort)
+    aggregate
+      .skip(+skip || 0)
+      .limit((+limit || 20) > 1000 ? 1000 : +limit || 20)
+
+    lookupUsers(aggregate)
+    lookupSubscribe(aggregate, 'provider')
+    lookupSubscribe(aggregate, 'buyer')
+
+    const articles = await aggregate.exec()
+    res.json(articles)
+  } catch (error) {
+    next(error)
   }
+}
 
-  if (q && typeof q === 'string') {
-    match.$and.push({
-      $or: [{ name: new RegExp(q, 'i') }, { ref: new RegExp(q, 'i') }],
+export const getArticleCount: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId } = req.query
+    if (!mongoose.isValidObjectId(trocId))
+      throw Error('trocId need to be a valid objectId')
+
+    const sumOf = (key: ArticleState) => ({
+      $sum: {
+        $cond: {
+          if: { $and: getMatchesByState(key, true) },
+          then: 1,
+          else: 0,
+        },
+      },
     })
+
+    const [counts] = await Article.aggregate([
+      { $match: { trocId: new ObjectId(trocId as string) } },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          proposed: sumOf('proposed'),
+          refused: sumOf('refused'),
+          valided: sumOf('valided'),
+          sold: sumOf('sold'),
+          recover: sumOf('recover'),
+        },
+      },
+    ])
+
+    res.json(counts)
+  } catch (error) {
+    next(error)
   }
-
-  //remove match if is empty
-  if (match.$and.length === 0) delete match.$and
-  if (match.$or.length === 0) delete match.$or
-
-  const aggregate = Article.aggregate().match(match)
-
-  if (Object.keys(sort).length) aggregate.sort(sort)
-  aggregate.skip(+skip || 0).limit((+limit || 20) > 1000 ? 1000 : +limit || 20)
-
-  lookupUsers(aggregate)
-  lookupSubscribe(aggregate, 'provider')
-  lookupSubscribe(aggregate, 'buyer')
-
-  const articles = await aggregate.exec()
-  res.json(articles)
 }
 
 /**

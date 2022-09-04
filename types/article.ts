@@ -90,4 +90,9 @@ export interface ArticleCorrectionsLookup {
   corrections: ArticleCorrectionLookup[]
 }
 
-export type EventName = 'valided' | 'refused' | 'sold' | 'recover'
+export type ArticleState =
+  | 'proposed'
+  | 'valided'
+  | 'refused'
+  | 'sold'
+  | 'recover'

@@ -10,12 +10,17 @@ import {
   soldArticles,
   cancelEvent,
 } from '../controllers/article_set'
-import { getArticles, getArticleCorrection } from '../controllers/article_get'
+import {
+  getArticles,
+  getArticleCorrection,
+  getArticleCount,
+} from '../controllers/article_get'
 
 router
   .get('/', getArticles)
   .post('/', createArticle)
   .delete('/', deleteArticle)
+  .get('/counts', getArticleCount)
   .post('/edit-name', editName)
   .post('/edit-price', editPrice)
   .post('/valid', validArticles)

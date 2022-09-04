@@ -30,10 +30,10 @@ export function getFields(): FieldInteface<Article>[] {
       label: 'Statut',
       visible: true,
       format: 'enum',
-      queryKey: 'statut',
+      queryKey: 'state',
       getValue: getStatut,
       cellWidth: 90,
-      enumOptions: statutEnumOptions,
+      enumOptions: stateEnumOptions,
     },
     {
       label: 'Création',
@@ -147,7 +147,7 @@ export function getFieldsLookup(
   ]
 }
 
-const statutEnumOptions: FieldInteface<Article>['enumOptions'] = [
+const stateEnumOptions: FieldInteface<Article>['enumOptions'] = [
   { key: null, label: 'Tous' },
   {
     key: 'proposed',

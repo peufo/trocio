@@ -11,7 +11,7 @@
     ArticleCorrection,
     ArticleCorrectionsLookup,
     ArticleLookup,
-    EventName,
+    ArticleState,
   } from 'types'
   import { getStatut } from '$lib/utils'
   import { troc } from '$lib/troc/store'
@@ -94,8 +94,8 @@
   )
 
   const queryCancelEvent = useMutation(
-    (eventName: EventName) =>
-      api<{ articleId: string; eventName: EventName }, ArticleLookup>(
+    (eventName: ArticleState) =>
+      api<{ articleId: string; eventName: ArticleState }, ArticleLookup>(
         '/api/articles/cancel-event',
         {
           method: 'post',

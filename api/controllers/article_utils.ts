@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 import Subscribe from '../models/subscribe'
 import { lookupTarif } from './subscribe_get'
-import type { Article, Tarif } from '../../types'
+import type { Article, ArticleState, Tarif } from '../../types'
 const { ObjectId } = mongoose.Types
 
 export async function getTarif(
@@ -34,4 +34,27 @@ export async function getFee(article: Article) {
 export async function getMargin(article: Article) {
   const tarif = await getTarif(article.providerSubId)
   return tarif && article.price ? tarif.margin * article.price : 0
+}
+
+export function getMatchesByState(
+  state: ArticleState | unknown,
+  modeAggregate = false
+): mongoose.FilterQuery<Article>[] {
+  if (typeof state !== 'string') return []
+  // https://stackoverflow.com/questions/25497150/mongodb-aggregate-by-field-exists
+  const exist = modeAggregate
+    ? (key: string) => ({ $gt: [`$${key}`, null] })
+    : (key: string) => ({ [key]: { $exists: true } })
+  const existNot = modeAggregate
+    ? (key: string) => ({ $lte: [`$${key}`, null] })
+    : (key: string) => ({ [key]: { $exists: false } })
+
+  const states = {
+    proposed: [existNot('valided'), existNot('refused')],
+    valided: [exist('valided'), existNot('sold'), existNot('recover')],
+    refused: [exist('refused')],
+    sold: [exist('sold')],
+    recover: [exist('recover')],
+  }
+  return states[state] || []
 }

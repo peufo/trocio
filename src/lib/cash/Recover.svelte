@@ -36,7 +36,7 @@
 
 <Template
   bind:pendingItems
-  queryParams={{ exact_providerSubId: subscribeId, exact_statut: 'valided' }}
+  queryParams={{ exact_providerSubId: subscribeId, exact_state: 'valided' }}
   placeholder="Articles validés"
   canSelectAll
   message="Sélectionner des articles invendus pour les rendre au client."

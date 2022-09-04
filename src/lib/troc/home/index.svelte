@@ -15,8 +15,9 @@
 
   import { troc } from '$lib/troc/store'
   import TrocCard from '$lib/troc/Card.svelte'
-  import UsersCard from '$lib/troc/home/UsersCard.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
+  import UsersCard from '$lib/troc/home/UsersCard.svelte'
+  import ArticlesCard from '$lib/troc/home/ArticlesCard.svelte'
 </script>
 
 <div class="grid">
@@ -31,28 +32,17 @@
     </div>
   </TrocCard>
 
+  <!-- Users -->
   <UsersCard trocId={$troc._id} />
 
   <!-- Articles-->
-  <Card>
-    <CardTitle>
-      <IconLink icon={faCashRegister} class="mr-4" />
-      42 Articles proposés
-    </CardTitle>
-    <CardText>
-      <ul>
-        <li>asd</li>
-        <li>asd</li>
-        <li>asd</li>
-      </ul>
-    </CardText>
-  </Card>
+  <ArticlesCard trocId={$troc._id} />
 
   <!-- Caisse-->
   <Card>
     <CardTitle>
-      <IconLink icon={faCubes} class="mr-4" />
-      42 Articles proposés
+      <IconLink icon={faCashRegister} class="mr-4" />
+      321 transaction
     </CardTitle>
     <CardText>
       <ul>

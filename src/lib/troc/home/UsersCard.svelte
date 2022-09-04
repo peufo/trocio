@@ -2,22 +2,7 @@
   import { onMount } from 'svelte'
   import { url } from '@roxi/routify'
   import { Card, CardTitle, Button } from 'svelte-materialify'
-  import {
-    faHouseChimney,
-    faInfoCircle,
-    faUsers,
-    faCubes,
-    faCoins,
-    faTag,
-    faChartPie,
-    faCashRegister,
-    faAngleDoubleLeft,
-    faEdit,
-    faUserAlt,
-    faUserCog,
-    faUserTag,
-    faUserTie,
-  } from '@fortawesome/free-solid-svg-icons'
+  import { faUsers } from '@fortawesome/free-solid-svg-icons'
 
   import type { DynamicQuerySubscribe } from 'types'
   import IconLink from '$lib/util/IconLink.svelte'
@@ -67,7 +52,7 @@
     {#each ROLES as role, index (role.key)}
       <a
         href={$url('/admin/management_users', {
-          trocId: trocId,
+          trocId,
           exact_role: role.key,
         })}
       >
@@ -85,7 +70,7 @@
     {#if countGuest}
       <a
         href={$url('/admin/management_users', {
-          trocId: trocId,
+          trocId,
           exact_validedByUser: false,
         })}
       >
