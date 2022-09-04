@@ -49,7 +49,7 @@
     {total}
   </CardTitle>
 
-  <div class="pl-4 pr-4 pb-4">
+  <div class="pl-4 pr-4 pb-4 d-flex flex-column" style="gap: 0.5em;">
     {#each ROLES as role, index (role.key)}
       <a
         href={$url('/admin/management_users', {
@@ -57,7 +57,7 @@
           exact_role: role.key,
         })}
       >
-        <Button depressed class="mb-2  d-flex" style="width: 100%;">
+        <Button depressed class="d-flex" style="width: 100%;">
           {#if role.icon}
             <IconLink icon={role.icon} opacity class="mr-2" size="1.2em" />
           {/if}
@@ -66,7 +66,6 @@
           {counts[index]}
         </Button>
       </a>
-      <br />
     {/each}
 
     {#if countGuest}

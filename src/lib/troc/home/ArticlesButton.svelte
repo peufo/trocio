@@ -17,9 +17,10 @@
       exact_state: state,
     })}
   >
-    <Button depressed class="mb-2" style="width: 100%;">
-      {count}
+    <Button depressed class="d-flex" style="width: 100%;">
       {label}{count > 1 ? 's' : ''}
+      <div class="flex-grow-1" />
+      {count}
     </Button>
   </a>
 </div>

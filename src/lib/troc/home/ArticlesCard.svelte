@@ -17,9 +17,11 @@
 
 {#if $query.data}
   <Card>
-    <CardTitle>
+    <CardTitle class="ml-3 mr-4">
       <IconLink icon={faCubes} class="mr-4" />
-      {$query.data.total} Articles
+      Articles
+      <div class="flex-grow-1" />
+      {$query.data.total}
     </CardTitle>
     <div class="articles-flow pl-4 pr-4 pb-4">
       <ArticlesButton
@@ -58,15 +60,48 @@
   </Card>
 {/if}
 
-<style lang="scss">
+<style lang="scss" global>
+  $column-gap: 0.5em;
+  $row-gap: 1.88em;
+  $line: 4px;
+
   .articles-flow {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    row-gap: 1em;
+    row-gap: $row-gap;
+    column-gap: $column-gap;
     justify-items: stretch;
 
-    [data-state='refused'] {
-      transform: translateY(10px);
+    div {
+      position: relative;
+    }
+
+    [data-state='refused'],
+    [data-state='recover'] {
+      transform: translateY(calc(50% + $row-gap / 2));
+    }
+
+    [data-state='proposed']::before,
+    [data-state='valided']::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      border-bottom: var(--theme-chips) solid $line / 2;
+      border-left: var(--theme-chips) solid $line / 2;
+      border-radius: $row-gap / 2;
+    }
+
+    [data-state='proposed']::after,
+    [data-state='valided']::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      height: 100%;
+      right: 50%;
+      border-right: var(--theme-chips) solid $line;
     }
   }
 </style>
