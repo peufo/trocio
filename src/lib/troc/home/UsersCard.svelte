@@ -42,10 +42,11 @@
 
 <!-- Participants  -->
 <Card>
-  <CardTitle>
-    <IconLink icon={faUsers} class="mr-4" />
-    {total}
+  <CardTitle class="ml-3 mr-4">
+    <IconLink icon={faUsers} class="mr-2" />
     Participation{total > 1 ? 's' : ''}
+    <div class="flex-grow-1" />
+    {total}
   </CardTitle>
 
   <div class="pl-4 pr-4 pb-4">
@@ -56,12 +57,13 @@
           exact_role: role.key,
         })}
       >
-        <Button depressed class="mb-2">
+        <Button depressed class="mb-2  d-flex" style="width: 100%;">
           {#if role.icon}
             <IconLink icon={role.icon} opacity class="mr-2" size="1.2em" />
           {/if}
-          {counts[index]}
           {role.label}{counts[index] > 1 ? 's' : ''}
+          <div class="flex-grow-1" />
+          {counts[index]}
         </Button>
       </a>
       <br />
