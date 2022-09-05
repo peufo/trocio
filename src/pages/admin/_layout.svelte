@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { params } from '@roxi/routify'
+  import { params, goto } from '@roxi/routify'
 
   import Loader from '$lib/util/Loader.svelte'
   import NavigationAdmin from '$lib/layout/NavigationAdmin.svelte'
   import Tips from '$lib/layout/Tips.svelte'
   import { troc } from '$lib/troc/store'
+  import { user } from '$lib/user/store'
   import { useApi } from '$lib/api'
   import type { TrocLookup } from 'types'
 
@@ -16,6 +17,8 @@
     queryKey: ['trocs/byId', { trocId: $params.trocId }],
     onSuccess: troc.set,
   })
+
+  if (!$user) $goto('/trocs')
 </script>
 
 {#if $trocQuery?.isLoading}

@@ -64,7 +64,7 @@ export const ensureUserCanAccessResum: RequestHandler = async (
  */
 async function getAccessedAndAssecor(req: Request, res: Response) {
   try {
-    if (!req.session.user._id) throw 'Login required'
+    if (!req.session.user?._id) throw 'Login required'
     const { subscribeId, trocId } = parseRequest(req)
 
     if (!subscribeId && !trocId)
