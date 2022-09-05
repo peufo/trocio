@@ -8,6 +8,7 @@
   import UsersCard from '$lib/troc/home/UsersCard.svelte'
   import ArticlesCard from '$lib/troc/home/ArticlesCard.svelte'
   import CashCard from '$lib/troc/home/CashCard.svelte'
+  import LinksCard from '$lib/troc/home/LinksCard.svelte'
 </script>
 
 <div class="home-grid">
@@ -22,14 +23,13 @@
     </div>
   </TrocCard>
 
-  <!-- Caisse-->
   <CashCard trocId={$troc._id} currency={$troc.currency} />
 
-  <!-- Articles-->
   <ArticlesCard trocId={$troc._id} />
 
-  <!-- Users -->
   <UsersCard trocId={$troc._id} />
+
+  <LinksCard trocId={$troc._id} />
 </div>
 
 <style lang="scss" global>
@@ -38,7 +38,7 @@
     margin: auto;
     display: grid;
     gap: 20px;
-    align-items: start;
+    /*align-items: start;*/
     grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
 
     @media screen and (min-width: 1000px) {

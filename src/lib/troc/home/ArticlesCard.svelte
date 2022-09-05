@@ -22,7 +22,7 @@
       <div class="flex-grow-1" />
       {$query.data.total}
     </CardTitle>
-    <div class="articles-flow pl-4 pr-4 pb-4">
+    <div class="articles-flow pa-4">
       <ArticlesButton
         label="Proposé"
         state="proposed"

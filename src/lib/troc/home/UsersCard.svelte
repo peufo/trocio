@@ -49,7 +49,7 @@
     {total}
   </CardTitle>
 
-  <div class="pl-4 pr-4 pb-4 d-flex flex-column" style="gap: 0.5em;">
+  <div class="pa-4 d-flex flex-column" style="gap: 0.5em;">
     {#each ROLES as role, index (role.key)}
       <a
         href={$url('/admin/management_users', {

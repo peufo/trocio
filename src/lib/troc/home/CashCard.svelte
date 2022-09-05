@@ -56,10 +56,7 @@
       </span>
     </CardSubtitle>
 
-    <div
-      class="pl-4 pr-4 pb-4 d-flex flex-column"
-      style="gap: 0.5em; margin-top: 12px;"
-    >
+    <div class="pa-4 d-flex flex-column" style="gap: 0.5em; margin-top: 12px;">
       <div>
         <a
           href={$url('/admin/management_users', {
