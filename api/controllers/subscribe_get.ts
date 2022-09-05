@@ -209,6 +209,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     // Ca fait mal au serveur 😁
     let { match, sort } = dynamicQuery(req.query)
     if (!match.$or?.length) delete match.$or
+    if (!match.$and?.length) delete match.$and
     aggregate.match(match)
     if (Object.keys(sort).length) aggregate.sort(sort)
 
