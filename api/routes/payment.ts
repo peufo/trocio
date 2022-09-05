@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { createPayment, getPaymentByUser } from '../controllers/payment'
+import { createPayment, getPaymentByUser } from '../controllers/payement'
 const router = express.Router()
 
 router.get('/by-user', getPaymentByUser).post('/', createPayment)

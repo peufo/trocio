@@ -11,7 +11,7 @@
   export let trocId: string
 
   $: query = useApi<{ trocId: string }, Record<ArticleState | 'total', number>>(
-    ['/articles/counts', { trocId }]
+    ['/articles/counts-by-state', { trocId }]
   )
 </script>
 

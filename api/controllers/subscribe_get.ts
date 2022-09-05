@@ -6,6 +6,7 @@ import { lookupUser, populateUser } from './lookup'
 import Subscribe from '../models/subscribe'
 import User from '../models/user'
 import Article from '../models/article'
+import Payment from '../models/payment'
 import type { ISubscribe, SubscribeLookup } from '../../types'
 import { dynamicQuery } from './utils'
 
@@ -65,6 +66,32 @@ export const getResum: RequestHandler = async (req, res, next) => {
 
     const [subscribe] = await aggregate.exec()
     res.json(subscribe)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getResumCounts: RequestHandler = async (req, res, next) => {
+  try {
+    const { trocId } = req.query
+
+    if (!mongoose.isValidObjectId(trocId) || typeof trocId !== 'string')
+      throw 'trocId need to be a string'
+
+    const aggregate = Subscribe.aggregate().match({
+      trocId: new ObjectId(trocId),
+    })
+    lookupResum(aggregate)
+    aggregate.group({
+      _id: null,
+      positive: { $sum: { $cond: [{ $gt: ['$resum.balance', 0] }, 1, 0] } },
+      negative: { $sum: { $cond: [{ $lt: ['$resum.balance', 0] }, 1, 0] } },
+    })
+
+    const [resum] = await aggregate.exec()
+    const payments = await Payment.countDocuments({ trocId })
+
+    res.json({ ...resum, payments })
   } catch (error) {
     next(error)
   }

@@ -18,6 +18,7 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import UsersCard from '$lib/troc/home/UsersCard.svelte'
   import ArticlesCard from '$lib/troc/home/ArticlesCard.svelte'
+  import PaymentsCard from './PaymentsCard.svelte'
 </script>
 
 <div class="grid">
@@ -39,18 +40,7 @@
   <ArticlesCard trocId={$troc._id} />
 
   <!-- Caisse-->
-  <Card>
-    <CardTitle>
-      <IconLink icon={faCashRegister} class="mr-4" />
-      321 transaction
-    </CardTitle>
-    <CardText>
-      <ul>
-        <li>23 Solde ouvert en votre faveur</li>
-        <li>43 Solde ouvert en faveur des clients</li>
-      </ul>
-    </CardText>
-  </Card>
+  <PaymentsCard trocId={$troc._id} />
 </div>
 
 <style>

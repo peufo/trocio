@@ -12,6 +12,7 @@ import {
   getSubscribe,
   getSubscribersCount,
   getResum,
+  getResumCounts,
   getResumePrintData,
 } from '../controllers/subscribe_get'
 import {
@@ -26,6 +27,7 @@ router
   .get('/count', ensureUserIsCashier, getSubscribersCount)
   .get('/byId', ensureUserCanAccessResum, getSubscribe)
   .get('/resum', ensureUserCanAccessResum, getResum)
+  .get('/resum/counts', ensureUserCanAccessResum, getResumCounts)
   .get('/resum/fulldata', ensureUserCanAccessResum, getResumePrintData)
   .get('/me', getMySubscribes)
   .post('/role', ensureUserIsAdmin, assignRole)

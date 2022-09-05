@@ -55,7 +55,11 @@ export const getArticles: RequestHandler = async (req, res, next) => {
   }
 }
 
-export const getArticleCount: RequestHandler = async (req, res, next) => {
+export const getArticleCountsByState: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   try {
     const { trocId } = req.query
     if (!mongoose.isValidObjectId(trocId))

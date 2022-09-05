@@ -13,14 +13,14 @@ import {
 import {
   getArticles,
   getArticleCorrection,
-  getArticleCount,
+  getArticleCountsByState,
 } from '../controllers/article_get'
 
 router
   .get('/', getArticles)
   .post('/', createArticle)
   .delete('/', deleteArticle)
-  .get('/counts', getArticleCount)
+  .get('/counts-by-state', getArticleCountsByState)
   .post('/edit-name', editName)
   .post('/edit-price', editPrice)
   .post('/valid', validArticles)
