@@ -62,6 +62,7 @@
           href={$url('/admin/management_users', {
             trocId,
             'min_resum.balance': 0.01,
+            'sort_resum.balance': -1,
           })}
         >
           <Button depressed style="width: 100%;">
@@ -87,6 +88,7 @@
           href={$url('/admin/management_users', {
             trocId,
             'max_resum.balance': -0.01,
+            'sort_resum.balance': 1,
           })}
         >
           <Button depressed style="width: 100%;">
