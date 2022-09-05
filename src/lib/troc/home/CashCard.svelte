@@ -46,7 +46,14 @@
     </CardTitle>
     <CardSubtitle class="d-flex">
       <div class="flex-grow-1" />
-      asd
+      <span
+        title={[
+          `Frais de dépot : ${renderAmount(resum.benefitMargin, currency)}`,
+          `Marge à la vente : ${renderAmount(resum.benefitFee, currency)}`,
+        ].join('\n')}
+      >
+        Bénéfice {renderAmount(resum.benefit, currency)}
+      </span>
     </CardSubtitle>
 
     <div
@@ -104,7 +111,5 @@
         </CardSubtitle>
       </div>
     </div>
-
-    <pre>{JSON.stringify(resum, null, 2)}</pre>
   </Card>
 {/if}

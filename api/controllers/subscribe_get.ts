@@ -99,9 +99,9 @@ export const getResumCounts: RequestHandler = async (req, res, next) => {
       negativeSum: {
         $sum: { $cond: [{ $lt: ['$resum.balance', 0] }, '$resum.balance', 0] },
       },
-      benefit: { $sum: { $add: ['$resum.feeSum', '$resum.marginFee'] } },
+      benefit: { $sum: { $add: ['$resum.feeSum', '$resum.marginSum'] } },
       benefitFee: { $sum: '$resum.feeSum' },
-      benefitMargin: { $sum: '$resum.marginFee' },
+      benefitMargin: { $sum: '$resum.marginSum' },
     })
 
     const [resum] = await aggregate.exec()

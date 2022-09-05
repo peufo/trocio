@@ -7,7 +7,7 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import UsersCard from '$lib/troc/home/UsersCard.svelte'
   import ArticlesCard from '$lib/troc/home/ArticlesCard.svelte'
-  import TraficCard from '$lib/troc/home/TraficCard.svelte'
+  import CashCard from '$lib/troc/home/CashCard.svelte'
 </script>
 
 <div class="grid">
@@ -29,7 +29,7 @@
   <ArticlesCard trocId={$troc._id} />
 
   <!-- Caisse-->
-  <TraficCard trocId={$troc._id} currency={$troc.currency} />
+  <CashCard trocId={$troc._id} currency={$troc.currency} />
 </div>
 
 <style>
