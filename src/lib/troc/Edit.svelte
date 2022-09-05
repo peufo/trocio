@@ -118,8 +118,6 @@
   function isModified(keys: TrocBaseKey[]): boolean {
     if (!$troc || !isNewTrocCloned) return false
     keys = Array.isArray(keys) ? keys : [keys]
-    console.log('new', JSON.stringify(newTroc.schedule))
-    console.log('old', JSON.stringify($troc.schedule))
     return (
       keys.filter((key) => {
         return typeof newTroc[key] === 'object'
