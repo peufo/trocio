@@ -29,7 +29,7 @@
   <ArticlesCard trocId={$troc._id} />
 
   <!-- Caisse-->
-  <TraficCard trocId={$troc._id} />
+  <TraficCard trocId={$troc._id} currency={$troc.currency} />
 </div>
 
 <style>

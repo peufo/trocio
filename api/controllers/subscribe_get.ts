@@ -40,7 +40,7 @@ export const getMySubscribes: RequestHandler = async (req, res, next) => {
 }
 
 /**
- * Resum is compute and tarif is added by default
+ * Récupère l'activité d'un participant
  */
 export const getResum: RequestHandler = async (req, res, next) => {
   try {
@@ -71,6 +71,9 @@ export const getResum: RequestHandler = async (req, res, next) => {
   }
 }
 
+/**
+ * Retourne des chiffre clé du troc
+ */
 export const getResumCounts: RequestHandler = async (req, res, next) => {
   try {
     const { trocId } = req.query
@@ -78,20 +81,39 @@ export const getResumCounts: RequestHandler = async (req, res, next) => {
     if (!mongoose.isValidObjectId(trocId) || typeof trocId !== 'string')
       throw 'trocId need to be a string'
 
-    const aggregate = Subscribe.aggregate().match({
-      trocId: new ObjectId(trocId),
-    })
+    const match = { trocId: new ObjectId(trocId) }
+
+    const aggregate = Subscribe.aggregate().match(match)
     lookupResum(aggregate)
     aggregate.group({
       _id: null,
-      positive: { $sum: { $cond: [{ $gt: ['$resum.balance', 0] }, 1, 0] } },
-      negative: { $sum: { $cond: [{ $lt: ['$resum.balance', 0] }, 1, 0] } },
+      positiveCount: {
+        $sum: { $cond: [{ $gt: ['$resum.balance', 0] }, 1, 0] },
+      },
+      positiveSum: {
+        $sum: { $cond: [{ $gt: ['$resum.balance', 0] }, '$resum.balance', 0] },
+      },
+      negativeCount: {
+        $sum: { $cond: [{ $lt: ['$resum.balance', 0] }, 1, 0] },
+      },
+      negativeSum: {
+        $sum: { $cond: [{ $lt: ['$resum.balance', 0] }, '$resum.balance', 0] },
+      },
+      benefit: { $sum: { $add: ['$resum.feeSum', '$resum.marginFee'] } },
+      benefitFee: { $sum: '$resum.feeSum' },
+      benefitMargin: { $sum: '$resum.marginFee' },
     })
 
     const [resum] = await aggregate.exec()
-    const payment = await Payment.countDocuments({ trocId })
+    const [payment] = await Payment.aggregate()
+      .match(match)
+      .group({
+        _id: null,
+        paymentCount: { $sum: 1 },
+        paymentSum: { $sum: '$amount' },
+      })
 
-    res.json({ ...resum, payment })
+    res.json({ ...resum, ...payment })
   } catch (error) {
     next(error)
   }
@@ -252,41 +274,6 @@ export const getSubscribersCount: RequestHandler = async (req, res, next) => {
     next(error)
   }
 }
-
-/**
- * Update aggregate for lookup user from userId
- */
-/*
-export function lookupUser(
-  aggregate: mongoose.Aggregate<ISubscribe[]>,
-  userId = '$userId'
-): void {
-  aggregate
-    .lookup({
-      from: 'users',
-      let: { userId },
-      pipeline: [
-        {
-          $match: {
-            $expr: {
-              $eq: ['$_id', '$$userId'],
-            },
-          },
-        },
-        {
-          $project: {
-            name: 1,
-            mail: 1,
-          },
-        },
-      ],
-      as: 'user',
-    })
-    .addFields({
-      user: { $arrayElemAt: ['$user', 0] },
-    })
-}
-*/
 
 /**
  * Update aggregate for lookup troc from trocId

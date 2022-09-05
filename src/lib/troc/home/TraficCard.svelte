@@ -1,75 +1,110 @@
 <script lang="ts">
   import { url } from '@roxi/routify'
-  import { Card, CardTitle, Button } from 'svelte-materialify'
+  import { Card, CardTitle, CardSubtitle, Button } from 'svelte-materialify'
 
   import IconLink from '$lib/util/IconLink.svelte'
+  import { renderAmount } from '$lib/utils'
   import { useApi } from '$lib/api'
   import {
     faArrowRightToBracket,
     faArrowUpFromBracket,
     faRightLeft,
+    faCashRegister,
   } from '@fortawesome/free-solid-svg-icons'
 
   export let trocId: string
+  export let currency: string
 
   interface ResumCount {
-    payment: number
-    positive: number
-    negative: number
+    paymentCount: number
+    paymentSum: number
+    positiveCount: number
+    positiveSum: number
+    negativeCount: number
+    negativeSum: number
+    benefit: number
+    benefitMargin: number
+    benefitFee: number
   }
 
   $: query = useApi<{ trocId: string }, ResumCount>([
     '/subscribes/resum/counts',
     { trocId },
   ])
+  $: resum = $query.data || null
 </script>
 
-{#if $query.data}
+{#if resum}
   <Card>
-    <CardTitle class="ml-3 mr-4">
-      <IconLink icon={faRightLeft} class="mr-4" />
-      Transactions
+    <CardTitle class="ml-3 ">
+      <IconLink icon={faCashRegister} class="mr-4" />
+      Caisse
       <div class="flex-grow-1" />
-      {$query.data.payment}
+      <span title="Contenu de la caisse">
+        {renderAmount(resum.paymentSum, currency)}
+      </span>
     </CardTitle>
-    <div class="pl-4 pr-4 pb-4 d-flex flex-column" style="gap: 0.5em;">
-      <a
-        href={$url('/admin/management_users', {
-          trocId,
-          'min_resum.balance': 0.01,
-        })}
-      >
-        <Button depressed style="width: 100%;">
-          <IconLink
-            icon={faArrowUpFromBracket}
-            class="mr-2"
-            size="1.2em"
-            opacity
-          />
-          Solde{$query.data.positive > 1 ? 's' : ''} en faveur du client
+    <CardSubtitle class="d-flex">
+      <div class="flex-grow-1" />
+      asd
+    </CardSubtitle>
+
+    <div
+      class="pl-4 pr-4 pb-4 d-flex flex-column"
+      style="gap: 0.5em; margin-top: 12px;"
+    >
+      <div>
+        <a
+          href={$url('/admin/management_users', {
+            trocId,
+            'min_resum.balance': 0.01,
+          })}
+        >
+          <Button depressed style="width: 100%;">
+            <IconLink
+              icon={faArrowUpFromBracket}
+              class="mr-2"
+              size="1.2em"
+              opacity
+            />
+            Solde{resum.positiveCount > 1 ? 's' : ''} en faveur du client
+            <div class="flex-grow-1" />
+            {resum.positiveCount}
+          </Button>
+        </a>
+        <CardSubtitle class="d-flex pa-0">
           <div class="flex-grow-1" />
-          {$query.data.positive}
-        </Button>
-      </a>
-      <a
-        href={$url('/admin/management_users', {
-          trocId,
-          'max_resum.balance': -0.01,
-        })}
-      >
-        <Button depressed style="width: 100%;">
-          <IconLink
-            icon={faArrowRightToBracket}
-            class="mr-2"
-            size="1.2em"
-            opacity
-            style="transform: rotate(90deg);"
-          />
-          Solde{$query.data.negative > 1 ? 's' : ''} en votre faveur
+          {renderAmount(-resum.positiveSum, currency)}
+        </CardSubtitle>
+      </div>
+
+      <div>
+        <a
+          href={$url('/admin/management_users', {
+            trocId,
+            'max_resum.balance': -0.01,
+          })}
+        >
+          <Button depressed style="width: 100%;">
+            <IconLink
+              icon={faArrowRightToBracket}
+              class="mr-2"
+              size="1.2em"
+              opacity
+              style="transform: rotate(90deg);"
+            />
+            Solde{resum.negativeCount > 1 ? 's' : ''} en votre faveur
+            <div class="flex-grow-1" />
+            {resum.negativeCount}
+          </Button>
+        </a>
+        <CardSubtitle class="d-flex pa-0">
           <div class="flex-grow-1" />
-          {$query.data.negative}
-        </Button>
-      </a>
+          {renderAmount(-resum.negativeSum, currency)}
+        </CardSubtitle>
+      </div>
     </div>
+
+    <pre>{JSON.stringify(resum, null, 2)}</pre>
   </Card>
 {/if}
