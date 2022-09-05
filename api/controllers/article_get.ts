@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 import { populateUser } from './lookup'
 import { dynamicQuery } from './utils'
 import { RequestHandler } from 'express'
-import type { Article as IArticle, ArticleState } from '../../types'
+import type { Article as IArticle } from '../../types'
 import { getMatchesByState, sumOfArticles } from './article_utils'
 
 const { ObjectId } = mongoose.Types
@@ -80,7 +80,18 @@ export const getArticleCountsByState: RequestHandler = async (
       },
     ])
 
-    res.json(counts)
+    // Si aucun article ne match
+    const defaultCounts = {
+      _id: null,
+      total: 0,
+      proposed: 0,
+      refused: 0,
+      valided: 0,
+      sold: 0,
+      recover: 0,
+    }
+
+    res.json(counts || defaultCounts)
   } catch (error) {
     next(error)
   }
