@@ -53,6 +53,7 @@
     transition: padding 200ms;
   }
 
+  /*
   .tipsButton.tipsActive {
     transform: translateX(-50px);
   }
@@ -68,4 +69,5 @@
     border-bottom: solid 1px var(--theme-text-fields-border);
     border-radius: 0px 23px 23px 0px;
   }
+  */
 </style>
