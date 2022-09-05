@@ -23,6 +23,7 @@
   class="tag"
   class:border={tag.border}
   class:useTagPrinter={tag.useTagPrinter}
+  class:mb-4={tag.useTagPrinter}
   style={`
     color: black;
     background: white;

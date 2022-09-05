@@ -32,7 +32,7 @@
   // @ts-ignore
 </script>
 
-<div class="container">
+<div class="wrapper">
   <h6 class="mb-5">Configuration des étiquettes</h6>
 
   <div class="pa-4 simple-card">
@@ -118,7 +118,7 @@
       <Button
         on:click={() => print('testPrint')}
         outlined
-        class="green green-text"
+        class="secondary-text"
       >
         Tester l'impression
       </Button>
@@ -148,15 +148,28 @@
 
   <!-- Apercue -->
   <div class="mt-8">
-    <h6>Aperçu des étiquettes</h6>
-
-    <TagsPrint id="testPrint" visible articles={articlesExemple} {tag} />
+    <h6 class="mb-4">Aperçu des étiquettes</h6>
+    <div class="page-wrapper" class:elevation-14={!tag.useTagPrinter}>
+      <div class:page={!tag.useTagPrinter}>
+        <TagsPrint id="testPrint" visible articles={articlesExemple} {tag} />
+      </div>
+    </div>
   </div>
 </div>
 
 <style>
-  .container {
-    max-width: 700px;
+  .wrapper {
+    max-width: 210mm;
     margin: auto;
+  }
+
+  .page-wrapper {
+    overflow-x: auto;
+  }
+
+  .page {
+    /** default value in chrome */
+    width: 210mm;
+    padding: 10mm;
   }
 </style>

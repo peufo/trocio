@@ -51,8 +51,8 @@ const trocModel = new Schema(
     ],
     articlelastref: { type: Number, required: true, default: 0 },
     tag: {
-      width: { type: Number, default: 90 },
-      height: { type: Number, default: 29 },
+      width: { type: Number, default: 95 },
+      height: { type: Number, default: 30 },
       padding: { type: Number, default: 2 },
       fontSize: { type: Number, default: 16 },
       border: { type: Boolean, default: true },
