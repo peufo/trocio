@@ -42,7 +42,8 @@
     $goto($url(), query)
   }
 
-  function clearSelection(e: Event) {
+  function clearSelection(event: CustomEvent<PointerEvent>) {
+    event.detail.stopPropagation()
     handleClick({
       key: null,
       label: '',

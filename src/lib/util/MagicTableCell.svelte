@@ -19,7 +19,7 @@
   }
 </script>
 
-{#if typeof value === 'string'}
+{#if typeof value === 'string' || typeof value === 'number'}
   {#if !value}
     <span> - </span>
   {:else if field.format === 'date'}

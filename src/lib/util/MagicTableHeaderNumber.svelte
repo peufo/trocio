@@ -130,7 +130,8 @@
     handleChangeFilter()
   }
 
-  function handleClearFilter() {
+  function handleClearFilter(event?: CustomEvent<PointerEvent>) {
+    if (event) event.detail.stopPropagation()
     min = ''
     max = ''
     handleChangeFilter()
@@ -235,7 +236,7 @@
         TODO 🥱
       {/if}
       {#if min || max}
-        <ListItem on:click={handleClearFilter}>
+        <ListItem on:click={() => handleClearFilter()}>
           <span slot="prepend">
             <IconLink icon={faTimes} />
           </span>

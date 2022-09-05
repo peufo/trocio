@@ -41,8 +41,8 @@
     active = false
   }
 
-  function handleClear(e: CustomEvent<PointerEvent>) {
-    e.detail.stopPropagation()
+  function handleClear(event: CustomEvent<PointerEvent>) {
+    event.detail.stopPropagation()
     const query = $params
     delete query[key]
     $goto($url(), query)
