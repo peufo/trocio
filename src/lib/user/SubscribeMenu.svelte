@@ -1,10 +1,17 @@
 <script lang="ts">
   import { fade, fly } from 'svelte/transition'
-  import { List, ListItem } from 'svelte-materialify'
+  import { Icon, List, ListItem } from 'svelte-materialify'
   import { params, url, goto } from '@roxi/routify'
   import { debounce } from 'debounce'
-  import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
+  import {
+    faAngleLeft,
+    faAngleRight,
+    faCashRegister,
+    faCubes,
+    faEdit,
+  } from '@fortawesome/free-solid-svg-icons'
   import { faCheckCircle } from '@fortawesome/free-regular-svg-icons'
+  import { mdiCart } from '@mdi/js'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   import IconLink from '$lib/util/IconLink.svelte'
@@ -97,7 +104,7 @@
       mouseIn = false
       handleMouseLeave()
     }}
-    style="left: {position.x}px; top: {position.y}px; z-index:{50};"
+    style="max-height: 400px; left: {position.x}px; top: {position.y}px; z-index:{50};"
   >
     <List>
       {#if state === 'main'}
@@ -107,33 +114,7 @@
               {subscribe?.user?.name || subscribe?.name}
             </span>
           </ListItem>
-          <ListItem
-            on:click={() =>
-              $goto($url('/admin/management_articles'), {
-                trocId: $params.trocId,
-                exact_buyerSubId: subscribe?._id,
-              })}
-          >
-            Vers les achats
-          </ListItem>
-          <ListItem
-            on:click={() =>
-              $goto($url('/admin/management_articles'), {
-                trocId: $params.trocId,
-                exact_providerSubId: subscribe?._id,
-              })}
-          >
-            Vers les articles
-          </ListItem>
-          <ListItem
-            on:click={() =>
-              $goto($url('/admin/cash_register'), {
-                trocId: $params.trocId,
-                client_subscribe_id: subscribe?._id,
-              })}
-          >
-            Vers la caisse
-          </ListItem>
+
           {#if subscribe?.userId}
             <ListItem on:click={() => (state = 'role')}>
               Assigner un rôle
@@ -148,12 +129,52 @@
               <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
             </span>
           </ListItem>
+
+          <ListItem
+            on:click={() =>
+              $goto($url('/admin/management_articles'), {
+                trocId: $params.trocId,
+                exact_buyerSubId: subscribe?._id,
+              })}
+          >
+            <span slot="prepend">
+              <Icon path={mdiCart} class="mr-3" size="1.1em" />
+            </span>
+            Vers les achats
+          </ListItem>
+          <ListItem
+            on:click={() =>
+              $goto($url('/admin/management_articles'), {
+                trocId: $params.trocId,
+                exact_providerSubId: subscribe?._id,
+              })}
+          >
+            <span slot="prepend">
+              <IconLink icon={faCubes} class="mr-3 mt-0 mb-0" size="1.1em" />
+            </span>
+            Vers les articles
+          </ListItem>
+          <ListItem
+            on:click={() =>
+              $goto($url('/admin/cash_register'), {
+                trocId: $params.trocId,
+                client_subscribe_id: subscribe?._id,
+              })}
+          >
+            <span slot="prepend">
+              <IconLink icon={faCashRegister} class="mr-3" size="1.1em" />
+            </span>
+            Vers la caisse
+          </ListItem>
           <ListItem
             on:click={() => {
               paymentDialog.open(subscribe, 'Correction du solde')
               active = false
             }}
           >
+            <span slot="prepend">
+              <IconLink icon={faEdit} class="mr-3" size="1.1em" />
+            </span>
             Corriger le solde
           </ListItem>
         </div>
