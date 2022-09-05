@@ -10,8 +10,8 @@
   import CashCard from '$lib/troc/home/CashCard.svelte'
 </script>
 
-<div class="grid">
-  <TrocCard troc={$troc} hideAdminButton style="grid-area: hero">
+<div class="home-grid">
+  <TrocCard troc={$troc} hideAdminButton class="hero">
     <div slot="card-actions">
       <a href={`/admin/edit?trocId=${$troc._id}`}>
         <Button depressed>
@@ -22,23 +22,29 @@
     </div>
   </TrocCard>
 
-  <!-- Users -->
-  <UsersCard trocId={$troc._id} />
+  <!-- Caisse-->
+  <CashCard trocId={$troc._id} currency={$troc.currency} />
 
   <!-- Articles-->
   <ArticlesCard trocId={$troc._id} />
 
-  <!-- Caisse-->
-  <CashCard trocId={$troc._id} currency={$troc.currency} />
+  <!-- Users -->
+  <UsersCard trocId={$troc._id} />
 </div>
 
-<style>
-  .grid {
+<style lang="scss" global>
+  .home-grid {
     max-width: 1100px;
     margin: auto;
     display: grid;
     gap: 20px;
-    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-    grid-template-areas: 'hero hero hero';
+    align-items: start;
+    grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+
+    @media screen and (min-width: 1000px) {
+      .hero {
+        grid-column: span 2;
+      }
+    }
   }
 </style>
