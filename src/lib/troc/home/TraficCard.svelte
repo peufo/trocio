@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Card, CardTitle, Button, Icon } from 'svelte-materialify'
+  import { url } from '@roxi/routify'
+  import { Card, CardTitle, Button } from 'svelte-materialify'
 
   import IconLink from '$lib/util/IconLink.svelte'
   import { useApi } from '$lib/api'
@@ -34,34 +35,43 @@
       {$query.data.payment}
     </CardTitle>
     <div class="pl-4 pr-4 pb-4 d-flex flex-column" style="gap: 0.5em;">
-      <Button depressed>
-        <IconLink
-          icon={faArrowUpFromBracket}
-          class="mr-2"
-          size="1.2em"
-          opacity
-        />
-        Solde{$query.data.positive > 1 ? 's' : ''} en faveur du client
-        <div class="flex-grow-1" />
-        {$query.data.positive}
-      </Button>
-      <Button depressed>
-        <IconLink
-          icon={faArrowRightToBracket}
-          class="mr-2"
-          size="1.2em"
-          opacity
-          style="transform: rotate(90deg);"
-        />
-        Solde{$query.data.negative > 1 ? 's' : ''} en votre faveur
-        <div class="flex-grow-1" />
-        {$query.data.negative}
-      </Button>
-      <ul>
-        <li>23 Solde ouvert en votre faveur</li>
-        <li>43 Solde ouvert en faveur des clients</li>
-      </ul>
-      <pre>{JSON.stringify($query.data)}</pre>
+      <a
+        href={$url('/admin/management_users', {
+          trocId,
+          'min_resum.balance': 0,
+        })}
+      >
+        <Button depressed style="width: 100%;">
+          <IconLink
+            icon={faArrowUpFromBracket}
+            class="mr-2"
+            size="1.2em"
+            opacity
+          />
+          Solde{$query.data.positive > 1 ? 's' : ''} en faveur du client
+          <div class="flex-grow-1" />
+          {$query.data.positive}
+        </Button>
+      </a>
+      <a
+        href={$url('/admin/management_users', {
+          trocId,
+          'max_resum.balance': 0,
+        })}
+      >
+        <Button depressed style="width: 100%;">
+          <IconLink
+            icon={faArrowRightToBracket}
+            class="mr-2"
+            size="1.2em"
+            opacity
+            style="transform: rotate(90deg);"
+          />
+          Solde{$query.data.negative > 1 ? 's' : ''} en votre faveur
+          <div class="flex-grow-1" />
+          {$query.data.negative}
+        </Button>
+      </a>
     </div>
   </Card>
 {/if}

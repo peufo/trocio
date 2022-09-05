@@ -57,7 +57,7 @@
           exact_role: role.key,
         })}
       >
-        <Button depressed class="d-flex" style="width: 100%;">
+        <Button depressed style="width: 100%;">
           {#if role.icon}
             <IconLink icon={role.icon} opacity class="mr-2" size="1.2em" />
           {/if}

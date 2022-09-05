@@ -34,7 +34,7 @@
 
 <style>
   .grid {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: auto;
     display: grid;
     gap: 20px;
