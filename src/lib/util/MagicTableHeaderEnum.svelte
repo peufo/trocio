@@ -51,7 +51,7 @@
 </script>
 
 <th>
-  <Menu active>
+  <Menu>
     <span slot="activator" class="clickable">
       {field.label}
       <Chip
