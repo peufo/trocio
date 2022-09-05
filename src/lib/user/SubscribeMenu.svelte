@@ -123,7 +123,7 @@
                 exact_providerSubId: subscribe?._id,
               })}
           >
-            Vers les propositions
+            Vers les articles
           </ListItem>
           <ListItem
             on:click={() =>
