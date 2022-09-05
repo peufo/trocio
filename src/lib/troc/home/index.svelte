@@ -46,9 +46,8 @@
     </CardTitle>
     <CardText>
       <ul>
-        <li>asd</li>
-        <li>asd</li>
-        <li>asd</li>
+        <li>23 Solde ouvert en votre faveur</li>
+        <li>43 Solde ouvert en faveur des clients</li>
       </ul>
     </CardText>
   </Card>

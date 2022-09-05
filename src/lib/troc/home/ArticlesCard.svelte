@@ -61,9 +61,9 @@
 {/if}
 
 <style lang="scss" global>
-  $column-gap: 0.5em;
+  $column-gap: 1em;
   $row-gap: 1.88em;
-  $line: 4px;
+  $line: 2px;
 
   .articles-flow {
     display: grid;
@@ -89,8 +89,8 @@
       left: 50%;
       width: 100%;
       height: 100%;
-      border-bottom: var(--theme-chips) solid $line / 2;
-      border-left: var(--theme-chips) solid $line / 2;
+      border-bottom: var(--theme-chips) solid $line;
+      border-left: var(--theme-chips) solid $line;
       border-radius: $row-gap / 2;
     }
 
