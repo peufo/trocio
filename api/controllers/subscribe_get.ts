@@ -160,17 +160,13 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     skip = Number(skip)
     limit = Number(limit)
 
-    let { match, sort } = dynamicQuery(req.query)
-
     // Assure de filtrer sur le troc
-    // @ts-ignore
-    if (!exact_trocId) match.$and.push({ trocId: new ObjectId(trocId) })
-
-    // remove match $or if is empty
-    if (!match.$or?.length) delete match.$or
+    const initialMatch = {
+      trocId: new ObjectId((exact_trocId || trocId) as string),
+    }
 
     const aggregate = Subscribe.aggregate()
-    aggregate.match(match)
+    aggregate.match(initialMatch)
 
     lookupUser(aggregate)
     if (q)
@@ -189,6 +185,10 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     if (includTarif) lookupTarif(aggregate)
 
     // Ca fait mal au serveur 😁
+    let { match, sort } = dynamicQuery(req.query)
+    if (!match.$or?.length) delete match.$or
+    aggregate.match(match)
+    console.log({ YOLO: match.$and })
     if (Object.keys(sort).length) aggregate.sort(sort)
 
     const subscribes = await aggregate.skip(skip).limit(limit).exec()
