@@ -1,12 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { ListItem, Menu } from 'svelte-materialify'
+  import { Chip, Icon, Menu } from 'svelte-materialify'
   import { goto, params, url } from '@roxi/routify'
-  import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
   import MagicSelect from '$lib/util/MagicSelect.svelte'
-  import IconLink from '$lib/util/IconLink.svelte'
   import type { FieldInteface } from 'types'
+  import { mdiClose } from '@mdi/js'
 
   export let field: Partial<FieldInteface>
   export let queryParam: { [key: string]: any } = {}
@@ -42,7 +41,8 @@
     active = false
   }
 
-  function handleClear() {
+  function handleClear(e: CustomEvent<PointerEvent>) {
+    e.detail.stopPropagation()
     const query = $params
     delete query[key]
     $goto($url(), query)
@@ -56,19 +56,20 @@
   <Menu closeOnClick={false} on:open={handleOpen} bind:active>
     <span slot="activator" class="clickable">
       {field.label}
-      <span class="text-caption" style="white-space: pre;">
-        {filterLabel}
-      </span>
-    </span>
 
-    {#if filterLabel}
-      <ListItem on:click={handleClear} dense>
-        <span slot="prepend">
-          <IconLink icon={faTimes} />
+      <Chip
+        active={!!filterLabel}
+        size="x-small"
+        class="clickable"
+        close
+        on:close={handleClear}
+      >
+        <span>{filterLabel}</span>
+        <span slot="close-icon">
+          <Icon path={mdiClose} size="0.7em" />
         </span>
-        Pas de filtre
-      </ListItem>
-    {/if}
+      </Chip>
+    </span>
 
     {#if field.selectOption}
       <MagicSelect
