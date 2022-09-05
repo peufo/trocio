@@ -78,13 +78,13 @@ export function dynamicQuery(
         // add filter min
       } else if (key.startsWith(QUERY_FILTER_MIN)) {
         match.$and.push({
-          [key.replace(QUERY_FILTER_MIN, '')]: { $gte: value },
+          [key.replace(QUERY_FILTER_MIN, '')]: { $gte: +value },
         })
 
         // add filter max
       } else if (key.startsWith(QUERY_FILTER_MAX)) {
         match.$and.push({
-          [key.replace(QUERY_FILTER_MAX, '')]: { $lte: value },
+          [key.replace(QUERY_FILTER_MAX, '')]: { $lte: +value },
         })
       }
     }
