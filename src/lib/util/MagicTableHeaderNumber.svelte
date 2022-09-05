@@ -1,7 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { params, goto, url } from '@roxi/routify'
-  import { List, ListItem, Menu, Divider, TextField } from 'svelte-materialify'
+  import {
+    List,
+    ListItem,
+    Menu,
+    Divider,
+    TextField,
+    Chip,
+    Icon,
+  } from 'svelte-materialify'
   import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
   import {
     faBars,
@@ -13,6 +21,7 @@
 
   import type { FieldInteface, EnumOption } from 'types'
   import IconLink from '$lib/util/IconLink.svelte'
+  import { mdiClose, mdiCloseCircleOutline, mdiDelete } from '@mdi/js'
 
   export let field: Partial<FieldInteface>
   export let active = false
@@ -122,7 +131,8 @@
   }
 
   function handleClearFilter() {
-    min = max = ''
+    min = ''
+    max = ''
     handleChangeFilter()
   }
 </script>
@@ -136,12 +146,18 @@
         <IconLink icon={sortIcon} size="1em" />
       {/if}
 
-      {#if filterLabel}
-        <span class="text-caption" style="white-space: pre;">
-          <IconLink icon={faFilter} size="1em" />
-          {filterLabel}
+      <Chip
+        active={!!filterLabel}
+        size="x-small"
+        class="clickable"
+        close
+        on:close={handleClearFilter}
+      >
+        <span>{filterLabel}</span>
+        <span slot="close-icon">
+          <Icon path={mdiClose} size="0.7em" />
         </span>
-      {/if}
+      </Chip>
     </span>
     <List dense>
       {#each sortOptions as option}

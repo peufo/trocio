@@ -1,11 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { params, goto, url } from '@roxi/routify'
-  import { List, ListItem, Menu } from 'svelte-materialify'
+  import { List, ListItem, Menu, Chip, Icon } from 'svelte-materialify'
 
   import IconLink from '$lib/util/IconLink.svelte'
 
   import type { FieldInteface, EnumOption } from 'types'
+  import { mdiClose } from '@mdi/js'
 
   export let field: Partial<FieldInteface>
   export let queryParam: { [key: string]: any } = {}
@@ -40,15 +41,32 @@
     }
     $goto($url(), query)
   }
+
+  function clearSelection(e: Event) {
+    handleClick({
+      key: null,
+      label: '',
+    })
+  }
 </script>
 
 <th>
-  <Menu>
+  <Menu active>
     <span slot="activator" class="clickable">
       {field.label}
-      <span class="text-caption" style="white-space: pre;">
+      <Chip
+        active={!!queryLabel}
+        size="x-small"
+        class="clickable"
+        close
+        on:close={clearSelection}
+      >
         {queryLabel}
-      </span>
+        <span slot="close-icon">
+          <Icon path={mdiClose} size="0.7em" />
+        </span>
+      </Chip>
+      <span class="text-caption" style="white-space: pre;" />
     </span>
     <List dense>
       {#if field.enumOptions}
