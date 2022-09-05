@@ -188,7 +188,6 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     let { match, sort } = dynamicQuery(req.query)
     if (!match.$or?.length) delete match.$or
     aggregate.match(match)
-    console.log({ YOLO: match.$and })
     if (Object.keys(sort).length) aggregate.sort(sort)
 
     const subscribes = await aggregate.skip(skip).limit(limit).exec()

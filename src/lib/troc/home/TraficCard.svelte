@@ -6,11 +6,9 @@
   import { useApi } from '$lib/api'
   import {
     faArrowRightToBracket,
-    faArrowsDownToLine,
     faArrowUpFromBracket,
     faRightLeft,
   } from '@fortawesome/free-solid-svg-icons'
-  import { mdiExport } from '@mdi/js'
 
   export let trocId: string
 
@@ -38,7 +36,7 @@
       <a
         href={$url('/admin/management_users', {
           trocId,
-          'min_resum.balance': 0,
+          'min_resum.balance': 0.01,
         })}
       >
         <Button depressed style="width: 100%;">
@@ -56,7 +54,7 @@
       <a
         href={$url('/admin/management_users', {
           trocId,
-          'max_resum.balance': 0,
+          'max_resum.balance': -0.01,
         })}
       >
         <Button depressed style="width: 100%;">
