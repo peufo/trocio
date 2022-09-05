@@ -1,24 +1,13 @@
 <script lang="ts">
-  import { Button, Card, CardText, CardTitle } from 'svelte-materialify'
-  import {
-    faHouseChimney,
-    faInfoCircle,
-    faUsers,
-    faCubes,
-    faCoins,
-    faTag,
-    faChartPie,
-    faCashRegister,
-    faAngleDoubleLeft,
-    faEdit,
-  } from '@fortawesome/free-solid-svg-icons'
+  import { Button } from 'svelte-materialify'
+  import { faEdit } from '@fortawesome/free-solid-svg-icons'
 
   import { troc } from '$lib/troc/store'
   import TrocCard from '$lib/troc/Card.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import UsersCard from '$lib/troc/home/UsersCard.svelte'
   import ArticlesCard from '$lib/troc/home/ArticlesCard.svelte'
-  import PaymentsCard from './PaymentsCard.svelte'
+  import TraficCard from '$lib/troc/home/TraficCard.svelte'
 </script>
 
 <div class="grid">
@@ -40,7 +29,7 @@
   <ArticlesCard trocId={$troc._id} />
 
   <!-- Caisse-->
-  <PaymentsCard trocId={$troc._id} />
+  <TraficCard trocId={$troc._id} />
 </div>
 
 <style>

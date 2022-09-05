@@ -89,9 +89,9 @@ export const getResumCounts: RequestHandler = async (req, res, next) => {
     })
 
     const [resum] = await aggregate.exec()
-    const payments = await Payment.countDocuments({ trocId })
+    const payment = await Payment.countDocuments({ trocId })
 
-    res.json({ ...resum, payments })
+    res.json({ ...resum, payment })
   } catch (error) {
     next(error)
   }

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Card, CardTitle, Button } from 'svelte-materialify'
-  import { url } from '@roxi/routify'
   import { faCubes } from '@fortawesome/free-solid-svg-icons'
 
   import IconLink from '$lib/util/IconLink.svelte'
