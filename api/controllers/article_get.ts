@@ -5,7 +5,7 @@ import { populateUser } from './lookup'
 import { dynamicQuery } from './utils'
 import { RequestHandler } from 'express'
 import type { Article as IArticle, ArticleState } from '../../types'
-import { getMatchesByState } from './article_utils'
+import { getMatchesByState, sumOfArticles } from './article_utils'
 
 const { ObjectId } = mongoose.Types
 
@@ -65,27 +65,17 @@ export const getArticleCountsByState: RequestHandler = async (
     if (!mongoose.isValidObjectId(trocId))
       throw Error('trocId need to be a valid objectId')
 
-    const sumOf = (key: ArticleState) => ({
-      $sum: {
-        $cond: {
-          if: { $and: getMatchesByState(key, true) },
-          then: 1,
-          else: 0,
-        },
-      },
-    })
-
     const [counts] = await Article.aggregate([
       { $match: { trocId: new ObjectId(trocId as string) } },
       {
         $group: {
           _id: null,
           total: { $sum: 1 },
-          proposed: sumOf('proposed'),
-          refused: sumOf('refused'),
-          valided: sumOf('valided'),
-          sold: sumOf('sold'),
-          recover: sumOf('recover'),
+          proposed: sumOfArticles('proposed'),
+          refused: sumOfArticles('refused'),
+          valided: sumOfArticles('valided'),
+          sold: sumOfArticles('sold'),
+          recover: sumOfArticles('recover'),
         },
       },
     ])

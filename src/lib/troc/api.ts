@@ -1,13 +1,4 @@
-import type {
-  SubscribeBase,
-  SubscribeLookup,
-  Troc,
-  TrocBase,
-  TrocLookup,
-  TrocUserResum,
-  Tarif,
-  TrocStats,
-} from 'types'
+import type { SubscribeLookup, Troc, TrocBase, TrocLookup, Tarif } from 'types'
 import { api, createGetNextPageParam } from '$lib/api'
 
 const FIRST_LIMIT = 10

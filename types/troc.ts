@@ -76,25 +76,6 @@ export interface TrocLookup extends Troc {
   subscribe: ISubscribe
 }
 
-/**
- * Résumé des interactions d'un utilisateur avec un troc
- * @deprecated Please, use SubscribeResum
- */
-export declare interface TrocUserResum {
-  troc: string
-  user: string
-  balance: number
-  providedCount: number
-  providedSum: number
-  feeSum: number
-  soldSum: number
-  marginSum: number
-  purchasesCount: number
-  purchasesSum: number
-  paymentsCount: number
-  paymentsSum: number
-}
-
 /** Statistique d'un troc */
 export declare interface TrocStats {
   articlesProposed: Article[]

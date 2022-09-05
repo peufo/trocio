@@ -47,8 +47,11 @@ export interface SubscribeLookup extends ISubscribe {
 export interface SubscribeResum extends ISubscribe {
   resum: {
     balance: number
-    providedCount?: number
-    providedSum?: number
+    articleCount?: number
+    proposedCount?: number
+    proposedSum?: number
+    validedCount?: number
+    validedSum?: number
     feeSum?: number
     soldSum?: number
     marginSum?: number

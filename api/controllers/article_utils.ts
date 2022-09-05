@@ -43,11 +43,11 @@ export function getMatchesByState(
   if (typeof state !== 'string') return []
   // https://stackoverflow.com/questions/25497150/mongodb-aggregate-by-field-exists
   const exist = modeAggregate
-    ? (key: string) => ({ $gt: [`$${key}`, null] })
-    : (key: string) => ({ [key]: { $exists: true } })
+    ? (key: ArticleState) => ({ $gt: [`$${key}`, null] })
+    : (key: ArticleState) => ({ [key]: { $exists: true } })
   const existNot = modeAggregate
-    ? (key: string) => ({ $lte: [`$${key}`, null] })
-    : (key: string) => ({ [key]: { $exists: false } })
+    ? (key: ArticleState) => ({ $lte: [`$${key}`, null] })
+    : (key: ArticleState) => ({ [key]: { $exists: false } })
 
   const states = {
     proposed: [existNot('valided'), existNot('refused')],
@@ -58,3 +58,16 @@ export function getMatchesByState(
   }
   return states[state] || []
 }
+
+export const sumOfArticles = (
+  key: ArticleState,
+  value: string | number = 1
+) => ({
+  $sum: {
+    $cond: {
+      if: { $and: getMatchesByState(key, true) },
+      then: value,
+      else: 0,
+    },
+  },
+})

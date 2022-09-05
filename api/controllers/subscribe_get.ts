@@ -9,6 +9,7 @@ import Article from '../models/article'
 import Payment from '../models/payment'
 import type { ISubscribe, SubscribeLookup } from '../../types'
 import { dynamicQuery } from './utils'
+import { sumOfArticles } from './article_utils'
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
   try {
@@ -385,28 +386,15 @@ export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
         {
           $group: {
             _id: null,
-            providedCount: { $sum: 1 },
-            providedSum: { $sum: '$price' },
-            feeSum: {
-              $sum: {
-                $cond: [{ $not: ['$valided'] }, 0, '$fee'],
-              },
-            },
-            soldSum: {
-              $sum: {
-                $cond: [{ $not: ['$sold'] }, 0, '$price'],
-              },
-            },
-            soldCount: {
-              $sum: {
-                $cond: [{ $not: ['$sold'] }, 0, 1],
-              },
-            },
-            marginSum: {
-              $sum: {
-                $cond: [{ $not: ['$sold'] }, 0, '$margin'],
-              },
-            },
+            articleCount: { $sum: 1 },
+            proposedCount: sumOfArticles('proposed'),
+            proposedSum: sumOfArticles('proposed', '$price'),
+            validedCount: sumOfArticles('valided'),
+            validedSum: sumOfArticles('valided', '$price'),
+            feeSum: sumOfArticles('valided', '$fee'),
+            soldCount: sumOfArticles('sold'),
+            soldSum: sumOfArticles('sold', '$price'),
+            marginSum: sumOfArticles('sold', '$margin'),
           },
         },
       ],

@@ -106,7 +106,7 @@
     <DetailCard
       title="Ventes"
       bind:open={providedOpen}
-      count={resum.providedCount || 0}
+      count={resum.proposedCount || 0}
       sum={(resum.soldSum || 0) - (resum.feeSum || 0) - (resum.marginSum || 0)}
     >
       <span slot="head">
@@ -119,7 +119,7 @@
           <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
 
           <!-- Bouton pour télécharger le fichier .csv -->
-          {#if resum.providedCount}
+          {#if resum.proposedCount}
             <Button
               fab
               text

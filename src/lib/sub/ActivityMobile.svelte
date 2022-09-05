@@ -71,8 +71,8 @@
     <Card outlined>
       <div on:click={() => handleClick('sales')} class="card-header d-flex">
         <div>
-          {resum.providedCount || 0}
-          Vente{(resum.providedCount || 0) > 1 ? 's' : ''}
+          {resum.proposedCount || 0}
+          Vente{(resum.proposedCount || 0) > 1 ? 's' : ''}
         </div>
         <div class="flex-grow-1" />
         <div>
