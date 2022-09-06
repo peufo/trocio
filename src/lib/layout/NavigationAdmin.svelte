@@ -17,7 +17,7 @@
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
 
   import { troc } from '$lib/troc/store'
-  import layout, { isMobile } from '$lib/store/layout'
+  import layout, { isMobile, isKeyboardOpen } from '$lib/store/layout'
   import IconLink from '$lib/util/IconLink.svelte'
   import NavigationDrawer from '$lib/util/NavigationDrawer.svelte'
 
@@ -114,7 +114,7 @@
   </NavigationDrawer>
 </div>
 
-{#if $isMobile}
+{#if $isMobile && !$isKeyboardOpen}
   <div class="icon-button secondary-color">
     <Button fab on:click={() => (mini = false)}>
       <IconLink icon={faAngleDoubleRight} />
