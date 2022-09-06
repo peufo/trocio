@@ -15,7 +15,7 @@
 
   const links = [
     { ref: 'tarif', label: 'Tarifications', icon: faCoins },
-    { ref: 'tag', label: 'Etiquetage', icon: faTag },
+    { ref: 'tag', label: 'Étiquetage', icon: faTag },
     { ref: 'statistic', label: 'Statistiques', icon: faChartPie },
     { ref: 'cash_register', label: 'Caisse', icon: faCashRegister },
   ]

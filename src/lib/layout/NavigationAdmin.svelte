@@ -35,7 +35,7 @@
     { ref: 'home', label: $troc.name, icon: faHouseChimney, isIndex: true },
     { ref: 'edit', label: 'Définition', icon: faInfoCircle },
     { ref: 'tarif', label: 'Tarifications', icon: faCoins },
-    { ref: 'tag', label: 'Etiquetage', icon: faTag },
+    { ref: 'tag', label: 'Étiquetage', icon: faTag },
     { ref: 'statistic', label: 'Statistiques', icon: faChartPie },
     { ref: 'management_users', label: 'Participants', icon: faUsers },
     { ref: 'management_articles', label: 'Articles', icon: faCubes },

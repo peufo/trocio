@@ -81,10 +81,9 @@
         $troc?.tarif.find((tarif) => tarif._id === sub.tarifId)?.name,
       enumOptions: [
         { key: null, label: 'Tous' },
-        // @ts-ignore tarif._id can be undefined ...
         ...$troc?.tarif.map((tarif) => ({
           label: tarif.name,
-          key: tarif._id,
+          key: tarif._id!,
         })),
       ],
     },
