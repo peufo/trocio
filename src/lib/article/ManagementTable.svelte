@@ -7,7 +7,7 @@
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
   import { useInfinitApi } from '$lib/api'
   import type { ParamsArticleAPI, ArticleLookup } from 'types'
-  import { layout } from '$lib/store/layout'
+  import { layout, isMobile } from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc } from '$lib/troc/store'
   import { getFieldsLookup } from '$lib/article/fields'
@@ -44,7 +44,7 @@
 
 <div class="container">
   <div class="d-flex align-center mb-2">
-    <h6>Gestion des articles</h6>
+    <h6>{$isMobile ? 'Articles' : 'Gestion des articles'}</h6>
     <div class="flex-grow-1" />
     <MagicTableFieldSelect bind:fields />
   </div>

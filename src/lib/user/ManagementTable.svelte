@@ -11,7 +11,7 @@
     SubscribeLookup,
     ParamsSubscribeAPI,
   } from 'types'
-  import layout from '$lib/store/layout'
+  import layout, { isMobile } from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc } from '$lib/troc/store'
   import { ROLES } from '$lib/user/roles'
@@ -193,7 +193,7 @@
 
 <div class="container">
   <div class="d-flex align-center mb-2">
-    <h6>Gestion des participants</h6>
+    <h6>{$isMobile ? 'Participants' : 'Gestion des participants'}</h6>
     <div class="flex-grow-1" />
     <MagicTableFieldSelect bind:fields />
   </div>
