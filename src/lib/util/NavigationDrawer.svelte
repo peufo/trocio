@@ -10,6 +10,8 @@
 
   let klass = ''
   export { klass as class }
+  export let classContent = ''
+  export let styleContent = ''
   export let width = '256px'
   export let active = true
   export let fixed = false
@@ -48,7 +50,7 @@
   style="z-index:{index};{style}"
 >
   <slot name="prepend" />
-  <div class="s-navigation-drawer__content">
+  <div class="s-navigation-drawer__content {classContent}" style={styleContent}>
     <slot />
   </div>
   <slot name="append" />

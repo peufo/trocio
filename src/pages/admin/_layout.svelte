@@ -6,6 +6,7 @@
   import Tips from '$lib/layout/Tips.svelte'
   import { troc } from '$lib/troc/store'
   import { user } from '$lib/user/store'
+  import { isMobile } from '$lib/store/layout'
   import { useApi } from '$lib/api'
   import type { TrocLookup } from 'types'
 
@@ -41,10 +42,10 @@
     <div
       class="layout"
       style="
-        padding-left: {navigationWidth};
+        padding-left: {$isMobile ? '0px' : navigationWidth};
         padding-right: {tipsActive ? tipsWidth : '0px'};"
     >
-      <main class="pa-4">
+      <main class="pa-4" class:pb-14={$isMobile}>
         {#if $troc.is_try}
           <div class="orange white-text alert mb-4">Troc d'entrainement</div>
         {/if}

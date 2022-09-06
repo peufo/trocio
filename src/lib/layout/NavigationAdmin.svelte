@@ -1,7 +1,7 @@
 <script lang="ts">
   import { params, url, isActive } from '@roxi/routify'
   import { createEventDispatcher } from 'svelte'
-  import { List, ListItem, Divider, Icon } from 'svelte-materialify'
+  import { List, ListItem, Divider, Icon, Button } from 'svelte-materialify'
   import {
     faHouseChimney,
     faInfoCircle,
@@ -14,18 +14,21 @@
     faAngleDoubleLeft,
   } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
+  import { mdiMenu } from '@mdi/js'
 
   import { troc } from '$lib/troc/store'
-  import layout from '$lib/store/layout'
+  import layout, { isMobile } from '$lib/store/layout'
   import IconLink from '$lib/util/IconLink.svelte'
   import NavigationDrawer from '$lib/util/NavigationDrawer.svelte'
 
   let width: string | undefined
-  let mini = false
+  let mini = $isMobile
+
+  $: miniWidth = $isMobile ? '0px' : '56px'
 
   /** width updated white according to props mini */
-  export let realWidth = mini ? '56px' : width
-  $: realWidth = mini ? '56px' : width
+  export let realWidth = mini ? miniWidth : width
+  $: realWidth = mini ? miniWidth : width
   let scrollY = 0
 
   const tabs = [
@@ -40,23 +43,28 @@
   ]
 
   const dispatch = createEventDispatcher()
+
+  $: offsetY =
+    scrollY > $layout.headerHeight ? 0 : $layout.headerHeight - scrollY
 </script>
 
 <svelte:window bind:scrollY />
 
 <div
-  class="container"
   style="
-    height: {$layout.innerHeight}px;
-    transform: translateY({scrollY > $layout.headerHeight
-    ? 0
-    : $layout.headerHeight - scrollY}px);
-    "
+    position: fixed;
+    top: 0px;
+    z-index: 2;
+    height: {$layout.innerHeight - offsetY}px;
+    transform: translateY({offsetY}px);
+  "
 >
   <NavigationDrawer
     {mini}
     transition={() => ({ duration: 0, css: (t) => '' })}
     bind:width
+    classContent="d-flex flex-column"
+    {miniWidth}
   >
     <List nav>
       {#each tabs as tab}
@@ -74,6 +82,7 @@
       {/each}
     </List>
 
+    <div class="flex-grow-1" />
     <Divider />
 
     <List nav>
@@ -98,9 +107,22 @@
   </NavigationDrawer>
 </div>
 
+{#if $isMobile}
+  <div class="icon-button secondary-color">
+    <Button fab on:click={() => (mini = false)}>
+      <Icon path={mdiMenu} />
+    </Button>
+  </div>
+{/if}
+
 <style>
-  .container {
+  .icon-button {
     position: fixed;
-    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    z-index: 1;
+    border-radius: 50%;
+    margin: 1em;
+    padding: 2px;
   }
 </style>
