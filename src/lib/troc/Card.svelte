@@ -50,12 +50,12 @@
   const DESCRIPTION_SIZE = 250
   let sliceDescription = DESCRIPTION_SIZE
 
-  const scheduleIcon = {
-    open: faStoreAlt,
-    deposit: faSignInAlt,
-    recovery: faSignOutAlt,
-    sale: faShoppingBasket,
-    delete: faTimes,
+  const SCHEDULE = {
+    open: { icon: faStoreAlt, title: 'Ouverture du troc' },
+    deposit: { icon: faSignInAlt, title: 'Dépot des articles' },
+    recovery: { icon: faSignOutAlt, title: 'Récupération des articles' },
+    sale: { icon: faShoppingBasket, title: 'Ouverture des ventes' },
+    delete: { icon: faTimes, title: `Cette option n'a pas de sens ici` },
   }
 
   $: queryCounters = useApi<
@@ -138,24 +138,24 @@
         {#if troc.schedule?.length}
           <div class="d-flex align-start">
             <IconLink icon={faCalendarAlt} opacity />
-            <div class="pl-4">
+            <div class="pl-4 d-flex flex-column" style="gap: 4px;">
               <b>
                 {dayjs(
                   troc.schedule && troc.schedule[0] && troc.schedule[0].open
                 ).fromNow()}
               </b>
 
-              <br />
               {#each troc.schedule as period}
-                <IconLink
-                  icon={(period.name && scheduleIcon[period.name]) ||
-                    scheduleIcon.open}
-                  size="1em"
-                  opacity
-                />
-                {dayjs(period.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
-                {dayjs(period.close).format('H[h]mm')}
-                <br />
+                <div title={(period.name && SCHEDULE[period.name].title) || ''}>
+                  <IconLink
+                    icon={(period.name && SCHEDULE[period.name].icon) ||
+                      SCHEDULE.open.icon}
+                    size="1.1em"
+                    class="mr-1"
+                  />
+                  {dayjs(period.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
+                  {dayjs(period.close).format('H[h]mm')}
+                </div>
               {/each}
             </div>
           </div>
@@ -164,7 +164,7 @@
         {#if troc.society || troc.societyweb || troc.societyMail || troc.societyPhone}
           <div class="d-flex align-start">
             <IconLink icon={faUserTie} opacity />
-            <div class="pl-4 d-flex flex-column">
+            <div class="pl-4 d-flex flex-column" style="gap: 4px;">
               {#if !!troc.society}
                 <b>{troc.society}</b>
               {/if}
@@ -172,13 +172,12 @@
               {#if !!troc.societyweb}
                 <div>
                   <a
-                    style="line-height: 2.5;"
                     href="https://{troc.societyweb.replace(/^https?:\/\//, '')}"
                     rel="noreferrer"
                     target="_blank"
                     title="Ouvrir le site internet de l'organisateur"
                   >
-                    <Icon path={mdiWeb} size="1.2em" class="mr-1" />
+                    <Icon path={mdiWeb} size="1.1em" class="mr-1" />
                     {troc.societyweb.replace(/^https?:\/\//, '')}
                   </a>
                 </div>
@@ -187,13 +186,12 @@
               {#if !!troc.societyMail}
                 <div>
                   <a
-                    style="line-height: 2.5;"
                     href="mailto:{troc.societyMail}?subject={troc.name}"
                     rel="noreferrer"
                     target="_blank"
                     title="Contacter l'organisateur par email"
                   >
-                    <IconLink icon={faEnvelope} size="1.2em" class="mr-1" />
+                    <IconLink icon={faEnvelope} size="1.1em" class="mr-1" />
                     {troc.societyMail}
                   </a>
                 </div>
@@ -202,13 +200,12 @@
               {#if !!troc.societyPhone}
                 <div>
                   <a
-                    style="line-height: 2.5;"
                     href="tel:{troc.societyPhone}"
                     rel="noreferrer"
                     target="_blank"
                     title="Contacter l'organisateur par téléphone"
                   >
-                    <Icon path={mdiPhone} size="1.2em" class="mr-1" />
+                    <Icon path={mdiPhone} size="1.1em" class="mr-1" />
                     {troc.societyPhone}
                   </a>
                 </div>
@@ -263,7 +260,7 @@
   .card-info-pratice {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
   }
 
   .showDescription {
