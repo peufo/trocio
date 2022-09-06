@@ -25,35 +25,41 @@
     padding-top: ${
       scrollY > $layout.headerHeight ? 0 : $layout.headerHeight - scrollY
     }px;
+    overflow-y: hidden;
   `
 </script>
 
 <svelte:window bind:scrollY />
 
 <NavigationDrawer {active} fixed style={drawerStyle}>
-  <div class="pa-2">
-    <TrocMap on:clickMarker={() => mobileMode && (active = false)} />
-  </div>
+  <div class="pa-2 d-flex flex-column" style="gap: 1em; height: 100%;">
+    <!-- MAP -->
+    <div class="flex-grow-1">
+      <TrocMap on:clickMarker={() => mobileMode && (active = false)} />
+    </div>
 
-  <List nav>
-    {#if $isActive('/trocs/index')}
-      <div transition:slide|local class="border">
-        <TrocSearch />
-      </div>
-    {:else}
-      <div transition:slide|local>
-        <a href="/trocs">
-          <ListItem>
-            <span slot="prepend">
-              <IconLink icon={faSearch} />
-            </span>
-            Chercher un troc
-          </ListItem>
-        </a>
-      </div>
-    {/if}
+    <!-- SEARCH -->
+    <div class="flex-grow-1">
+      {#if $isActive('/trocs/index')}
+        <div class="simple-card " transition:slide|local>
+          <TrocSearch />
+        </div>
+      {:else}
+        <div transition:slide|local class="d-flex">
+          <div class="flex-grow-1" />
+          <a href="/trocs">
+            <Button depressed>
+              <IconLink icon={faSearch} class="mr-2" opacity />
 
-    <div class="pt-4 pb-3 d-flex justify-space-between">
+              Chercher un troc
+            </Button>
+          </a>
+        </div>
+      {/if}
+    </div>
+
+    <!-- LIST HEADER -->
+    <div class="d-flex justify-space-between">
       <h6>Mes trocs</h6>
       <a href="{!$user ? '/login?callback=' : ''}/trocs/create">
         <Button depressed class="primary-color">
@@ -63,24 +69,21 @@
       </a>
     </div>
 
+    <!-- LIST -->
     {#if !$user}
-      <ListItem disabled>
-        <div class="text--disabled text-center">
-          Connectez-vous pour voir vos trocs.
-        </div>
-      </ListItem>
+      <div class="text--disabled text-center mt-4">
+        Connectez-vous pour voir vos trocs.
+      </div>
     {:else}
-      <SubTrocsList
-        offset={22}
-        on:click={() => mobileMode && (active = false)}
-      />
+      <div
+        class="simple-card flex-shrink-1"
+        style="overflow-y: auto; overflow-x: hidden;"
+      >
+        <SubTrocsList
+          offset={22}
+          on:click={() => mobileMode && (active = false)}
+        />
+      </div>
     {/if}
-  </List>
+  </div>
 </NavigationDrawer>
-
-<style>
-  .border {
-    border: solid 1px var(--theme-text-fields-border);
-    border-radius: 5px;
-  }
-</style>
