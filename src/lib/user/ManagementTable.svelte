@@ -201,7 +201,10 @@
   <MagicTable
     {query}
     class="simple-card"
-    style="min-height: 400px; max-height: {$layout.mainHeight - 94}px;"
+    style="
+      min-height: 400px;
+      max-height: {$layout.mainHeight - ($troc.is_try ? 148 : 76)}px;
+    "
   >
     <thead>
       <tr>
