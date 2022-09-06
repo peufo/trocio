@@ -8,7 +8,6 @@ import mongoose from 'mongoose'
 import MongoStore from 'connect-mongo'
 import compression from 'compression'
 import createError from 'http-errors'
-import swaggerUI from 'swagger-ui-express'
 
 import type { User } from '../types'
 import { initOptions } from './controllers/option'
@@ -55,13 +54,6 @@ app.use(
   })
 )
 app.use(compression({ threshold: 0 }))
-
-app.use('/doc', express.static('api/doc'))
-app.use('/doc-swagger', swaggerUI.serve)
-app.use(
-  '/doc-swagger',
-  swaggerUI.setup(undefined, { swaggerUrl: '/doc/index.yml' })
-)
 
 app.use('/', routesIndex)
 app.use('/users', routesUser)
