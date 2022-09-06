@@ -48,13 +48,6 @@
   {/each}
 
   <div class="d-flex">
-    <a
-      href={$url('/admin/tarif_attribution', {
-        trocId: $params.trocId,
-      })}
-    >
-      <Button depressed>Gerer l'attribution des tarifs</Button>
-    </a>
     <div class="flex-grow-1" />
     <Button
       disabled={$queryCreateTarif.isLoading}
