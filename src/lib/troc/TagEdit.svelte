@@ -114,7 +114,7 @@
       Utiliser les codes barres
     </Switch>
 
-    <div class="d-flex mt-4">
+    <div class="d-flex flex-wrap mt-4" style="gap: 1em;">
       <Button
         on:click={() => print('testPrint')}
         outlined
