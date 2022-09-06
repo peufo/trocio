@@ -3,7 +3,7 @@
    * Liste les trocs auxquels l'utilisateur est abonné
    */
 
-  import { List, ListItem, Chip } from 'svelte-materialify'
+  import { List, ListItem, Chip, Button } from 'svelte-materialify'
   import { faCog, faCashRegister } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
@@ -22,16 +22,11 @@
   export let offset = 0
 
   // const querySubscribes = useSubscribedTrocs()
-  const querySubscribes = useInfinitApi<{}, SubscribeLookup[]>([
-    'subscribes/me',
-    {},
-  ])
-  $: subscribes = $querySubscribes.data
-    ? $querySubscribes.data.pages.flat()
-    : []
+  const query = useInfinitApi<{}, SubscribeLookup[]>(['subscribes/me', {}])
+  $: subscribes = $query.data ? $query.data.pages.flat() : []
 </script>
 
-{#if $querySubscribes.isSuccess}
+{#if $query.isSuccess}
   <List dense={!$isMobile}>
     {#each subscribes as { troc }}
       <a href={`/trocs/${troc._id}`}>
@@ -88,24 +83,22 @@
       </div>
     {/each}
   </List>
-{:else if $querySubscribes.isError}
+{:else if $query.isError}
   <ListItem disabled>Oups, une erreur est survenue !</ListItem>
 {/if}
 
-{#if $querySubscribes.isFetching}
-  <ListItem disabled class="pl-16">
-    <Loader />
-  </ListItem>
-{:else if $querySubscribes.hasNextPage}
-  <ListItem
-    on:click={() =>
-      !$querySubscribes.isFetchingNextPage && $querySubscribes.fetchNextPage()}
-    style="padding-left: {offset}px;"
-  >
-    {#if !$querySubscribes.isFetchingNextPage}
-      Afficher plus
-    {:else}
-      <Loader />
-    {/if}
-  </ListItem>
+{#if $query.hasNextPage || $query.isFetching || $query.isFetchingNextPage}
+  <div class="centered pb-4">
+    <Button
+      on:click={() => !$query.isFetchingNextPage && $query.fetchNextPage()}
+      disabled={$query.isFetching || $query.isFetchingNextPage}
+      depressed
+    >
+      {#if $query.isFetching || $query.isFetchingNextPage}
+        <Loader />
+      {:else}
+        Afficher plus
+      {/if}
+    </Button>
+  </div>
 {/if}
