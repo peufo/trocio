@@ -30,41 +30,34 @@
 
 {#if isActive}
   <div
-    class="wrapper"
     transition:scale|local={transitionParams}
     on:outroend
     on:introend={introend}
+    class="notify elevation-12 notify-{type}"
   >
-    <div class="container elevation-12 notify-{type}">
-      <div class="text">
-        {#if title}
-          <b>{title} - </b>
-        {/if}
-        <span>{text}</span>
-      </div>
-      {#if persistent}
-        <div class="pr-1">
-          <Button icon on:click={() => (isActive = false)}>
-            <Icon path={mdiClose} />
-          </Button>
-        </div>
+    <div class="text">
+      {#if title}
+        <b>{title} - </b>
       {/if}
+      <span>{text}</span>
     </div>
+    {#if persistent}
+      <div class="pr-1">
+        <Button icon on:click={() => (isActive = false)}>
+          <Icon path={mdiClose} />
+        </Button>
+      </div>
+    {/if}
   </div>
 {/if}
 
 <style>
-  .wrapper {
+  .notify {
     position: fixed;
-    bottom: 0;
-    width: calc(100% - 1rem);
-    margin: 0.5rem;
-    display: grid;
-    justify-content: center;
-    z-index: 1000;
-  }
-
-  .container {
+    bottom: 1em;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100% - 1rem);
     display: flex;
     align-items: center;
     border-radius: 6px;
@@ -85,11 +78,7 @@
   .notify-success {
     outline: solid 2px #a7ff9d;
   }
-  /*
-  .notify-info {
-    outline: solid 2px #fff59d;
-  }
-  */
+
   .notify-warning {
     outline: solid 2px #ffc49d;
   }
