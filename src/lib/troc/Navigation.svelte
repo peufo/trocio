@@ -34,12 +34,12 @@
 <NavigationDrawer {active} fixed style={drawerStyle}>
   <div class="pa-2 d-flex flex-column" style="gap: 1em; height: 100%;">
     <!-- MAP -->
-    <div class="flex-grow-1">
+    <div class="flex-shrink-0">
       <TrocMap on:clickMarker={() => mobileMode && (active = false)} />
     </div>
 
     <!-- SEARCH -->
-    <div class="flex-grow-1">
+    <div>
       {#if $isActive('/trocs/index')}
         <div class="simple-card " transition:slide|local>
           <TrocSearch />
@@ -76,7 +76,7 @@
       </div>
     {:else}
       <div
-        class="simple-card flex-shrink-1"
+        class="simple-card flex-grow-1"
         style="overflow-y: auto; overflow-x: hidden;"
       >
         <SubTrocsList
