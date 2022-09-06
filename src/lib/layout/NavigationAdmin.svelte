@@ -1,7 +1,7 @@
 <script lang="ts">
   import { params, url, isActive } from '@roxi/routify'
   import { createEventDispatcher } from 'svelte'
-  import { List, ListItem, Divider, Icon, Button } from 'svelte-materialify'
+  import { List, ListItem, Divider, Button, Overlay } from 'svelte-materialify'
   import {
     faHouseChimney,
     faInfoCircle,
@@ -12,9 +12,9 @@
     faChartPie,
     faCashRegister,
     faAngleDoubleLeft,
+    faAngleDoubleRight,
   } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
-  import { mdiMenu } from '@mdi/js'
 
   import { troc } from '$lib/troc/store'
   import layout, { isMobile } from '$lib/store/layout'
@@ -46,6 +46,10 @@
 
   $: offsetY =
     scrollY > $layout.headerHeight ? 0 : $layout.headerHeight - scrollY
+
+  function handleClickLink() {
+    if ($isMobile) mini = true
+  }
 </script>
 
 <svelte:window bind:scrollY />
@@ -68,7 +72,10 @@
   >
     <List nav>
       {#each tabs as tab}
-        <a href={$url(`/admin/${tab.ref}`, { ...$params })}>
+        <a
+          href={$url(`/admin/${tab.ref}`, { ...$params })}
+          on:click={handleClickLink}
+        >
           <ListItem
             active={$isActive(`/admin/${tab.ref}`) ||
               (tab.isIndex && $isActive('/admin/index'))}
@@ -110,19 +117,25 @@
 {#if $isMobile}
   <div class="icon-button secondary-color">
     <Button fab on:click={() => (mini = false)}>
-      <Icon path={mdiMenu} />
+      <IconLink icon={faAngleDoubleRight} />
     </Button>
   </div>
+
+  <Overlay
+    active={!mini}
+    index={1}
+    opacity={0.7}
+    on:click={() => (mini = true)}
+  />
 {/if}
 
 <style>
   .icon-button {
     position: fixed;
-    left: 0px;
-    bottom: 0px;
+    left: 0.5em;
+    bottom: 0.5em;
     z-index: 1;
     border-radius: 50%;
-    margin: 1em;
     padding: 2px;
   }
 </style>
