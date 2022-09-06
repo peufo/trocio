@@ -192,8 +192,8 @@
 <SubscribeMenu bind:this={subscribeMenu} />
 
 <div class="container">
-  <div class="d-flex align-center">
-    <h6 class="mb-5">Gestion des participants</h6>
+  <div class="d-flex align-center mb-2">
+    <h6>Gestion des participants</h6>
     <div class="flex-grow-1" />
     <MagicTableFieldSelect bind:fields />
   </div>

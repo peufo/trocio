@@ -36,7 +36,7 @@
 
 <Menu closeOnClick={false} style="max-height: none;">
   <div slot="activator">
-    <Button depressed>Choisir les champs visibles</Button>
+    <Button depressed>Champs visibles</Button>
   </div>
   <List dense>
     {#each fields as field, index}
