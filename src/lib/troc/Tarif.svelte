@@ -1,17 +1,18 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
   import { TextField, Button, CardActions, Table } from 'svelte-materialify'
+  import { faCubes, faPercent } from '@fortawesome/free-solid-svg-icons'
+  import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
+  import { useMutation } from '@sveltestack/svelte-query'
+  import { params, url } from '@roxi/routify'
 
   import type { Tarif, TrocLookup } from 'types'
   import { api, useApi } from '$lib/api'
   import { troc } from '$lib/troc/store'
+  import { isMobile } from '$lib/store/layout'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
-  import { faCubes, faPercent } from '@fortawesome/free-solid-svg-icons'
-  import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
   import notify from '$lib/notify'
-  import { useMutation } from '@sveltestack/svelte-query'
-  import { page, params, url } from '@roxi/routify'
 
   let klass = ''
   export { klass as class }
@@ -168,12 +169,12 @@
     <br />
     <br />
 
-    <div style="width: 400px; margin: auto;">
+    <div style="max-width: 400px; margin: auto;">
       <Table class="simple-card">
         <thead>
           <tr>
-            <th>A partir du prix</th>
-            <th>Les frais sont de</th>
+            <th>À partir de</th>
+            <th>{false ? 'Frais' : 'Les Frais sont de'}</th>
             <th />
           </tr>
         </thead>
@@ -186,7 +187,7 @@
                   on:input={(event) => handleChangeFeePrice(event, i)}
                   type="number"
                   class="pa-3"
-                  style="width: 100px;"
+                  style="max-width: {$isMobile ? 80 : 130}px;"
                   min={i == 0 ? 0 : _tarif.fee[i - 1].price}
                   max={i == _tarif.fee.length - 1
                     ? ''
@@ -199,7 +200,7 @@
                   on:input={(event) => handleChangeFeeValue(event, i)}
                   type="number"
                   class="pa-3"
-                  style="width: 100px;"
+                  style="max-width: {$isMobile ? 80 : 130}px;"
                   min={i == 0 ? 0 : _tarif.fee[i - 1].value}
                   max={i == _tarif.fee.length - 1
                     ? ''
