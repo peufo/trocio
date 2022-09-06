@@ -49,6 +49,8 @@ export declare interface TrocBase {
   schedule?: Period[]
   society?: string
   societyweb?: string
+  societyMail?: string
+  societyPhone?: string
 }
 
 /** Information complette d'un troc */

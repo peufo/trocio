@@ -4,6 +4,7 @@ import cc from 'currency-codes'
 const ObjectId = Schema.Types.ObjectId
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 import type { Troc } from '../../types'
+import { EMAIL_REGEX } from './utils'
 
 const trocModel = new Schema(
   {
@@ -11,6 +12,12 @@ const trocModel = new Schema(
     is_try: { type: Boolean, default: false },
     society: String,
     societyweb: String,
+    societyPhone: String,
+    societyMail: {
+      type: String,
+      lowercase: true,
+      validate: EMAIL_REGEX,
+    },
     currency: { type: String, enum: cc.codes() },
     address: {
       type: String,

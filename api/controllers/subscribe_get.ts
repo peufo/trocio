@@ -308,6 +308,8 @@ export function lookupTroc(
             schedule: 1,
             society: 1,
             societyweb: 1,
+            societyMail: 1,
+            societyPhone: 1,
             is_try: 1,
             subscriber: 1,
             open: { $min: `$schedule.open` },

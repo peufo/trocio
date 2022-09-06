@@ -132,7 +132,12 @@
       troc: isModified(['name', 'description']),
       location: isModified(['address', 'location', 'currency']),
       schedule: isModified(['schedule']),
-      society: isModified(['society', 'societyweb']),
+      society: isModified([
+        'society',
+        'societyweb',
+        'societyMail',
+        'societyPhone',
+      ]),
     }
   }
 </script>
@@ -242,28 +247,52 @@
     <h6>
       Organisation <span class="text-caption">Optionnel</span>
     </h6>
-    <br />
-    <TextField
-      name="society"
-      on:input={handleInput}
-      value={newTroc.society}
-      outlined>Nom de l'organisation</TextField
-    >
-    <br />
-    <TextField
-      name="societyweb"
-      on:input={handleInput}
-      value={newTroc.societyweb}
-      outlined
-    >
-      Site internet de l'organisation
-    </TextField>
 
-    <UpdateButton
-      visible={blockIsModifed.society}
-      updateQuery={updateTroc}
-      clickHandler={handleUpdateTroc}
-    />
+    <div class="d-flex flex-column mt-4" style="gap: 1em;">
+      <div class="d-flex flex-wrap" style="gap: 1em;">
+        <TextField
+          name="society"
+          on:input={handleInput}
+          value={newTroc.society}
+          outlined>Nom</TextField
+        >
+
+        <TextField
+          name="societyweb"
+          on:input={handleInput}
+          value={newTroc.societyweb}
+          outlined
+        >
+          Site internet
+        </TextField>
+      </div>
+
+      <div class="d-flex flex-wrap" style="gap: 1em;">
+        <TextField
+          name="societyMail"
+          on:input={handleInput}
+          value={newTroc.societyMail}
+          outlined
+        >
+          Email de contact
+        </TextField>
+
+        <TextField
+          name="societyPhone"
+          on:input={handleInput}
+          value={newTroc.societyPhone}
+          outlined
+        >
+          Téléphone
+        </TextField>
+      </div>
+
+      <UpdateButton
+        visible={blockIsModifed.society}
+        updateQuery={updateTroc}
+        clickHandler={handleUpdateTroc}
+      />
+    </div>
   </div>
 
   {#if createMode}
