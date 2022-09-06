@@ -6,7 +6,6 @@
     faStoreAltSlash,
     faMapMarkerAlt,
     faCalendarAlt,
-    faUserAlt,
     faCog,
     faCashRegister,
     faSignInAlt,
@@ -14,6 +13,7 @@
     faSignOutAlt,
     faShoppingBasket,
     faTimes,
+    faUserTie,
   } from '@fortawesome/free-solid-svg-icons'
   import {
     Card,
@@ -23,18 +23,19 @@
     CardActions,
     Button,
     Chip,
+    Icon,
   } from 'svelte-materialify'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
-  dayjs.locale('fr')
-  dayjs.extend(relativeTime)
+  import { mdiPhone, mdiWeb, mdiMail } from '@mdi/js'
 
   import IconLink from '$lib/util/IconLink.svelte'
   import { user } from '$lib/user/store'
   import Share from '$lib/troc/Share.svelte'
   import type { TrocLookup } from 'types'
   import { useApi } from '$lib/api'
+  import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
 
   export let troc: TrocLookup
   export let clickable = false
@@ -42,6 +43,9 @@
   let klass = ''
   export { klass as class }
   export let style = ''
+
+  dayjs.locale('fr')
+  dayjs.extend(relativeTime)
 
   const DESCRIPTION_SIZE = 250
   let sliceDescription = DESCRIPTION_SIZE
@@ -157,24 +161,57 @@
           </div>
         {/if}
 
-        {#if troc.society || troc.societyweb}
+        {#if troc.society || troc.societyweb || troc.societyMail || troc.societyPhone}
           <div class="d-flex align-start">
-            <IconLink icon={faUserAlt} opacity />
-            <div class="pl-4">
+            <IconLink icon={faUserTie} opacity />
+            <div class="pl-4 d-flex flex-column">
               {#if !!troc.society}
                 <b>{troc.society}</b>
               {/if}
 
               {#if !!troc.societyweb}
-                <a
-                  style="line-height: 2.5;"
-                  href={`http://${troc.societyweb}`}
-                  rel="noreferrer"
-                  target="_blank"
-                  title="Ouvrir le site internet de l'organisateur"
-                >
-                  {troc.societyweb}
-                </a>
+                <div>
+                  <a
+                    style="line-height: 2.5;"
+                    href="https://{troc.societyweb.replace(/^https?:\/\//, '')}"
+                    rel="noreferrer"
+                    target="_blank"
+                    title="Ouvrir le site internet de l'organisateur"
+                  >
+                    <Icon path={mdiWeb} size="1.2em" class="mr-1" />
+                    {troc.societyweb.replace(/^https?:\/\//, '')}
+                  </a>
+                </div>
+              {/if}
+
+              {#if !!troc.societyMail}
+                <div>
+                  <a
+                    style="line-height: 2.5;"
+                    href="mailto:{troc.societyMail}?subject={troc.name}"
+                    rel="noreferrer"
+                    target="_blank"
+                    title="Contacter l'organisateur par email"
+                  >
+                    <IconLink icon={faEnvelope} size="1.2em" class="mr-1" />
+                    {troc.societyMail}
+                  </a>
+                </div>
+              {/if}
+
+              {#if !!troc.societyPhone}
+                <div>
+                  <a
+                    style="line-height: 2.5;"
+                    href="tel:{troc.societyPhone}"
+                    rel="noreferrer"
+                    target="_blank"
+                    title="Contacter l'organisateur par téléphone"
+                  >
+                    <Icon path={mdiPhone} size="1.2em" class="mr-1" />
+                    {troc.societyPhone}
+                  </a>
+                </div>
               {/if}
             </div>
           </div>
