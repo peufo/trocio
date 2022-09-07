@@ -29,7 +29,7 @@
 
   <div class="pa-4 d-flex flex-column" style="gap: 0.5em;">
     {#each links as link}
-      <a href={$url(link.ref, { trocId })}>
+      <a href={$url(`/admin/${link.ref}`, { trocId })}>
         <Button depressed style="width: 100%;">
           <IconLink icon={link.icon} class="mr-2" opacity />
           {link.label}
