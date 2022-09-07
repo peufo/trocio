@@ -19,19 +19,15 @@
   import { troc } from '$lib/troc/store'
   import { api } from '$lib/api'
   import { ROLES } from '$lib/user/roles'
-  import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
 
   export let state: 'main' | 'role' | 'tarif' = 'main'
   export let subscribe: SubscribeLookup | undefined = undefined
 
   interface EventsMap {
-    done: void
+    soldCorrection: void
   }
   const dispatch = createEventDispatcher<EventsMap>()
-
   const queryClient = useQueryClient()
-
-  let paymentDialog: PaymentDialog
 
   interface AssignTarifBody {
     subscribeId: string
@@ -42,7 +38,6 @@
     role: RoleEnum
     prefix?: string
   }
-
   const assignTarif = useMutation(
     (data: AssignTarifBody) =>
       api<AssignTarifBody, ISubscribe>('/api/subscribes/tarif', {
@@ -79,14 +74,7 @@
       },
     }
   )
-
-  function handleClickSoldCorrection() {
-    paymentDialog.open(subscribe, 'Correction du solde')
-    dispatch('done')
-  }
 </script>
-
-<PaymentDialog bind:this={paymentDialog} />
 
 <List>
   {#if state === 'main'}
@@ -148,7 +136,7 @@
         </span>
         Vers la caisse
       </ListItem>
-      <ListItem on:click={handleClickSoldCorrection}>
+      <ListItem on:click={() => dispatch('soldCorrection')}>
         <span slot="prepend">
           <IconLink icon={faEdit} class="mr-3" size="1.1em" />
         </span>
