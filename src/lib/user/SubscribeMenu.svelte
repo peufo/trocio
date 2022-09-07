@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
   import { debounce } from 'debounce'
+  import { Dialog } from 'svelte-materialify'
 
   import type { SubscribeLookup } from 'types'
   import { isMobile } from '$lib/store/layout'
@@ -37,7 +38,13 @@
 <PaymentDialog bind:this={paymentDialog} />
 
 {#if $isMobile}
-  <div>isMobile</div>
+  <Dialog bind:active>
+    <SubscribeMenuList
+      {state}
+      {subscribe}
+      on:soldCorrection={handleSoldCorrection}
+    />
+  </Dialog>
 {:else if active}
   <div
     class="s-menu"

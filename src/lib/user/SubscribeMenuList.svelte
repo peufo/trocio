@@ -76,7 +76,7 @@
   )
 </script>
 
-<List>
+<List style="overflow-x: hidden;">
   {#if state === 'main'}
     <div in:fly|local={{ x: -200 }}>
       <ListItem disabled dense>
