@@ -81,7 +81,7 @@
       />
 
       <Menu>
-        <div slot="activator" class="mt-1">
+        <div slot="activator">
           <Button depressed>
             {selectedTarif?.name
               ? `Tarif: ${selectedTarif.name}`

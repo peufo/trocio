@@ -20,6 +20,9 @@
 .s-app {
   position: relative;
 }
+.s-input.dense .s-input__slot {
+  margin-bottom: 0px;
+}
 
 body {
   font-family: Roboto, sans-serif !important;

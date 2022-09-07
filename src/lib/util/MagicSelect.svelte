@@ -125,7 +125,6 @@
       on:blur={handleBlur}
       autocomplete="off"
       placeholder={keepValue && !!selectedItem ? ' ' : ''}
-      class="mt-2"
       {...$$restProps}
     >
       {label}
