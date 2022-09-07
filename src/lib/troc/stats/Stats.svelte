@@ -62,7 +62,7 @@
 <div class="wrapper">
   <h6 class="mb-5">Statistique du troc</h6>
   <div class="d-flex flex-column" style="gap: 1em;">
-    <div class="d-flex align-center" style="gap: 1em;">
+    <div class="d-flex align-center flex-wrap" style="gap: 1em;">
       <MagicSelect
         modeSelect
         placeholder="Participant"
