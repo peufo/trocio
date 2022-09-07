@@ -60,13 +60,7 @@
     <thead>
       <tr>
         <th colspan="2" style="padding-left: 0px;">
-          <SearchTextField
-            bind:search={searchValue}
-            placeholder="Chercher un article"
-            flat
-            solo
-            dense
-          />
+          <SearchTextField bind:search={searchValue} flat solo dense />
         </th>
 
         <MagicTableHeaders {fields} bind:queryParams />
