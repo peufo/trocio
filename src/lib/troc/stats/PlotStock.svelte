@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { ButtonGroup, ButtonGroupItem } from 'svelte-materialify'
   import { faChartBar, faChartArea } from '@fortawesome/free-solid-svg-icons'
   import { grey } from 'svelte-materialify/src/utils/colors'
   import Plotly from 'plotly.js-dist'
@@ -16,7 +15,7 @@
 
   export let stats: TrocStatsFormatted
 
-  let mode: 'sums' | 'numbers' = 'sums'
+  export let mode: 'sums' | 'numbers' = 'sums'
   let isLoading = true
   let isMounted = false
   let containerPlotStock: HTMLDivElement
@@ -25,7 +24,7 @@
     setTimeout(() => (isMounted = true), 300)
   })
 
-  $: if (isMounted && ($isDarkTheme || true)) load()
+  $: if ((isMounted && ($isDarkTheme || true)) || mode || true) load()
 
   const config = { responsive: true }
 
@@ -467,18 +466,6 @@
     return traces
   }
 </script>
-
-<ButtonGroup
-  rounded
-  mandatory
-  bind:value={mode}
-  class="ml-4 mt-4"
-  on:change={load}
-  style="position: absolute; z-index: 1;"
->
-  <ButtonGroupItem value="numbers">Nombre</ButtonGroupItem>
-  <ButtonGroupItem value="sums">Valeur</ButtonGroupItem>
-</ButtonGroup>
 
 {#if isLoading}
   <div class="centered" style="height: 450px;">

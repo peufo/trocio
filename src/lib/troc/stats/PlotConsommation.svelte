@@ -4,7 +4,7 @@
   import { grey } from 'svelte-materialify/src/utils/colors'
   import Plotly from 'plotly.js-dist'
 
-  // For use typescript
+  // To use typescript
   // import * as Plotly from 'plotly.js'
 
   import IconLink from '$lib/util/IconLink.svelte'

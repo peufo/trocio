@@ -83,7 +83,7 @@
 
 <Card outlined hover={!open} class={klass}>
   <div on:click={handleOpen}>
-    <CardTitle>
+    <CardTitle style="gap: 1em;">
       <slot name="icon" />
 
       {#if titleEditable}
@@ -94,7 +94,7 @@
         </span>
       {/if}
 
-      <div style="flex-grow: 1;" />
+      <div class="flex-grow-1" />
 
       {#if hasSearchInput}
         <div
@@ -124,6 +124,9 @@
           </TextField>
         </div>
       {/if}
+
+      <slot name="actions" />
+
       <IconLink
         icon={faChevronDown}
         clickable

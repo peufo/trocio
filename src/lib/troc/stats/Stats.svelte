@@ -1,5 +1,12 @@
 <script lang="ts">
-  import { Menu, List, ListItem, Button } from 'svelte-materialify'
+  import {
+    Menu,
+    List,
+    ListItem,
+    Button,
+    ButtonGroup,
+    ButtonGroupItem,
+  } from 'svelte-materialify'
   import {
     faCashRegister,
     faShoppingCart,
@@ -25,6 +32,7 @@
   let selectedSubscribeId = ''
   let selectedTarif: Tarif | null = null
   let stats: TrocStatsFormatted | null = null
+  let plotStockMode: 'sums' | 'numbers' = 'sums'
 
   interface ParamsStats {
     trocId: string
@@ -110,6 +118,14 @@
         <span slot="icon">
           <IconLink icon={faTruck} class="mr-2" />
         </span>
+
+        <div slot="actions" class="flex-grow-1">
+          <ButtonGroup borderless mandatory bind:value={plotStockMode}>
+            <ButtonGroupItem value="sums">Valeur</ButtonGroupItem>
+            <ButtonGroupItem value="numbers">Nombre</ButtonGroupItem>
+          </ButtonGroup>
+        </div>
+
         <span slot="subtitle">
           {#if stats.articlesProposed.length}
             <span>
@@ -131,7 +147,7 @@
           {/if}
         </span>
 
-        <PlotStock {stats} />
+        <PlotStock {stats} mode={plotStockMode} />
       </ExpansionCard>
 
       <ExpansionCard title="Consommation">
