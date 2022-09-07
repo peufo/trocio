@@ -5,12 +5,19 @@
   import { page } from '@roxi/routify'
 
   import { user } from '$lib/user/store'
+  import logo from '$assets/logo'
   import { isDarkTheme } from '$lib/store/layout'
   import IconLink from '$lib/util/IconLink.svelte'
 </script>
 
+<a href="/trocs">
+  <Button fab depressed>
+    <Icon {...logo} />
+  </Button>
+</a>
+
 <a href={$user ? '/profile' : `/login?callback=${$page.path}`}>
-  <Button fab depressed class="mr-2">
+  <Button fab depressed>
     <IconLink icon={faUser} />
   </Button>
 </a>
