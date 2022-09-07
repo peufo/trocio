@@ -467,15 +467,16 @@
   }
 </script>
 
-{#if isLoading}
-  <div class="centered" style="height: 450px;">
-    <IconLink icon={faChartArea} size="2em" />
-  </div>
-  <div class="centered" style="height: 450px;">
-    <IconLink icon={faChartBar} size="2em" />
-  </div>
-{/if}
+<div class="d-flex flex-column" style="gap: 1em;">
+  {#if isLoading}
+    <div class="centered" style="height: {mode === 'numbers' ? 400 : 600}px;">
+      <IconLink icon={faChartArea} size="2em" />
+    </div>
+    <div class="centered" style="height: 450px;">
+      <IconLink icon={faChartBar} size="2em" />
+    </div>
+  {/if}
 
-<div bind:this={containerPlotStock} class="plot" />
-<br />
-<div bind:this={containerHisto} class="plot" />
+  <div bind:this={containerPlotStock} class="plot" />
+  <div bind:this={containerHisto} class="plot" />
+</div>
