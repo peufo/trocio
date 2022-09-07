@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { faChartBar, faChartArea } from '@fortawesome/free-solid-svg-icons'
+  import { faChartBar } from '@fortawesome/free-solid-svg-icons'
   import { grey } from 'svelte-materialify/src/utils/colors'
   import Plotly from 'plotly.js-dist'
 
@@ -33,8 +33,9 @@
     return new Promise((resolve) => {
       const layout = getLayout()
       const traces = getTraces()
+      const config = { responsive: true }
 
-      Plotly.newPlot(containerPlot, traces, layout)
+      Plotly.newPlot(containerPlot, traces, layout, config)
       resolve(true)
     })
   }
@@ -47,7 +48,7 @@
       xaxis: {},
       yaxis: { title: 'Nombre' },
       yaxis2: { title: 'Valeur', side: 'right', overlaying: 'y' },
-      margin: { t: 0 },
+      margin: { t: 0, l: 60, r: 60 },
       legend: {
         orientation: 'h',
         xanchor: 'center',

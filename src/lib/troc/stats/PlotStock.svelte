@@ -9,14 +9,14 @@
   // import * as Plotly from 'plotly.js'
 
   import IconLink from '$lib/util/IconLink.svelte'
-  import { isDarkTheme } from '$lib/store/layout'
+  import { isDarkTheme, isMobile } from '$lib/store/layout'
   import { troc } from '$lib/troc/store'
   import type { TrocStatsFormatted } from './formatStats'
   import { renderAmount } from '$lib/utils'
 
   export let stats: TrocStatsFormatted
 
-  let mode: 'sums' | 'numbers' = 'numbers'
+  let mode: 'sums' | 'numbers' = 'sums'
   let isLoading = true
   let isMounted = false
   let containerPlotStock: HTMLDivElement
@@ -26,6 +26,8 @@
   })
 
   $: if (isMounted && ($isDarkTheme || true)) load()
+
+  const config = { responsive: true }
 
   function load() {
     isLoading = true
@@ -39,7 +41,7 @@
       const layout = getLayout()
       const traces = getScatterTraces()
       const pie = getPieTrace()
-      Plotly.newPlot(containerPlotStock, [...traces, pie], layout)
+      Plotly.newPlot(containerPlotStock, [...traces, pie], layout, config)
       resolve(true)
     })
   }
@@ -48,7 +50,7 @@
     return new Promise((resolve) => {
       const layout = getLayoutHisto()
       const traces = getHistoTraces()
-      Plotly.newPlot(containerHisto, traces, layout)
+      Plotly.newPlot(containerHisto, traces, layout, config)
       resolve(true)
     })
   }
@@ -68,10 +70,15 @@
       hoverinfo: 'none',
       type: 'pie',
       hole: 0.2,
-      domain: {
-        x: [0.8, 1],
-        y: [0, mode === 'numbers' ? 1 : 0.7],
-      },
+      domain: $isMobile
+        ? {
+            x: [0, mode === 'numbers' ? 0.95 : 0.5],
+            y: [0.65, 1],
+          }
+        : {
+            x: [0.8, 1],
+            y: [0, mode === 'numbers' ? 1 : 0.7],
+          },
       showlegend: false,
       values: [
         stats[mode].proposed,
@@ -246,7 +253,12 @@
       paper_bgcolor: grey[$isDarkTheme ? 'darken-4' : 'lighten-5'],
       plot_bgcolor: grey[$isDarkTheme ? 'darken-3' : 'lighten-4'],
       font: { color: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'] },
-      yaxis: { title: 'Nombre' },
+      yaxis: {
+        title: 'Nombre',
+        ...($isMobile && { domain: [0, 0.5] }),
+      },
+      xaxis: $isMobile ? {} : { domain: [0, 0.7] },
+      height: $isMobile || mode === 'sums' ? 600 : 400,
       legend: {
         orientation: 'h',
         xanchor: 'center',
@@ -254,12 +266,7 @@
         yanchor: 'bottom',
         y: 1.15,
       },
-      grid: { columns: 2 },
-      xaxis: {
-        domain: [0, 0.7],
-        range: [],
-      },
-      margin: { t: 80 },
+      margin: { t: 80, l: 60, r: $isMobile ? 30 : 50 },
       annotations: [],
     }
 
@@ -284,34 +291,39 @@
         ]
     }
     if (mode === 'sums') {
-      layout.yaxis = { domain: [0, 0.7], title: 'Valeur' }
-      layout.yaxis2 = { domain: [0.75, 1] }
+      layout.yaxis = {
+        title: 'Valeur',
+        domain: $isMobile ? [0, 0.35] : [0, 0.7],
+      }
+      layout.yaxis2 = {
+        title: 'Bénéfice',
+        domain: $isMobile ? [0.4, 0.6] : [0.75, 1],
+      }
       if (layout.annotations)
         layout.annotations.push(
           {
-            text: `<span>Marge<br>Frais<br>Bénéfice total</span>`,
-            x: 0.9,
+            text: `<span>Marge :<br>Frais :<br>Total :</span>`,
+            x: $isMobile ? 0.5 : 0.78,
+            y: 0.95,
             xref: 'paper',
-            xanchor: 'left',
-            y: 0.98,
             yref: 'paper',
+            xanchor: 'left',
             yanchor: 'middle',
             align: 'left',
             showarrow: false,
           },
           {
-            text: `
-              <b>${renderAmount(stats.sums.margin, $troc.currency)}<br>
+            text: `<b>${renderAmount(stats.sums.margin, $troc.currency)}<br>
               ${renderAmount(stats.sums.fee, $troc.currency)}<br>
               ${renderAmount(
                 stats.sums.fee + stats.sums.margin,
                 $troc.currency
               )}<br>
-              </b>`,
-            x: 0.9,
+            </b>`,
+            x: 0.95,
+            y: 0.93,
             xref: 'paper',
             xanchor: 'right',
-            y: 0.95,
             yref: 'paper',
             yanchor: 'middle',
             align: 'right',
@@ -351,13 +363,12 @@
         range: [0, averageProvided * 3 || 50],
       },
       yaxis: { title: 'Nombre' },
-      margin: { t: 80 },
+      margin: { t: 80, l: 60, r: 30 },
       annotations: [
         {
-          text: ` Moy. mis en vente: <b>${renderAmount(
-            averageProvided,
-            $troc.currency
-          )}</b>`,
+          text: ` Moy. mis en vente: <b>
+            ${renderAmount(averageProvided, $troc.currency)}
+          </b>`,
           x: averageProvided,
           y: 0,
           arrowhead: 0,
@@ -368,10 +379,9 @@
           ay: -30,
         },
         {
-          text: ` Moy. vendu: <b>${renderAmount(
-            averageSolded,
-            $troc.currency
-          )}</b>`,
+          text: ` Moy. vendu: <b>
+            ${renderAmount(averageSolded, $troc.currency)}
+          </b>`,
           x: averageSolded,
           y: 0,
           arrowhead: 0,
@@ -382,10 +392,9 @@
           ay: -30,
         },
         {
-          text: ` Moy. récupéré: <b>${renderAmount(
-            averageRecovered,
-            $troc.currency
-          )}</b>`,
+          text: ` Moy. récupéré: <b>
+            ${renderAmount(averageRecovered, $troc.currency)}
+          </b>`,
           x: averageRecovered,
           y: 0,
           arrowhead: 0,
@@ -401,7 +410,7 @@
   }
 
   function getHistoTraces(): Partial<Plotly.ScatterData>[] {
-    //TODO: Limite price obligé pour éviter que ca rame ... Faire un avertissement ?
+    // TODO: pLimite price obligé our éviter que ca rame ... Faire un avertissement ?
     const LIMIT_PRICE = 1000
 
     const proposed: Partial<Plotly.ScatterData> = {
