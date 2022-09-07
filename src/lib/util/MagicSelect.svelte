@@ -59,7 +59,6 @@
     if (inputElement) inputElement.value = value
   }
 
-  // $: searchValue = $params[searchKey] || '' // <-- Communication par $params, inutil...
   $: querySearch = useInfinitApi<any, any[]>([
     path,
     { [searchKey]: searchValue, ...queryParams },

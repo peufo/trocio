@@ -11,20 +11,26 @@ const { ObjectId } = mongoose.Types
 
 /**
  * Return tous les infos nécéssaire au graphique
+ * Très peu optimisé désolé
  */
 export const getStats: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId = '', subscribeId = '' } = req.query
-    if (!trocId && !subscribeId) throw 'trocId or subscribeId is required'
-    if (typeof trocId !== 'string') throw 'trocId query need to be a string'
-    if (typeof subscribeId !== 'string')
-      throw 'subscribeId query need to be a string'
+    const { trocId, subscribeId, tarifId } = validIds(req.query)
+    const subIds: string[] = []
 
-    if (subscribeId) {
+    if (tarifId) {
+      const subsWithTarif = await Subscribe.find({ tarifId }, { _id: 1 })
+      console.log({ subsWithTarif })
+      subIds.push(...subsWithTarif.map((doc) => doc._id.toString()))
+    }
+
+    if (subscribeId) subIds.push(subscribeId)
+
+    if (subIds.length || tarifId) {
       const [articlesProposed, articlesBuyed, payments] = await Promise.all([
-        Article.find({ providerSubId: subscribeId }),
-        Article.find({ buyerSubId: subscribeId }),
-        Payment.find({ userSubId: subscribeId }),
+        Article.find({ providerSubId: { $in: subIds } }),
+        Article.find({ buyerSubId: { $in: subIds } }),
+        Payment.find({ userSubId: { $in: subIds } }),
       ])
       res.json({ articlesProposed, articlesBuyed, payments })
     } else {
@@ -38,6 +44,16 @@ export const getStats: RequestHandler = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+}
+
+function validIds(ids: { [key: string]: unknown }): { [key: string]: string } {
+  for (const [key, value] of Object.entries(ids)) {
+    if (!value) continue
+    if (typeof value !== 'string') throw new Error(`${key} need to be a string`)
+    if (!mongoose.isValidObjectId(value))
+      throw new Error(`${key} need to be a valid Id`)
+  }
+  return ids as { [key: string]: string }
 }
 
 export const search: RequestHandler = async (req, res, next) => {

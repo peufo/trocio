@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Divider, Menu, List, ListItem, Button } from 'svelte-materialify'
+  import { Menu, List, ListItem, Button } from 'svelte-materialify'
   import {
     faCashRegister,
     faShoppingCart,
@@ -26,12 +26,19 @@
   let selectedTarif: Tarif | null = null
   let stats: TrocStatsFormatted | null = null
 
-  $: queryStats = useApi<{ trocId: string; subscribeId?: string }, TrocStats>({
+  interface ParamsStats {
+    trocId: string
+    subscribeId?: string
+    tarifId?: string
+  }
+
+  $: queryStats = useApi<ParamsStats, TrocStats>({
     queryKey: [
       'trocs/byId/stats',
       {
         trocId: $troc._id,
         subscribeId: selectedSubscribeId,
+        tarifId: selectedTarif?._id,
       },
     ],
     onSuccess: (statsBrut) => {
@@ -47,6 +54,7 @@
 
   function handleSelectTarif(tarif: Tarif | null) {
     magicSelectUser.clear()
+    selectedSubscribeId = ''
     selectedTarif = tarif
   }
 </script>
@@ -74,8 +82,10 @@
 
       <Menu>
         <div slot="activator" class="mt-1">
-          <Button>
-            {selectedTarif?.name || 'Tous les tarifs'}
+          <Button depressed>
+            {selectedTarif?.name
+              ? `Tarif: ${selectedTarif.name}`
+              : 'Tous les tarifs'}
           </Button>
         </div>
         <List>
