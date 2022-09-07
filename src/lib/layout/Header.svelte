@@ -6,11 +6,7 @@
 
   import { troc } from '$lib/troc/store'
   import { user } from '$lib/user/store'
-  import {
-    trocNavigationActive,
-    isDarkTheme,
-    isMobile,
-  } from '$lib/store/layout'
+  import { isDarkTheme, isMobile } from '$lib/store/layout'
 
   import MobileMenu from '$lib/layout/MobileMenu.svelte'
   import logo from '$assets/logo'
@@ -52,7 +48,7 @@
       <MobileMenu />
     {:else}
       <a href="/trocs">
-        <Button text on:click={() => ($trocNavigationActive = true)}>
+        <Button text>
           <Icon {...logo} class="mr-2" />
           Les trocs
         </Button>

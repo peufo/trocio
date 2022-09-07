@@ -4,32 +4,29 @@
 
   import Navigation from '$lib/troc/Navigation.svelte'
   import TabsTrocs from '$lib/troc/TabsTrocs.svelte'
-  import {
-    trocNavigationActive,
-    isMobile,
-    isKeyboardOpen,
-  } from '$lib/store/layout'
+  import { isMobile, isKeyboardOpen } from '$lib/store/layout'
 
   let navigationWidth = '360px'
 
-  $: $trocNavigationActive = !$isMobile
+  let navigationActive = !isMobile
+
   $afterPageLoad(() => {
     // Hide navigation for create form
-    if ($isActive('./create')) $trocNavigationActive = false
-    else if (!$isMobile) $trocNavigationActive = true
-    else if ($isActive('./index')) $trocNavigationActive = true
+    if ($isActive('./create')) return (navigationActive = false)
+    if (!$isMobile) return (navigationActive = true)
+    if ($isActive('./index')) return (navigationActive = true)
   })
 </script>
 
 <div
   class="layout"
-  style="padding-left: {$trocNavigationActive && !$isMobile
+  style="padding-left: {navigationActive && !$isMobile
     ? navigationWidth
     : '0px'}"
 >
   {#if !$isMobile}
     <Navigation
-      bind:active={$trocNavigationActive}
+      bind:active={navigationActive}
       width={navigationWidth}
       mobileMode={false}
     />
