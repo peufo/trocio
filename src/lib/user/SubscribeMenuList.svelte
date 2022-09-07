@@ -25,6 +25,8 @@
 
   interface EventsMap {
     soldCorrection: void
+    roleSelect: void
+    tarifSelect: void
   }
   const dispatch = createEventDispatcher<EventsMap>()
   const queryClient = useQueryClient()
@@ -160,12 +162,13 @@
         <ListItem
           active={key === subscribe?.role}
           disabled={key === subscribe?.role}
-          on:click={() =>
-            subscribe &&
+          on:click={() => {
             $assignRole.mutate({
-              subscribeId: subscribe._id,
+              subscribeId: subscribe?._id || '',
               role: key,
-            })}
+            })
+            dispatch('roleSelect')
+          }}
         >
           <span slot="prepend">
             {#if icon}
@@ -199,12 +202,13 @@
         <ListItem
           disabled={tarif._id === subscribe?.tarifId}
           active={tarif._id === subscribe?.tarifId}
-          on:click={() =>
-            subscribe &&
+          on:click={() => {
             $assignTarif.mutate({
-              subscribeId: subscribe._id,
+              subscribeId: subscribe?._id || '',
               tarifId: tarif._id || '',
-            })}
+            })
+            dispatch('tarifSelect')
+          }}
         >
           {tarif.name}
 

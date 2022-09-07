@@ -33,6 +33,10 @@
     active = false
     paymentDialog.open(subscribe, 'Correction du solde')
   }
+
+  function handleSelectRoleOrTarif() {
+    setTimeout(() => (active = false), 200)
+  }
 </script>
 
 <PaymentDialog bind:this={paymentDialog} />
@@ -43,6 +47,8 @@
       {state}
       {subscribe}
       on:soldCorrection={handleSoldCorrection}
+      on:roleSelect={handleSelectRoleOrTarif}
+      on:tarifSelect={handleSelectRoleOrTarif}
     />
   </Dialog>
 {:else if active}
