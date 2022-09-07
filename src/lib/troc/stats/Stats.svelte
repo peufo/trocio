@@ -18,15 +18,17 @@
   import type { TrocStatsFormatted } from './formatStats'
   import ExpansionCard from '$lib/util/ExpansionCard.svelte'
   import { troc } from '$lib/troc/store'
+  import { isMobile } from '$lib/store/layout'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
+  import { renderAmount } from '$lib/utils'
+  import { useApi } from '$lib/api'
+
   import PlotStock from './PlotStock.svelte'
   import PlotConsommation from './PlotConsommation.svelte'
   import PlotCash from './PlotCash.svelte'
   import { formatStats } from './formatStats'
-  import { renderAmount } from '$lib/utils'
-  import { useApi } from '$lib/api'
 
   let magicSelectUser: MagicSelect
   let selectedSubscribeId = ''
@@ -67,7 +69,7 @@
   }
 </script>
 
-<div class="wrapper">
+<div class="wrapper" class:mobile={$isMobile}>
   <h6 class="mb-5">Statistique du troc</h6>
   <div class="d-flex flex-column" style="gap: 1em;">
     <div class="d-flex align-center flex-wrap" style="gap: 1em;">
@@ -236,6 +238,10 @@
   .wrapper {
     max-width: 1000px;
     margin: auto;
-    padding-bottom: 250px;
+    padding-bottom: 200px;
+  }
+
+  .wrapper.mobile {
+    padding-bottom: 72px;
   }
 </style>
