@@ -45,7 +45,7 @@
         padding-left: {$isMobile ? '0px' : navigationWidth};
         padding-right: {tipsActive ? tipsWidth : '0px'};"
     >
-      <main class="pa-{$isMobile ? 1 : 4}" class:pb-14={$isMobile}>
+      <main class="pa-{$isMobile ? 1 : 4}">
         {#if $troc.is_try}
           <div class="orange white-text alert mb-4">Troc d'entrainement</div>
         {/if}

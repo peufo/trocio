@@ -161,6 +161,7 @@
   .wrapper {
     max-width: 210mm;
     margin: auto;
+    padding-bottom: 75px;
   }
 
   .page-wrapper {

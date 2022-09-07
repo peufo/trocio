@@ -3,6 +3,7 @@
   import { faEdit } from '@fortawesome/free-solid-svg-icons'
 
   import { troc } from '$lib/troc/store'
+  import { isMobile } from '$lib/store/layout'
   import TrocCard from '$lib/troc/Card.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import UsersCard from '$lib/troc/home/UsersCard.svelte'
@@ -11,7 +12,7 @@
   import LinksCard from '$lib/troc/home/LinksCard.svelte'
 </script>
 
-<div class="home-grid">
+<div class="home-grid" style="padding-bottom: {$isMobile ? 75 : 0}px">
   <TrocCard troc={$troc} hideAdminButton class="hero">
     <div slot="card-actions">
       <a href={`/admin/edit?trocId=${$troc._id}`}>
@@ -38,7 +39,6 @@
     margin: auto;
     display: grid;
     gap: 20px;
-    /*align-items: start;*/
     grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
 
     @media screen and (min-width: 1000px) {

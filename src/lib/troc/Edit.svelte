@@ -325,6 +325,7 @@
     width: 100%;
     max-width: 600px;
     margin: auto;
+    padding-bottom: 36px;
   }
 
   .container > div {
