@@ -175,9 +175,9 @@
         <span slot="icon">
           <IconLink icon={faCashRegister} class="mr-2" />
         </span>
-        <span slot="subtitle">
+        <div slot="subtitle" class="d-flex flex-wrap" style="gap: 0.3em;">
           {#if stats.numbers.payment}
-            <span>
+            <div>
               <b>{stats.numbers.payment.toLocaleString()}</b>
               <span class="ml-2" style="color: green;">
                 <i class="fas fa-chevron-up" />
@@ -187,10 +187,14 @@
                 <i class="fas fa-chevron-down" />
                 {stats.numbers.paymentNegatif.toLocaleString()}
               </span>
+            </div>
+
+            <div>
               paiements pour une valeur total de
-              <b>
-                {renderAmount(stats.sums.payment, $troc.currency)}
-              </b>
+              <b>{renderAmount(stats.sums.payment, $troc.currency)}</b>
+            </div>
+
+            <div>
               <span class="ml-2" style="color: green;">
                 <i class="fas fa-chevron-up" />
                 {renderAmount(stats.sums.paymentPositif, $troc.currency)}
@@ -206,11 +210,11 @@
                   $troc.currency
                 )}
               </span>
-            </span>
+            </div>
           {:else}
             <span>Aucun paiement</span>
           {/if}
-        </span>
+        </div>
 
         <PlotCash {stats} />
       </ExpansionCard>

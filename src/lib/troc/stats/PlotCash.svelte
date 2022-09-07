@@ -33,7 +33,8 @@
     return new Promise((resolve) => {
       const layout = getLayout()
       const traces = getTraces()
-      Plotly.newPlot(containerPlot, traces, layout)
+      const config = { responsive: true, displayModeBar: false }
+      Plotly.newPlot(containerPlot, traces, layout, config)
       resolve(true)
     })
   }
@@ -43,7 +44,8 @@
       paper_bgcolor: grey[$isDarkTheme ? 'darken-4' : 'lighten-5'],
       plot_bgcolor: grey[$isDarkTheme ? 'darken-3' : 'lighten-4'],
       font: { color: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'] },
-      xaxis: {},
+      margin: { t: 30, l: 60, r: 30 },
+      height: 650,
       yaxis: { title: 'Montant', domain: [0, 0.7] },
       yaxis2: { title: 'Opé. par heure', domain: [0.75, 1] },
       legend: {
@@ -51,7 +53,7 @@
         xanchor: 'center',
         x: 0.5,
         yanchor: 'bottom',
-        y: 1.15,
+        y: 1.03,
       },
       annotations: [],
     }
@@ -243,7 +245,7 @@
 <div bind:this={containerPlot} class="plot" />
 
 {#if isLoading}
-  <div class="centered" style="height: 450px;">
+  <div class="centered" style="height: 665px;">
     <IconLink icon={faChartBar} size="2em" />
   </div>
 {/if}

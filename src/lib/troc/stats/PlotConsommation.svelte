@@ -33,7 +33,7 @@
     return new Promise((resolve) => {
       const layout = getLayout()
       const traces = getTraces()
-      const config = { responsive: true }
+      const config = { responsive: true, displayModeBar: false }
 
       Plotly.newPlot(containerPlot, traces, layout, config)
       resolve(true)
@@ -48,13 +48,13 @@
       xaxis: {},
       yaxis: { title: 'Nombre' },
       yaxis2: { title: 'Valeur', side: 'right', overlaying: 'y' },
-      margin: { t: 0, l: 60, r: 60 },
+      margin: { t: 30, l: 60, r: 60 },
       legend: {
         orientation: 'h',
         xanchor: 'center',
         x: 0.5,
         yanchor: 'bottom',
-        y: 1.15,
+        y: 1.03,
       },
       annotations: [],
     }

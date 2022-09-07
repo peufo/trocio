@@ -26,7 +26,7 @@
 
   $: if ((isMounted && ($isDarkTheme || true)) || mode || true) load()
 
-  const config = { responsive: true }
+  const config = { responsive: true, displayModeBar: false }
 
   function load() {
     isLoading = true
@@ -69,9 +69,10 @@
       hoverinfo: 'none',
       type: 'pie',
       hole: 0.2,
+      rotation: 90,
       domain: $isMobile
         ? {
-            x: [0, mode === 'numbers' ? 0.95 : 0.5],
+            x: [0, mode === 'numbers' ? 0.95 : 0.35],
             y: [0.65, 1],
           }
         : {
@@ -263,9 +264,9 @@
         xanchor: 'center',
         x: 0.5,
         yanchor: 'bottom',
-        y: 1.15,
+        y: 1.03,
       },
-      margin: { t: 80, l: 60, r: $isMobile ? 30 : 50 },
+      margin: { t: 30, l: 60, ...($isMobile && { r: 10 }) },
       annotations: [],
     }
 
@@ -302,8 +303,8 @@
         layout.annotations.push(
           {
             text: `<span>Marge :<br>Frais :<br>Total :</span>`,
-            x: $isMobile ? 0.5 : 0.78,
-            y: 0.95,
+            x: $isMobile ? 0.55 : 0.78,
+            y: 0.9,
             xref: 'paper',
             yref: 'paper',
             xanchor: 'left',
@@ -320,7 +321,7 @@
               )}<br>
             </b>`,
             x: 0.95,
-            y: 0.93,
+            y: 0.88,
             xref: 'paper',
             xanchor: 'right',
             yref: 'paper',
@@ -355,14 +356,14 @@
         xanchor: 'center',
         x: 0.5,
         yanchor: 'bottom',
-        y: 1.15,
+        y: 1.03,
       },
       xaxis: {
         title: 'Valeur',
         range: [0, averageProvided * 3 || 50],
       },
       yaxis: { title: 'Nombre' },
-      margin: { t: 80, l: 60, r: 30 },
+      margin: { t: 30, l: 60, r: 30 },
       annotations: [
         {
           text: ` Moy. mis en vente: <b>
