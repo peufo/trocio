@@ -14,12 +14,13 @@
   import type { Article, ArticleCreate, ISubscribe } from 'types'
   import { api, useApi } from '$lib/api'
   import notify from '$lib/notify'
+  import { troc } from '$lib/troc/store'
 
   const queryClient = useQueryClient()
   export let subscribeId: string
   export let active = false
   export let listMode = false
-  export let trocIsClosed = false
+  export let disabled = false
   export let fullscreen = false
 
   let newName = ''
@@ -55,7 +56,7 @@
   } Mon troisième article ; 5,40\n ...`
 
   function handleClicOpen() {
-    if (trocIsClosed)
+    if (disabled && !$troc.is_try)
       return notify.warning(`Ajout d'article impossible, le troc est terminé.`)
     dispatch('open')
     active = true

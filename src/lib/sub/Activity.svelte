@@ -22,7 +22,7 @@
   export let subscribeId: string
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
   export let modeAdmin = false
-  export let isClosed = false
+  export let createArticleDisabled = false
 
   let klass = ''
   export { klass as class }
@@ -113,7 +113,10 @@
         <!-- Provide button -->
         <span style="margin-left: 30px;">
           {#if !modeAdmin}
-            <ArticleCreateDialog {subscribeId} trocIsClosed={isClosed} />
+            <ArticleCreateDialog
+              {subscribeId}
+              disabled={createArticleDisabled}
+            />
           {/if}
 
           <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />

@@ -23,7 +23,7 @@
   import Loader from '$lib/util/Loader.svelte'
 
   let clientSelector: MagicSelect
-  const clientKey = 'client_subscribe_id'
+  const subscribeKey = 'client_subscribe_id'
   const tabIndexKey = 'cash_register_tab_index'
   let container: HTMLDivElement
 
@@ -35,9 +35,9 @@
   ]
 
   onMount(() => {
-    if ($params[clientKey]) {
+    if ($params[subscribeKey]) {
       api<{ subscribeId: string }, { name: string }>('/api/users/name', {
-        params: { subscribeId: $params[clientKey] },
+        params: { subscribeId: $params[subscribeKey] },
       }).then((user) => clientSelector.setValue(user.name))
     }
 
@@ -109,7 +109,7 @@
   )
 
   function redirectSubscribe(newSubscribe: ISubscribe) {
-    $redirect('', { ...$params, [clientKey]: newSubscribe._id })
+    $redirect('', { ...$params, [subscribeKey]: newSubscribe._id })
   }
 </script>
 
@@ -121,7 +121,7 @@
           bind:this={clientSelector}
           path="/subscribes"
           searchKey="q"
-          selectKey={clientKey}
+          selectKey={subscribeKey}
           on:select={handleSelectClient}
           queryParams={{ trocId: $troc._id, includGlobalUser: true }}
           getValue={(sub) => sub.user?.name || sub.name}
@@ -153,7 +153,7 @@
         {/if}
       </div>
     </div>
-    {#if $params[clientKey]}
+    {#if $params[subscribeKey]}
       <div
         in:fade|local
         bind:this={container}
@@ -177,7 +177,7 @@
             <div in:fade|locale class="pa-4">
               <svelte:component
                 this={component}
-                subscribeId={$params[clientKey]}
+                subscribeId={$params[subscribeKey]}
                 modeAdmin
               />
             </div>
