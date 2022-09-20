@@ -85,16 +85,15 @@ userSchema.statics.getAuthenticated = async function (
   password: string
 ) {
   const user = await this.findOne({ mail }).exec()
-  if (!user)
-    throw Error(`public: Le mail indiqué n'est pas associé à un compte!`)
+  if (!user) throw Error(`public: Le mail indiqué n'est associé à aucun compte`)
   if (user.isLocked) {
-    throw Error(`public: Ce compte est temporairement verrouillé!`)
+    throw Error(`public: Ce compte est temporairement verrouillé`)
   }
 
   const isMatch = await user.comparePassword(password)
   if (!isMatch) {
     await user.incLoginAttempts()
-    throw Error('public: Mot de passe invalide!')
+    throw Error('public: Mot de passe invalide ')
   }
 
   await user
