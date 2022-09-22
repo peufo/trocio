@@ -31,7 +31,7 @@ declare module 'express-session' {
 try {
   mongoose.connect(config.TROCIO_DB).then(() => {
     console.log(`DB connected: ${config.TROCIO_DB}`)
-    initOptions
+    initOptions()
   })
 } catch (error) {
   console.log(error)
