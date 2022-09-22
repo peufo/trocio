@@ -34,7 +34,7 @@
   }
 </script>
 
-<Menu closeOnClick={false} style="max-height: none;">
+<Menu closeOnClick={false} right style="max-height: none;">
   <div slot="activator">
     <Button depressed>Champs visibles</Button>
   </div>
