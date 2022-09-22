@@ -66,11 +66,12 @@
             <Button
               on:click={() => userQuery.update({ name: userName })}
               disabled={userNameError || $userStatus.isLoading}
+              class="primary-color"
             >
               {#await $userQuery}
                 <Loader />
               {:then}
-                Valider la modification
+                Valider
               {/await}
             </Button>
             <br /><br />
@@ -100,11 +101,12 @@
             <Button
               on:click={() => userQuery.update({ mail: userMail })}
               disabled={userMailError || $userStatus.isLoading}
+              class="primary-color"
             >
               {#await $userQuery}
                 <Loader />
               {:then}
-                Valider la modification
+                Valider
               {/await}
             </Button>
             <br /><br />
@@ -179,23 +181,23 @@
                 </Button>
               {:then}
                 <Button
-                  variant="raised"
+                  class="primary-color"
                   on:click={handleChangePassword}
                   disabled={!newPassword ||
                     newPasswordError ||
                     newPassword2Error}
                 >
-                  Valider la modification
+                  Valider
                 </Button>
               {:catch}
                 <Button
-                  variant="raised"
+                  class="primary-color"
                   on:click={handleChangePassword}
                   disabled={!newPassword ||
                     newPasswordError ||
                     newPassword2Error}
                 >
-                  Valider la modification
+                  Valider
                 </Button>
               {/await}
             </div>
