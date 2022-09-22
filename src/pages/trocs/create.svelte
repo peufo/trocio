@@ -1,15 +1,13 @@
 <script>
   import { onMount } from 'svelte'
-  import { goto, page } from '@roxi/routify'
+  import { redirect, page } from '@roxi/routify'
   import { Icon } from 'svelte-materialify'
   import { mdiAlert } from '@mdi/js'
 
   import { user } from '$lib/user/store'
   import TrocEdit from '$lib/troc/Edit.svelte'
   onMount(() => {
-    const url = `/login?callback=${$page.path}`
-    console.log(url, $user)
-    if (!$user) $goto(`/login?callback=${$page.path}`)
+    if (!$user) $redirect(`/login?callback=${$page.path}`)
   })
 </script>
 
