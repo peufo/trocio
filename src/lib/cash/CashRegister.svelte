@@ -115,7 +115,7 @@
 
 {#if $troc}
   <div class="main-container">
-    <div class="d-flex">
+    <div class="d-flex align-center" style="gap: 1em;">
       <div style="width: 300px;">
         <MagicSelect
           bind:this={clientSelector}
@@ -135,23 +135,21 @@
         />
       </div>
 
-      <div class="ml-4 mt-2">
-        {#if $createSubscribeAnonym.isLoading}
-          <Button depressed disabled style="height: 40px;">
-            <Loader />
-          </Button>
-        {:else}
-          <Button
-            depressed
-            style="height: 40px;"
-            on:click={() =>
-              $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
-          >
-            <IconLink icon={faUserPlus} opacity class="mr-2" size="1.2em" />
-            Nouveau client
-          </Button>
-        {/if}
-      </div>
+      {#if $createSubscribeAnonym.isLoading}
+        <Button depressed disabled style="height: 40px;">
+          <Loader />
+        </Button>
+      {:else}
+        <Button
+          depressed
+          style="height: 40px;"
+          on:click={() =>
+            $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
+        >
+          <IconLink icon={faUserPlus} opacity class="mr-2" size="1.2em" />
+          Nouveau client
+        </Button>
+      {/if}
     </div>
     {#if $params[subscribeKey]}
       <div
