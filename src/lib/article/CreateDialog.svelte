@@ -274,7 +274,8 @@
         <TextField
           bind:value={newPrice}
           type="number"
-          min="0"
+          min={0}
+          step={0.01}
           rules={[(value) => +value >= 0 || 'Le prix doit être positif']}
         >
           Prix
