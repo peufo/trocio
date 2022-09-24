@@ -12,7 +12,7 @@
 
   // const initialStart = dayjs().add(-2, 'year').format('YYYY-MM-DD')
   const initialStart = dayjs().format('YYYY-MM-DD')
-  const initialEnd = dayjs().add(1, 'month').format('YYYY-MM-DD')
+  const initialEnd = dayjs().add(2, 'month').format('YYYY-MM-DD')
   let searchElement: HTMLInputElement
   let startElement: HTMLInputElement
   let endElement: HTMLInputElement
