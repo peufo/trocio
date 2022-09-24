@@ -1,7 +1,13 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { fade, slide } from 'svelte/transition'
-  import { Dialog, Button, Textarea, TextField } from 'svelte-materialify'
+  import {
+    Dialog,
+    Button,
+    Textarea,
+    TextField,
+    Checkbox,
+  } from 'svelte-materialify'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import {
     faCircleNotch,
@@ -29,6 +35,8 @@
   let newArticles = ''
   let listArticles: ArticleCreate[] = []
   let listArticlesError = ''
+  let textarea: HTMLTextAreaElement | undefined
+  let keepOpen = true
 
   const dispatch = createEventDispatcher<{
     open: null
@@ -36,8 +44,6 @@
     createArticle: Article
     createArticles: Article[]
   }>()
-
-  let textarea: HTMLTextAreaElement | undefined
 
   $: querySubscribe = useApi<{ subscribeId: string }, ISubscribe>([
     'subscribes/byId',
@@ -83,6 +89,7 @@
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
         queryClient.invalidateQueries('trocs/byId/counters')
+        if (!keepOpen) handleClose()
       },
     }
   )
@@ -104,6 +111,7 @@
         listArticlesError = ''
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
+        if (!keepOpen) handleClose()
       },
     }
   )
@@ -301,7 +309,10 @@
     </form>
   {/if}
   <div class="d-flex mt-2">
+    <Checkbox bind:checked={keepOpen}>Garder la fenêtre ouverte</Checkbox>
+
     <div class="flex-grow-1" />
+
     <Button depressed size="small" on:click={() => (listMode = !listMode)}>
       <IconLink
         icon={!listMode ? faList : faPlus}
