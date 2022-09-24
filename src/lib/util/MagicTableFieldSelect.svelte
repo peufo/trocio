@@ -1,7 +1,13 @@
 <script lang="ts">
   import { params, goto, url } from '@roxi/routify'
   import { onMount } from 'svelte'
-  import { Button, Menu, List, ListItem, Checkbox } from 'svelte-materialify'
+  import {
+    Button,
+    Menu,
+    List,
+    ListItem,
+    Checkbox,
+  } from 'svelte-materialify/src'
   import type { FieldInteface } from 'types'
 
   export let fields: Partial<FieldInteface>[]
