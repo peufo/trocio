@@ -32,6 +32,11 @@
     { subscribeId },
   ])
   $: resum = $queryResum.data?.resum
+  $: totalProposedCount =
+    (resum?.proposedCount || 0) +
+    (resum?.validedCount || 0) +
+    (resum?.soldCount || 0) +
+    (resum?.refusedCount || 0)
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
@@ -71,12 +76,12 @@
       />
     </div>
 
-    <!-- Ventes -->
+    <!-- Propositions -->
     <Card outlined>
       <div on:click={() => handleClick('sales')} class="card-header d-flex">
         <div>
-          {resum.proposedCount || 0}
-          Vente{(resum.proposedCount || 0) > 1 ? 's' : ''}
+          {totalProposedCount}
+          Proposition{totalProposedCount > 1 ? 's' : ''}
         </div>
         <div class="flex-grow-1" />
         <div>

@@ -36,6 +36,11 @@
     { subscribeId },
   ])
   $: resum = $queryResum.data?.resum
+  $: totalProposedCount =
+    (resum?.proposedCount || 0) +
+    (resum?.validedCount || 0) +
+    (resum?.soldCount || 0) +
+    (resum?.refusedCount || 0)
 
   const queryPayment = useMutation(
     () =>
@@ -104,12 +109,9 @@
     </div>
 
     <DetailCard
-      title="Ventes"
+      title="Proposition{totalProposedCount > 1 ? 's' : ''}"
       bind:open={providedOpen}
-      count={(resum.proposedCount || 0) +
-        (resum.validedCount || 0) +
-        (resum.soldCount || 0) +
-        (resum.refusedCount || 0)}
+      count={totalProposedCount}
       sum={(resum.soldSum || 0) - (resum.feeSum || 0) - (resum.marginSum || 0)}
     >
       <span slot="head">
@@ -144,7 +146,7 @@
     </DetailCard>
 
     <DetailCard
-      title="Achats"
+      title="Achat{(resum.purchasesCount || 0) > 1 ? 's' : ''}"
       count={resum.purchasesCount || 0}
       sum={-(resum.purchasesSum || 0)}
     >
@@ -152,7 +154,7 @@
     </DetailCard>
 
     <DetailCard
-      title="Paiements"
+      title="Paiement{(resum.paymentsCount || 0) > 1 ? 's' : ''}"
       count={resum.paymentsCount || 0}
       sum={resum.paymentsSum || 0}
       open={paymentOpen}
