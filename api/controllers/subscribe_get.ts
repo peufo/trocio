@@ -393,6 +393,7 @@ export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
             proposedSum: sumOfArticles('proposed', '$price'),
             validedCount: sumOfArticles('valided'),
             validedSum: sumOfArticles('valided', '$price'),
+            refusedCount: sumOfArticles('refused'),
             feeSum: sumOfArticles('valided', '$fee'),
             soldCount: sumOfArticles('sold'),
             soldSum: sumOfArticles('sold', '$price'),

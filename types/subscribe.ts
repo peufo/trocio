@@ -52,8 +52,10 @@ export interface SubscribeResum extends ISubscribe {
     proposedSum?: number
     validedCount?: number
     validedSum?: number
-    feeSum?: number
+    refusedCount?: number
+    soldCount?: number
     soldSum?: number
+    feeSum?: number
     marginSum?: number
     purchasesCount?: number
     purchasesSum?: number
