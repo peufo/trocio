@@ -141,12 +141,13 @@
         </Button>
       {:else}
         <Button
-          class="primary-color"
+          text
+          class="primary-text"
           style="height: 40px;"
           on:click={() =>
             $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
         >
-          <IconLink icon={faUserPlus} opacity class="mr-2" size="1.2em" />
+          <IconLink icon={faUserPlus} class="mr-2" size="1.2em" />
           Nouveau client
         </Button>
       {/if}
