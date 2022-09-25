@@ -177,7 +177,7 @@
             paymentDialog.open(subscribe, msg, -balance)
           }}
         >
-          Regler {renderAmount(balance, $troc.currency)} en faveur du
+          Règler {renderAmount(balance, $troc.currency)} en faveur du
           {balance > 0 ? 'client' : 'troc'}
         </Button>
       {/if}

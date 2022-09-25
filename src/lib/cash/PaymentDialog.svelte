@@ -55,7 +55,8 @@
 {#if subscribe}
   <Dialog bind:active class="pa-4">
     <div class="text-h6">
-      Correction du solde de <b>{subscribe.user?.name || subscribe.name}</b>
+      {modeCorrection ? 'Correction' : 'Règlement'} du solde de
+      <b>{subscribe.user?.name || subscribe.name}</b>
     </div>
     <form on:submit|preventDefault={() => $queryPayment.mutate()}>
       <div class="mt-3">
@@ -66,7 +67,9 @@
         <TextField
           bind:value={amount}
           type="number"
-          hint={+amount > 0 ? 'En faveur du client' : 'En votre faveur'}
+          hint={+amount > 0 === modeCorrection
+            ? 'En faveur du client'
+            : 'En faveur du troc'}
         >
           Montant
         </TextField>
