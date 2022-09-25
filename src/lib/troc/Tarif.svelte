@@ -143,6 +143,7 @@
   title={_tarif.name}
   titleEditable
   on:input={handleInputName}
+  on:submit={handleSubmit}
   class={klass}
 >
   <div slot="subtitle">
