@@ -51,12 +51,7 @@
   }
 </script>
 
-<Button
-  dense
-  depressed
-  on:click={handleClicOpen}
-  class={article ? 'secondary-color' : 'primary-color'}
->
+<Button dense depressed on:click={handleClicOpen} class="secondary-color">
   {#if article}
     <IconLink icon={faEdit} opacity size="1.1em" class="mr-2" />
     éditer
@@ -94,7 +89,9 @@
 
   {#if !article}
     <div class="d-flex mt-2">
-      <Checkbox bind:checked={keepOpen}>Garder la fenêtre ouverte</Checkbox>
+      <Checkbox bind:checked={keepOpen} color="secondary">
+        Garder la fenêtre ouverte
+      </Checkbox>
       <div class="flex-grow-1" />
 
       <Button depressed size="small" on:click={() => (listMode = !listMode)}>
