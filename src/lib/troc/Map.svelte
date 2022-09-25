@@ -9,8 +9,6 @@
   import markerIcon2X from '$assets/images/marker-icon-2x.png'
   import { trocs, trocsElement, map } from '$lib/troc/store'
 
-  trocs.subscribe(updateMarkers)
-
   const dispatch = createEventDispatcher()
 
   let mapId = 'map' + Math.random()
@@ -25,6 +23,8 @@
 
   // Flag util pour s'assuré de l'origine des zoom et move de la map
   let isUserAction = false
+
+  trocs.subscribe(updateMarkers)
 
   onMount(() => {
     $map = L.map(mapId, {
@@ -44,7 +44,7 @@
   })
 
   onDestroy(() => {
-    $map.remove()
+    // $map.remove()
   })
 
   const handleMoveMap = debounce(loadBounds, 200)

@@ -134,7 +134,6 @@
 
   /** Convertie un localisation {lat, lng} en string */
   function locationToString(loc?: Location) {
-    console.log({ loc })
     if (!loc) return ''
     let lat = numberToString(loc.lat)
     lat += loc.lat >= 0 ? 'N' : 'S'
