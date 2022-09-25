@@ -58,7 +58,7 @@
   style="
     position: fixed;
     top: 0px;
-    z-index: 2;
+    z-index: 3;
     height: {$layout.innerHeight - offsetY}px;
     transform: translateY({offsetY}px);
   "
@@ -123,7 +123,7 @@
 
   <Overlay
     active={!mini}
-    index={1}
+    index={2}
     opacity={0.7}
     on:click={() => (mini = true)}
   />

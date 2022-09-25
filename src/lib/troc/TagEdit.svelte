@@ -139,7 +139,7 @@
               )
             }}
           >
-            Valider la modification
+            Valider
           </Button>
         </div>
       {/if}

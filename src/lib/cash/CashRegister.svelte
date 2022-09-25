@@ -23,7 +23,7 @@
   import Loader from '$lib/util/Loader.svelte'
 
   let clientSelector: MagicSelect
-  const clientKey = 'client_subscribe_id'
+  const subscribeKey = 'client_subscribe_id'
   const tabIndexKey = 'cash_register_tab_index'
   let container: HTMLDivElement
 
@@ -35,9 +35,9 @@
   ]
 
   onMount(() => {
-    if ($params[clientKey]) {
+    if ($params[subscribeKey]) {
       api<{ subscribeId: string }, { name: string }>('/api/users/name', {
-        params: { subscribeId: $params[clientKey] },
+        params: { subscribeId: $params[subscribeKey] },
       }).then((user) => clientSelector.setValue(user.name))
     }
 
@@ -109,19 +109,19 @@
   )
 
   function redirectSubscribe(newSubscribe: ISubscribe) {
-    $redirect('', { ...$params, [clientKey]: newSubscribe._id })
+    $redirect('', { ...$params, [subscribeKey]: newSubscribe._id })
   }
 </script>
 
 {#if $troc}
   <div class="main-container">
-    <div class="d-flex">
+    <div class="d-flex align-center" style="gap: 1em;">
       <div style="width: 300px;">
         <MagicSelect
           bind:this={clientSelector}
           path="/subscribes"
           searchKey="q"
-          selectKey={clientKey}
+          selectKey={subscribeKey}
           on:select={handleSelectClient}
           queryParams={{ trocId: $troc._id, includGlobalUser: true }}
           getValue={(sub) => sub.user?.name || sub.name}
@@ -135,25 +135,23 @@
         />
       </div>
 
-      <div class="ml-4 mt-2">
-        {#if $createSubscribeAnonym.isLoading}
-          <Button depressed disabled style="height: 40px;">
-            <Loader />
-          </Button>
-        {:else}
-          <Button
-            depressed
-            style="height: 40px;"
-            on:click={() =>
-              $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
-          >
-            <IconLink icon={faUserPlus} opacity class="mr-2" size="1.2em" />
-            Nouveau client
-          </Button>
-        {/if}
-      </div>
+      {#if $createSubscribeAnonym.isLoading}
+        <Button depressed disabled style="height: 40px;">
+          <Loader />
+        </Button>
+      {:else}
+        <Button
+          depressed
+          style="height: 40px;"
+          on:click={() =>
+            $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
+        >
+          <IconLink icon={faUserPlus} opacity class="mr-2" size="1.2em" />
+          Nouveau client
+        </Button>
+      {/if}
     </div>
-    {#if $params[clientKey]}
+    {#if $params[subscribeKey]}
       <div
         in:fade|local
         bind:this={container}
@@ -177,7 +175,7 @@
             <div in:fade|locale class="pa-4">
               <svelte:component
                 this={component}
-                subscribeId={$params[clientKey]}
+                subscribeId={$params[subscribeKey]}
                 modeAdmin
               />
             </div>

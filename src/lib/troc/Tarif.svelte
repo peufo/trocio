@@ -18,6 +18,7 @@
   export { klass as class }
   export let open = false
   export let tarif: Tarif
+  let margin = tarif.margin * 100
 
   // Copie de tarif
   let _tarif: Tarif = getClone()
@@ -76,7 +77,8 @@
   }
 
   function handleChangeTarif(event: any) {
-    _tarif.margin = Number(event.target.value) / 100
+    _tarif.margin = +(+event.target.value / 100).toFixed(4)
+    console.log(_tarif.margin)
   }
 
   function handleChangeMax(event: any) {
@@ -133,14 +135,16 @@
     <div class="d-flex align-start">
       <TextField
         type="number"
-        value={(_tarif.margin * 100).toFixed(0)}
+        bind:value={margin}
         on:input={handleChangeTarif}
         min="0"
-        max="40"
+        max="100"
+        step={0.1}
         placeholder=" "
         hint="Votre part sur les articles vendus"
         style="max-width: 50%;"
         class="mr-2"
+        rules={[(value) => value < 100 || '( doit être inférieur à 100 )']}
       >
         <span slot="append">
           <IconLink icon={faPercent} size="1em" />
@@ -266,7 +270,7 @@
             )
           }}
         >
-          Valider la modification
+          Valider
         </Button>
       </div>
     {/if}

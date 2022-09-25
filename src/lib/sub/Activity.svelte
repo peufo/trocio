@@ -12,7 +12,7 @@
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import TablePurchases from './TablePurchases.svelte'
   import TablePayments from './TablePayments.svelte'
-  import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
+  import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
@@ -22,7 +22,7 @@
   export let subscribeId: string
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
   export let modeAdmin = false
-  export let isClosed = false
+  export let createArticleDisabled = false
 
   let klass = ''
   export { klass as class }
@@ -36,6 +36,11 @@
     { subscribeId },
   ])
   $: resum = $queryResum.data?.resum
+  $: totalProposedCount =
+    (resum?.proposedCount || 0) +
+    (resum?.validedCount || 0) +
+    (resum?.soldCount || 0) +
+    (resum?.refusedCount || 0)
 
   const queryPayment = useMutation(
     () =>
@@ -104,16 +109,16 @@
     </div>
 
     <DetailCard
-      title="Ventes"
+      title="Proposition{totalProposedCount > 1 ? 's' : ''}"
       bind:open={providedOpen}
-      count={resum.proposedCount || 0}
+      count={totalProposedCount}
       sum={(resum.soldSum || 0) - (resum.feeSum || 0) - (resum.marginSum || 0)}
     >
       <span slot="head">
         <!-- Provide button -->
         <span style="margin-left: 30px;">
           {#if !modeAdmin}
-            <ArticleCreateDialog {subscribeId} trocIsClosed={isClosed} />
+            <ArticleEditDialog {subscribeId} disabled={createArticleDisabled} />
           {/if}
 
           <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
@@ -138,7 +143,7 @@
     </DetailCard>
 
     <DetailCard
-      title="Achats"
+      title="Achat{(resum.purchasesCount || 0) > 1 ? 's' : ''}"
       count={resum.purchasesCount || 0}
       sum={-(resum.purchasesSum || 0)}
     >
@@ -146,7 +151,7 @@
     </DetailCard>
 
     <DetailCard
-      title="Paiements"
+      title="Paiement{(resum.paymentsCount || 0) > 1 ? 's' : ''}"
       count={resum.paymentsCount || 0}
       sum={resum.paymentsSum || 0}
       open={paymentOpen}

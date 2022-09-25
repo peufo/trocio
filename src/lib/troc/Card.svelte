@@ -227,14 +227,14 @@
       {#if !!$user && troc.subscribe?.validedByUser}
         {#if troc.subscribe?.role === 'admin'}
           <a href={`/admin?trocId=${troc._id}`}>
-            <Button depressed>
+            <Button depressed class="primary-color">
               administration
               <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
             </Button>
           </a>
         {:else if troc.subscribe?.role === 'cashier'}
           <a href={`/cashier?trocId=${troc._id}`}>
-            <Button depressed>
+            <Button depressed class="primary-color">
               Caisse
               <IconLink
                 icon={faCashRegister}

@@ -12,11 +12,15 @@
 {#if visible}
   <div transition:slide|local class="d-flex">
     <div class="flex-grow-1" />
-    <Button disabled={$updateQuery.isLoading} on:click={clickHandler}>
+    <Button
+      disabled={$updateQuery.isLoading}
+      on:click={clickHandler}
+      class="primary-color"
+    >
       {#if $updateQuery.isLoading}
         <Loader title="Validation" />
       {:else}
-        Valider la modification
+        Valider
       {/if}
     </Button>
     <br /><br />

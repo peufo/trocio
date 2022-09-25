@@ -7,7 +7,7 @@
 
   import type { SubscribeResum } from 'types'
   import { renderAmount } from '$lib/utils'
-  import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
+  import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
@@ -17,7 +17,7 @@
 
   export let subscribeId: string
   export let currency: string | undefined = undefined
-  export let isClosed = false
+  export let createArticleDisabled = false
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles */
   export let modeAdmin = false
 
@@ -32,6 +32,11 @@
     { subscribeId },
   ])
   $: resum = $queryResum.data?.resum
+  $: totalProposedCount =
+    (resum?.proposedCount || 0) +
+    (resum?.validedCount || 0) +
+    (resum?.soldCount || 0) +
+    (resum?.refusedCount || 0)
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
@@ -64,15 +69,19 @@
     <div class="d-flex">
       <div class="flex-grow-1" />
       <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
-      <ArticleCreateDialog {subscribeId} fullscreen trocIsClosed={isClosed} />
+      <ArticleEditDialog
+        {subscribeId}
+        fullscreen
+        disabled={createArticleDisabled}
+      />
     </div>
 
-    <!-- Ventes -->
+    <!-- Propositions -->
     <Card outlined>
       <div on:click={() => handleClick('sales')} class="card-header d-flex">
         <div>
-          {resum.proposedCount || 0}
-          Vente{(resum.proposedCount || 0) > 1 ? 's' : ''}
+          {totalProposedCount}
+          Proposition{totalProposedCount > 1 ? 's' : ''}
         </div>
         <div class="flex-grow-1" />
         <div>

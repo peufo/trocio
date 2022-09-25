@@ -71,8 +71,8 @@
 
     <!-- LIST -->
     {#if !$user}
-      <div class="text--disabled text-center mt-4">
-        Connectez-vous pour voir vos trocs.
+      <div>
+        <a href="/login?callback=/trocs">Connectez-vous</a> pour voir vos trocs.
       </div>
     {:else}
       <div
