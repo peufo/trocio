@@ -79,6 +79,7 @@
           <ListItem
             active={$isActive(`/admin/${tab.ref}`) ||
               (tab.isIndex && $isActive('/admin/index'))}
+            activeClass="secondary-color"
           >
             <span slot="prepend">
               <IconLink icon={tab.icon} size="1.1em" />
