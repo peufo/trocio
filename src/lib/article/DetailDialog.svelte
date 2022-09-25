@@ -4,6 +4,7 @@
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiPrinter } from '@mdi/js'
 
+  import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import { renderAmount, print } from '$lib/utils'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import type {
@@ -61,38 +62,6 @@
     }
   )
 
-  const queryEditName = useMutation(
-    (newName: string) =>
-      api('/api/articles/edit-name', {
-        method: 'post',
-        data: { articleId: article?._id, newName },
-        success: 'Nom modifé',
-      }),
-    {
-      onSuccess: (newArticle) => {
-        // @ts-ignore
-        article.name = newArticle.name
-        queryClient.invalidateQueries('articles')
-      },
-    }
-  )
-
-  const queryEditPrice = useMutation(
-    (newPrice: string) =>
-      api('/api/articles/edit-price', {
-        method: 'post',
-        data: { articleId: article?._id, newPrice },
-        success: 'Prix mis à jour',
-      }),
-    {
-      onSuccess: (newArticle) => {
-        // @ts-ignore
-        article.price = newArticle.price
-        queryClient.invalidateQueries('articles')
-      },
-    }
-  )
-
   const queryCancelEvent = useMutation(
     (eventName: ArticleState) =>
       api<{ articleId: string; eventName: ArticleState }, ArticleLookup>(
@@ -113,18 +82,6 @@
     }
   )
 
-  function handleEditName() {
-    const newName = prompt('Nouveau nom', article?.name)
-    if (!newName || !article) return
-    $queryEditName.mutate(newName)
-  }
-
-  function handleEditPrice() {
-    const newPrice = prompt('Nouveau prix', String(article?.price))
-    if (!newPrice || !article) return
-    $queryEditPrice.mutate(newPrice)
-  }
-
   const mapCorrectionEvent: { [key in ArticleCorrection['event']]: string } = {
     'edit-name': 'changé le nom',
     'edit-price': 'changé le prix',
@@ -132,6 +89,10 @@
     'cancel-refused': 'annulé le refus',
     'cancel-sold': 'annulé la vente',
     'cancel-valided': 'annulé la validation',
+  }
+
+  function handleEditDone(event: CustomEvent<Article>) {
+    article = { ...article, ...event.detail }
   }
 </script>
 
@@ -182,7 +143,7 @@
       </p>
     {/if}
 
-    {#if queryCorrections && $queryCorrections.isSuccess && !$queryCorrections.isLoading && $queryCorrections.data?.corrections?.length}
+    {#if $queryCorrections && $queryCorrections.isSuccess && !$queryCorrections.isLoading && $queryCorrections.data?.corrections?.length}
       {#if !correctionsVisible}
         <div out:slide|local class="d-flex">
           <div class="flex-grow-1" />
@@ -193,12 +154,12 @@
           >
             <IconLink icon={faHistory} class="mr-2" size="1em" opacity />
             {$queryCorrections.data.corrections.length}
-            corrections
+            éditions
           </Button>
         </div>
       {:else}
         <div in:slide|local>
-          <b>Historique des corrections : </b>
+          <b>Historique des éditions : </b>
 
           {#each $queryCorrections.data.corrections as correction}
             <div>
@@ -223,12 +184,7 @@
     {:else}
       <div class="d-flex flex-wrap" style="gap: 0.5em;">
         {#if modeAdmin || (!article.valided && !article.refused)}
-          <Button text class="blue-text" on:click={handleEditName}>
-            Modifier le nom
-          </Button>
-          <Button text class="blue-text" on:click={handleEditPrice}>
-            Modifier le prix
-          </Button>
+          <ArticleEditDialog {article} on:done={handleEditDone} />
         {/if}
 
         {#if !article.valided && !article.refused}
@@ -289,18 +245,6 @@
           >
             <Icon path={mdiPrinter} />
           </Button>
-
-          <!--
-            TODO: Toute les actions accessible directement ici ?
-
-            {#if !article.valided}
-              <Button text on:click={() => notify.info('TODO')}>Valider</Button>
-              <Button text on:click={() => notify.info('TODO')}>Refuser</Button>
-            {:else if article.valided && !article.sold && !article.refused}
-              <Button text on:click={() => notify.info('TODO')}>Vendre</Button>
-              <Button text on:click={() => notify.info('TODO')}>Rendre</Button>
-            {/if}
-          -->
         {/if}
       </div>
     {/if}
