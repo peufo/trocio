@@ -10,8 +10,10 @@
 
   import notify from '$lib/notify'
   import { troc } from '$lib/troc/store'
+  import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
-  export let subscribeId: string
+  export let subscribeId: string = ''
+  export let article: Article | undefined = undefined
   export let active = false
   export let listMode = false
   export let disabled = false
@@ -23,8 +25,8 @@
   const dispatch = createEventDispatcher<{
     open: null
     close: null
-    createArticle: Article
-    createArticles: Article[]
+    done: Article
+    doneList: Article[]
   }>()
 
   function closeDialog() {
@@ -39,14 +41,29 @@
     active = true
   }
 
-  function handleDone() {
+  function handleDone(event: CustomEvent<Article>) {
+    if (!keepOpen || article) closeDialog()
+    dispatch('done', event.detail)
+  }
+  function handleDoneList(event: CustomEvent<Article[]>) {
     if (!keepOpen) closeDialog()
+    dispatch('doneList', event.detail)
   }
 </script>
 
-<Button dense depressed on:click={handleClicOpen} class="primary-color">
-  <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
-  article
+<Button
+  dense
+  depressed
+  on:click={handleClicOpen}
+  class={article ? 'secondary-color' : 'primary-color'}
+>
+  {#if article}
+    <IconLink icon={faEdit} opacity size="1.1em" class="mr-2" />
+    éditer
+  {:else}
+    <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
+    article
+  {/if}
 </Button>
 
 <Dialog
@@ -57,7 +74,11 @@
 >
   <div class="d-flex justify-space-between mb-3">
     <div class="text-h6">
-      Proposer {listMode ? `une liste d'` : 'un '}article
+      {#if article}
+        Éditer un article
+      {:else}
+        Proposer {listMode ? `une liste d'` : 'un '}article
+      {/if}
     </div>
     {#if fullscreen}
       <div class="flex-grow-1" />
@@ -66,24 +87,25 @@
   </div>
 
   {#if listMode}
-    <ArticleFormList {subscribeId} on:done={handleDone} />
+    <ArticleFormList {subscribeId} on:done={handleDoneList} />
   {:else}
-    <ArticleForm {subscribeId} on:done={handleDone} />
+    <ArticleForm {subscribeId} on:done={handleDone} {article} />
   {/if}
 
-  <div class="d-flex mt-2">
-    <Checkbox bind:checked={keepOpen}>Garder la fenêtre ouverte</Checkbox>
+  {#if !article}
+    <div class="d-flex mt-2">
+      <Checkbox bind:checked={keepOpen}>Garder la fenêtre ouverte</Checkbox>
+      <div class="flex-grow-1" />
 
-    <div class="flex-grow-1" />
-
-    <Button depressed size="small" on:click={() => (listMode = !listMode)}>
-      <IconLink
-        icon={!listMode ? faList : faPlus}
-        opacity
-        size="1em"
-        class="mr-2"
-      />
-      {!listMode ? 'Charger une liste' : 'Un seul article'}
-    </Button>
-  </div>
+      <Button depressed size="small" on:click={() => (listMode = !listMode)}>
+        <IconLink
+          icon={!listMode ? faList : faPlus}
+          opacity
+          size="1em"
+          class="mr-2"
+        />
+        {!listMode ? 'Charger une liste' : 'Un seul article'}
+      </Button>
+    </div>
+  {/if}
 </Dialog>
