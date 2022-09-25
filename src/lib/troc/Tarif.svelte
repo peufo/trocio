@@ -186,6 +186,10 @@
           on:input={handleChangeMax}
           min="1"
           max="5000"
+          rules={[
+            (value) =>
+              value <= 5000 || '( doit être égal ou inférieur à 5000 )',
+          ]}
           placeholder=" "
           hint="Nombre maximum d'article pouvant être proposé par un participant"
           style="max-width: 50%;"
