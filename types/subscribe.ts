@@ -44,7 +44,7 @@ export interface SubscribeLookup extends ISubscribe {
 }
 
 /** Résumé des interactions d'un utilisateur avec un troc */
-export interface SubscribeResum extends ISubscribe {
+export interface SubscribeResum extends SubscribeLookup {
   resum: {
     balance: number
     articleCount?: number
