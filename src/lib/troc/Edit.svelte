@@ -302,7 +302,7 @@
         text={$createTroc.isLoading}
         disabled={$createTroc.isLoading}
         title="Valider la création de mon troc"
-        class="green white-text"
+        class="primary-color"
       >
         {#if $createTroc.isLoading}
           <Loader title="Création en cours" />
