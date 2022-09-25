@@ -31,6 +31,13 @@
     })
   }
 
+  export function close() {
+    active = false
+    subscribe = undefined
+    message = ''
+    amount = '0'
+  }
+
   const queryPayment = useMutation(
     () =>
       api<IPaymentCreate>('/api/payments', {
