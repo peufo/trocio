@@ -23,6 +23,7 @@
   import Loader from '$lib/util/Loader.svelte'
   import { renderAmount } from '$lib/utils'
   import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
+  import notify from '$lib/notify'
 
   let clientSelector: MagicSelect
   const subscribeKey = 'client_subscribe_id'
@@ -59,11 +60,17 @@
   })
 
   function handleShortcut(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      paymentDialog.close()
+    }
+
     if (!event.ctrlKey) return
-    console.log(event.key)
     switch (event.key) {
       case 'Backspace':
         clientSelector.focus()
+        break
+      case 'Enter':
+        openPaymentDialog()
         break
     }
   }
@@ -122,6 +129,17 @@
   function redirectSubscribe(newSubscribe: ISubscribe) {
     $redirect('', { ...$params, [subscribeKey]: newSubscribe._id })
   }
+
+  function openPaymentDialog() {
+    if (!subscribe || balance === undefined) return
+    if (Math.abs(balance) < 0.001)
+      return notify.info(
+        `Le solde de ${subscribe.user?.name || subscribe.name} est nul`
+      )
+    let msg = 'Règlement du solde en faveur du '
+    msg += balance > 0 ? 'client' : 'troc'
+    paymentDialog.open(subscribe, msg, -balance)
+  }
 </script>
 
 <PaymentDialog bind:this={paymentDialog} />
@@ -168,15 +186,7 @@
       <div class="flex-grow-1" />
 
       {#if $params[subscribeKey] && balance && Math.abs(balance) > 0.001}
-        <Button
-          class="primary-color"
-          on:click={() => {
-            if (!subscribe || balance === undefined) return
-            let msg = 'Règlement du solde en faveur du '
-            msg += balance > 0 ? 'client' : 'troc'
-            paymentDialog.open(subscribe, msg, -balance)
-          }}
-        >
+        <Button class="primary-color" on:click={openPaymentDialog}>
           Règler {renderAmount(balance, $troc.currency)} en faveur du
           {balance > 0 ? 'client' : 'troc'}
         </Button>
