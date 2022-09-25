@@ -12,7 +12,7 @@
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import TablePurchases from './TablePurchases.svelte'
   import TablePayments from './TablePayments.svelte'
-  import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
+  import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
@@ -118,10 +118,7 @@
         <!-- Provide button -->
         <span style="margin-left: 30px;">
           {#if !modeAdmin}
-            <ArticleCreateDialog
-              {subscribeId}
-              disabled={createArticleDisabled}
-            />
+            <ArticleEditDialog {subscribeId} disabled={createArticleDisabled} />
           {/if}
 
           <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />

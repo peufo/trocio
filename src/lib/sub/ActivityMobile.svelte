@@ -7,7 +7,7 @@
 
   import type { SubscribeResum } from 'types'
   import { renderAmount } from '$lib/utils'
-  import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
+  import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
@@ -69,7 +69,7 @@
     <div class="d-flex">
       <div class="flex-grow-1" />
       <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
-      <ArticleCreateDialog
+      <ArticleEditDialog
         {subscribeId}
         fullscreen
         disabled={createArticleDisabled}
