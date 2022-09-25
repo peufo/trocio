@@ -64,6 +64,8 @@ export const getResum: RequestHandler = async (req, res, next) => {
     aggregate.match(match)
     lookupResum(aggregate)
     lookupTarif(aggregate)
+    lookupUser(aggregate)
+    lookupTroc(aggregate)
 
     const [subscribe] = await aggregate.exec()
     res.json(subscribe)

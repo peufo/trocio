@@ -10,8 +10,8 @@
     faUserPlus,
   } from '@fortawesome/free-solid-svg-icons'
 
-  import type { ISubscribe } from 'types'
-  import { api } from '$lib/api'
+  import type { ISubscribe, SubscribeLookup, SubscribeResum } from 'types'
+  import { api, useApi } from '$lib/api'
   import { troc } from '$lib/troc/store'
   import { layout } from '$lib/store/layout'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
@@ -21,11 +21,15 @@
   import Buy from '$lib/cash/Buy.svelte'
   import SubActivity from '$lib/sub/Activity.svelte'
   import Loader from '$lib/util/Loader.svelte'
+  import { renderAmount } from '$lib/utils'
+  import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
 
   let clientSelector: MagicSelect
   const subscribeKey = 'client_subscribe_id'
   const tabIndexKey = 'cash_register_tab_index'
   let container: HTMLDivElement
+  let paymentDialog: PaymentDialog
+  let subscribe: SubscribeLookup | undefined = undefined
 
   const TABS = [
     { ref: 'provide', label: 'Proposition', component: Provide },
@@ -33,6 +37,13 @@
     { ref: 'buy', label: 'Achat', component: Buy },
     { ref: 'resum', label: 'Compte', component: SubActivity },
   ]
+
+  $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>({
+    enabled: !!$params[subscribeKey],
+    queryKey: ['subscribes/resum', { subscribeId: $params[subscribeKey] }],
+  })
+  $: subscribe = $queryResum.data
+  $: balance = $queryResum.data?.resum.balance
 
   onMount(() => {
     if ($params[subscribeKey]) {
@@ -92,8 +103,8 @@
     }
   )
 
-  /** Créer un client anonym */
-  const createSubscribeAnonym = useMutation(
+  /** Créer un client invité */
+  const createSubscribeGuest = useMutation(
     (data: CreateSubscribeBody) =>
       api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
         method: 'post',
@@ -112,6 +123,8 @@
     $redirect('', { ...$params, [subscribeKey]: newSubscribe._id })
   }
 </script>
+
+<PaymentDialog bind:this={paymentDialog} />
 
 {#if $troc}
   <div class="main-container">
@@ -135,23 +148,41 @@
         />
       </div>
 
-      {#if $createSubscribeAnonym.isLoading}
+      {#if $createSubscribeGuest.isLoading}
         <Button depressed disabled style="height: 40px;">
           <Loader />
         </Button>
       {:else}
         <Button
-          text
+          outlined
           class="primary-text"
           style="height: 40px;"
           on:click={() =>
-            $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
+            $createSubscribeGuest.mutate({ trocId: $params.trocId })}
         >
           <IconLink icon={faUserPlus} class="mr-2" size="1.2em" />
           Nouveau client
         </Button>
       {/if}
+
+      <div class="flex-grow-1" />
+
+      {#if $params[subscribeKey] && balance && Math.abs(balance) > 0.001}
+        <Button
+          class="primary-color"
+          on:click={() => {
+            if (!subscribe || balance === undefined) return
+            let msg = 'Règlement du solde en faveur du '
+            msg += balance > 0 ? 'client' : 'troc'
+            paymentDialog.open(subscribe, msg, -balance)
+          }}
+        >
+          Regler {renderAmount(balance, $troc.currency)} en faveur du
+          {balance > 0 ? 'client' : 'troc'}
+        </Button>
+      {/if}
     </div>
+
     {#if $params[subscribeKey]}
       <div
         in:fade|local
