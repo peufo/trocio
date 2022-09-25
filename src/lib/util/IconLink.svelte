@@ -108,3 +108,10 @@
     {...$$restProps}
   />
 {/if}
+
+<style global>
+  .s-list-item.primary-color > span > i.s-icon,
+  .s-list-item.secondary-color > span > i.s-icon {
+    color: white;
+  }
+</style>
