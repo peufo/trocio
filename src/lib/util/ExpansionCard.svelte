@@ -87,7 +87,9 @@
       <slot name="icon" />
 
       {#if titleEditable}
-        <input value={title} on:input style="min-width: 100px;" />
+        <form on:submit|preventDefault>
+          <input value={title} on:input style="min-width: 100px;" />
+        </form>
       {:else}
         <span>
           {title}
