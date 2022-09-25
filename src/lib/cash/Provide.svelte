@@ -51,7 +51,11 @@
   canSelectAll
   message="Sélectionner des articles proposés par le client pour les valider ou les refuser."
 >
-  <div slot="actions-permanent-left">
+  <div
+    slot="actions-permanent-left"
+    class="d-flex align-center"
+    style="gap: 1em;"
+  >
     <ArticleEditDialog
       {subscribeId}
       on:createArticle={({ detail }) =>
@@ -59,6 +63,12 @@
       on:createArticles={({ detail }) =>
         (pendingItems = [...pendingItems, ...detail])}
     />
+
+    <div title="Impression automatique des étiquettes">
+      <Checkbox bind:checked={autoPrint} color="secondary">
+        <Icon path={mdiPrinter} />
+      </Checkbox>
+    </div>
   </div>
 
   <div slot="actions">
@@ -79,15 +89,5 @@
         Valider la sélection
       </Button>
     {/if}
-  </div>
-
-  <div
-    slot="actions-permanent-right"
-    class="ml-4 mt-2"
-    title="Impression automatique des étiquettes"
-  >
-    <Checkbox bind:checked={autoPrint}>
-      <Icon path={mdiPrinter} />
-    </Checkbox>
   </div>
 </Template>
