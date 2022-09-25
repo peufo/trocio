@@ -42,24 +42,6 @@
     (resum?.soldCount || 0) +
     (resum?.refusedCount || 0)
 
-  const queryPayment = useMutation(
-    () =>
-      api<IPaymentCreate>('/api/payments', {
-        method: 'post',
-        data: {
-          userSubId: subscribeId,
-          amount: -(resum?.balance || 0),
-          message: 'Règlement du solde',
-        },
-        success: 'Solde reglé avec succès',
-      }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('subscribes/resum')
-      },
-    }
-  )
-
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
@@ -88,24 +70,10 @@
 
       <div class="flex-grow-1" />
 
-      <!-- TODO: Arondi en attendant de gerer la monaie correctement dans la DB -->
-      {#if modeAdmin && Math.abs(resum.balance) > 0.001}
-        <Button
-          class="primary-color mt-2 mr-4"
-          on:click={() => $queryPayment.mutate()}
-          disabled={$queryPayment.isLoading}
-        >
-          Regler le solde en {resum.balance > 0
-            ? 'faveur du client'
-            : 'votre faveur'}
-        </Button>
-        <h6>{renderAmount(resum.balance)}</h6>
-      {:else}
-        <h6 class="mr-1">
-          Solde &nbsp;&nbsp;
-          {renderAmount(resum.balance)}
-        </h6>
-      {/if}
+      <h6 class="mr-1">
+        <span class="mr-2">Solde</span>
+        {renderAmount(resum.balance)}
+      </h6>
     </div>
 
     <DetailCard
