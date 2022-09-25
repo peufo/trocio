@@ -33,9 +33,8 @@
             Trocio est un outil simple et efficace pour échanger vos objets.
           </p>
           <p>
-            Que vous soyez organisateur ou amateur de bonnes affaires, Trocio
-            vous offre une structure pour améliorer votre expérience sur des
-            évenements éphemères.
+            Déstiné aux organisateurs ou aux amateurs de bonnes affaires, Trocio
+            améliore votre expérience sur des évenements éphemères.
           </p>
           <p>
             L'interface fournit de nombreuses fonctionalitées qui vous
