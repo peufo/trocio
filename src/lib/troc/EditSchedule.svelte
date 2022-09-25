@@ -174,7 +174,12 @@
   {/if}
 </div>
 
-<Button on:click={addPeriod} text class="mt-3 mb-3">Ajouter une période</Button>
+<div class="d-flex">
+  <div class="flex-grow-1" />
+  <Button on:click={addPeriod} text class="mt-3 mb-3">
+    Ajouter une période
+  </Button>
+</div>
 
 <style>
   :global(.s-select .s-text-field__wrapper.solo) {
