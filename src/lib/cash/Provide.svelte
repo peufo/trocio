@@ -5,7 +5,7 @@
   import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
   import Template from '$lib/cash/Template.svelte'
-  import ArticleCreateDialog from '$lib/article/CreateDialog.svelte'
+  import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import { api } from '$lib/api'
   import { print } from '$lib/utils'
@@ -52,7 +52,7 @@
   message="Sélectionner des articles proposés par le client pour les valider ou les refuser."
 >
   <div slot="actions-permanent-left">
-    <ArticleCreateDialog
+    <ArticleEditDialog
       {subscribeId}
       on:createArticle={({ detail }) =>
         (pendingItems = [...pendingItems, detail])}
