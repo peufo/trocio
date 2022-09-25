@@ -7,8 +7,8 @@
   import type { IPaymentCreate, SubscribeLookup } from 'types'
 
   export let active = false
+  export let modeCorrection = false
 
-  let modeCorrection = false
   let subscribe: SubscribeLookup | undefined
   let message = ''
   let amount = '0'
