@@ -1,6 +1,6 @@
 <script lang="ts">
   import { slide } from 'svelte/transition'
-  import { Dialog, Divider, Button, Icon } from 'svelte-materialify'
+  import { Dialog, Divider, Button, Icon } from 'svelte-materialify/src'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiPrinter } from '@mdi/js'
 
@@ -183,10 +183,6 @@
       </div>
     {:else}
       <div class="d-flex flex-wrap" style="gap: 0.5em;">
-        {#if modeAdmin || (!article.valided && !article.refused)}
-          <ArticleEditDialog {article} on:done={handleEditDone} />
-        {/if}
-
         {#if !article.valided && !article.refused}
           <Button
             text
@@ -236,6 +232,8 @@
             </Button>
           {/if}
 
+          <div class="flex-grow-1" />
+
           <Button
             fab
             size="small"
@@ -245,6 +243,10 @@
           >
             <Icon path={mdiPrinter} />
           </Button>
+
+          {#if modeAdmin || (!article.valided && !article.refused)}
+            <ArticleEditDialog {article} on:done={handleEditDone} />
+          {/if}
         {/if}
       </div>
     {/if}
