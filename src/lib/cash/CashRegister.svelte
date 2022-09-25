@@ -141,7 +141,7 @@
         </Button>
       {:else}
         <Button
-          depressed
+          class="primary-color"
           style="height: 40px;"
           on:click={() =>
             $createSubscribeAnonym.mutate({ trocId: $params.trocId })}
