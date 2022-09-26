@@ -12,12 +12,14 @@
   })
 </script>
 
-<EnsureSubscribe troc={$troc}>
-  <SubActivityMobile
-    subscribeId={$troc.subscribe._id}
-    currency={$troc.currency}
-    createArticleDisabled={!$troc.is_try || $troc.isClosed}
-  />
-</EnsureSubscribe>
+<div class="pa-2">
+  <EnsureSubscribe troc={$troc}>
+    <SubActivityMobile
+      subscribeId={$troc.subscribe._id}
+      currency={$troc.currency}
+      createArticleDisabled={!$troc.is_try || $troc.isClosed}
+    />
+  </EnsureSubscribe>
+</div>
 
 <slot />
