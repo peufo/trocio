@@ -216,7 +216,7 @@
 
       {#if $params[subscribeKey] && balance && Math.abs(balance) > 0.001}
         <div transition:slide style={$isMobile ? 'width: 100%;' : ''}>
-          <Button block class="primary-color" on:click={openPaymentDialog}>
+          <Button block class="secondary-color" on:click={openPaymentDialog}>
             Règler {renderAmount(balance, $troc.currency)} en faveur du
             {balance > 0 ? 'client' : 'troc'}
           </Button>
