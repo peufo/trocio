@@ -5,6 +5,10 @@
   import { Button, Tabs, Tab } from 'svelte-materialify/src'
   import { useMutation } from '@sveltestack/svelte-query'
   import {
+    faArrowRightArrowLeft,
+    faArrowRightFromBracket,
+    faArrowRightToBracket,
+    faCartShopping,
     faCashRegister,
     faUserAlt,
     faUserPlus,
@@ -32,10 +36,25 @@
   let subscribe: SubscribeLookup | undefined = undefined
 
   const TABS = [
-    { ref: 'provide', label: 'Proposition', component: Provide },
-    { ref: 'recover', label: 'Récupèration', component: Recover },
-    { ref: 'buy', label: 'Achat', component: Buy },
-    { ref: 'resum', label: 'Compte', component: SubActivity },
+    {
+      ref: 'provide',
+      label: 'Dépot',
+      icon: faArrowRightToBracket,
+      component: Provide,
+    },
+    {
+      ref: 'recover',
+      label: 'Retrait',
+      icon: faArrowRightFromBracket,
+      component: Recover,
+    },
+    { ref: 'buy', label: 'Achat', icon: faCartShopping, component: Buy },
+    {
+      ref: 'resum',
+      label: 'Compte',
+      icon: faArrowRightArrowLeft,
+      component: SubActivity,
+    },
   ]
 
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>({
@@ -145,7 +164,7 @@
 
 {#if $troc}
   <div class="main-container">
-    <div class="d-flex flex-wrap align-center" style="gap: 0.5em;">
+    <div class="d-flex flex-wrap align-center pb-2" style="gap: 0.5em;">
       <div class:flex-grow-1={$isMobile}>
         <MagicSelect
           bind:this={clientSelector}
@@ -208,17 +227,30 @@
       <div
         in:fade|local
         bind:this={container}
-        class="simple-card mt-4"
-        style="min-height: {$layout.innerHeight - container?.offsetTop - 16}px;"
+        class="simple-card"
+        style="min-height: {$layout.innerHeight -
+          container?.offsetTop -
+          ($isMobile ? 6 : 16)}px;"
       >
         <Tabs
           grow
+          icons={$isMobile}
           value={$params[tabIndexKey] || 3}
           on:change={handleChangeTab}
         >
           <div slot="tabs">
-            {#each TABS as { ref, label }}
-              <Tab class="rounded">{label}</Tab>
+            {#each TABS as { ref, label, icon }}
+              <Tab class="rounded">
+                {#if $isMobile || true}
+                  <IconLink
+                    {icon}
+                    class={$isMobile ? '' : 'mr-3'}
+                    size="1.2em"
+                  />
+                {/if}
+                <span style={$isMobile ? 'font-size: 0.8em;' : ''}>{label}</span
+                >
+              </Tab>
             {/each}
           </div>
         </Tabs>
@@ -250,9 +282,13 @@
   </div>
 {/if}
 
-<style>
+<style lang="scss">
   :global(.s-tabs) {
     border-radius: 5px;
+  }
+
+  :global(.s-tabs-bar.icons) {
+    height: 56px;
   }
 
   .main-container {
