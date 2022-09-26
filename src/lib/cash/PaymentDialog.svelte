@@ -70,7 +70,7 @@
         <Textarea bind:value={message} rows={2} autogrow>Commentaire</Textarea>
       </div>
 
-      <div class="d-flex mt-3">
+      <div class="d-flex mt-3" style="gap: 0.5em;">
         <TextField
           bind:value={amount}
           type="number"
