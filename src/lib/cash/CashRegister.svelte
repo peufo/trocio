@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { fade } from 'svelte/transition'
+  import { fade, slide } from 'svelte/transition'
   import { params, redirect } from '@roxi/routify'
   import { Button, Tabs, Tab } from 'svelte-materialify/src'
   import { useMutation } from '@sveltestack/svelte-query'
@@ -13,14 +13,13 @@
   import type { ISubscribe, SubscribeLookup, SubscribeResum } from 'types'
   import { api, useApi } from '$lib/api'
   import { troc } from '$lib/troc/store'
-  import { layout } from '$lib/store/layout'
+  import { layout, isMobile } from '$lib/store/layout'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import Provide from '$lib/cash/Provide.svelte'
   import Recover from '$lib/cash/Recover.svelte'
   import Buy from '$lib/cash/Buy.svelte'
   import SubActivity from '$lib/sub/Activity.svelte'
-  import Loader from '$lib/util/Loader.svelte'
   import { renderAmount } from '$lib/utils'
   import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
   import notify from '$lib/notify'
@@ -146,8 +145,8 @@
 
 {#if $troc}
   <div class="main-container">
-    <div class="d-flex align-center" style="gap: 1em;">
-      <div style="width: 300px;">
+    <div class="d-flex flex-wrap align-center" style="gap: 0.5em;">
+      <div class:flex-grow-1={$isMobile}>
         <MagicSelect
           bind:this={clientSelector}
           path="/subscribes"
@@ -166,13 +165,21 @@
         />
       </div>
 
-      {#if $createSubscribeGuest.isLoading}
-        <Button depressed disabled style="height: 40px;">
-          <Loader />
-        </Button>
+      {#if $isMobile}
+        <div class="flex-grow-1" />
+        <IconLink
+          disabled={$createSubscribeGuest.isLoading}
+          clickable
+          icon={faUserPlus}
+          size="0.8em"
+          buttonClass="primary-color"
+          on:click={() =>
+            $createSubscribeGuest.mutate({ trocId: $params.trocId })}
+        />
       {:else}
         <Button
           outlined
+          disabled={$createSubscribeGuest.isLoading}
           class="primary-text"
           style="height: 40px;"
           on:click={() =>
@@ -183,13 +190,17 @@
         </Button>
       {/if}
 
-      <div class="flex-grow-1" />
+      {#if !$isMobile}
+        <div class="flex-grow-1" />
+      {/if}
 
       {#if $params[subscribeKey] && balance && Math.abs(balance) > 0.001}
-        <Button class="primary-color" on:click={openPaymentDialog}>
-          Règler {renderAmount(balance, $troc.currency)} en faveur du
-          {balance > 0 ? 'client' : 'troc'}
-        </Button>
+        <div transition:slide style={$isMobile ? 'width: 100%;' : ''}>
+          <Button block class="primary-color" on:click={openPaymentDialog}>
+            Règler {renderAmount(balance, $troc.currency)} en faveur du
+            {balance > 0 ? 'client' : 'troc'}
+          </Button>
+        </div>
       {/if}
     </div>
 

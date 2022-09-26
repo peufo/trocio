@@ -4,6 +4,7 @@
 
   let klass = ''
   export { klass as class }
+  export let buttonClass = ''
   export let tip = ''
   export let href = ''
   export let clickable = false
@@ -16,6 +17,7 @@
   export let style = ''
   export let target = '_self'
   export let title = ''
+  export let fab = false
 
   $: style = opacity
     ? style + 'opacity: 0.5;'
@@ -27,7 +29,7 @@
     <Tooltip bottom>
       <span slot="tip" {title}>{tip}</span>
       <a {href} {target} {title}>
-        <Button icon on:click>
+        <Button icon={!fab} {fab} on:click class={buttonClass}>
           <Icon
             path={icon.icon[4]}
             viewWidth={icon.icon[0]}
@@ -46,7 +48,7 @@
   {:else}
     <Tooltip bottom>
       <span slot="tip" {title}>{tip}</span>
-      <Button icon on:click>
+      <Button icon={!fab} {fab} on:click class={buttonClass}>
         <Icon
           path={icon.icon[4]}
           viewWidth={icon.icon[0]}
@@ -64,7 +66,7 @@
   {/if}
 {:else if !!href}
   <a {href} {target} {title}>
-    <Button icon on:click>
+    <Button icon={!fab} {fab} on:click class={buttonClass}>
       <Icon
         path={icon.icon[4]}
         viewWidth={icon.icon[0]}
@@ -80,7 +82,7 @@
     </Button>
   </a>
 {:else if clickable}
-  <Button icon on:click>
+  <Button icon={!fab} {fab} on:click class={buttonClass}>
     <Icon
       path={icon.icon[4]}
       viewWidth={icon.icon[0]}
