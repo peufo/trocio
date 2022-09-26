@@ -258,7 +258,7 @@
 
         {#each TABS as { component }, index}
           {#if index == ($params[tabIndexKey] || 3)}
-            <div in:fade|locale class="pa-4">
+            <div in:fade|locale class:pa-2={$isMobile} class:pa-4={!$isMobile}>
               <svelte:component
                 this={component}
                 subscribeId={$params[subscribeKey]}

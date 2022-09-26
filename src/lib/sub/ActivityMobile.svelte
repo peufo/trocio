@@ -56,11 +56,7 @@
     Oups, une erreur est survenu.
   </div>
 {:else if $queryResum.isSuccess && resum}
-  <div
-    in:fade|local
-    class="d-flex flex-column {klass} pa-2 pb-14"
-    style="gap: 1em;"
-  >
+  <div in:fade|local class="d-flex flex-column {klass} pb-10" style="gap: 1em;">
     <!-- Solde total -->
     <div class="centered pa-4">
       <div class="text-center">
