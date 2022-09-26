@@ -24,6 +24,7 @@
   import Recover from '$lib/cash/Recover.svelte'
   import Buy from '$lib/cash/Buy.svelte'
   import SubActivity from '$lib/sub/Activity.svelte'
+  import SubActivityMobile from '$lib/sub/ActivityMobile.svelte'
   import { renderAmount } from '$lib/utils'
   import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
   import notify from '$lib/notify'
@@ -35,7 +36,7 @@
   let paymentDialog: PaymentDialog
   let subscribe: SubscribeLookup | undefined = undefined
 
-  const TABS = [
+  $: TABS = [
     {
       ref: 'provide',
       label: 'Dépot',
@@ -53,7 +54,7 @@
       ref: 'resum',
       label: 'Compte',
       icon: faArrowRightArrowLeft,
-      component: SubActivity,
+      component: $isMobile ? SubActivityMobile : SubActivity,
     },
   ]
 
@@ -287,7 +288,7 @@
     border-radius: 5px;
   }
 
-  :global(.s-tabs-bar.icons) {
+  :global(.simple-card .s-tabs-bar.icons) {
     height: 56px;
   }
 
