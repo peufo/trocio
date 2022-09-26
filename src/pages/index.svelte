@@ -15,7 +15,7 @@
     <div class="title mr-6">Troc.io</div>
 
     <a href="/trocs">
-      <Button flat class="primary-color text-white" style="z-index: 2;">
+      <Button flat class="secondary-color text-white" style="z-index: 2;">
         Trouver un troc
       </Button>
     </a>
@@ -229,7 +229,7 @@
 
       <br /><br />
       <a href="/trocs/create">
-        <Button class="primary-color white-text">Organiser un troc</Button>
+        <Button class="secondary-color white-text">Organiser un troc</Button>
       </a>
     </div>
   </section>

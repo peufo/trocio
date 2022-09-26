@@ -62,7 +62,7 @@
     <div class="d-flex justify-space-between">
       <h6>Mes trocs</h6>
       <a href="{!$user ? '/login?callback=' : ''}/trocs/create">
-        <Button depressed class="primary-color">
+        <Button depressed class="secondary-color">
           <IconLink icon={faPlus} class="mr-2" opacity />
           Organiser
         </Button>
