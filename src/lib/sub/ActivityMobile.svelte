@@ -56,7 +56,11 @@
     Oups, une erreur est survenu.
   </div>
 {:else if $queryResum.isSuccess && resum}
-  <div in:fade|local class="d-flex flex-column {klass} pa-2" style="gap: 1em;">
+  <div
+    in:fade|local
+    class="d-flex flex-column {klass} pa-2 pb-14"
+    style="gap: 1em;"
+  >
     <!-- Solde total -->
     <div class="centered pa-4">
       <div class="text-center">
@@ -69,11 +73,13 @@
     <div class="d-flex">
       <div class="flex-grow-1" />
       <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
-      <ArticleEditDialog
-        {subscribeId}
-        fullscreen
-        disabled={createArticleDisabled}
-      />
+      {#if !modeAdmin}
+        <ArticleEditDialog
+          {subscribeId}
+          fullscreen
+          disabled={createArticleDisabled}
+        />
+      {/if}
     </div>
 
     <!-- Propositions -->
