@@ -1,6 +1,6 @@
 <!-- routify:options isFooterDisplay=true -->
 <script lang="ts">
-  import { Button, Card, CardText } from 'svelte-materialify'
+  import { Button, Card, CardText } from 'svelte-materialify/src'
   import DrawingSearch from '$lib/draw/Search.svelte'
   import DrawingSold from '$lib/draw/Sold.svelte'
   import Logo from '$lib/draw/LogoV2.svelte'

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { slide } from 'svelte/transition'
-  import { Button } from 'svelte-materialify'
+  import { Button } from 'svelte-materialify/src'
   import type { MutationStoreResult } from '@sveltestack/svelte-query'
   import Loader from './Loader.svelte'
 

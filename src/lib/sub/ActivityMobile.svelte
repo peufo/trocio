@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade, slide } from 'svelte/transition'
-  import { Card } from 'svelte-materialify'
+  import { Card } from 'svelte-materialify/src'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'

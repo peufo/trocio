@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { TextField } from 'svelte-materialify'
+  import { TextField } from 'svelte-materialify/src'
   import { debounce } from 'debounce'
   import { faSearch } from '@fortawesome/free-solid-svg-icons'
   import Litepicker from 'litepicker'

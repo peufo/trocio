@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { fade } from 'svelte/transition'
   import { params, redirect } from '@roxi/routify'
-  import { Button, Tabs, Tab } from 'svelte-materialify'
+  import { Button, Tabs, Tab } from 'svelte-materialify/src'
   import { useMutation } from '@sveltestack/svelte-query'
   import {
     faCashRegister,

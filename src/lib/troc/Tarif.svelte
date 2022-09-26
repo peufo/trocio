@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { TextField, Button, CardActions, Table } from 'svelte-materialify'
+  import { TextField, Button, CardActions, Table } from 'svelte-materialify/src'
   import { faCubes, faPercent } from '@fortawesome/free-solid-svg-icons'
   import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
   import { useMutation } from '@sveltestack/svelte-query'

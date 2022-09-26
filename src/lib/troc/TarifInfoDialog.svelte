@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Dialog, Button } from 'svelte-materialify'
+  import { Dialog, Button } from 'svelte-materialify/src'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
 
   import IconLink from '$lib/util/IconLink.svelte'

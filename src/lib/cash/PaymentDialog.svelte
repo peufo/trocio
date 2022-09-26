@@ -1,6 +1,6 @@
 <script lang="ts">
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { Dialog, Button, Textarea, TextField } from 'svelte-materialify'
+  import { Dialog, Button, Textarea, TextField } from 'svelte-materialify/src'
 
   import { api } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'

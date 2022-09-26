@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { Chip, Icon, Menu } from 'svelte-materialify'
+  import { Chip, Icon, Menu } from 'svelte-materialify/src'
   import { goto, params, url } from '@roxi/routify'
 
   import MagicSelect from '$lib/util/MagicSelect.svelte'

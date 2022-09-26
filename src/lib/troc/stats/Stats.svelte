@@ -6,7 +6,7 @@
     Button,
     ButtonGroup,
     ButtonGroupItem,
-  } from 'svelte-materialify'
+  } from 'svelte-materialify/src'
   import {
     faCashRegister,
     faShoppingCart,

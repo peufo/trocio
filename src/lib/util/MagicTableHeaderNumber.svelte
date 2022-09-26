@@ -9,7 +9,7 @@
     TextField,
     Chip,
     Icon,
-  } from 'svelte-materialify'
+  } from 'svelte-materialify/src'
   import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
   import {
     faBars,

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { params, goto, url } from '@roxi/routify'
-  import { List, ListItem, Menu, Chip, Icon } from 'svelte-materialify'
+  import { List, ListItem, Menu, Chip, Icon } from 'svelte-materialify/src'
 
   import IconLink from '$lib/util/IconLink.svelte'
 

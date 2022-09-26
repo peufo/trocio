@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { scale } from 'svelte/transition'
   import type { ScaleParams } from 'svelte/transition'
-  import { Button, Icon } from 'svelte-materialify'
+  import { Button, Icon } from 'svelte-materialify/src'
   import { mdiClose } from '@mdi/js'
 
   type TNotify = 'info' | 'success' | 'warning' | 'error'

@@ -3,7 +3,7 @@
    * Liste les trocs auxquels l'utilisateur est abonné
    */
 
-  import { List, ListItem, Chip, Button } from 'svelte-materialify'
+  import { List, ListItem, Chip, Button } from 'svelte-materialify/src'
   import { faCog, faCashRegister } from '@fortawesome/free-solid-svg-icons'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'

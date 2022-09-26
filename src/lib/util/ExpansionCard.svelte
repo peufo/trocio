@@ -7,7 +7,7 @@
     CardSubtitle,
     TextField,
     Button,
-  } from 'svelte-materialify'
+  } from 'svelte-materialify/src'
   import { faChevronDown, faSearch } from '@fortawesome/free-solid-svg-icons'
   import debounce from 'debounce'
 

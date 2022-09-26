@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-  import { Button, Tooltip, Icon } from 'svelte-materialify'
+  import { Button, Tooltip, Icon } from 'svelte-materialify/src'
 
   let klass = ''
   export { klass as class }

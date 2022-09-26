@@ -6,7 +6,7 @@
   import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
 
   import Loader from '$lib/util/Loader.svelte'
-  import { Button } from 'svelte-materialify'
+  import { Button } from 'svelte-materialify/src'
   /** Choose if the mode for fetch more items */
   export let mode: 'button' | 'scroll' = 'scroll'
   export let query: UseInfiniteQueryStoreResult<any, any, any, any>

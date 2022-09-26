@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { fly } from 'svelte/transition'
-  import { List, ListItem } from 'svelte-materialify'
+  import { List, ListItem } from 'svelte-materialify/src'
   import { url, params, goto, redirect } from '@roxi/routify'
 
   import SearchTextField from '$lib/util/SearchTextField.svelte'

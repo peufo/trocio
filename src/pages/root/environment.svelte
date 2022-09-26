@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { Table } from 'svelte-materialify'
+  import { Table } from 'svelte-materialify/src'
 
   onMount(getEnvs)
 

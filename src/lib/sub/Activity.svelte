@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { Button, Icon } from 'svelte-materialify'
+  import { Button, Icon } from 'svelte-materialify/src'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
