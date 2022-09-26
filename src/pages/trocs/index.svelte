@@ -1,5 +1,5 @@
 <script>
-  import { Card } from 'svelte-materialify'
+  import { Card } from 'svelte-materialify/src'
 
   import { isMobile } from '$lib/store/layout'
   import TrocMap from '$lib/troc/Map.svelte'

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Table } from 'svelte-materialify'
+  import { Table } from 'svelte-materialify/src'
 
   import type { IPaymentLookup } from 'types'
   import { renderAmount } from '$lib/utils'

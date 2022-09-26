@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from 'svelte-materialify'
+  import { Button } from 'svelte-materialify/src'
   import { fly } from 'svelte/transition'
   import notify from '$lib/notify'
 

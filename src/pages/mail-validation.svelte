@@ -1,7 +1,7 @@
 <!-- routify:options isFooterDisplay=true -->
 <script lang="ts">
   import { params } from '@roxi/routify'
-  import { Button, Icon } from 'svelte-materialify'
+  import { Button, Icon } from 'svelte-materialify/src'
   import Logo from '$lib/draw/Logo.svelte'
   import { user, userQuery } from '$lib/user/store'
   export let scoped: LayoutScoped

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { Menu, ListItem } from 'svelte-materialify'
+  import { Menu, ListItem } from 'svelte-materialify/src'
   import { params, goto, url } from '@roxi/routify'
   import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons'
 

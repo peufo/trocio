@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Card, CardTitle } from 'svelte-materialify'
+  import { Card, CardTitle } from 'svelte-materialify/src'
 
   import { isMobile } from '$lib/store/layout'
   import { troc } from '$lib/troc/store'

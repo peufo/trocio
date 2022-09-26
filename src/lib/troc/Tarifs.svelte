@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from 'svelte-materialify'
+  import { Button } from 'svelte-materialify/src'
   import { url, params, goto } from '@roxi/routify'
   import { api } from '$lib/api'
   import { troc } from '$lib/troc/store'

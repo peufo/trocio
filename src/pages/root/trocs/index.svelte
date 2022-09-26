@@ -2,7 +2,7 @@
   import { useInfinitApi } from '$lib/api'
   import notify from '$lib/notify'
   import { getHeader, syntaxHighlight } from '$lib/utils'
-  import { Button, TextField } from 'svelte-materialify'
+  import { Button, TextField } from 'svelte-materialify/src'
   import { slide } from 'svelte/transition'
   import type { Troc } from 'types'
 

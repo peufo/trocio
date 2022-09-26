@@ -1,13 +1,13 @@
 <script>
   /**
-   * Same of import { ListGroup } from 'svelte-materialify'
+   * Same of import { ListGroup } from 'svelte-materialify/src'
    * Exept line 53 : transition:transition|local={transitionOpts}
    *                                       ^^^^^
    */
 
   import { slide } from 'svelte/transition'
   import { onMount, setContext } from 'svelte'
-  import { ListItem } from 'svelte-materialify'
+  import { ListItem } from 'svelte-materialify/src'
   import Style from '../../../node_modules/svelte-materialify/src/internal/Style'
 
   let klass = 'primary-text'

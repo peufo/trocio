@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from 'svelte-materialify'
+  import { Button } from 'svelte-materialify/src'
   import { url } from '@roxi/routify'
 
   import type { ArticleState } from 'types'

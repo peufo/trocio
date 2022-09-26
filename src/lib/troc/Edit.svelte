@@ -4,7 +4,7 @@
   import { goto } from '@roxi/routify'
   import clone from 'clone'
 
-  import { Button, TextField, Textarea, Checkbox } from 'svelte-materialify'
+  import { Button, TextField, Textarea, Checkbox } from 'svelte-materialify/src'
   import { faInfo } from '@fortawesome/free-solid-svg-icons'
 
   import type { TrocBase } from 'types'

@@ -2,7 +2,7 @@
   /** Affiche soit le bouton pour participer, soit l'activité d'un utilisateur sur un troc */
   import { useMutation } from '@sveltestack/svelte-query'
   import { goto } from '@roxi/routify'
-  import { Button } from 'svelte-materialify'
+  import { Button } from 'svelte-materialify/src'
   import { fade } from 'svelte/transition'
 
   import { user } from '$lib/user/store'

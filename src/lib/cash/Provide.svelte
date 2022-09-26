@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Checkbox, Icon } from 'svelte-materialify'
+  import { Button, Checkbox, Icon } from 'svelte-materialify/src'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiPrinter } from '@mdi/js'
   import { faPlus } from '@fortawesome/free-solid-svg-icons'

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { mdiEarth, mdiPlus } from '@mdi/js'
   import { isActive, redirect } from '@roxi/routify'
-  import { Tabs, Tab, Icon, Button } from 'svelte-materialify'
+  import { Tabs, Tab, Icon, Button } from 'svelte-materialify/src'
 
   import logo from '$assets/logo'
 

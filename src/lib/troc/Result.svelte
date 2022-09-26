@@ -2,7 +2,6 @@
   import { fade } from 'svelte/transition'
   import debounce from 'debounce'
 
-  import { Ripple } from 'svelte-materialify'
   import TrocCard from '$lib/troc/Card.svelte'
   import Loader from '$lib/util/Loader.svelte'
 

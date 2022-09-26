@@ -1,6 +1,6 @@
 <script lang="ts">
   // import { Button } from 'svelte-materialify/src'
-  import { Button } from 'svelte-materialify'
+  import { Button } from 'svelte-materialify/src'
 
   import { api } from '$lib/api'
   import notify from '$lib/notify'

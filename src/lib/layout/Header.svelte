@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { AppBar, Button, Dialog, Icon } from 'svelte-materialify'
+  import { AppBar, Button, Dialog, Icon } from 'svelte-materialify/src'
   import { faUser } from '@fortawesome/free-regular-svg-icons'
   import { mdiWeatherNight, mdiWhiteBalanceSunny } from '@mdi/js'
   import { params } from '@roxi/routify'

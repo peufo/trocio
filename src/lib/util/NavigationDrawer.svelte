@@ -1,6 +1,6 @@
 <script>
   /**
-   * Same of import { NavigationDrawer } from 'svelte-materialify'
+   * Same of import { NavigationDrawer } from 'svelte-materialify/src'
    * Exept line 31 : transition:transition|local={transitionOpts}
    *                                       ^^^^^
    */

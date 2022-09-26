@@ -1,7 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { url, layout } from '@roxi/routify'
-  import { NavigationDrawer, List, ListItem, Divider } from 'svelte-materialify'
+  import {
+    NavigationDrawer,
+    List,
+    ListItem,
+    Divider,
+  } from 'svelte-materialify/src'
   import { layout as lay } from '$lib/store/layout'
 
   let isRootUser = false

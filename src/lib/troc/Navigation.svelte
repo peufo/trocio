@@ -1,6 +1,6 @@
 <script lang="ts">
   import { slide } from 'svelte/transition'
-  import { List, ListItem, Button } from 'svelte-materialify'
+  import { List, ListItem, Button } from 'svelte-materialify/src'
 
   import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
   import { isActive } from '@roxi/routify'

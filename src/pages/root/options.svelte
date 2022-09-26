@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { Table } from 'svelte-materialify'
+  import { Table } from 'svelte-materialify/src'
   import EditOption from '$lib/util/EditOption.svelte'
   import type { Option } from 'types'
 

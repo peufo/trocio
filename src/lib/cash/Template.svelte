@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade, scale } from 'svelte/transition'
   import { flip } from 'svelte/animate'
-  import { Button, Icon } from 'svelte-materialify'
+  import { Button, Icon } from 'svelte-materialify/src'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { mdiTextBoxCheckOutline } from '@mdi/js'
   import { faTimes } from '@fortawesome/free-solid-svg-icons'
