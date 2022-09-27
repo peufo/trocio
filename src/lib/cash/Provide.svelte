@@ -1,8 +1,7 @@
 <script lang="ts">
   import { Button, Checkbox, Icon } from 'svelte-materialify/src'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { mdiPrinter } from '@mdi/js'
-  import { faPlus } from '@fortawesome/free-solid-svg-icons'
+  import { mdiPlus, mdiPrinter } from '@mdi/js'
 
   import Template from '$lib/cash/Template.svelte'
   import ArticleEditDialog from '$lib/article/EditDialog.svelte'
@@ -12,7 +11,6 @@
   import type { Article } from 'types'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import { troc } from '$lib/troc/store'
-  import IconLink from '$lib/util/IconLink.svelte'
 
   export let subscribeId: string
 
@@ -51,19 +49,7 @@
   canSelectAll
   message="Sélectionner des articles proposés par le client pour les valider ou les refuser."
 >
-  <div
-    slot="actions-permanent-left"
-    class="d-flex align-center"
-    style="gap: 1em;"
-  >
-    <ArticleEditDialog
-      {subscribeId}
-      on:createArticle={({ detail }) =>
-        (pendingItems = [...pendingItems, detail])}
-      on:createArticles={({ detail }) =>
-        (pendingItems = [...pendingItems, ...detail])}
-    />
-
+  <div slot="options-selection" class="d-flex align-center" style="gap: 1em;">
     <div title="Impression automatique des étiquettes">
       <Checkbox bind:checked={autoPrint} color="secondary">
         <Icon path={mdiPrinter} />
@@ -71,7 +57,18 @@
     </div>
   </div>
 
-  <div slot="actions">
+  <div slot="actions-search">
+    <ArticleEditDialog
+      icon
+      actionName="Ajouter"
+      {subscribeId}
+      on:done={({ detail }) => (pendingItems = [...pendingItems, detail])}
+      on:doneList={({ detail }) =>
+        (pendingItems = [...pendingItems, ...detail])}
+    />
+  </div>
+
+  <div slot="actions-selection">
     {#if $queryValid.isLoading}
       <Button disabled><Loader /></Button>
     {:else}

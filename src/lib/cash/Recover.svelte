@@ -41,7 +41,7 @@
   canSelectAll
   message="Sélectionner des articles invendus pour les rendre au client."
 >
-  <div slot="actions">
+  <div slot="actions-selection">
     {#if $queryRecover.isLoading}
       <Button disabled><Loader /></Button>
     {:else}
