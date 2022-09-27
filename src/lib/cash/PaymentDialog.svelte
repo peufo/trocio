@@ -23,7 +23,7 @@
   ) {
     subscribe = sub
     message = _message
-    amount = String(_amount)
+    amount = String(Math.round(_amount * 100) / 100)
     if (!subscribe) return (active = false)
     active = true
     setTimeout(() => {
