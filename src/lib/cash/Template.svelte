@@ -3,9 +3,10 @@
   import { flip } from 'svelte/animate'
   import { Button, Icon } from 'svelte-materialify/src'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
-  import { mdiTextBoxCheckOutline } from '@mdi/js'
+  import { mdiClose, mdiTextBoxCheckOutline } from '@mdi/js'
   import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
+  import { isMobile } from '$lib/store/layout'
   import { renderAmount } from '$lib/utils'
   import { troc } from '$lib/troc/store'
   import { api } from '$lib/api'
@@ -51,7 +52,7 @@
   }
 </script>
 
-<div class="wrapper">
+<div class="wrapper {$isMobile ? 'is-mobile' : ''}">
   <!-- Selecteur -->
   <div class="flex-grow-1" style="min-width: 260px; max-width: 320px;">
     <MagicSelect
@@ -94,11 +95,23 @@
 
   <!-- Selection -->
   <div class="flex-grow-1">
-    <!-- Selection actions -->
+    <!-- Selection header -->
     <div class="d-flex">
-      <slot name="options-selection" />
+      {#if pendingItems.length}
+        <div in:fade|local>
+          <Button depressed on:click={() => (pendingItems = [])}>
+            {pendingItems.length === 1
+              ? 'Un élément'
+              : `${pendingItems.length} éléments`}
+            {#if pendingItems.length}
+              <Icon class="ml-3" style="opacity: 0.6;" path={mdiClose} />
+            {/if}
+          </Button>
+        </div>
+      {/if}
 
       <div class="flex-grow-1" />
+      <slot name="options-selection" />
 
       {#if pendingItems.length}
         <div in:fade|locale>
@@ -114,8 +127,7 @@
           <div
             in:scale|local
             animate:flip={{ duration: 200 }}
-            class="d-flex simple-card pl-2 pr-2 pt-1 pb-1"
-            style="min-width: 200px; max-width: calc(50% - 8px);"
+            class="simple-card"
           >
             <div class="flex-grow-1">
               <span class="text-subtitle-2">
@@ -158,5 +170,17 @@
     flex-wrap: wrap;
     align-content: stretch;
     margin-top: 4px;
+  }
+
+  .basket-content > div {
+    display: flex;
+    flex-grow: 1;
+    padding: 4px 8px;
+    min-width: 200px;
+    max-width: calc(50% - 4px);
+  }
+
+  .is-mobile .basket-content > div {
+    max-width: 100%;
   }
 </style>
