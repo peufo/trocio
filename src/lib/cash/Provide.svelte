@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Button, Checkbox, Icon } from 'svelte-materialify/src'
+  import { Button, Icon } from 'svelte-materialify/src'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { mdiPlus, mdiPrinter } from '@mdi/js'
+  import { mdiPrinterCheck, mdiPrinterOff } from '@mdi/js'
 
   import Template from '$lib/cash/Template.svelte'
   import ArticleEditDialog from '$lib/article/EditDialog.svelte'
@@ -51,9 +51,14 @@
 >
   <div slot="options-selection" class="d-flex align-center" style="gap: 1em;">
     <div title="Impression automatique des étiquettes">
-      <Checkbox bind:checked={autoPrint} color="secondary">
-        <Icon path={mdiPrinter} />
-      </Checkbox>
+      <Button
+        fab
+        size="small"
+        depressed
+        on:click={() => (autoPrint = !autoPrint)}
+      >
+        <Icon path={autoPrint ? mdiPrinterCheck : mdiPrinterOff} />
+      </Button>
     </div>
   </div>
 
