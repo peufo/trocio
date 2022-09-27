@@ -96,7 +96,7 @@
   <!-- Selection -->
   <div class="selection">
     <!-- Selection header -->
-    <div class="d-flex align-center">
+    <div class="d-flex align-center" style="height: 40px;">
       {#if pendingItems.length}
         <div in:fade|local>
           <Button depressed on:click={() => (pendingItems = [])}>
@@ -115,7 +115,7 @@
     </div>
 
     <!-- Basket content -->
-    <div class="basket-container">
+    <div class="basket-container simple-card">
       {#if pendingItems.length}
         <div in:fade|local class="basket-content">
           {#each pendingItems as article, index (article._id)}
@@ -181,6 +181,10 @@
 
   .basket-container {
     flex-grow: 1;
+    overflow-y: auto;
+    padding: 4px;
+    border-radius: 8px;
+    background: var(--theme-app-bar);
   }
 
   .basket-content {
@@ -196,6 +200,7 @@
     padding: 4px 8px;
     min-width: 200px;
     max-width: calc(50% - 2px);
+    background: var(--theme-cards);
   }
 
   .is-mobile .basket-content > div {
