@@ -11,6 +11,7 @@
   import type { Article } from 'types'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import { troc } from '$lib/troc/store'
+  import notify from '$lib/notify'
 
   export let subscribeId: string
 
@@ -38,6 +39,13 @@
       },
     }
   )
+
+  function toggleAutoPrint() {
+    autoPrint = !autoPrint
+    notify.info(
+      `Impression automatique des étiquettes ${autoPrint ? '' : 'dés'}activé`
+    )
+  }
 </script>
 
 <TagsPrint id="providedTags" articles={pendingItems} tag={$troc.tag} />
@@ -51,12 +59,7 @@
 >
   <div slot="options-selection" class="d-flex align-center" style="gap: 1em;">
     <div title="Impression automatique des étiquettes">
-      <Button
-        fab
-        size="small"
-        depressed
-        on:click={() => (autoPrint = !autoPrint)}
-      >
+      <Button fab size="small" depressed on:click={toggleAutoPrint}>
         <Icon path={autoPrint ? mdiPrinterCheck : mdiPrinterOff} />
       </Button>
     </div>
