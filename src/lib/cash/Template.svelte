@@ -94,7 +94,7 @@
   </div>
 
   <!-- Selection -->
-  <div class="flex-grow-1">
+  <div class="selection">
     <!-- Selection header -->
     <div class="d-flex align-center">
       {#if pendingItems.length}
@@ -112,50 +112,56 @@
 
       <div class="flex-grow-1" />
       <slot name="options-selection" />
+    </div>
 
+    <!-- Basket content -->
+    <div class="basket-container">
+      {#if pendingItems.length}
+        <div in:fade|local class="basket-content">
+          {#each pendingItems as article, index (article._id)}
+            <div
+              in:scale|local
+              animate:flip={{ duration: 200 }}
+              class="simple-card"
+            >
+              <div class="flex-grow-1">
+                <span class="text-subtitle-2">
+                  {article.ref} - {article.name}
+                </span>
+                <br />
+                <div class="text-right">
+                  <b class="text-caption" style="line-height: 1;">
+                    {renderAmount(article.price, $troc.currency)}
+                  </b>
+                </div>
+              </div>
+              <div class="ml-3 mt-1">
+                <IconLink
+                  icon={faTimes}
+                  clickable
+                  opacity
+                  on:click={() => handleRemove(index)}
+                />
+              </div>
+            </div>
+          {/each}
+        </div>
+      {:else}
+        <div class="flex-grow-1 text-center pa-16 text-caption">
+          {message}
+        </div>
+      {/if}
+    </div>
+
+    <!-- Basket footer (actions)-->
+    <div class="d-flex">
+      <div class="flex-grow-1" />
       {#if pendingItems.length}
         <div in:fade|locale>
           <slot name="actions-selection" />
         </div>
       {/if}
     </div>
-
-    <!-- Basket content -->
-    {#if pendingItems.length}
-      <div in:fade|local class="basket-content" style="gap: 0.5em;">
-        {#each pendingItems as article, index (article._id)}
-          <div
-            in:scale|local
-            animate:flip={{ duration: 200 }}
-            class="simple-card"
-          >
-            <div class="flex-grow-1">
-              <span class="text-subtitle-2">
-                {article.ref} - {article.name}
-              </span>
-              <br />
-              <div class="text-right">
-                <b class="text-caption" style="line-height: 1;">
-                  {renderAmount(article.price, $troc.currency)}
-                </b>
-              </div>
-            </div>
-            <div class="ml-3 mt-1">
-              <IconLink
-                icon={faTimes}
-                clickable
-                opacity
-                on:click={() => handleRemove(index)}
-              />
-            </div>
-          </div>
-        {/each}
-      </div>
-    {:else}
-      <div class="text-center pa-16 text-caption">
-        {message}
-      </div>
-    {/if}
   </div>
 </div>
 
@@ -163,13 +169,25 @@
   .wrapper {
     display: flex;
     gap: 1em;
+    height: 100%;
+  }
+
+  .selection {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 4px;
+  }
+
+  .basket-container {
+    flex-grow: 1;
   }
 
   .basket-content {
     display: flex;
     flex-wrap: wrap;
+    gap: 4px;
     align-content: stretch;
-    margin-top: 4px;
   }
 
   .basket-content > div {
@@ -177,7 +195,7 @@
     flex-grow: 1;
     padding: 4px 8px;
     min-width: 200px;
-    max-width: calc(50% - 4px);
+    max-width: calc(50% - 2px);
   }
 
   .is-mobile .basket-content > div {

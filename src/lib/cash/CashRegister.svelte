@@ -220,9 +220,12 @@
         in:fade|local
         bind:this={container}
         class="simple-card"
-        style="min-height: {$layout.innerHeight -
+        style="
+          height: {$layout.innerHeight -
           container?.offsetTop -
-          ($isMobile ? 6 : 16)}px;"
+          ($isMobile ? 6 : 16)}px;
+          overflow: hidden;
+        "
       >
         <Tabs
           grow
@@ -240,8 +243,9 @@
                     size="1.2em"
                   />
                 {/if}
-                <span style={$isMobile ? 'font-size: 0.8em;' : ''}>{label}</span
-                >
+                <span style={$isMobile ? 'font-size: 0.8em;' : ''}>
+                  {label}
+                </span>
               </Tab>
             {/each}
           </div>
@@ -249,7 +253,15 @@
 
         {#each TABS as { component }, index}
           {#if index == ($params[tabIndexKey] || 3)}
-            <div in:fade|locale class:pa-2={$isMobile} class:pa-4={!$isMobile}>
+            <div
+              in:fade|locale
+              class:pa-2={$isMobile}
+              class:pa-4={!$isMobile}
+              style="
+                height: calc(100% - {$isMobile ? '56' : '48'}px);
+                overflow-y: auto;
+              "
+            >
               <svelte:component
                 this={component}
                 subscribeId={$params[subscribeKey]}
