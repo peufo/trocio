@@ -37,7 +37,7 @@
 
   function handleSelect(event: { detail: Article }) {
     const article = event.detail
-    setTimeout(magicSelect.focus, 250)
+    if (!$isMobile) setTimeout(magicSelect.focus, 250)
     if (pendingItems.map(({ _id }) => _id).includes(article._id))
       return notify.warning('Article déjà sélectioné')
 
@@ -54,7 +54,7 @@
 
 <div class="wrapper {$isMobile ? 'is-mobile' : ''}">
   <!-- Selecteur -->
-  <div class="flex-grow-1" style="min-width: 260px; max-width: 320px;">
+  <div class="selector">
     <MagicSelect
       bind:this={magicSelect}
       flatMode
@@ -68,6 +68,8 @@
       getValue={(art) => `${art.ref} - ${art.name}`}
       getValue2={(art) => renderAmount(art.price, $troc.currency)}
       exepted={pendingItems.map((art) => art._id)}
+      solo
+      dense
       on:select={handleSelect}
     >
       <div slot="action" class="d-flex" style="gap: 4px;">
@@ -125,12 +127,12 @@
               class="simple-card"
             >
               <div class="flex-grow-1">
-                <span class="text-subtitle-2">
+                <span class="text-subtitle-1">
                   {article.ref} - {article.name}
                 </span>
                 <br />
                 <div class="text-right">
-                  <b class="text-caption" style="line-height: 1;">
+                  <b class="text-subtitle-2" style="line-height: 1;">
                     {renderAmount(article.price, $troc.currency)}
                   </b>
                 </div>
@@ -154,18 +156,18 @@
     </div>
 
     <!-- Basket footer (actions)-->
-    <div class="d-flex">
-      <div class="flex-grow-1" />
-      {#if pendingItems.length}
+    {#if pendingItems.length}
+      <div class="d-flex">
+        <div class="flex-grow-1" />
         <div in:fade|locale>
           <slot name="actions-selection" />
         </div>
-      {/if}
-    </div>
+      </div>
+    {/if}
   </div>
 </div>
 
-<style>
+<style lang="scss">
   .wrapper {
     display: flex;
     gap: 1em;
@@ -176,7 +178,7 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    gap: 4px;
+    gap: 8px;
   }
 
   .basket-container {
@@ -192,18 +194,29 @@
     flex-wrap: wrap;
     gap: 4px;
     align-content: stretch;
+
+    > div {
+      display: flex;
+      flex-grow: 1;
+      padding: 4px 8px;
+      min-width: 200px;
+      max-width: calc(50% - 2px);
+      background: var(--theme-cards);
+      line-height: 1.3em;
+    }
   }
 
-  .basket-content > div {
-    display: flex;
-    flex-grow: 1;
-    padding: 4px 8px;
-    min-width: 200px;
-    max-width: calc(50% - 2px);
-    background: var(--theme-cards);
+  .selector {
+    flex-shrink: 0;
+    width: 360px;
   }
 
-  .is-mobile .basket-content > div {
-    max-width: 100%;
+  .is-mobile {
+    .basket-content > div {
+      max-width: 100%;
+    }
+    .selector {
+      width: 100%;
+    }
   }
 </style>
