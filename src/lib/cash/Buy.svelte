@@ -50,7 +50,10 @@
       <Button disabled><Loader /></Button>
     {:else}
       <Button class="primary-color" on:click={() => $querySold.mutate()}>
-        Vendre la sélection
+        Vendre
+        {pendingItems.length > 1
+          ? `les ${pendingItems.length} articles`
+          : `l'article`}
       </Button>
     {/if}
   </div>
