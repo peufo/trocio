@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { fly } from 'svelte/transition'
-  import { List, ListItem } from 'svelte-materialify/src'
+  import { Button, List, ListItem } from 'svelte-materialify/src'
   import { url, params, goto, redirect } from '@roxi/routify'
 
   import SearchTextField from '$lib/util/SearchTextField.svelte'
@@ -119,7 +119,7 @@
   }
 </script>
 
-<div class={klass} style="position: relative; min-width: 200px; {style}">
+<div class:flatMode class="wrapper {klass}" {style}>
   <div class="d-flex" style="gap: 4px;">
     <SearchTextField
       bind:inputElement
@@ -140,39 +140,38 @@
 
   {#if flatMode}
     <div class="flat-container simple-card">
-      <List dense>
-        {#if $querySearch.isLoading}
-          <ListItem disabled><Loader /></ListItem>
-        {:else if $querySearch.isError}
-          <ListItem disabled>Oups, un problème est survenu</ListItem>
+      {#if $querySearch.isError}
+        <span>Oups, un problème est survenu</span>
+      {:else}
+        {#each itemsFiltred as item, index}
+          <div
+            class="item selectable simple-card"
+            class:active={isFocus && selectedIndex === index}
+            on:click={() => handleSelect(item)}
+          >
+            <span class="text-subtitle-1">{getValue(item)}</span>
+            {#if getValue2}
+              <br />
+              <div class="text-right">
+                <span class="text-subtitle-2">{getValue2(item)}</span>
+              </div>
+            {/if}
+          </div>
         {:else}
-          {#each itemsFiltred as item, index}
-            <ListItem
-              active={isFocus && selectedIndex === index}
-              on:click={() => handleSelect(item)}
-            >
-              {getValue(item)}
-              <span slot="subtitle">
-                {#if getValue2}{getValue2(item)}{/if}
-              </span>
-            </ListItem>
-          {:else}
-            <ListItem disabled>
-              Aucun résultat {#if searchValue} pour <b>{searchValue}</b>{/if}
-            </ListItem>
-          {/each}
+          <div class="item simple-card text-center">
+            Aucun résultat {#if searchValue} pour <b>{searchValue}</b>{/if}
+          </div>
+        {/each}
 
-          {#if $querySearch.hasNextPage && !$querySearch.isFetchingNextPage}
-            <ListItem on:click={() => $querySearch.fetchNextPage()}>
-              Afficher plus
-            </ListItem>
-          {:else if $querySearch.isFetchingNextPage}
-            <ListItem disabled>
-              <Loader />
-            </ListItem>
-          {/if}
+        {#if $querySearch.hasNextPage && !$querySearch.isFetchingNextPage}
+          <Button on:click={() => $querySearch.fetchNextPage()} depressed>
+            Afficher plus
+          </Button>
         {/if}
-      </List>
+      {/if}
+      {#if $querySearch.isLoading || $querySearch.isFetchingNextPage}
+        <Loader />
+      {/if}
     </div>
   {:else if isFocus}
     <div class="list-container elevation-5 rounded" in:fly|local={{ y: 50 }}>
@@ -204,9 +203,14 @@
   {/if}
 </div>
 
-<style>
+<style lang="scss">
   :global(.s-radio .s-text-field__input > label) {
     padding-left: 0px;
+  }
+
+  .wrapper {
+    position: relative;
+    min-width: 200px;
   }
 
   .list-container {
@@ -218,7 +222,37 @@
     z-index: 99;
   }
 
+  .wrapper.flatMode {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+  }
+
   .flat-container {
-    margin-top: 4px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-radius: 8px;
+    overflow-y: auto;
+    padding: 4px;
+
+    .item {
+      padding: 4px 8px;
+      line-height: 1.3em;
+
+      &.selectable {
+        cursor: pointer;
+        background: var(--theme-cards);
+
+        &.active {
+          background: var(--theme-tables-active);
+        }
+        &:hover {
+          background: var(--theme-tables-hover);
+        }
+      }
+    }
   }
 </style>
