@@ -79,15 +79,12 @@
     {:else}
       <Button
         text
-        class="red-text mt-1"
+        class="red-text"
         on:click={() => confirm('Etes-vous sur ?') && $queryValid.mutate(false)}
       >
         Refuser
       </Button>
-      <Button
-        class="primary-color mt-1"
-        on:click={() => $queryValid.mutate(true)}
-      >
+      <Button class="primary-color" on:click={() => $queryValid.mutate(true)}>
         Valider la sélection
       </Button>
     {/if}
