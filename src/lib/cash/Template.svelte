@@ -108,8 +108,8 @@
         <div in:fade|local>
           <Button depressed on:click={() => (pendingItems = [])}>
             {pendingItems.length === 1
-              ? 'Un élément'
-              : `${pendingItems.length} éléments`}
+              ? 'Un article'
+              : `${pendingItems.length} articles`}
             {#if pendingItems.length}
               <Icon class="ml-3" style="opacity: 0.6;" path={mdiClose} />
             {/if}

@@ -57,7 +57,10 @@
       </Button>
 
       <Button class="primary-color" on:click={() => $queryRecover.mutate()}>
-        Récupérer la sélection
+        Rendre
+        {pendingItems.length > 1
+          ? `les ${pendingItems.length} articles`
+          : `l'article`}
       </Button>
     {/if}
   </div>

@@ -88,7 +88,10 @@
         Refuser
       </Button>
       <Button class="primary-color" on:click={() => $queryValid.mutate(true)}>
-        Valider la sélection
+        Valider
+        {pendingItems.length > 1
+          ? `les ${pendingItems.length} articles`
+          : `l'article`}
       </Button>
     {/if}
   </div>
