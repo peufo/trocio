@@ -154,6 +154,7 @@
     placeholder={listPlaceHolder}
     error={!!listArticlesError}
     hint={listArticlesError}
+    color="secondary"
   >
     Liste d'articles
   </Textarea>

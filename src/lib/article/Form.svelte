@@ -109,7 +109,13 @@
 </script>
 
 <form in:fade|local on:submit|preventDefault={handleSubmit}>
-  <Textarea bind:value={newName} rows={2} autogrow bind:textarea>
+  <Textarea
+    bind:value={newName}
+    rows={2}
+    autogrow
+    bind:textarea
+    color="secondary"
+  >
     Désignation
   </Textarea>
 
@@ -120,6 +126,7 @@
       min={0}
       step={0.01}
       rules={[(value) => +value >= 0 || 'Le prix doit être positif']}
+      color="secondary"
     >
       Prix
     </TextField>
