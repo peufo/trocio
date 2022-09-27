@@ -49,7 +49,7 @@
     {#if $querySold.isLoading}
       <Button disabled><Loader /></Button>
     {:else}
-      <Button class="primary-color mt-1" on:click={() => $querySold.mutate()}>
+      <Button class="primary-color" on:click={() => $querySold.mutate()}>
         Vendre la sélection
       </Button>
     {/if}

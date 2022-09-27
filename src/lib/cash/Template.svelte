@@ -96,7 +96,7 @@
   <!-- Selection -->
   <div class="flex-grow-1">
     <!-- Selection header -->
-    <div class="d-flex">
+    <div class="d-flex align-center">
       {#if pendingItems.length}
         <div in:fade|local>
           <Button depressed on:click={() => (pendingItems = [])}>

@@ -41,25 +41,22 @@
   canSelectAll
   message="Sélectionner des articles invendus pour les rendre au client."
 >
-  <div slot="actions-selection">
+  <div slot="actions-selection" class="d-flex align-center" style="gap: 4px;">
     {#if $queryRecover.isLoading}
       <Button disabled><Loader /></Button>
     {:else}
       <Button
         fab
-        depressed
+        outlined
         size="small"
         title="Imprimer les étiquettes de la sélection"
-        class="mr-2"
+        class="secondary-color"
         on:click={() => print('recoverTags')}
       >
         <Icon path={mdiPrinter} />
       </Button>
 
-      <Button
-        class="primary-color mt-1"
-        on:click={() => $queryRecover.mutate()}
-      >
+      <Button class="primary-color" on:click={() => $queryRecover.mutate()}>
         Récupérer la sélection
       </Button>
     {/if}
