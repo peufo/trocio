@@ -218,9 +218,8 @@ a {
 }
 
 .alert {
-  padding: 1em;
+  padding: 0.5em;
   border-radius: 6px;
-  display: flex;
 }
 
 /* Compatible dark theme */

@@ -23,7 +23,7 @@
 </script>
 
 {#if !!$user}
-  {#if $trocQuery?.isLoading}
+  {#if $trocQuery.isLoading}
     <div class="centered" style="height: 100px;">
       <Loader />
     </div>
@@ -47,7 +47,9 @@
     >
       <main class="pa-{$isMobile ? 1 : 4}">
         {#if $troc.is_try}
-          <div class="orange white-text alert mb-4">Troc d'entrainement</div>
+          <div class="orange white-text alert mb-2">
+            <div>Troc d'entrainement</div>
+          </div>
         {/if}
 
         <slot />
