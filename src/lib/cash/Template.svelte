@@ -37,7 +37,7 @@
 
   function handleSelect(event: { detail: Article }) {
     const article = event.detail
-    if (!$isMobile) setTimeout(magicSelect.focus, 250)
+    // if (!$isMobile) setTimeout(magicSelect.focus, 250)
     if (pendingItems.map(({ _id }) => _id).includes(article._id))
       return notify.warning('Article déjà sélectioné')
 
@@ -58,6 +58,7 @@
     <MagicSelect
       bind:this={magicSelect}
       flatMode
+      keepFocus
       path="articles"
       searchKey="q"
       {placeholder}

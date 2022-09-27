@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
+  import { createEventDispatcher, tick } from 'svelte'
   import { fly } from 'svelte/transition'
   import { Button, List, ListItem } from 'svelte-materialify/src'
   import { url, params, goto, redirect } from '@roxi/routify'
 
+  import { isMobile } from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import { useInfinitApi } from '$lib/api'
@@ -30,8 +31,11 @@
   /** Items key hidden */
   export let exepted: string[] = []
 
-  /** Si vrai, la valeur de la sélection est maintenue dans le champ de text */
+  /** Maintien la valeur de la sélection est maintenue dans le champ de text */
   export let keepValue = false
+  /** Maintien le focus sur le champs de recherche lors des seléction */
+  export let keepFocus = false
+
   /** func used for obtain name from item */
   export let getValue: (item: any) => string = (item) => item?.name
   /** func used for obtain the secoundary name from item */
@@ -70,7 +74,7 @@
   $: items = $querySearch.data ? $querySearch.data.pages.flat() : []
   $: itemsFiltred = items.filter((item) => !exepted.includes(getKey(item)))
 
-  function handleSelect(item: any) {
+  async function handleSelect(item: any) {
     if (selectKey) {
       const query = $params
       query[selectKey] = getKey(item)
@@ -80,16 +84,21 @@
     selectedItem = item
     dispatch('select', item)
     if (!inputElement) return
-    inputElement.value = keepValue ? getValue(item) : ''
-    inputElement.blur()
+    if (!flatMode) inputElement.value = keepValue ? getValue(item) : ''
+    if (!$isMobile && keepFocus) inputElement.focus()
+    else inputElement.blur()
+    await tick()
+    if (selectedIndex >= itemsFiltred.length)
+      selectedIndex = itemsFiltred.length - 1
   }
 
   function handleKeydown(event: KeyboardEvent) {
     switch (event.key) {
       case 'Enter':
-        if (selectedIndex > -1) {
+        if ($isMobile) inputElement?.blur()
+        else if (itemsFiltred[selectedIndex])
           handleSelect(itemsFiltred[selectedIndex])
-        }
+
         break
 
       case 'ArrowDown':
@@ -109,13 +118,12 @@
 
   function handleFocus() {
     isFocus = true
+    selectedIndex = 0
     if (keepValue) clear()
   }
 
   function handleBlur() {
-    setTimeout(() => {
-      isFocus = false
-    }, 200)
+    setTimeout(() => (isFocus = false), 200)
   }
 </script>
 
