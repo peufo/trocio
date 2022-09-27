@@ -70,11 +70,7 @@
       <div class="flex-grow-1" />
       <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
       {#if !modeAdmin}
-        <ArticleEditDialog
-          {subscribeId}
-          fullscreen
-          disabled={createArticleDisabled}
-        />
+        <ArticleEditDialog {subscribeId} disabled={createArticleDisabled} />
       {/if}
     </div>
 
