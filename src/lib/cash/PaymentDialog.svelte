@@ -67,7 +67,9 @@
     </div>
     <form on:submit|preventDefault={() => $queryPayment.mutate()}>
       <div class="mt-3">
-        <Textarea bind:value={message} rows={2} autogrow>Commentaire</Textarea>
+        <Textarea bind:value={message} rows={2} autogrow color="secondary">
+          Commentaire
+        </Textarea>
       </div>
 
       <div class="d-flex mt-3" style="gap: 0.5em;">
@@ -77,6 +79,8 @@
           hint={+amount > 0 === modeCorrection
             ? 'En faveur du client'
             : 'En faveur du troc'}
+          color="secondary"
+          step="0.01"
         >
           Montant
         </TextField>
