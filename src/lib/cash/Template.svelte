@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { fade, scale } from 'svelte/transition'
   import { flip } from 'svelte/animate'
   import { Button, Icon } from 'svelte-materialify/src'
@@ -22,6 +23,10 @@
   let magicSelect: MagicSelect
   let selectAllPromise: Promise<void>
 
+  onMount(() => {
+    if (!$isMobile) magicSelect.focus()
+  })
+
   async function handleSelectAll() {
     const articles = await api<Article[]>('/api/articles', {
       params: {
@@ -37,7 +42,6 @@
 
   function handleSelect(event: { detail: Article }) {
     const article = event.detail
-    // if (!$isMobile) setTimeout(magicSelect.focus, 250)
     if (pendingItems.map(({ _id }) => _id).includes(article._id))
       return notify.warning('Article déjà sélectioné')
 
