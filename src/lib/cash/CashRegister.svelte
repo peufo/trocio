@@ -185,37 +185,28 @@
         />
       </div>
 
-      {#if $isMobile}
-        <div class="flex-grow-1" />
+      <Button
+        outlined
+        disabled={$createSubscribeGuest.isLoading}
+        class="primary-text"
+        style="height: 40px;"
+        on:click={() =>
+          $createSubscribeGuest.mutate({ trocId: $params.trocId })}
+      >
         <IconLink
-          disabled={$createSubscribeGuest.isLoading}
-          clickable
           icon={faUserPlus}
-          size="0.8em"
-          buttonClass="primary-color"
-          on:click={() =>
-            $createSubscribeGuest.mutate({ trocId: $params.trocId })}
+          class={$isMobile ? '' : 'mr-2'}
+          size={$isMobile ? '1.4em' : '1.2em'}
         />
-      {:else}
-        <Button
-          outlined
-          disabled={$createSubscribeGuest.isLoading}
-          class="primary-text"
-          style="height: 40px;"
-          on:click={() =>
-            $createSubscribeGuest.mutate({ trocId: $params.trocId })}
-        >
-          <IconLink icon={faUserPlus} class="mr-2" size="1.2em" />
-          Nouveau client
-        </Button>
-      {/if}
+        {$isMobile ? '' : 'Nouveau client'}
+      </Button>
 
       {#if !$isMobile}
         <div class="flex-grow-1" />
       {/if}
 
       {#if $params[subscribeKey] && balance && Math.abs(balance) > 0.001}
-        <div transition:slide style={$isMobile ? 'width: 100%;' : ''}>
+        <div transition:slide|local style={$isMobile ? 'width: 100%;' : ''}>
           <Button block class="secondary-color" on:click={openPaymentDialog}>
             Règler {renderAmount(balance, $troc.currency)} en faveur du
             {balance > 0 ? 'client' : 'troc'}
