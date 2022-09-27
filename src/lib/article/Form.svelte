@@ -113,7 +113,7 @@
     Désignation
   </Textarea>
 
-  <div class="d-flex mt-3">
+  <div class="d-flex mt-3" style="gap: 0.5em;">
     <TextField
       bind:value={newPrice}
       type="number"
