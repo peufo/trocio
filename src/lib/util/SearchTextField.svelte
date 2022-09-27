@@ -52,6 +52,7 @@
   type="search"
   class={klass}
   style="max-width: 400px; {style}"
+  color="secondary"
   {...$$restProps}
 >
   <div slot="prepend">

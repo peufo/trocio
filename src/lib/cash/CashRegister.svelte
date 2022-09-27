@@ -221,6 +221,7 @@
         bind:this={container}
         class="simple-card"
         style="
+          min-height: 300px;
           height: {$layout.innerHeight -
           container?.offsetTop -
           ($isMobile ? 6 : 16)}px;
