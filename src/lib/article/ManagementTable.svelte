@@ -54,7 +54,7 @@
     class="simple-card"
     style="
       min-height: 400px;
-      max-height: {$layout.mainHeight - ($troc.is_try ? 148 : 76)}px;
+      max-height: {$layout.mainHeight - ($troc.is_try ? 124 : 76)}px;
     "
   >
     <thead>
