@@ -8,6 +8,10 @@
   import Loader from '$lib/util/Loader.svelte'
   import { useInfinitApi } from '$lib/api'
 
+  let klass = ''
+  export { klass as class }
+  export let style = ''
+
   export let label = ''
   export let inputElement: HTMLInputElement | undefined = undefined
   export let selectedItem: any = null
@@ -115,8 +119,8 @@
   }
 </script>
 
-<div style="position: relative; min-width: 200px;">
-  <div class="d-flex">
+<div class={klass} style="position: relative; min-width: 200px; {style}">
+  <div class="d-flex" style="gap: 4px;">
     <SearchTextField
       bind:inputElement
       bind:search={searchValue}
@@ -125,6 +129,7 @@
       on:blur={handleBlur}
       autocomplete="off"
       placeholder={keepValue && !!selectedItem ? ' ' : ''}
+      class="flex-grow-1"
       {...$$restProps}
     >
       {label}
@@ -134,7 +139,7 @@
   </div>
 
   {#if flatMode}
-    <div class="elevation-1 rounded mt-1">
+    <div class="flat-container simple-card">
       <List dense>
         {#if $querySearch.isLoading}
           <ListItem disabled><Loader /></ListItem>
@@ -170,7 +175,7 @@
       </List>
     </div>
   {:else if isFocus}
-    <div class="items elevation-5 rounded" in:fly|local={{ y: 50 }}>
+    <div class="list-container elevation-5 rounded" in:fly|local={{ y: 50 }}>
       <List dense>
         {#if $querySearch.isLoading}
           <ListItem disabled><Loader /></ListItem>
@@ -200,7 +205,11 @@
 </div>
 
 <style>
-  .items {
+  :global(.s-radio .s-text-field__input > label) {
+    padding-left: 0px;
+  }
+
+  .list-container {
     position: absolute;
     width: 100%;
     min-width: 260px;
@@ -208,7 +217,8 @@
     margin-top: 4px;
     z-index: 99;
   }
-  :global(.s-radio .s-text-field__input > label) {
-    padding-left: 0px;
+
+  .flat-container {
+    margin-top: 4px;
   }
 </style>

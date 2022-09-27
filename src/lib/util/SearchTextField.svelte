@@ -6,10 +6,13 @@
   import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
   import IconLink from '$lib/util/IconLink.svelte'
+
+  let klass = ''
+  export { klass as class }
+  export let style = ''
   export let search = ''
   export let placeholder = 'Chercher'
   export let icon = faSearch
-  export let style = ''
   export let debounceTime = 200
   export let inputElement: HTMLInputElement | undefined = undefined
   // bind with url query
@@ -47,6 +50,7 @@
   on:change={handleSearch}
   on:input={handleSearch}
   type="search"
+  class={klass}
   style="max-width: 400px; {style}"
   {...$$restProps}
 >
