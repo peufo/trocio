@@ -2,22 +2,22 @@
   import { createEventDispatcher } from 'svelte'
   import { Dialog, Button, Checkbox } from 'svelte-materialify/src'
   import { faList, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
+  import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
+  import type { Article } from 'types'
+  import { isMobile } from '$lib/store/layout'
+  import notify from '$lib/notify'
+  import { troc } from '$lib/troc/store'
   import ArticleForm from '$lib/article/Form.svelte'
   import ArticleFormList from '$lib/article/FormList.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
-  import type { Article } from 'types'
-
-  import notify from '$lib/notify'
-  import { troc } from '$lib/troc/store'
-  import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
   export let subscribeId: string = ''
   export let article: Article | undefined = undefined
   export let active = false
   export let listMode = false
   export let disabled = false
-  export let fullscreen = false
+  export let fullscreen = $isMobile
 
   let textarea: HTMLTextAreaElement | undefined
   let keepOpen = true
