@@ -45,7 +45,7 @@
   placeholder="Articles disponibles"
   message="Sélectionner des articles disponible pour les vendres au client."
 >
-  <div slot="actions">
+  <div slot="actions-selection">
     {#if $querySold.isLoading}
       <Button disabled><Loader /></Button>
     {:else}

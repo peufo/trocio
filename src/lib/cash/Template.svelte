@@ -12,9 +12,8 @@
   import type { Article } from 'types'
   import IconLink from '$lib/util/IconLink.svelte'
   import notify from '$lib/notify'
-  import Loader from '$lib/util/Loader.svelte'
 
-  export let pendingItems: any[] = []
+  export let pendingItems: Article[] = []
   export let queryParams = {}
   export let placeholder = 'Articles'
   export let canSelectAll = false
@@ -52,9 +51,9 @@
   }
 </script>
 
-<div class="d-flex">
+<div class="wrapper">
   <!-- Selecteur -->
-  <div class="flex-grow-1 mr-4" style="min-width: 260px; max-width: 320px;">
+  <div class="flex-grow-1" style="min-width: 260px; max-width: 320px;">
     <MagicSelect
       bind:this={magicSelect}
       flatMode
@@ -70,7 +69,7 @@
       exepted={pendingItems.map((art) => art._id)}
       on:select={handleSelect}
     >
-      <div slot="action">
+      <div slot="action" class="d-flex" style="gap: 4px;">
         {#if canSelectAll}
           {#await selectAllPromise}
             <Button fab size="small" disabled>
@@ -88,6 +87,7 @@
             </Button>
           {/await}
         {/if}
+        <slot name="actions-search" />
       </div>
     </MagicSelect>
   </div>
@@ -96,57 +96,67 @@
   <div class="flex-grow-1">
     <!-- Selection actions -->
     <div class="d-flex">
-      <slot name="actions-permanent-left" />
+      <slot name="options-selection" />
 
       <div class="flex-grow-1" />
 
       {#if pendingItems.length}
         <div in:fade|locale>
-          <slot name="actions" />
+          <slot name="actions-selection" />
         </div>
       {/if}
-
-      <slot name="actions-permanent-right" />
     </div>
 
-    <!-- Basket -->
-    <div class="mt-2">
-      {#if pendingItems.length}
-        <div in:fade|local class="d-flex flex-wrap">
-          {#each pendingItems as article, index (article._id)}
-            <div
-              in:scale|local
-              animate:flip={{ duration: 200 }}
-              class="d-flex simple-card pl-2 pr-2 pt-1 pb-1 ma-1"
-              style="min-width: 200px; max-width: calc(50% - 8px);"
-            >
-              <div class="flex-grow-1">
-                <span class="text-subtitle-2">
-                  {article.ref} - {article.name}
-                </span>
-                <br />
-                <div class="text-right">
-                  <b class="text-caption" style="line-height: 1;">
-                    {renderAmount(article.price, $troc.currency)}
-                  </b>
-                </div>
-              </div>
-              <div class="ml-3 mt-1">
-                <IconLink
-                  icon={faTimes}
-                  clickable
-                  opacity
-                  on:click={() => handleRemove(index)}
-                />
+    <!-- Basket content -->
+    {#if pendingItems.length}
+      <div in:fade|local class="basket-content" style="gap: 0.5em;">
+        {#each pendingItems as article, index (article._id)}
+          <div
+            in:scale|local
+            animate:flip={{ duration: 200 }}
+            class="d-flex simple-card pl-2 pr-2 pt-1 pb-1"
+            style="min-width: 200px; max-width: calc(50% - 8px);"
+          >
+            <div class="flex-grow-1">
+              <span class="text-subtitle-2">
+                {article.ref} - {article.name}
+              </span>
+              <br />
+              <div class="text-right">
+                <b class="text-caption" style="line-height: 1;">
+                  {renderAmount(article.price, $troc.currency)}
+                </b>
               </div>
             </div>
-          {/each}
-        </div>
-      {:else}
-        <div class="text-center pa-16 text-caption">
-          {message}
-        </div>
-      {/if}
-    </div>
+            <div class="ml-3 mt-1">
+              <IconLink
+                icon={faTimes}
+                clickable
+                opacity
+                on:click={() => handleRemove(index)}
+              />
+            </div>
+          </div>
+        {/each}
+      </div>
+    {:else}
+      <div class="text-center pa-16 text-caption">
+        {message}
+      </div>
+    {/if}
   </div>
 </div>
+
+<style>
+  .wrapper {
+    display: flex;
+    gap: 1em;
+  }
+
+  .basket-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: stretch;
+    margin-top: 4px;
+  }
+</style>

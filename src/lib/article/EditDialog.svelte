@@ -1,8 +1,9 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { Dialog, Button, Checkbox } from 'svelte-materialify/src'
+  import { Dialog, Button, Checkbox, Icon } from 'svelte-materialify/src'
   import { faList, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
   import { faEdit } from '@fortawesome/free-regular-svg-icons'
+  import { mdiPlus } from '@mdi/js'
 
   import type { Article } from 'types'
   import { isMobile } from '$lib/store/layout'
@@ -18,6 +19,8 @@
   export let listMode = false
   export let disabled = false
   export let fullscreen = $isMobile
+  export let icon = false
+  export let actionName = 'Proposer'
 
   let textarea: HTMLTextAreaElement | undefined
   let keepOpen = true
@@ -51,15 +54,28 @@
   }
 </script>
 
-<Button dense depressed on:click={handleClicOpen} class="secondary-color">
-  {#if article}
-    <IconLink icon={faEdit} opacity size="1.1em" class="mr-2" />
-    éditer
-  {:else}
-    <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
-    article
-  {/if}
-</Button>
+{#if icon}
+  <Button
+    fab
+    size="small"
+    title="Ajouter un article"
+    depressed
+    class="secondary-color"
+    on:click={handleClicOpen}
+  >
+    <Icon path={mdiPlus} />
+  </Button>
+{:else}
+  <Button dense depressed on:click={handleClicOpen} class="secondary-color">
+    {#if article}
+      <IconLink icon={faEdit} opacity size="1.1em" class="mr-2" />
+      éditer
+    {:else}
+      <IconLink icon={faPlus} opacity size="1.1em" class="mr-2" />
+      article
+    {/if}
+  </Button>
+{/if}
 
 <Dialog
   bind:active
@@ -72,7 +88,7 @@
       {#if article}
         Éditer un article
       {:else}
-        Proposer {listMode ? `une liste d'` : 'un '}article
+        {actionName} {listMode ? `une liste d'` : 'un '}article
       {/if}
     </div>
     {#if fullscreen}
