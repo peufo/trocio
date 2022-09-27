@@ -165,11 +165,13 @@
               </div>
             {/if}
           </div>
-        {:else}
-          <div class="item simple-card text-center">
+        {/each}
+
+        {#if !itemsFiltred.length && !$querySearch.isLoading}
+          <div class="item simple-card text-center pa-2">
             Aucun résultat {#if searchValue} pour <b>{searchValue}</b>{/if}
           </div>
-        {/each}
+        {/if}
 
         {#if $querySearch.hasNextPage && !$querySearch.isFetchingNextPage}
           <Button on:click={() => $querySearch.fetchNextPage()} depressed>
@@ -177,8 +179,11 @@
           </Button>
         {/if}
       {/if}
+
       {#if $querySearch.isLoading || $querySearch.isFetchingNextPage}
-        <Loader />
+        <div class="item simple-card text-center pa-2">
+          <Loader />
+        </div>
       {/if}
     </div>
   {:else if isFocus}
