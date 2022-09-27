@@ -58,17 +58,18 @@
     },
   ]
 
+  $: subscribeId = $params[subscribeKey]
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>({
-    enabled: !!$params[subscribeKey],
-    queryKey: ['subscribes/resum', { subscribeId: $params[subscribeKey] }],
+    enabled: !!subscribeId,
+    queryKey: ['subscribes/resum', { subscribeId }],
   })
   $: subscribe = $queryResum.data
   $: balance = $queryResum.data?.resum.balance
 
   onMount(() => {
-    if ($params[subscribeKey]) {
+    if (subscribeId) {
       api<{ subscribeId: string }, { name: string }>('/api/users/name', {
-        params: { subscribeId: $params[subscribeKey] },
+        params: { subscribeId },
       }).then((user) => clientSelector.setValue(user.name))
     }
 
@@ -205,7 +206,7 @@
         <div class="flex-grow-1" />
       {/if}
 
-      {#if $params[subscribeKey] && balance && Math.abs(balance) > 0.001}
+      {#if subscribeId && balance && Math.abs(balance) > 0.001}
         <div transition:slide|local style={$isMobile ? 'width: 100%;' : ''}>
           <Button block class="secondary-color" on:click={openPaymentDialog}>
             Règler {renderAmount(balance, $troc.currency)} en faveur du
@@ -215,7 +216,7 @@
       {/if}
     </div>
 
-    {#if $params[subscribeKey]}
+    {#if subscribeId}
       <div
         in:fade|local
         bind:this={container}
@@ -263,11 +264,7 @@
                 overflow-y: auto;
               "
             >
-              <svelte:component
-                this={component}
-                subscribeId={$params[subscribeKey]}
-                modeAdmin
-              />
+              <svelte:component this={component} {subscribeId} modeAdmin />
             </div>
           {/if}
         {/each}
