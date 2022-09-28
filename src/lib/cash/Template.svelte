@@ -33,6 +33,10 @@
     if (!$isMobile) magicSelect.focus()
   })
 
+  export function closeSelection() {
+    isSelectionOpen = false
+  }
+
   async function handleSelectAll() {
     const articles = await api<Article[]>('/api/articles', {
       params: {

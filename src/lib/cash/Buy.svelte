@@ -9,6 +9,7 @@
   import { troc } from '$lib/troc/store'
 
   export let subscribeId: string
+  let template: Template
 
   let pendingItems: Article[] = []
   const queryClient = useQueryClient()
@@ -30,12 +31,14 @@
         pendingItems = []
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
+        template.closeSelection()
       },
     }
   )
 </script>
 
 <Template
+  bind:this={template}
   bind:pendingItems
   queryParams={{
     exact_trocId: $troc._id,

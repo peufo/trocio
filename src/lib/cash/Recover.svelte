@@ -12,6 +12,7 @@
   import { mdiPrinter } from '@mdi/js'
 
   export let subscribeId: string
+  let template: Template
 
   let pendingItems: Article[] = []
   const queryClient = useQueryClient()
@@ -27,6 +28,7 @@
         pendingItems = []
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
+        template.closeSelection()
       },
     }
   )
@@ -35,6 +37,7 @@
 <TagsPrint id="recoverTags" articles={pendingItems} tag={$troc.tag} />
 
 <Template
+  bind:this={template}
   bind:pendingItems
   queryParams={{ exact_providerSubId: subscribeId, exact_state: 'valided' }}
   placeholder="Articles validés"
