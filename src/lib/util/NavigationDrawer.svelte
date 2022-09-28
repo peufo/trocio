@@ -1,12 +1,12 @@
 <script>
   /**
-   * Same of import { NavigationDrawer } from 'svelte-materialify/src'
+   * Same of import { NavigationDrawer } from '$material'
    * Exept line 31 : transition:transition|local={transitionOpts}
    *                                       ^^^^^
    */
 
   import { fade } from 'svelte/transition'
-  import Style from '../../../node_modules/svelte-materialify/src/internal/Style'
+  import Style from '../../../node_modules/$material/internal/Style'
 
   let klass = ''
   export { klass as class }

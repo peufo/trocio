@@ -4,7 +4,7 @@
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { getHeader, syntaxHighlight } from '$lib/utils'
   import { faUser } from '@fortawesome/free-solid-svg-icons'
-  import { Button } from 'svelte-materialify/src'
+  import { Button } from '$material'
   import type { User } from 'types'
 
   let userSelected: User | null = null

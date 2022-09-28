@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { Button, Icon } from 'svelte-materialify/src'
+  import { Button, Icon } from '$material'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'

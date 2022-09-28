@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte'
   import dayjs from 'dayjs'
-  import { Button, Select, Table, TextField } from 'svelte-materialify/src'
+  import { Button, Select, Table, TextField } from '$material'
 
   import type { Period } from 'types'
 

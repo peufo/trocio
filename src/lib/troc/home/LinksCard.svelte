@@ -1,6 +1,6 @@
 <script lang="ts">
   import { url } from '@roxi/routify'
-  import { Button, Card, CardTitle, Icon } from 'svelte-materialify/src'
+  import { Button, Card, CardTitle, Icon } from '$material'
   import {
     faCoins,
     faTag,

@@ -5,7 +5,7 @@
    */
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import { Card, Button, Icon } from 'svelte-materialify/src'
+  import { Card, Button, Icon } from '$material'
   import { mdiChevronRight } from '@mdi/js'
 
   import { renderAmount } from '$lib/utils'

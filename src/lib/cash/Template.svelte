@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { fade, scale } from 'svelte/transition'
   import { flip } from 'svelte/animate'
-  import { Button, Icon, Ripple } from 'svelte-materialify/src'
+  import { Button, Icon, Ripple } from '$material'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { mdiChevronDown, mdiClose, mdiTextBoxCheckOutline } from '@mdi/js'
   import { faTimes } from '@fortawesome/free-solid-svg-icons'

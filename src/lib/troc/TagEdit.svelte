@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { Button, Switch, TextField, Icon } from 'svelte-materialify/src'
+  import { Button, Switch, TextField, Icon } from '$material'
   import { mdiOverscan, mdiFormatSize } from '@mdi/js'
   import IconLink from '$lib/util/IconLink.svelte'
   import { faArrowsAltV, faArrowsAltH } from '@fortawesome/free-solid-svg-icons'

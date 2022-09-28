@@ -1,7 +1,7 @@
 <script lang="ts">
   import { mdiSwapHorizontal, mdiTagMultipleOutline } from '@mdi/js'
   import { page, isActive, redirect } from '@roxi/routify'
-  import { Tabs, Tab, Icon } from 'svelte-materialify/src'
+  import { Tabs, Tab, Icon } from '$material'
 
   import logo from '$assets/logo'
 

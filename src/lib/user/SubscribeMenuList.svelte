@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fly } from 'svelte/transition'
   import { createEventDispatcher } from 'svelte'
-  import { Icon, List, ListItem } from 'svelte-materialify/src'
+  import { Icon, List, ListItem } from '$material'
   import { params, url, goto } from '@roxi/routify'
   import {
     faAngleLeft,

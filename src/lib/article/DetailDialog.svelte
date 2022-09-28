@@ -1,6 +1,6 @@
 <script lang="ts">
   import { slide } from 'svelte/transition'
-  import { Dialog, Divider, Button, Icon } from 'svelte-materialify/src'
+  import { Dialog, Divider, Button, Icon } from '$material'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiPrinter } from '@mdi/js'
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Table } from 'svelte-materialify/src'
+  import { Table } from '$material'
 
   import type { Article } from 'types'
   import { renderAmount } from '$lib/utils'

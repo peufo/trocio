@@ -1,13 +1,7 @@
 <script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import {
-    Textarea,
-    TextField,
-    Icon,
-    List,
-    ListItem,
-  } from 'svelte-materialify/src'
+  import { Textarea, TextField, Icon, List, ListItem } from '$material'
   import L from 'leaflet'
   import debounce from 'debounce'
 

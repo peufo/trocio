@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { fade, slide } from 'svelte/transition'
-  import { Button, Textarea } from 'svelte-materialify/src'
+  import { Button, Textarea } from '$material'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 

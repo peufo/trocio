@@ -1,5 +1,5 @@
 <script>
-  import { Card } from 'svelte-materialify/src'
+  import { Card } from '$material'
   import { redirect, params, afterPageLoad } from '@roxi/routify'
 
   import Login from '$lib/user/Login.svelte'

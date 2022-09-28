@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Icon } from 'svelte-materialify/src'
+  import { Button, Icon } from '$material'
   import { faUser } from '@fortawesome/free-regular-svg-icons'
   import { mdiWeatherNight, mdiWhiteBalanceSunny } from '@mdi/js'
   import { page } from '@roxi/routify'

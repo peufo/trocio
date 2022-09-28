@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Icon } from 'svelte-materialify/src'
+  import { Button, Icon } from '$material'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   import Template from '$lib/cash/Template.svelte'

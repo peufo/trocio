@@ -2,7 +2,7 @@
   import { onMount, createEventDispatcher } from 'svelte'
   import { url, params, goto } from '@roxi/routify'
   import debounce from 'debounce'
-  import { TextField } from 'svelte-materialify/src'
+  import { TextField } from '$material'
   import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
   import IconLink from '$lib/util/IconLink.svelte'

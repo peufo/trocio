@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { ListItem } from 'svelte-materialify/src'
+  import { ListItem } from '$material'
 
   export let rowsNumber = 5
   export let cellsWidth = [60, 60, 60]

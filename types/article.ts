@@ -52,7 +52,7 @@ export interface Article extends ArticleCreate {
 
   /** Raccourci vers les utilisateurs pour ne pas passé par les subscribes */
   buyerId: string
-  validatorId: string
+  validatorId?: string
   sellerId: string
 }
 

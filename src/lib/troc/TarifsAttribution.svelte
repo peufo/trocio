@@ -1,6 +1,6 @@
 <script lang="ts">
   import { params, goto, url } from '@roxi/routify'
-  import { TextField, Ripple, Button } from 'svelte-materialify/src'
+  import { TextField, Ripple, Button } from '$material'
   import debounce from 'debounce'
   import MagicTable from '$lib/util/MagicTable.svelte'
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
-  import { List, ListItem, Avatar } from 'svelte-materialify/src'
+  import { List, ListItem, Avatar } from '$material'
   import { faSpinner, faTimes, faUser } from '@fortawesome/free-solid-svg-icons'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { Dialog, Button, Textarea, TextField } from 'svelte-materialify/src'
 
+  import { Dialog, Button, Textarea, TextField } from '$material'
   import { api } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
   import type { IPaymentCreate, SubscribeLookup } from 'types'

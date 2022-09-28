@@ -1,6 +1,6 @@
 <script>
   import { slide } from 'svelte/transition'
-  import { Button, TextField, Icon, Card } from 'svelte-materialify/src'
+  import { Button, TextField, Icon, Card } from '$material'
 
   import Loader from '$lib/util/Loader.svelte'
   import { user, userQuery, userStatus } from '$lib/user/store'

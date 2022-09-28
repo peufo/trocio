@@ -1,6 +1,6 @@
 <!-- routify:options isFooterDisplay=true -->
 <script>
-  import { Button } from 'svelte-materialify/src'
+  import { Button } from '$material'
   import { isDarkTheme } from '$lib/store/layout'
 
   import forestLight from '$assets/images/forest-720.png'
