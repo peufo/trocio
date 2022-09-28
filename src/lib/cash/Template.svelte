@@ -71,6 +71,7 @@
   function handleReset() {
     pendingItems = []
     countWithDelay = 0
+    setTimeout(closeSelection, 300)
   }
 
   function animeIndicator() {
@@ -137,7 +138,7 @@
     {#if pendingItems.length && $isMobile && !isSelectionOpen}
       <div
         class:animate__bounce={isIndicatorAnimated}
-        class="selection-indicator animate__bounce"
+        class="selection-indicator"
       >
         <Button
           fab
@@ -298,13 +299,13 @@
       padding: $wrapper-padding;
       inset: 0;
       background: var(--theme-surface);
-      transition: ease 300ms all;
+      transition: ease-in-out 400ms all;
       translate: calc(100% - $selection-size) calc(100% - $selection-size);
       border-top-left-radius: calc($selection-size / 2);
     }
 
     &.no-pending-items .selection {
-      translate: 100% calc(100% - $selection-size);
+      translate: calc(100% - $selection-size) 100%;
     }
 
     &.selection-open .selection {
