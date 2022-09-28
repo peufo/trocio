@@ -14,6 +14,7 @@
   import notify from '$lib/notify'
 
   export let subscribeId: string
+  let template: Template
 
   let pendingItems: Article[] = []
   let autoPrint = true
@@ -36,6 +37,7 @@
         pendingItems = []
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
+        template.closeSelection()
       },
     }
   )
@@ -51,6 +53,7 @@
 <TagsPrint id="providedTags" articles={pendingItems} tag={$troc.tag} />
 
 <Template
+  bind:this={template}
   bind:pendingItems
   queryParams={{ exact_providerSubId: subscribeId, exact_state: 'proposed' }}
   placeholder="Articles proposés"
