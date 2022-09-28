@@ -177,6 +177,7 @@
     display: flex;
     gap: 1em;
     height: 100%;
+    padding: 1em;
   }
 
   .selection {
@@ -216,7 +217,9 @@
     width: 360px;
   }
 
-  .is-mobile {
+  .wrapper.is-mobile {
+    padding: 8px;
+
     .basket-content > div {
       max-width: 100%;
     }

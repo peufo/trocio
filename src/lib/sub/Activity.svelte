@@ -3,11 +3,10 @@
   import { Button, Icon } from 'svelte-materialify/src'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
-  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
   import 'dayjs/locale/fr'
 
-  import type { IPaymentCreate, SubscribeResum } from 'types'
+  import type { SubscribeResum } from 'types'
   import { renderAmount } from '$lib/utils'
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
   import TablePurchases from './TablePurchases.svelte'
@@ -16,7 +15,7 @@
   import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
-  import { api, useApi } from '$lib/api'
+  import { useApi } from '$lib/api'
   import notify from '$lib/notify'
 
   export let subscribeId: string
@@ -29,7 +28,6 @@
 
   let providedOpen = false
   let paymentOpen = false
-  const queryClient = useQueryClient()
 
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
     'subscribes/resum',
@@ -59,7 +57,7 @@
     Oups, une erreur est survenu.
   </div>
 {:else if $queryResum.isSuccess && resum}
-  <div in:fade|local class="d-flex flex-column {klass}" style="gap: 1em;">
+  <div in:fade|local class="d-flex flex-column pa-4 {klass}" style="gap: 1em;">
     <div class="d-flex align-center">
       <a href={`/print-subscribe?subscribeId=${subscribeId}`} target="_blank">
         <Button text size="small" style="opacity: 0.6;">

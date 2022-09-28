@@ -20,9 +20,7 @@
 
     <Card>
       <CardTitle>Mon activité</CardTitle>
-      <div class="pa-4">
-        <Subscribe troc={$troc} />
-      </div>
+      <Subscribe troc={$troc} />
     </Card>
 
     <Card class="pa-4">
