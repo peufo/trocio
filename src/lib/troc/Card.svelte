@@ -24,7 +24,7 @@
     Button,
     Chip,
     Icon,
-  } from 'svelte-materialify/src'
+  } from '$material'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'

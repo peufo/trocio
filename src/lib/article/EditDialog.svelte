@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { Dialog, Button, Checkbox, Icon } from 'svelte-materialify/src'
+  import { Dialog, Button, Checkbox, Icon } from '$material'
   import { faList, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
   import { faEdit } from '@fortawesome/free-regular-svg-icons'
   import { mdiPlus } from '@mdi/js'

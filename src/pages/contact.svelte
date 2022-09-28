@@ -1,6 +1,6 @@
 <!-- routify:options isFooterDisplay=true -->
 <script lang="ts">
-  import { TextField, Textarea, Button } from 'svelte-materialify/src'
+  import { TextField, Textarea, Button } from '$material'
   import { useMutation } from '@sveltestack/svelte-query'
 
   import type { IMessageCreate } from 'types'

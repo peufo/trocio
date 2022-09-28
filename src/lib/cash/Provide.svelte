@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Button, Icon } from 'svelte-materialify/src'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiPrinterCheck, mdiPrinterOff } from '@mdi/js'
 
+  import { Button, Icon } from '$material'
   import Template from '$lib/cash/Template.svelte'
   import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'

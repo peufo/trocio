@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Option } from 'types'
-  import { Card, Button, TextField } from 'svelte-materialify/src'
+  import { Card, Button, TextField } from '$material'
   import { useMutation } from '@sveltestack/svelte-query'
   import { api } from '$lib/api'
 

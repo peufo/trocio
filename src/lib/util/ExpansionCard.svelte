@@ -1,13 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import {
-    Card,
-    CardTitle,
-    CardSubtitle,
-    TextField,
-    Button,
-  } from 'svelte-materialify/src'
+  import { Card, CardTitle, CardSubtitle, TextField, Button } from '$material'
   import { faChevronDown, faSearch } from '@fortawesome/free-solid-svg-icons'
   import debounce from 'debounce'
 

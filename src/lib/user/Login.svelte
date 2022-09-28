@@ -3,7 +3,7 @@
   import { createEventDispatcher } from 'svelte'
   const dispatch = createEventDispatcher()
   import { afterPageLoad } from '@roxi/routify'
-  import { Button, TextField, Icon, Divider } from 'svelte-materialify/src'
+  import { Button, TextField, Icon, Divider } from '$material'
 
   import { isDarkTheme } from '$lib/store/layout'
   import { userQuery } from '$lib/user/store'

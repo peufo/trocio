@@ -307,6 +307,8 @@ export const cancelEvent: RequestHandler<
     let { articles, isArray, subscribe } = await ensureCanEdit(req)
     const { eventName } = req.body
 
+    if (!subscribe) throw new Error('Subscribe not found')
+
     const correctionBase = {
       authorId: req.session.user._id,
       authorSubId: subscribe._id,

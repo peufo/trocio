@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
   import { debounce } from 'debounce'
-  import { Dialog } from 'svelte-materialify/src'
+  import { Dialog } from '$material'
 
   import type { SubscribeLookup } from 'types'
   import { isMobile } from '$lib/store/layout'

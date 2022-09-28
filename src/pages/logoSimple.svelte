@@ -1,6 +1,6 @@
 <script>
   import logo from '$assets/logo'
-  import { Icon } from 'svelte-materialify/src'
+  import { Icon } from '$material'
 </script>
 
 <div class="centered" style="height: 400px;">

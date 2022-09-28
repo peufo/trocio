@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from 'svelte-materialify/src'
+  import { Button } from '$material'
   import { faEdit } from '@fortawesome/free-solid-svg-icons'
 
   import { troc } from '$lib/troc/store'

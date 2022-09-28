@@ -6,7 +6,7 @@
     CardText,
     CardActions,
     Button,
-  } from 'svelte-materialify/src'
+  } from '$material'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
   import { api } from '$lib/api'

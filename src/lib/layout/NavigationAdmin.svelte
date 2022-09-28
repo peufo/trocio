@@ -1,13 +1,7 @@
 <script lang="ts">
   import { params, url, isActive } from '@roxi/routify'
   import { createEventDispatcher } from 'svelte'
-  import {
-    List,
-    ListItem,
-    Divider,
-    Button,
-    Overlay,
-  } from 'svelte-materialify/src'
+  import { List, ListItem, Divider, Button, Overlay } from '$material'
   import {
     faHouseChimney,
     faInfoCircle,

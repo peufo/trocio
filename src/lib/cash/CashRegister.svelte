@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { fade, slide } from 'svelte/transition'
   import { params, redirect } from '@roxi/routify'
-  import { Button, Tabs, Tab } from 'svelte-materialify/src'
+  import { Button, Tabs, Tab } from '$material'
   import { useMutation } from '@sveltestack/svelte-query'
   import {
     faArrowRightArrowLeft,

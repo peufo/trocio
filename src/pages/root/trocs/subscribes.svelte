@@ -1,6 +1,6 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
-  import { ButtonGroup, ButtonGroupItem } from 'svelte-materialify/src'
+  import { ButtonGroup, ButtonGroupItem } from '$material'
 
   import { useApi } from '$lib/api'
   import { syntaxHighlight } from '$lib/utils'

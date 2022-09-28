@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { faChartBar, faChartArea } from '@fortawesome/free-solid-svg-icons'
-  import { grey } from 'svelte-materialify/src/utils/colors'
+  import { grey } from '$material/utils/colors'
   import Plotly from 'plotly.js-dist'
 
   // For use typescript

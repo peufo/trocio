@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { url } from '@roxi/routify'
-  import { Card, CardTitle, Button } from 'svelte-materialify/src'
+  import { Card, CardTitle, Button } from '$material'
   import { faUsers } from '@fortawesome/free-solid-svg-icons'
 
   import type { DynamicQuerySubscribe } from 'types'
