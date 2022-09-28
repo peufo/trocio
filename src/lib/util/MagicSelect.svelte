@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, tick } from 'svelte'
   import { fly } from 'svelte/transition'
+  import { flip } from 'svelte/animate'
   import { Button, List, ListItem } from 'svelte-materialify/src'
   import { url, params, goto, redirect } from '@roxi/routify'
 
@@ -151,10 +152,11 @@
       {#if $querySearch.isError}
         <span>Oups, un problème est survenu</span>
       {:else}
-        {#each itemsFiltred as item, index}
+        {#each itemsFiltred as item, index (item._id)}
           <div
             class="item selectable simple-card"
             class:active={isFocus && selectedIndex === index}
+            animate:flip={{ duration: 200 }}
             on:click={() => handleSelect(item)}
           >
             <span class="text-subtitle-1">{getValue(item)}</span>
