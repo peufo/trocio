@@ -157,8 +157,8 @@
   min-height: $list-dense-min-height;
 
   .s-icon {
-    margin-top: $list-item-icon-margin-y/2;
-    margin-bottom: $list-item-icon-margin-y/2;
+    margin-top: $list-item-icon-margin-y*0.5;
+    margin-bottom: $list-item-icon-margin-y*0.5;
   }
 
   [slot='prepend'] {

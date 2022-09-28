@@ -1,20 +1,22 @@
+@use "sass:math";
+
 @import '../../styles/tools/breakpoints';
 @import '../../styles/variables';
 
 @mixin make-col($size) {
-  flex: 0 0 percentage($size / $grid-columns);
-  max-width: percentage($size / $grid-columns);
+  flex: 0 0 percentage(math.div($size, $grid-columns));
+  max-width: percentage(math.div($size, $grid-columns));
 }
 
 @mixin make-col-offset($size) {
-  $num: $size / $grid-columns;
+  $num: math.div($size, $grid-columns);
 
   margin-left: if($num == 0, 0, percentage($num));
 }
 
 .s-col {
   width: 100%;
-  padding: $grid-gutter / 2;
+  padding: $grid-gutter * 0.5;
   flex-basis: 0;
   flex-grow: 1;
   max-width: 100%;
