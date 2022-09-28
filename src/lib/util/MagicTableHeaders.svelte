@@ -37,13 +37,3 @@
     bind:queryParam={queryParamsArray[index]}
   />
 {/each}
-
-<style global>
-  .s-table.fixed-header > thead > tr {
-    position: sticky;
-    top: 0;
-  }
-  .s-table.fixed-header > thead > tr > th {
-    position: initial;
-  }
-</style>

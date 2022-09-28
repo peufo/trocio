@@ -89,9 +89,12 @@
   &.fixed-header {
     > thead {
       > tr {
+        position: sticky;
+        top: 0;
+
         > th {
           border-bottom: 0 !important;
-          position: sticky;
+          position: initial;
           top: 0;
           z-index: 2;
           background-color: var(--theme-surface);
