@@ -1,6 +1,6 @@
 <script lang="ts">
   import { slide } from 'svelte/transition'
-  import { List, ListItem, Button } from '$material'
+  import { Button, NavigationDrawer } from '$material'
 
   import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
   import { isActive } from '@roxi/routify'
@@ -8,7 +8,6 @@
   import layout from '$lib/store/layout'
   import { user } from '$lib/user/store'
   import IconLink from '$lib/util/IconLink.svelte'
-  import NavigationDrawer from '$lib/util/NavigationDrawer.svelte'
   import TrocMap from '$lib/troc/Map.svelte'
   import TrocSearch from '$lib/troc/Search.svelte'
   import SubTrocsList from '$lib/sub/TrocsList.svelte'
