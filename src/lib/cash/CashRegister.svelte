@@ -117,7 +117,7 @@
   interface CreateSubscribeBody {
     trocId: string
     userId?: string
-    guest?: boolean
+    isGuest?: boolean
   }
   /** Inscris un client qui à pu être identifé */
   const createSubscribe = useMutation(
@@ -137,7 +137,7 @@
     (data: CreateSubscribeBody) =>
       api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
         method: 'post',
-        data: { ...data, guest: true },
+        data: { ...data, isGuest: true },
         success: 'Nouveau participant invité',
       }),
     {
