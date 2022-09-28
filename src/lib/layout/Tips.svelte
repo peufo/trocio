@@ -1,12 +1,12 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { params, isActive, afterPageLoad } from '@roxi/routify'
-  import NavigationDrawer from '$lib/util/NavigationDrawer.svelte'
+  import { isActive, afterPageLoad } from '@roxi/routify'
+  import { faTimes } from '@fortawesome/free-solid-svg-icons'
+
+  import { NavigationDrawer } from '$material'
 
   import IconLink from '$lib/util/IconLink.svelte'
-
   import layout from '$lib/store/layout'
-  import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
   export let active = true
   export let isCashier = false

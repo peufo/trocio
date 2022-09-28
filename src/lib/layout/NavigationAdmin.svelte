@@ -1,7 +1,6 @@
 <script lang="ts">
   import { params, url, isActive } from '@roxi/routify'
   import { createEventDispatcher } from 'svelte'
-  import { List, ListItem, Divider, Button, Overlay } from '$material'
   import {
     faHouseChimney,
     faInfoCircle,
@@ -15,11 +14,18 @@
     faAngleDoubleRight,
   } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
+  import {
+    List,
+    ListItem,
+    Divider,
+    Button,
+    Overlay,
+    NavigationDrawer,
+  } from '$material'
 
   import { troc } from '$lib/troc/store'
   import layout, { isMobile, isKeyboardOpen } from '$lib/store/layout'
   import IconLink from '$lib/util/IconLink.svelte'
-  import NavigationDrawer from '$lib/util/NavigationDrawer.svelte'
 
   let width: string | undefined
   let mini = $isMobile
