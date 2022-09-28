@@ -32,9 +32,9 @@
   let clientSelector: MagicSelect
   const subscribeKey = 'client_subscribe_id'
   const tabIndexKey = 'cash_register_tab_index'
-  let container: HTMLDivElement
   let paymentDialog: PaymentDialog
   let subscribe: SubscribeLookup | undefined = undefined
+  let mainContainer: HTMLDivElement
 
   $: TABS = [
     {
@@ -65,6 +65,8 @@
   })
   $: subscribe = $queryResum.data
   $: balance = $queryResum.data?.resum.balance
+  $: mainContainerHeight =
+    $layout.innerHeight - mainContainer?.offsetTop - ($isMobile ? 6 : 16)
 
   onMount(() => {
     if (subscribeId) {
@@ -165,7 +167,11 @@
 <PaymentDialog bind:this={paymentDialog} />
 
 {#if $troc}
-  <div class="main-container">
+  <div
+    class="main-container"
+    bind:this={mainContainer}
+    style="height: {mainContainerHeight}px;"
+  >
     <div class="d-flex flex-wrap align-center pb-2" style="gap: 0.5em;">
       <div class:flex-grow-1={$isMobile}>
         <MagicSelect
@@ -219,13 +225,9 @@
     {#if subscribeId}
       <div
         in:fade|local
-        bind:this={container}
-        class="simple-card"
+        class="simple-card flex-grow-1"
         style="
           min-height: 300px;
-          height: {$layout.innerHeight -
-          container?.offsetTop -
-          ($isMobile ? 6 : 16)}px;
           overflow: hidden;
         "
       >
@@ -236,7 +238,7 @@
           on:change={handleChangeTab}
         >
           <div slot="tabs">
-            {#each TABS as { ref, label, icon }}
+            {#each TABS as { label, icon }}
               <Tab class="rounded">
                 {#if $isMobile || true}
                   <IconLink
@@ -268,12 +270,7 @@
         {/each}
       </div>
     {:else}
-      <div
-        in:fade|local
-        bind:this={container}
-        class="mt-4 centered"
-        style="min-height: {$layout.innerHeight - container?.offsetTop - 16}px;"
-      >
+      <div in:fade|local class="centered flex-grow-1">
         <div>
           <IconLink icon={faCashRegister} size="3.5em" style="opacity: 0.2;" />
         </div>
@@ -294,5 +291,7 @@
   .main-container {
     max-width: 1100px;
     margin: auto;
+    display: flex;
+    flex-direction: column;
   }
 </style>
