@@ -4,8 +4,9 @@
   import { flip } from 'svelte/animate'
   import { Button, Icon, Ripple } from 'svelte-materialify/src'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
-  import { mdiClose, mdiTextBoxCheckOutline } from '@mdi/js'
+  import { mdiChevronDown, mdiClose, mdiTextBoxCheckOutline } from '@mdi/js'
   import { faTimes } from '@fortawesome/free-solid-svg-icons'
+  import 'animate.css'
 
   import { isMobile } from '$lib/store/layout'
   import { renderAmount } from '$lib/utils'
@@ -24,7 +25,9 @@
   let selectAllPromise: Promise<void>
 
   /** Gestion de l'affichage des seléctions en mode mobile */
-  let selectionOpen = false
+  let isSelectionOpen = false
+  let isIndicatorAnimated = false
+  let countWithDelay = pendingItems.length
 
   onMount(() => {
     if (!$isMobile) magicSelect.focus()
@@ -41,14 +44,16 @@
     if (!articles.length) notify.warning(`Le client n'a pas d'article proposé`)
     if (articles.length === 1000)
       notify.warning('Seul 1000 article peuvent être sélectionés')
+
+    if ($isMobile) animeIndicator()
   }
 
   function handleSelect(event: { detail: Article }) {
     const article = event.detail
     if (pendingItems.map(({ _id }) => _id).includes(article._id))
       return notify.warning('Article déjà sélectioné')
-
     pendingItems = [...pendingItems, article]
+    if ($isMobile) animeIndicator()
   }
 
   function handleRemove(index: number) {
@@ -56,10 +61,29 @@
       ...pendingItems.slice(0, index),
       ...pendingItems.slice(index + 1),
     ]
+    countWithDelay = pendingItems.length
+  }
+
+  function handleReset() {
+    pendingItems = []
+    countWithDelay = 0
+  }
+
+  function animeIndicator() {
+    const duration = 1000
+    setTimeout(() => (countWithDelay = pendingItems.length), 0.57 * duration)
+    if (!isIndicatorAnimated)
+      setTimeout(() => (isIndicatorAnimated = false), duration)
+    isIndicatorAnimated = true
   }
 </script>
 
-<div class="wrapper {$isMobile ? 'is-mobile' : ''}">
+<div
+  class="wrapper"
+  class:is-mobile={$isMobile}
+  class:no-pending-items={!pendingItems.length}
+  class:selection-open={isSelectionOpen}
+>
   <!-- Selecteur -->
   <div class="selector">
     <MagicSelect
@@ -106,24 +130,27 @@
   <!-- Selection -->
   <div class="selection" class:simple-card={$isMobile}>
     <!-- Selection indicator -->
-    {#if pendingItems.length && $isMobile && !selectionOpen}
-      <div in:fade|local use:Ripple class="selection-indicator">
+    {#if pendingItems.length && $isMobile && !isSelectionOpen}
+      <div
+        class:animate__bounce={isIndicatorAnimated}
+        class="selection-indicator animate__bounce"
+      >
         <Button
           fab
           class="secondary-color"
-          on:click={() => (pendingItems = [])}
+          on:click={() => (isSelectionOpen = true)}
           style="font-size: large;"
         >
-          {pendingItems.length}
+          {countWithDelay}
         </Button>
       </div>
     {/if}
 
     <!-- Selection header -->
-    <div class="d-flex align-center" style="height: 40px;">
+    <div class="d-flex align-center" style="height: 40px; gap: 0.5em;">
       {#if pendingItems.length}
         <div in:fade|local>
-          <Button depressed on:click={() => (pendingItems = [])}>
+          <Button depressed on:click={handleReset}>
             {pendingItems.length === 1
               ? 'Un article'
               : `${pendingItems.length} articles`}
@@ -135,7 +162,20 @@
       {/if}
 
       <div class="flex-grow-1" />
+
       <slot name="options-selection" />
+
+      {#if $isMobile}
+        <Button
+          fab
+          size="small"
+          outlined
+          class="secondary-text"
+          on:click={() => (isSelectionOpen = false)}
+        >
+          <Icon path={mdiChevronDown} />
+        </Button>
+      {/if}
     </div>
 
     <!-- Basket content -->
@@ -234,16 +274,8 @@
     width: 360px;
   }
 
-  $selection-indicator-w: 72px;
-  $selection-indicator-h: 72px;
+  $selection-size: 72px;
   $wrapper-padding: 8px;
-
-  .selection-indicator {
-    width: $selection-indicator-w;
-    height: $selection-indicator-h;
-    flex-shrink: 0;
-    padding: 8px;
-  }
 
   .wrapper.is-mobile {
     padding: $wrapper-padding;
@@ -259,12 +291,29 @@
 
     .selection {
       position: absolute;
-      inset: $wrapper-padding;
+      padding: $wrapper-padding;
+      inset: 0;
       background: var(--theme-surface);
-      translate: calc(100% - $selection-indicator-w + $wrapper-padding)
-        calc(100% - $selection-indicator-h + $wrapper-padding);
-      border-top-left-radius: calc($selection-indicator-h / 2);
-      overflow: hidden;
+      transition: ease 300ms all;
+      translate: calc(100% - $selection-size) calc(100% - $selection-size);
+      border-top-left-radius: calc($selection-size / 2);
+    }
+
+    &.no-pending-items .selection {
+      translate: 100% calc(100% - $selection-size);
+    }
+
+    &.selection-open .selection {
+      translate: 0px 0px;
+      border-top-left-radius: 8px;
+      border-color: transparent;
+    }
+
+    & .selection-indicator {
+      width: $selection-size;
+      height: $selection-size;
+      flex-shrink: 0;
+      animation-duration: 1000ms;
     }
   }
 </style>
