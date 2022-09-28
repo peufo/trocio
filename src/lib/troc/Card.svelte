@@ -57,6 +57,7 @@
     sale: { icon: faShoppingBasket, title: 'Ouverture des ventes' },
     delete: { icon: faTimes, title: `Cette option n'a pas de sens ici` },
   }
+  let scheduleInfo = ''
 
   $: queryCounters = useApi<
     { trocId: string },
@@ -138,15 +139,27 @@
         {#if troc.schedule?.length}
           <div class="d-flex align-start">
             <IconLink icon={faCalendarAlt} opacity />
-            <div class="pl-4 d-flex flex-column" style="gap: 4px;">
-              <b>
-                {dayjs(
-                  troc.schedule && troc.schedule[0] && troc.schedule[0].open
-                ).fromNow()}
-              </b>
+            <div
+              class="pl-4 d-flex flex-column"
+              style="gap: 4px;"
+              on:mouseleave={() => (scheduleInfo = '')}
+            >
+              <span>
+                <b class="mr-2">
+                  {dayjs(
+                    troc.schedule && troc.schedule[0] && troc.schedule[0].open
+                  ).fromNow()}
+                </b>
+                {scheduleInfo}
+              </span>
 
               {#each troc.schedule as period}
-                <div title={(period.name && SCHEDULE[period.name].title) || ''}>
+                <div
+                  title={(period.name && SCHEDULE[period.name].title) || ''}
+                  on:mouseenter={() =>
+                    (scheduleInfo =
+                      (period.name && SCHEDULE[period.name].title) || '')}
+                >
                   <IconLink
                     icon={(period.name && SCHEDULE[period.name].icon) ||
                       SCHEDULE.open.icon}
