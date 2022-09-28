@@ -221,7 +221,7 @@
       &.filled {
         input,
         textarea {
-          margin-top: $text-field-filled-margin-top / 2;
+          margin-top: $text-field-filled-margin-top * 0.5;
         }
 
         label {

@@ -4,15 +4,15 @@
   display: flex;
   flex-wrap: wrap;
   flex: 1 1 auto;
-  margin-right: -$grid-gutter / 2;
-  margin-left: -$grid-gutter / 2;
+  margin-right: -$grid-gutter * 0.5;
+  margin-left: -$grid-gutter * 0.5;
 
   &.dense {
-    margin-right: -$form-grid-gutter / 2;
-    margin-left: -$form-grid-gutter / 2;
+    margin-right: -$form-grid-gutter * 0.5;
+    margin-left: -$form-grid-gutter * 0.5;
 
     > .s-col {
-      padding: $form-grid-gutter / 2;
+      padding: $form-grid-gutter * 0.5;
     }
   }
 

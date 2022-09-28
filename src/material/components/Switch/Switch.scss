@@ -83,7 +83,7 @@
       height: $switch-track-inset-height;
       left: -4px;
       opacity: $switch-track-inset-opacity;
-      top: calc(50% - #{$switch-track-inset-height / 2});
+      top: calc(50% - #{$switch-track-inset-height * 0.5});
     }
 
     .s-switch__thumb {

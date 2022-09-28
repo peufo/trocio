@@ -58,7 +58,7 @@
     pointer-events: none;
     position: absolute;
     border-top: $progress-linear-stream-border-width dotted;
-    top: calc(50% - #{$progress-linear-stream-border-width/2});
+    top: calc(50% - #{$progress-linear-stream-border-width*0.5});
     transition: inherit;
   }
 
