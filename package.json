@@ -44,6 +44,7 @@
     "@sveltestack/svelte-query": "^1.4.0",
     "@types/leaflet": "^1.7.5",
     "@types/morgan": "^1.9.3",
+    "animate.css": "^4.1.1",
     "axios": "^0.21.2",
     "bcrypt": "^5.0.0",
     "bwip-js": "^2.0.11",
