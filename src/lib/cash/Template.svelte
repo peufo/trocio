@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { fade, scale } from 'svelte/transition'
   import { flip } from 'svelte/animate'
-  import { Button, Icon } from 'svelte-materialify/src'
+  import { Button, Icon, Ripple } from 'svelte-materialify/src'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { mdiClose, mdiTextBoxCheckOutline } from '@mdi/js'
   import { faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -22,6 +22,9 @@
   export let message = ''
   let magicSelect: MagicSelect
   let selectAllPromise: Promise<void>
+
+  /** Gestion de l'affichage des seléctions en mode mobile */
+  let selectionOpen = false
 
   onMount(() => {
     if (!$isMobile) magicSelect.focus()
@@ -101,7 +104,21 @@
   </div>
 
   <!-- Selection -->
-  <div class="selection">
+  <div class="selection" class:simple-card={$isMobile}>
+    <!-- Selection indicator -->
+    {#if pendingItems.length && $isMobile && !selectionOpen}
+      <div in:fade|local use:Ripple class="selection-indicator">
+        <Button
+          fab
+          class="secondary-color"
+          on:click={() => (pendingItems = [])}
+          style="font-size: large;"
+        >
+          {pendingItems.length}
+        </Button>
+      </div>
+    {/if}
+
     <!-- Selection header -->
     <div class="d-flex align-center" style="height: 40px;">
       {#if pendingItems.length}
@@ -217,14 +234,37 @@
     width: 360px;
   }
 
-  .wrapper.is-mobile {
+  $selection-indicator-w: 72px;
+  $selection-indicator-h: 72px;
+  $wrapper-padding: 8px;
+
+  .selection-indicator {
+    width: $selection-indicator-w;
+    height: $selection-indicator-h;
+    flex-shrink: 0;
     padding: 8px;
+  }
+
+  .wrapper.is-mobile {
+    padding: $wrapper-padding;
+    position: relative;
+    overflow: hidden;
 
     .basket-content > div {
       max-width: 100%;
     }
     .selector {
       width: 100%;
+    }
+
+    .selection {
+      position: absolute;
+      inset: $wrapper-padding;
+      background: var(--theme-surface);
+      translate: calc(100% - $selection-indicator-w + $wrapper-padding)
+        calc(100% - $selection-indicator-h + $wrapper-padding);
+      border-top-left-radius: calc($selection-indicator-h / 2);
+      overflow: hidden;
     }
   }
 </style>

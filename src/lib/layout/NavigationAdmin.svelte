@@ -139,8 +139,8 @@
 <style>
   .icon-button {
     position: fixed;
-    left: 0.5em;
-    bottom: 0.5em;
+    left: 8px;
+    bottom: 10px;
     z-index: 1;
     border-radius: 50%;
     padding: 2px;
