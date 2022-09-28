@@ -257,8 +257,6 @@
           {#if index == ($params[tabIndexKey] || 3)}
             <div
               in:fade|locale
-              class:pa-2={$isMobile}
-              class:pa-4={!$isMobile}
               style="
                 height: calc(100% - {$isMobile ? '56' : '48'}px);
                 overflow-y: auto;
