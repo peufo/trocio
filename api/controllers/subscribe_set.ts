@@ -40,7 +40,7 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
 
       if (role === 'trader') {
         newSubscribe.prefix =
-          prefix || (await findNewPrefix(newSubscribe.trocId))
+          prefix || (await findNewPrefix(newSubscribe.trocId!))
       }
 
       if (userId) {
