@@ -1,10 +1,10 @@
 import { SvelteComponentTyped } from 'svelte'
 
-interface TextFieldProps {
+interface TextFieldProps extends Partial<HTMLInputElement> {
   /** Classes to add to text field wrapper. */
   class?: string
   /** Value of the text field. */
-  value?: string
+  value?: string | number
   /** Color class of the text field when active. */
   color?: string
   /** Whether text field is the `filled` material design variant. */

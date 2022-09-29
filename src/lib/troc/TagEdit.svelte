@@ -7,7 +7,6 @@
 
   import { troc, useUpdateTroc } from '$lib/troc/store'
   import type { Article, TagInterface } from 'types'
-  import notify from '$lib/notify'
   import { print } from '$lib/utils'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
 
@@ -102,17 +101,7 @@
       Utiliser une imprimantes d'étiquettes
     </Switch>
 
-    <Switch
-      checked={tag.useScanner}
-      disabled
-      on:click={() =>
-        notify.info({
-          title: 'En développement',
-          text: `L'utilisation des codes barres est en cours de développement.`,
-        })}
-    >
-      Utiliser les codes barres
-    </Switch>
+    <Switch bind:checked={tag.useScanner}>Utiliser les codes barres</Switch>
 
     <div class="d-flex flex-wrap mt-4" style="gap: 1em;">
       <Button
@@ -151,7 +140,13 @@
     <h6 class="mb-4">Aperçu des étiquettes</h6>
     <div class="page-wrapper" class:elevation-10={!tag.useTagPrinter}>
       <div class:page={!tag.useTagPrinter}>
-        <TagsPrint id="testPrint" visible articles={articlesExemple} {tag} />
+        <TagsPrint
+          id="testPrint"
+          visible
+          articles={articlesExemple}
+          {tag}
+          currency={$troc.currency}
+        />
       </div>
     </div>
   </div>

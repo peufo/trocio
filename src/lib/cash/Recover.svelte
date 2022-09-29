@@ -34,7 +34,12 @@
   )
 </script>
 
-<TagsPrint id="recoverTags" articles={pendingItems} tag={$troc.tag} />
+<TagsPrint
+  id="recoverTags"
+  articles={pendingItems}
+  tag={$troc.tag}
+  currency={$troc.currency}
+/>
 
 <Template
   bind:this={template}

@@ -5,6 +5,7 @@
   export let id = 'tagsPrint'
   export let visible = false
   export let articles: Partial<Article>[] = []
+  export let currency = ''
   export let tag: TagInterface = {
     width: 80,
     height: 22,
@@ -23,7 +24,7 @@
     class:flex-wrap={!tag.useTagPrinter}
   >
     {#each articles as article}
-      <Tag {article} {tag} />
+      <Tag {article} {tag} {currency} />
     {/each}
   </div>
 </div>
