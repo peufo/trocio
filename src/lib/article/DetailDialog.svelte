@@ -98,7 +98,12 @@
 
 {#if article}
   {#if modeAdmin && $troc}
-    <TagsPrint id="dialogTag" articles={[article]} tag={$troc?.tag} />
+    <TagsPrint
+      id="dialogTag"
+      articles={[article]}
+      tag={$troc.tag}
+      currency={$troc.currency}
+    />
   {/if}
 
   <Dialog bind:active class="pa-4" style="cursor: initial;" width="large">

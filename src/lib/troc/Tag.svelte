@@ -1,12 +1,14 @@
 <script lang="ts">
-  import type { TagInterface, Article } from 'types'
-  import logo from '$assets/favicon.ico'
+  import { onMount } from 'svelte'
+  import QrCode from 'qrcode'
 
-  export let article: Partial<Article> = {
-    name: `Nom de l'article`,
-    ref: 'ref',
-    price: 99,
-  }
+  import { renderAmount } from '$lib/utils'
+  import type { TagInterface, Article } from 'types'
+
+  type TagData = Pick<Article, '_id' | 'ref' | 'name' | 'price'>
+
+  export let article: Partial<TagData>
+  export let currency: string = ''
 
   export let tag: TagInterface = {
     width: 80,
@@ -17,6 +19,15 @@
     useTagPrinter: false,
     useScanner: false,
   }
+
+  let qrcode = ''
+  onMount(async () => {
+    const defaultUrl = `Made with ❤️ by Jonas`
+    qrcode = await QrCode.toDataURL(article._id || defaultUrl, {
+      type: 'image/webp',
+      margin: 0,
+    })
+  })
 </script>
 
 <div
@@ -25,31 +36,40 @@
   class:useTagPrinter={tag.useTagPrinter}
   class:mb-4={tag.useTagPrinter}
   style={`
-    color: black;
-    background: white;
     width: ${tag.width}mm;
     height: ${tag.height}mm;
     padding: ${tag.padding}mm;
+    gap: ${tag.padding < 2 ? 2 : tag.padding}mm;
     font-size: ${tag.fontSize}px;
   `}
 >
-  <div class="d-flex flex-column" style="height: 100%;">
-    <div class="flex-grow-1">
-      <b class="mr-1">#{article.ref}</b>
-      <span>{article.name}</span>
+  {#if tag.useScanner}
+    <img class="flex-shrink-0" src={qrcode} alt="QrCode de l'article" />
+  {/if}
+
+  <div class="data">
+    <div class="name">
+      {article.name}
     </div>
 
-    <div class="d-flex align-center">
-      <img src={logo} alt="Logo trocio" height="30" width="30" />
-      <div class="flex-grow-1" />
-      <div>
-        {article.price?.toFixed(2)}
-      </div>
+    <div class="ref-price">
+      <b>
+        # {article.ref}
+      </b>
+      <span>
+        {renderAmount(article.price, currency)}
+      </span>
     </div>
   </div>
 </div>
 
-<style>
+<style lang="scss">
+  .tag {
+    color: black;
+    background: white;
+    display: flex;
+  }
+
   .tag.useTagPrinter {
     page-break-before: always;
     overflow: hidden;
@@ -58,5 +78,20 @@
   .tag.border {
     border: 2px solid #ccc;
     border-radius: 4px;
+  }
+
+  .data {
+    flex-grow: 1;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    .name {
+      overflow: hidden;
+    }
+  }
+
+  .ref-price {
+    display: flex;
+    justify-content: space-between;
+    font-family: monospace;
   }
 </style>

@@ -64,7 +64,7 @@ const trocModel = new Schema(
       fontSize: { type: Number, default: 16 },
       border: { type: Boolean, default: true },
       useTagPrinter: { type: Boolean, default: false },
-      useScanner: { type: Boolean, default: false },
+      useScanner: { type: Boolean, default: true },
     },
   },
   {
