@@ -92,6 +92,5 @@
   .ref-price {
     display: flex;
     justify-content: space-between;
-    font-family: monospace;
   }
 </style>
