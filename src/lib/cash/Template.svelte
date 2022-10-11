@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { fade, scale } from 'svelte/transition'
+  import { fade, scale, slide } from 'svelte/transition'
   import { flip } from 'svelte/animate'
   import { Button, Icon } from '$material'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
@@ -157,8 +157,9 @@
   <!-- Selection -->
   <div class="selection" class:simple-card={$isMobile}>
     <!-- Selection indicator -->
-    {#if pendingItems.length && $isMobile && !isSelectionOpen}
+    {#if $isMobile && !isSelectionOpen}
       <div
+        transition:slide|local
         class:animate__bounce={isIndicatorAnimated}
         class="selection-indicator"
       >
