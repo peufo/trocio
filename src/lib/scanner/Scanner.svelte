@@ -13,11 +13,13 @@
     mdiVolumeOff,
   } from '@mdi/js'
 
-  import { Button, Chip, Icon, ProgressCircular } from '$material'
+  import { Button, Chip, Icon } from '$material'
   import notify from '$lib/notify'
   import soundPristine from '$assets/sounds/Pristine.wav'
 
-  const TIMEOUT = 25_000
+  const TIMEOUT = 9 // secondes
+  let timeoutId: NodeJS.Timeout
+  let time = TIMEOUT
 
   let qrScanner: QrScanner
   let result = ''
@@ -27,7 +29,6 @@
   let isVibrateOn = true
   let isFlashOnDetect = false
   let isSoundOn = false
-  let scannTimeOut: NodeJS.Timeout
   let video: HTMLVideoElement
   let audio: HTMLAudioElement
   let offsetWidth: number
@@ -54,6 +55,7 @@
 
   onDestroy(() => {
     qrScanner?.destroy()
+    clearInterval(timeoutId)
   })
 
   function scan() {
@@ -61,14 +63,15 @@
     video.play()
     qrScanner.start()
     isFlashOnDetect = qrScanner.isFlashOn()
-    scannTimeOut = setTimeout(pause, TIMEOUT)
+    clearInterval(timeoutId)
+    time = TIMEOUT
+    timeoutId = setInterval(() => --time <= 0 && pause(), 1000)
   }
 
   function pause() {
     isScanning = false
     video.pause()
-    // qrScanner.pause()
-    clearTimeout(scannTimeOut)
+    clearInterval(timeoutId)
   }
 
   async function onSuccess(scanResult: string) {
@@ -154,7 +157,7 @@
       </Chip>
     {:else if isScanning}
       <Chip label>
-        <span>Scan en cours ...</span>
+        <span>Recherche d'un code QR ... ( {time} )</span>
       </Chip>
     {/if}
 
@@ -197,7 +200,7 @@
     place-items: center;
     outline: rgba(0, 0, 0, 0.5) 9999px solid;
     border-radius: 10px;
-    outline-offset: 6px;
+    outline-offset: 4px;
   }
 
   .overlay > svg {
@@ -206,12 +209,12 @@
 
   .overlay > svg > rect {
     fill: transparent;
-    stroke-width: 4;
     stroke-linecap: round;
     animation-name: rotate-stroke;
     animation-duration: 2000ms;
     animation-iteration-count: infinite;
     stroke: #fff;
+    stroke-width: 4;
     stroke-opacity: 0.6;
     stroke-dasharray: 49%;
     stroke-dashoffset: 27%;
@@ -221,6 +224,8 @@
     animation-timing-function: linear;
     animation-duration: 800ms;
     stroke: #4456a8;
+    stroke-width: 8;
+    stroke-opacity: 1;
   }
 
   @keyframes rotate-stroke {
