@@ -78,7 +78,7 @@ type QueryOptions<RequestQuery, RequestResult> =
       [string, RequestQuery]
     >
 
-export function useApi<RequestQuery, RequestResult>(
+export function useApi<RequestQuery, RequestResult = RequestQuery>(
   queryOptions: QueryOptions<RequestQuery, RequestResult>,
   apiOptions: ApiOptions<RequestQuery, RequestResult> = {}
 ) {

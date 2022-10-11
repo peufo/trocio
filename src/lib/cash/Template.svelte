@@ -2,9 +2,14 @@
   import { onMount } from 'svelte'
   import { fade, scale } from 'svelte/transition'
   import { flip } from 'svelte/animate'
-  import { Button, Icon, Ripple } from '$material'
+  import { Button, Icon } from '$material'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
-  import { mdiChevronDown, mdiClose, mdiTextBoxCheckOutline } from '@mdi/js'
+  import {
+    mdiChevronDown,
+    mdiClose,
+    mdiQrcodeScan,
+    mdiTextBoxCheckOutline,
+  } from '@mdi/js'
   import { faTimes } from '@fortawesome/free-solid-svg-icons'
   import 'animate.css'
 
@@ -15,12 +20,14 @@
   import type { Article } from 'types'
   import IconLink from '$lib/util/IconLink.svelte'
   import notify from '$lib/notify'
+  import Scanner from '$lib/scanner/Scanner.svelte'
 
   export let pendingItems: Article[] = []
   export let queryParams = {}
   export let placeholder = 'Articles'
   export let canSelectAll = false
   export let message = ''
+  let isScannerOpen = false
   let magicSelect: MagicSelect
   let selectAllPromise: Promise<void>
 
@@ -91,45 +98,60 @@
 >
   <!-- Selecteur -->
   <div class="selector">
-    <MagicSelect
-      bind:this={magicSelect}
-      flatMode
-      keepFocus
-      path="articles"
-      searchKey="q"
-      {placeholder}
-      queryParams={{
-        limit: 10,
-        ...queryParams,
-      }}
-      getValue={(art) => `${art.ref} - ${art.name}`}
-      getValue2={(art) => renderAmount(art.price, $troc.currency)}
-      exepted={pendingItems.map((art) => art._id)}
-      solo
-      dense
-      on:select={handleSelect}
-    >
-      <div slot="action" class="d-flex" style="gap: 4px;">
-        {#if canSelectAll}
-          {#await selectAllPromise}
-            <Button fab size="small" disabled>
-              <Icon path={mdiTextBoxCheckOutline} />
-            </Button>
-          {:then}
-            <Button
-              fab
-              size="small"
-              title="Tout sélectioner"
-              depressed
-              on:click={() => (selectAllPromise = handleSelectAll())}
-            >
-              <Icon path={mdiTextBoxCheckOutline} />
-            </Button>
-          {/await}
-        {/if}
-        <slot name="actions-search" />
-      </div>
-    </MagicSelect>
+    {#if isScannerOpen}
+      <Scanner on:close={() => (isScannerOpen = false)} />
+    {:else}
+      <MagicSelect
+        bind:this={magicSelect}
+        flatMode
+        keepFocus
+        path="articles"
+        searchKey="q"
+        {placeholder}
+        queryParams={{
+          limit: 10,
+          ...queryParams,
+        }}
+        getValue={(art) => `${art.ref} - ${art.name}`}
+        getValue2={(art) => renderAmount(art.price, $troc.currency)}
+        exepted={pendingItems.map((art) => art._id)}
+        solo
+        dense
+        on:select={handleSelect}
+      >
+        <div slot="action" class="d-flex" style="gap: 4px;">
+          <slot name="actions-search" />
+
+          {#if canSelectAll}
+            {#await selectAllPromise}
+              <Button fab size="small" disabled>
+                <Icon path={mdiTextBoxCheckOutline} />
+              </Button>
+            {:then}
+              <Button
+                fab
+                depressed
+                size="small"
+                title="Tout sélectioner"
+                on:click={() => (selectAllPromise = handleSelectAll())}
+              >
+                <Icon path={mdiTextBoxCheckOutline} />
+              </Button>
+            {/await}
+          {/if}
+
+          <Button
+            fab
+            depressed
+            size="small"
+            title="Scanner des codes QR"
+            on:click={() => (isScannerOpen = true)}
+          >
+            <Icon path={mdiQrcodeScan} />
+          </Button>
+        </div>
+      </MagicSelect>
+    {/if}
   </div>
 
   <!-- Selection -->
