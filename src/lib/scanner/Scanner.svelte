@@ -5,7 +5,6 @@
     mdiClose,
     mdiFlashlight,
     mdiFlashlightOff,
-    mdiLoading,
     mdiRepeat,
     mdiRepeatOff,
     mdiVibrate,
@@ -14,14 +13,15 @@
     mdiVolumeOff,
   } from '@mdi/js'
 
-  import { Button, Chip, Icon } from '$material'
+  import { Button, Chip, Icon, ProgressCircular } from '$material'
   import notify from '$lib/notify'
   import soundPristine from '$assets/sounds/Pristine.wav'
 
-  const TIMEOUT = 5000
+  const TIMEOUT = 25_000
 
+  let qrScanner: QrScanner
   let result = ''
-  let isRuning = false
+  let isScanning = false
   let isProcessing = false
   let isAutoScan = true
   let isVibrateOn = true
@@ -30,9 +30,10 @@
   let scannTimeOut: NodeJS.Timeout
   let video: HTMLVideoElement
   let audio: HTMLAudioElement
-  let qrScanner: QrScanner
   let offsetWidth: number
   let offsetHeight: number
+  let overlay: HTMLDivElement
+  let overlaySize: number
 
   const dispatch = createEventDispatcher<{ close: void }>()
 
@@ -46,6 +47,7 @@
     qrScanner = new QrScanner(video, onSuccess, {
       maxScansPerSecond: 5,
       highlightScanRegion: true,
+      overlay,
     })
     scan()
   })
@@ -55,7 +57,7 @@
   })
 
   function scan() {
-    isRuning = true
+    isScanning = true
     video.play()
     qrScanner.start()
     isFlashOnDetect = qrScanner.isFlashOn()
@@ -63,7 +65,7 @@
   }
 
   function pause() {
-    isRuning = false
+    isScanning = false
     video.pause()
     // qrScanner.pause()
     clearTimeout(scannTimeOut)
@@ -89,7 +91,7 @@
   }
 </script>
 
-<div class="scanner-wrapper" bind:offsetWidth>
+<div class="scanner-wrapper" bind:offsetWidth on:click={scan}>
   <video
     bind:this={video}
     kind="caption"
@@ -98,8 +100,28 @@
   >
     <track kind="captions" />
   </video>
-  <div class="overlay">
-    <div />
+  <div
+    class="overlay"
+    bind:this={overlay}
+    bind:offsetWidth={overlaySize}
+    class:isScanning
+    class:isProcessing
+  >
+    {#if overlaySize !== offsetWidth}
+      {#if isScanning || isProcessing}
+        <svg
+          viewBox="0 0 {overlaySize} {overlaySize}"
+          width="100%"
+          height="100%"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect width={overlaySize} height={overlaySize} rx="10" />
+        </svg>
+      {:else}
+        <h6>En pause</h6>
+        <p>Toucher pour relancer</p>
+      {/if}
+    {/if}
   </div>
 
   <div class="top-bar">
@@ -122,6 +144,7 @@
       <Icon path={mdiClose} />
     </Button>
   </div>
+
   <div class="bottom-bar">
     <div class="flex-grow-1" />
 
@@ -129,7 +152,7 @@
       <Chip label>
         <span>Traitement du code QR ...</span>
       </Chip>
-    {:else if isRuning}
+    {:else if isScanning}
       <Chip label>
         <span>Scan en cours ...</span>
       </Chip>
@@ -169,15 +192,43 @@
   }
 
   .overlay {
-    position: absolute;
     inset: 0px;
-    border: red solid 2px;
     display: grid;
     place-items: center;
+    outline: rgba(0, 0, 0, 0.5) 9999px solid;
+    border-radius: 10px;
+    outline-offset: 6px;
   }
-  .overlay > div {
-    width: 40px;
-    height: 40px;
-    border: green solid 2px;
+
+  .overlay > svg {
+    overflow: visible;
+  }
+
+  .overlay > svg > rect {
+    fill: transparent;
+    stroke-width: 4;
+    stroke-linecap: round;
+    animation-name: rotate-stroke;
+    animation-duration: 2000ms;
+    animation-iteration-count: infinite;
+    stroke: #fff;
+    stroke-opacity: 0.6;
+    stroke-dasharray: 49%;
+    stroke-dashoffset: 27%;
+  }
+
+  .overlay.isProcessing > svg > rect {
+    animation-timing-function: linear;
+    animation-duration: 800ms;
+    stroke: #4456a8;
+  }
+
+  @keyframes rotate-stroke {
+    from {
+      stroke-dashoffset: 27%;
+    }
+    to {
+      stroke-dashoffset: 125%;
+    }
   }
 </style>
