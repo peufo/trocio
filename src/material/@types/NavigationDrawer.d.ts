@@ -4,6 +4,8 @@ import { TransitionConfig } from 'svelte/transition'
 interface NavigationDrawerProps {
   /** classes added to the drawer */
   class?: string
+  /** classes addes to the drawer content */
+  classContent?: string
   /** width of the drawer */
   width?: string | number
   /** sets the state of the drawer */
