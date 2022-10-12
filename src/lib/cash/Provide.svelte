@@ -63,6 +63,7 @@
   queryParams={{ exact_providerSubId: subscribeId, exact_state: 'proposed' }}
   placeholder="Articles proposés"
   canSelectAll
+  disableScanner
   message="Sélectionner des articles proposés par le client pour les valider ou les refuser."
 >
   <div slot="options-selection" class="d-flex align-center" style="gap: 1em;">
