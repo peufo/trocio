@@ -13,12 +13,18 @@
     mdiVolumeOff,
   } from '@mdi/js'
 
-  import { isMobile } from '$lib/store/layout'
   import { Button, Chip, Icon } from '$material'
+  import { isMobile } from '$lib/store/layout'
   import notify from '$lib/notify'
   import soundPristine from '$assets/sounds/Pristine.wav'
   import type { Article } from 'types'
   import { api } from '$lib/api'
+  import {
+    isAutoScanOn,
+    isFlashOn,
+    isSoundOn,
+    isVibrateOn,
+  } from '$lib/scanner/options'
 
   /** Params ajouter à la requet de l'article */
   export let queryParams = {}
@@ -30,10 +36,7 @@
   let qrScanner: QrScanner
   let isScanning = false
   let isProcessing = false
-  let isAutoScan = true
-  let isVibrateOn = true
-  let isFlashOnDetect = false
-  let isSoundOn = false
+
   let video: HTMLVideoElement
   let audio: HTMLAudioElement
   let offsetWidth: number
@@ -55,6 +58,14 @@
       overlay,
     })
     scan()
+
+    const handleFlashOn = (v: boolean) => {
+      if (v) qrScanner.turnFlashOn()
+      else qrScanner.turnFlashOff()
+    }
+    isFlashOn.subscribe(handleFlashOn)
+    handleFlashOn($isFlashOn)
+    console.log($isFlashOn)
   })
 
   onDestroy(() => {
@@ -66,7 +77,6 @@
     isScanning = true
     video.play()
     qrScanner.start()
-    isFlashOnDetect = qrScanner.isFlashOn()
     clearInterval(timeoutId)
     time = TIMEOUT
     timeoutId = setInterval(() => --time <= 0 && pause(), 1000)
@@ -98,15 +108,10 @@
 
     const getNextState = () => {
       isProcessing = false
-      if (isAutoScan) scan()
+      if (isAutoScanOn) scan()
     }
     const elapsedTime = new Date().getTime() - startTime
     setTimeout(getNextState, minimalPause - elapsedTime)
-  }
-
-  function toggleFlashLight() {
-    qrScanner.toggleFlash()
-    isFlashOnDetect = qrScanner.isFlashOn()
   }
 </script>
 
@@ -147,23 +152,23 @@
 
   <div class="top-bar">
     {#if $isMobile}
-      <Button icon outlined on:click={toggleFlashLight}>
-        <Icon path={isFlashOnDetect ? mdiFlashlight : mdiFlashlightOff} />
+      <Button icon outlined on:click={() => isFlashOn.update((v) => !v)}>
+        <Icon path={$isFlashOn ? mdiFlashlight : mdiFlashlightOff} />
       </Button>
     {/if}
 
-    <Button icon outlined on:click={() => (isSoundOn = !isSoundOn)}>
-      <Icon path={isSoundOn ? mdiVolumeHigh : mdiVolumeOff} />
+    <Button icon outlined on:click={() => isSoundOn.update((v) => !v)}>
+      <Icon path={$isSoundOn ? mdiVolumeHigh : mdiVolumeOff} />
     </Button>
 
     {#if $isMobile}
-      <Button icon outlined on:click={() => (isVibrateOn = !isVibrateOn)}>
-        <Icon path={isVibrateOn ? mdiVibrate : mdiVibrateOff} />
+      <Button icon outlined on:click={() => isVibrateOn.update((v) => !v)}>
+        <Icon path={$isVibrateOn ? mdiVibrate : mdiVibrateOff} />
       </Button>
     {/if}
 
-    <Button icon outlined on:click={() => (isAutoScan = !isAutoScan)}>
-      <Icon path={isAutoScan ? mdiRepeat : mdiRepeatOff} />
+    <Button icon outlined on:click={() => isAutoScanOn.update((v) => !v)}>
+      <Icon path={$isAutoScanOn ? mdiRepeat : mdiRepeatOff} />
     </Button>
 
     <div class="flex-grow-1" />
