@@ -20,14 +20,17 @@
     useScanner: false,
   }
 
+  onMount(refresh)
+
   let qrcode = ''
-  onMount(async () => {
-    const defaultUrl = `Made with ❤️ by Jonas`
+  const defaultUrl = `Made with ❤️ by Jonas`
+
+  export async function refresh() {
     qrcode = await QrCode.toDataURL(article._id || defaultUrl, {
       type: 'image/webp',
       margin: 0,
     })
-  })
+  }
 </script>
 
 <div
