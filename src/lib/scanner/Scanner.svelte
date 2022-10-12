@@ -111,7 +111,7 @@
   }
 </script>
 
-<div class="scanner-wrapper" bind:offsetWidth on:click={scan}>
+<div class="scanner-wrapper white-text" bind:offsetWidth on:click={scan}>
   <video
     bind:this={video}
     kind="caption"
