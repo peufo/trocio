@@ -45,8 +45,9 @@
       return
     }
 
+    // @ts-ignore
     qrScanner = new QrScanner(video, onSuccess, {
-      maxScansPerSecond: 5,
+      maxScansPerSecond: 8,
       highlightScanRegion: true,
       overlay,
     })
