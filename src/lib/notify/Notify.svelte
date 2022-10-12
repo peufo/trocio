@@ -57,7 +57,7 @@
     bottom: 1em;
     left: 50%;
     transform: translateX(-50%);
-    max-width: calc(100% - 1rem);
+    max-width: calc(100% - 0.5rem);
     display: flex;
     align-items: center;
     border-radius: 6px;
