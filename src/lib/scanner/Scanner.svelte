@@ -16,13 +16,17 @@
   import { Button, Chip, Icon } from '$material'
   import notify from '$lib/notify'
   import soundPristine from '$assets/sounds/Pristine.wav'
+  import type { Article } from 'types'
+  import { api } from '$lib/api'
+
+  /** Params ajouter à la requet de l'article */
+  export let queryParams = {}
 
   const TIMEOUT = 9 // secondes
   let timeoutId: NodeJS.Timeout
   let time = TIMEOUT
 
   let qrScanner: QrScanner
-  let result = ''
   let isScanning = false
   let isProcessing = false
   let isAutoScan = true
@@ -36,17 +40,16 @@
   let overlay: HTMLDivElement
   let overlaySize: number
 
-  const dispatch = createEventDispatcher<{ close: void }>()
+  const dispatch = createEventDispatcher<{ close: void; select: Article }>()
 
   onMount(async () => {
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-      // TODO: HANDLE NO CAMERA
       notify.warning('No camera detected')
       return
     }
 
     // @ts-ignore
-    qrScanner = new QrScanner(video, onSuccess, {
+    qrScanner = new QrScanner(video, onDetect, {
       maxScansPerSecond: 8,
       highlightScanRegion: true,
       overlay,
@@ -75,18 +78,30 @@
     clearInterval(timeoutId)
   }
 
-  async function onSuccess(scanResult: string) {
+  async function onDetect(scanResult: { data: string }) {
     isProcessing = true
     pause()
-    result = scanResult
     if (isSoundOn) audio.play()
     if (isVibrateOn) navigator.vibrate([50])
 
-    // Simulation d'appel à l'api
-    setTimeout(() => {
+    // Garantie une pause un temps de traitement minimum pour évité les doubles scan
+    const minimalPause = 1000
+    const startTime = new Date().getTime()
+
+    // Récupère l'article scanner
+    const [article] = await api<Article[]>('/api/articles', {
+      params: { exact__id: scanResult.data, ...queryParams },
+    })
+
+    if (article) dispatch('select', article)
+    else notify.error('Article introuvable') // TODO: Personalisé le message d'erreur
+
+    const getNextState = () => {
       isProcessing = false
       if (isAutoScan) scan()
-    }, 5000)
+    }
+    const elapsedTime = new Date().getTime() - startTime
+    setTimeout(getNextState, minimalPause - elapsedTime)
   }
 
   function toggleFlashLight() {

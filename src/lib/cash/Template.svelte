@@ -27,6 +27,7 @@
   export let placeholder = 'Articles'
   export let canSelectAll = false
   export let message = ''
+  export let disableScanner = false
   let isScannerOpen = false
   let magicSelect: MagicSelect
   let selectAllPromise: Promise<void>
@@ -59,7 +60,7 @@
     if ($isMobile) animeIndicator()
   }
 
-  function handleSelect(event: { detail: Article }) {
+  function handleSelectArticle(event: { detail: Article }) {
     const article = event.detail
     if (pendingItems.map(({ _id }) => _id).includes(article._id))
       return notify.warning('Article déjà sélectioné')
@@ -99,7 +100,11 @@
   <!-- Selecteur -->
   <div class="selector">
     {#if isScannerOpen}
-      <Scanner on:close={() => (isScannerOpen = false)} />
+      <Scanner
+        on:close={() => (isScannerOpen = false)}
+        on:select={handleSelectArticle}
+        {queryParams}
+      />
     {:else}
       <MagicSelect
         bind:this={magicSelect}
@@ -117,11 +122,9 @@
         exepted={pendingItems.map((art) => art._id)}
         solo
         dense
-        on:select={handleSelect}
+        on:select={handleSelectArticle}
       >
         <div slot="action" class="d-flex" style="gap: 4px;">
-          <slot name="actions-search" />
-
           {#if canSelectAll}
             {#await selectAllPromise}
               <Button fab size="small" disabled>
@@ -139,16 +142,19 @@
               </Button>
             {/await}
           {/if}
+          {#if !disableScanner}
+            <Button
+              fab
+              depressed
+              size="small"
+              title="Scanner des codes QR"
+              on:click={() => (isScannerOpen = true)}
+            >
+              <Icon path={mdiQrcodeScan} />
+            </Button>
+          {/if}
 
-          <Button
-            fab
-            depressed
-            size="small"
-            title="Scanner des codes QR"
-            on:click={() => (isScannerOpen = true)}
-          >
-            <Icon path={mdiQrcodeScan} />
-          </Button>
+          <slot name="actions-search" />
         </div>
       </MagicSelect>
     {/if}
