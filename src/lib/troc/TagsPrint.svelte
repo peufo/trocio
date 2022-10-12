@@ -1,8 +1,8 @@
 <script lang="ts">
+  import printJS from 'print-js'
   import type { TagInterface, Article } from 'types'
   import Tag from './Tag.svelte'
 
-  export let id = 'tagsPrint'
   export let visible = false
   export let articles: Partial<Article>[] = []
   export let currency = ''
@@ -15,11 +15,23 @@
     useTagPrinter: false,
     useScanner: false,
   }
+  export function print() {
+    const options: printJS.Configuration = {
+      printable,
+      type: 'html',
+      targetStyles: ['*'],
+      font_size: undefined,
+    }
+
+    printJS(options)
+  }
+
+  let printable: HTMLDivElement
 </script>
 
 <div class:hide={!visible}>
   <div
-    {id}
+    bind:this={printable}
     class:d-flex={!tag.useTagPrinter}
     class:flex-wrap={!tag.useTagPrinter}
   >

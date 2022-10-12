@@ -5,7 +5,7 @@
   import { mdiPrinter } from '@mdi/js'
 
   import ArticleEditDialog from '$lib/article/EditDialog.svelte'
-  import { renderAmount, print } from '$lib/utils'
+  import { renderAmount } from '$lib/utils'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import type {
     Article,
@@ -25,8 +25,9 @@
   export let article: ArticleLookup | undefined
   export let modeAdmin = false
 
-  const queryClient = useQueryClient()
+  let tagsPrint: TagsPrint
 
+  const queryClient = useQueryClient()
   const intl = new Intl.DateTimeFormat(undefined, {
     weekday: 'short',
     day: 'numeric',
@@ -35,8 +36,8 @@
     hour: 'numeric',
     minute: 'numeric',
   })
-
   let correctionsVisible = false
+
   $: if (!active) correctionsVisible = false
   $: queryCorrections = article
     ? useApi<{ articleId: string }, ArticleCorrectionsLookup>([
@@ -99,7 +100,7 @@
 {#if article}
   {#if modeAdmin && $troc}
     <TagsPrint
-      id="dialogTag"
+      bind:this={tagsPrint}
       articles={[article]}
       tag={$troc.tag}
       currency={$troc.currency}
@@ -244,7 +245,7 @@
             size="small"
             title="Imprimer l'étiquette"
             depressed
-            on:click={() => print('dialogTag')}
+            on:click={() => tagsPrint.print()}
           >
             <Icon path={mdiPrinter} />
           </Button>

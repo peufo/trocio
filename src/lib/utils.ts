@@ -1,5 +1,4 @@
 import { quintOut, cubicOut } from 'svelte/easing'
-import printJS from 'print-js'
 import type { Article, ArticleLookup } from 'types'
 
 /** @deprecated */
@@ -16,18 +15,6 @@ export function sortByUpdatedAt(a, b) {
 }
 export function sortByRecover(a, b) {
   return new Date(b.recover).getTime() - new Date(a.recover).getTime()
-}
-
-export function print(id: string) {
-  const options = {
-    printable: id,
-    type: 'html',
-    targetStyles: ['*'],
-    font_size: null,
-  }
-
-  // @ts-ignore
-  printJS(options)
 }
 
 /*

@@ -5,7 +5,6 @@
   import Template from '$lib/cash/Template.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import { api } from '$lib/api'
-  import { print } from '$lib/utils'
   import type { Article } from 'types'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import { troc } from '$lib/troc/store'
@@ -13,6 +12,7 @@
 
   export let subscribeId: string
   let template: Template
+  let tagsPrint: TagsPrint
 
   let pendingItems: Article[] = []
   const queryClient = useQueryClient()
@@ -35,7 +35,7 @@
 </script>
 
 <TagsPrint
-  id="recoverTags"
+  bind:this={tagsPrint}
   articles={pendingItems}
   tag={$troc.tag}
   currency={$troc.currency}
@@ -59,7 +59,7 @@
         size="small"
         title="Imprimer les étiquettes de la sélection"
         class="secondary-color"
-        on:click={() => print('recoverTags')}
+        on:click={() => tagsPrint.print()}
       >
         <Icon path={mdiPrinter} />
       </Button>
