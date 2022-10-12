@@ -416,6 +416,7 @@ export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
             },
           },
         },
+        { $sort: { sold: -1 } },
         {
           $group: {
             _id: null,
@@ -438,6 +439,7 @@ export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
             },
           },
         },
+        { $sort: { createdAt: -1 } },
         { $lookup: populateUser('acceptor') },
         { $addFields: { acceptor: { $arrayElemAt: ['$acceptor', 0] } } },
         {
