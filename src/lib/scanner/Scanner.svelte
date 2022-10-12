@@ -13,6 +13,7 @@
     mdiVolumeOff,
   } from '@mdi/js'
 
+  import { isMobile } from '$lib/store/layout'
   import { Button, Chip, Icon } from '$material'
   import notify from '$lib/notify'
   import soundPristine from '$assets/sounds/Pristine.wav'
@@ -144,15 +145,22 @@
   </div>
 
   <div class="top-bar">
-    <Button icon outlined on:click={toggleFlashLight}>
-      <Icon path={isFlashOnDetect ? mdiFlashlight : mdiFlashlightOff} />
-    </Button>
+    {#if $isMobile}
+      <Button icon outlined on:click={toggleFlashLight}>
+        <Icon path={isFlashOnDetect ? mdiFlashlight : mdiFlashlightOff} />
+      </Button>
+    {/if}
+
     <Button icon outlined on:click={() => (isSoundOn = !isSoundOn)}>
       <Icon path={isSoundOn ? mdiVolumeHigh : mdiVolumeOff} />
     </Button>
-    <Button icon outlined on:click={() => (isVibrateOn = !isVibrateOn)}>
-      <Icon path={isVibrateOn ? mdiVibrate : mdiVibrateOff} />
-    </Button>
+
+    {#if $isMobile}
+      <Button icon outlined on:click={() => (isVibrateOn = !isVibrateOn)}>
+        <Icon path={isVibrateOn ? mdiVibrate : mdiVibrateOff} />
+      </Button>
+    {/if}
+
     <Button icon outlined on:click={() => (isAutoScan = !isAutoScan)}>
       <Icon path={isAutoScan ? mdiRepeat : mdiRepeatOff} />
     </Button>
