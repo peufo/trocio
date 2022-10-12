@@ -30,8 +30,6 @@
 
   let printable: HTMLDivElement
   let tags: Tag[] = []
-
-  $: console.log(tags)
 </script>
 
 <div class:hide={!visible}>
