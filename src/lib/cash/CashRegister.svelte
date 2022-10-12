@@ -235,6 +235,7 @@
           grow
           icons={$isMobile}
           value={$params[tabIndexKey] || 3}
+          showArrows={false}
           on:change={handleChangeTab}
         >
           <div slot="tabs">
