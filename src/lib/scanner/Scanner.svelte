@@ -37,7 +37,6 @@
   let video: HTMLVideoElement
   let audio: HTMLAudioElement
   let offsetWidth: number
-  let offsetHeight: number
   let overlay: HTMLDivElement
   let overlaySize: number
 
@@ -111,13 +110,13 @@
   }
 </script>
 
-<div class="scanner-wrapper white-text" bind:offsetWidth on:click={scan}>
-  <video
-    bind:this={video}
-    kind="caption"
-    width={offsetWidth}
-    height={offsetHeight}
-  >
+<div
+  class="scanner-wrapper white-text"
+  bind:offsetWidth
+  style="height: {offsetWidth}px"
+  on:click={scan}
+>
+  <video bind:this={video} kind="caption" width={offsetWidth}>
     <track kind="captions" />
   </video>
   <div
@@ -138,8 +137,10 @@
           <rect width={overlaySize} height={overlaySize} rx="10" />
         </svg>
       {:else}
-        <h6>En pause</h6>
-        <p>Toucher pour relancer</p>
+        <div style="text-align: center;">
+          <h6>En pause</h6>
+          <p>Toucher pour relancer</p>
+        </div>
       {/if}
     {/if}
   </div>
