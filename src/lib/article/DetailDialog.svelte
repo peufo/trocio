@@ -106,7 +106,7 @@
     />
   {/if}
 
-  <Dialog bind:active class="pa-4" style="cursor: initial;" width="large">
+  <Dialog bind:active class="pa-4" width="large">
     <div class="d-flex mb-4">
       <div class="text-h6">
         #{article.ref} - {article.name}
