@@ -198,7 +198,7 @@
     inset: 0px;
     display: grid;
     place-items: center;
-    outline: rgba(0, 0, 0, 0.5) 9999px solid;
+    outline: rgba(0, 0, 0, 0.2) 9999px solid;
     border-radius: 10px;
     outline-offset: 4px;
   }
@@ -218,6 +218,10 @@
     stroke-opacity: 0.6;
     stroke-dasharray: 49%;
     stroke-dashoffset: 27%;
+  }
+  .overlay:not(.isProcessing):not(.isScanning) {
+    background: rgba(0, 0, 0, 0.6);
+    outline-offset: 0px;
   }
 
   .overlay.isProcessing > svg > rect {
