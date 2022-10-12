@@ -7,7 +7,6 @@
   import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'
   import { api } from '$lib/api'
-  import { print } from '$lib/utils'
   import type { Article } from 'types'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import { troc } from '$lib/troc/store'
@@ -15,6 +14,7 @@
 
   export let subscribeId: string
   let template: Template
+  let tagsPrint: TagsPrint
 
   let pendingItems: Article[] = []
   let autoPrint = true
@@ -33,7 +33,7 @@
       ),
     {
       onSuccess: (articles: Article[]) => {
-        if (autoPrint && articles[0].valided) print('providedTags')
+        if (autoPrint && articles[0].valided) tagsPrint.print()
         pendingItems = []
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
@@ -51,7 +51,7 @@
 </script>
 
 <TagsPrint
-  id="providedTags"
+  bind:this={tagsPrint}
   articles={pendingItems}
   tag={$troc.tag}
   currency={$troc.currency}

@@ -7,11 +7,11 @@
 
   import { troc, useUpdateTroc } from '$lib/troc/store'
   import type { Article, TagInterface } from 'types'
-  import { print } from '$lib/utils'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
 
   const updateTroc = useUpdateTroc()
 
+  let tagsPrint: TagsPrint
   let tag: TagInterface = { ...$troc.tag }
   const articlesExemple: Partial<Article>[] = [
     { name: 'Article test A', ref: '123', price: 99 },
@@ -105,7 +105,7 @@
 
     <div class="d-flex flex-wrap mt-4" style="gap: 1em;">
       <Button
-        on:click={() => print('testPrint')}
+        on:click={() => tagsPrint.print()}
         outlined
         class="secondary-text"
       >
@@ -141,10 +141,10 @@
     <div class="page-wrapper" class:elevation-10={!tag.useTagPrinter}>
       <div class:page={!tag.useTagPrinter}>
         <TagsPrint
-          id="testPrint"
-          visible
-          articles={articlesExemple}
           {tag}
+          visible
+          bind:this={tagsPrint}
+          articles={articlesExemple}
           currency={$troc.currency}
         />
       </div>
