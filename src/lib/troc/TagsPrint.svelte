@@ -15,7 +15,9 @@
     useTagPrinter: false,
     useScanner: false,
   }
-  export function print() {
+  export async function print() {
+    await Promise.all(tags.filter(Boolean).map((tag) => tag.refresh()))
+
     const options: printJS.Configuration = {
       printable,
       type: 'html',
@@ -27,6 +29,9 @@
   }
 
   let printable: HTMLDivElement
+  let tags: Tag[] = []
+
+  $: console.log(tags)
 </script>
 
 <div class:hide={!visible}>
@@ -35,8 +40,8 @@
     class:d-flex={!tag.useTagPrinter}
     class:flex-wrap={!tag.useTagPrinter}
   >
-    {#each articles as article}
-      <Tag {article} {tag} {currency} />
+    {#each articles as article, index}
+      <Tag bind:this={tags[index]} {article} {tag} {currency} />
     {/each}
   </div>
 </div>
