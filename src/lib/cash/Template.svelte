@@ -173,8 +173,8 @@
         >
           {#key pendingItems.length}
             <span
-              in:fly|local={{ y: -30, duration: 250, delay: 450 }}
-              out:fly|local={{ y: 30, duration: 250, delay: 150 }}
+              in:fly|local={{ y: -40, duration: 200, delay: 400 }}
+              out:fly|local={{ y: 40, duration: 200, delay: 100 }}
               class="absolute-center"
             >
               {pendingItems.length}
