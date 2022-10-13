@@ -65,7 +65,6 @@
     }
     isFlashOn.subscribe(handleFlashOn)
     handleFlashOn($isFlashOn)
-    console.log($isFlashOn)
   })
 
   onDestroy(() => {
@@ -91,8 +90,8 @@
   async function onDetect(scanResult: { data: string }) {
     isProcessing = true
     pause()
-    if (isSoundOn) audio.play()
-    if (isVibrateOn) navigator.vibrate([50])
+    if ($isSoundOn) audio.play()
+    if ($isVibrateOn) navigator.vibrate([50])
 
     // Garantie une pause un temps de traitement minimum pour évité les doubles scan
     const minimalPause = 1000
@@ -108,7 +107,7 @@
 
     const getNextState = () => {
       isProcessing = false
-      if (isAutoScanOn) scan()
+      if ($isAutoScanOn) scan()
     }
     const elapsedTime = new Date().getTime() - startTime
     setTimeout(getNextState, minimalPause - elapsedTime)
