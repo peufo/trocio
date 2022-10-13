@@ -21,6 +21,8 @@
   import type { SubscribeLookup } from 'types'
   import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons'
 
+  export let listGap = '4px'
+
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
 
@@ -29,7 +31,7 @@
   $: subscribes = $query.data ? $query.data.pages.flat() : []
 </script>
 
-<div class="list-container">
+<div class="list-container" style="gap: {listGap};">
   {#if $query.isSuccess}
     {#each subscribes as sub}
       <div
@@ -108,30 +110,29 @@
   {:else if $query.isError}
     <div>Oups, une erreur est survenue !</div>
   {/if}
-</div>
 
-{#if $query.hasNextPage || $query.isFetching || $query.isFetchingNextPage}
-  <div class="centered pb-4">
-    <Button
-      on:click={() => !$query.isFetchingNextPage && $query.fetchNextPage()}
-      disabled={$query.isFetching || $query.isFetchingNextPage}
-      depressed
-    >
-      {#if $query.isFetching || $query.isFetchingNextPage}
-        <Loader />
-      {:else}
-        Afficher plus
-      {/if}
-    </Button>
-  </div>
-{/if}
+  {#if $query.hasNextPage || $query.isFetching || $query.isFetchingNextPage}
+    <div class="centered pb-4">
+      <Button
+        on:click={() => !$query.isFetchingNextPage && $query.fetchNextPage()}
+        disabled={$query.isFetching || $query.isFetchingNextPage}
+        depressed
+      >
+        {#if $query.isFetching || $query.isFetchingNextPage}
+          <Loader />
+        {:else}
+          Afficher plus
+        {/if}
+      </Button>
+    </div>
+  {/if}
+</div>
 
 <style lang="scss">
   .list-container {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 4px;
     border-radius: 8px;
     overflow-y: auto;
     padding: 4px;

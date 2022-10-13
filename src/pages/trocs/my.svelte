@@ -10,6 +10,6 @@
   })
 </script>
 
-<div class="pa-4">
-  <SubTrocsList />
+<div class="pa-3">
+  <SubTrocsList listGap="1em" />
 </div>
