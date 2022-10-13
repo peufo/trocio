@@ -17,7 +17,7 @@
   import { isMobile } from '$lib/store/layout'
   import notify from '$lib/notify'
   import soundPristine from '$assets/sounds/Pristine.wav'
-  import type { Article } from 'types'
+  import type { Article, ArticleState } from 'types'
   import { api } from '$lib/api'
   import {
     isAutoScanOn,
@@ -25,9 +25,11 @@
     isSoundOn,
     isVibrateOn,
   } from '$lib/scanner/options'
+  import { getState, getStateLabel, STATE_LABEL } from '$lib/utils'
+  import { getMismatchRaison } from './utils'
 
   /** Params ajouter à la requet de l'article */
-  export let queryParams = {}
+  export let queryParams: { [key: string]: string } = {}
 
   const TIMEOUT = 9 // secondes
   let timeoutId: NodeJS.Timeout
@@ -104,7 +106,7 @@
       })
 
       if (article) dispatch('select', article)
-      else notify.warning('Article introuvable')
+      else notify.warning(await getMismatchRaison(scanResult.data, queryParams))
     } catch (error: any) {
       notify.error(error)
     }

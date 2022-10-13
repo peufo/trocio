@@ -1,5 +1,5 @@
 import { quintOut, cubicOut } from 'svelte/easing'
-import type { Article, ArticleLookup } from 'types'
+import type { Article, ArticleLookup, ArticleState } from 'types'
 
 /** @deprecated */
 export function getHeader(body, verb = 'POST') {
@@ -83,22 +83,24 @@ export function renderAmount(
   )
 }
 
-export const STATUTS = ['Proposé', 'Validé', 'Refusé', 'Vendu', 'Récupéré']
-
-export function addStatutField(articles: Article | Article[]) {
-  if (Array.isArray(articles)) {
-    return articles.map(getStatut)
-  } else {
-    return getStatut(articles)
-  }
+export function getState(article: Article | ArticleLookup): ArticleState {
+  if (article.recover) return 'recover'
+  if (article.sold) return 'sold'
+  if (article.refused) return 'refused'
+  if (article.valided) return 'valided'
+  return 'proposed'
 }
 
-export function getStatut(article: Article | ArticleLookup) {
-  if (article.recover) return STATUTS[4]
-  if (article.sold) return STATUTS[3]
-  if (article.refused) return STATUTS[2]
-  if (article.valided) return STATUTS[1]
-  return STATUTS[0]
+export const STATE_LABEL: Record<ArticleState, string> = {
+  proposed: 'Proposé',
+  valided: 'Validé',
+  refused: 'Refusé',
+  sold: 'Vendu',
+  recover: 'Récupéré',
+}
+
+export function getStateLabel(article: Article | ArticleLookup): string {
+  return STATE_LABEL[getState(article)]
 }
 
 //TODO: This is a copy from ../api/controllers/article_utils

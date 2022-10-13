@@ -14,7 +14,7 @@
     ArticleLookup,
     ArticleState,
   } from 'types'
-  import { getStatut } from '$lib/utils'
+  import { getStateLabel } from '$lib/utils'
   import { troc } from '$lib/troc/store'
   import { api, useApi } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
@@ -115,7 +115,7 @@
       <div class="flex-grow-1" />
 
       <div class="text-subtitle-2 pt-1">
-        Statut : {getStatut(article)}
+        Statut : {getStateLabel(article)}
       </div>
     </div>
 

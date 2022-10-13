@@ -6,7 +6,7 @@ import type {
   SelectOption,
   SubscribeLookup,
 } from 'types'
-import { getStatut } from '$lib/utils'
+import { getStateLabel } from '$lib/utils'
 
 export function getFields(): FieldInteface<Article>[] {
   return [
@@ -31,7 +31,7 @@ export function getFields(): FieldInteface<Article>[] {
       visible: true,
       format: 'enum',
       queryKey: 'state',
-      getValue: getStatut,
+      getValue: getStateLabel,
       cellWidth: 90,
       enumOptions: stateEnumOptions,
     },
