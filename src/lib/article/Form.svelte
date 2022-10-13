@@ -13,6 +13,7 @@
   const queryClient = useQueryClient()
   export let subscribeId: string = ''
   export let article: Article | undefined = undefined
+  export let actionName = 'Valider'
 
   let newName = ''
   let newPrice = ''
@@ -139,7 +140,7 @@
         Chargement
       </Button>
     {:else}
-      <Button class="primary-color" type="submit">Valider</Button>
+      <Button class="primary-color" type="submit">{actionName}</Button>
     {/if}
   </div>
 </form>

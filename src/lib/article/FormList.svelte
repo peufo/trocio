@@ -11,6 +11,7 @@
 
   const queryClient = useQueryClient()
   export let subscribeId: string
+  export let actionName = 'Valider'
 
   let newArticles = ''
   let listArticles: ArticleCreate[] = []
@@ -176,7 +177,8 @@
         <div>Oups, une erreur c'est produite</div>
       {:else}
         <Button class="primary-color" type="submit">
-          Valider {listArticles.length > 1
+          {actionName}
+          {listArticles.length > 1
             ? `les ${listArticles.length} articles`
             : `l'article`}
         </Button>

@@ -98,9 +98,9 @@
   </div>
 
   {#if listMode}
-    <ArticleFormList {subscribeId} on:done={handleDoneList} />
+    <ArticleFormList {subscribeId} on:done={handleDoneList} {actionName} />
   {:else}
-    <ArticleForm {subscribeId} on:done={handleDone} {article} />
+    <ArticleForm {subscribeId} on:done={handleDone} {article} {actionName} />
   {/if}
 
   {#if !article}
