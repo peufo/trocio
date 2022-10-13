@@ -106,17 +106,6 @@
         {/if}
 
         <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
-
-        {#if resum.proposedCount}
-          <Button
-            icon
-            on:click={() => downloadCSV.proposed(subscribeId)}
-            title="Télécharger vos articles proposés"
-            style="opacity: .8;"
-          >
-            <Icon size=".8em" path={mdiFileDownloadOutline} />
-          </Button>
-        {/if}
       </div>
     </DetailCard>
 
@@ -126,18 +115,6 @@
       sum={-(resum.purchasesSum || 0)}
     >
       <TablePurchases purchases={resum.purchases || []} />
-      <div slot="head">
-        {#if resum.purchasesCount}
-          <Button
-            icon
-            on:click={() => downloadCSV.purchases(subscribeId)}
-            title="Télécharger vos articles achetés"
-            style="opacity: .8;"
-          >
-            <Icon size=".8em" path={mdiFileDownloadOutline} />
-          </Button>
-        {/if}
-      </div>
     </DetailCard>
 
     <DetailCard
@@ -147,18 +124,6 @@
       open={paymentOpen}
     >
       <TablePayments payments={resum.payments || []} />
-      <div slot="head">
-        {#if resum.purchasesCount}
-          <Button
-            icon
-            on:click={() => downloadCSV.payments(subscribeId)}
-            title="Télécharger vos payments"
-            style="opacity: .8;"
-          >
-            <Icon size=".8em" path={mdiFileDownloadOutline} />
-          </Button>
-        {/if}
-      </div>
     </DetailCard>
   </div>
 {/if}
