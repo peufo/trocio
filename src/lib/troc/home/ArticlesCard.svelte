@@ -90,7 +90,7 @@
       height: 100%;
       border-bottom: var(--theme-chips) solid $line;
       border-left: var(--theme-chips) solid $line;
-      border-radius: $row-gap / 2;
+      border-radius: calc($row-gap / 2);
     }
 
     [data-state='proposed']::after,
