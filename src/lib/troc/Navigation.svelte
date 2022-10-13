@@ -73,7 +73,7 @@
     </div>
     <!-- LIST -->
     {#if !$user}
-      <div>
+      <div class="pa-4 text-center">
         <a href="/login?callback=/trocs">Connectez-vous</a> pour voir vos trocs.
       </div>
     {:else}
