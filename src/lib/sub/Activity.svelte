@@ -2,7 +2,7 @@
   import { fade } from 'svelte/transition'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
-  import { mdiCloudDownload, mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
+  import { mdiCloudDownload, mdiPrinter } from '@mdi/js'
   import 'dayjs/locale/fr'
 
   import { Button, Icon, Menu, List, ListItem } from '$material'
@@ -71,10 +71,10 @@
         </div>
         <List dense>
           <ListItem on:click={() => downloadCSV.proposed(subscribeId)}>
-            Articles proposés
+            Propositions
           </ListItem>
           <ListItem on:click={() => downloadCSV.purchases(subscribeId)}>
-            Articles achetés
+            Achats
           </ListItem>
           <ListItem on:click={() => downloadCSV.payments(subscribeId)}>
             Payments
