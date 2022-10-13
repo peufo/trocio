@@ -2,7 +2,7 @@
   import { fade } from 'svelte/transition'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
-  import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
+  import { mdiCloudDownload, mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
   import 'dayjs/locale/fr'
 
   import { Button, Icon, Menu, List, ListItem } from '$material'
@@ -56,16 +56,17 @@
   <div in:fade|local class="d-flex flex-column pa-4 {klass}" style="gap: 1em;">
     <div class="d-flex align-center" style="gap: 0.5em;">
       <a href={`/print-subscribe?subscribeId=${subscribeId}`} target="_blank">
-        <Button text size="small" style="opacity: 0.6;">
-          <Icon path={mdiPrinter} size="1.1em" class="mr-2" />
-          Version imprimable
+        <Button text size="small" style="opacity: 0.8;">
+          <Icon path={mdiPrinter} size="1.2em" class="mr-2" />
+          Imprimer
         </Button>
       </a>
 
       <Menu hover>
         <div slot="activator">
-          <Button icon title="Télécharger vos données" style="opacity: .8;">
-            <Icon size=".8em" path={mdiFileDownloadOutline} />
+          <Button text size="small" style="opacity: .8;">
+            <Icon path={mdiCloudDownload} size="1.2em" class="mr-2" />
+            Télécharger
           </Button>
         </div>
         <List dense>
