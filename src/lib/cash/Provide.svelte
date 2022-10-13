@@ -32,8 +32,8 @@
         }
       ),
     {
-      onSuccess: (articles: Article[]) => {
-        if (autoPrint && articles[0].valided) tagsPrint.print()
+      onSuccess: async (articles: Article[]) => {
+        if (autoPrint && articles[0].valided) await tagsPrint.print()
         pendingItems = []
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
