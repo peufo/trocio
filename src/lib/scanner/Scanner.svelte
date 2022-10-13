@@ -98,12 +98,16 @@
     const startTime = new Date().getTime()
 
     // Récupère l'article scanner
-    const [article] = await api<Article[]>('/api/articles', {
-      params: { exact__id: scanResult.data, ...queryParams },
-    })
+    try {
+      const [article] = await api<Article[]>('/api/articles', {
+        params: { exact__id: scanResult.data, ...queryParams },
+      })
 
-    if (article) dispatch('select', article)
-    else notify.error('Article introuvable') // TODO: Personalisé le message d'erreur
+      if (article) dispatch('select', article)
+      else notify.error('Article introuvable')
+    } catch (error) {
+      notify.error(error)
+    }
 
     const getNextState = () => {
       isProcessing = false

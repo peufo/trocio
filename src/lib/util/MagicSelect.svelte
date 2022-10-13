@@ -148,7 +148,7 @@
   </div>
 
   {#if flatMode}
-    <div class="flat-container simple-card">
+    <div class="list-container simple-card">
       {#if $querySearch.isError}
         <span>Oups, un problème est survenu</span>
       {:else}
@@ -228,15 +228,6 @@
     min-width: 200px;
   }
 
-  .list-container {
-    position: absolute;
-    width: 100%;
-    min-width: 260px;
-    background: var(--theme-surface);
-    margin-top: 4px;
-    z-index: 99;
-  }
-
   .wrapper.flatMode {
     display: flex;
     flex-direction: column;
@@ -244,7 +235,7 @@
     height: 100%;
   }
 
-  .flat-container {
+  .list-container {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -252,6 +243,15 @@
     border-radius: 8px;
     overflow-y: auto;
     padding: 4px;
+    background: var(--theme-surface);
+
+    .fly-mode {
+      position: absolute;
+      width: 100%;
+      min-width: 260px;
+      margin-top: 4px;
+      z-index: 99;
+    }
 
     .item {
       padding: 4px 8px;
