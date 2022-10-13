@@ -30,18 +30,16 @@
         <span>Aucun article trouvé</span>
       </div>
     {:else}
-      <div in:fade|local class="d-flex flex-wrap" style="gap: 12px;">
+      <div in:fade|local class="d-flex flex-wrap" style="gap: 8px;">
         {#each articles as article}
-          <div
-            class="simple-card pl-2 pr-2 pt-1 pb-1 flex-grow-1"
-            style="max-width: calc(50% - 6px);"
-          >
-            <span class="text-subtitle-2">{article.name}</span>
-            <br />
-            <div class="text-right">
-              <b class="text-caption" style="line-height: 1;">
+          <div class="simple-card article d-flex flex-column">
+            <div class="text-subtitle-1">{article.name}</div>
+            <div class="flex-grow-1" />
+            <div class="d-flex">
+              <div class="flex-grow-1" />
+              <div class="price text-caption">
                 {renderAmount(article.price, currency)}
-              </b>
+              </div>
             </div>
           </div>
         {/each}
@@ -68,3 +66,20 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .article {
+    background: var(--theme-controls-thumb-disabled);
+    max-width: calc(50% - 4px);
+    flex-grow: 1;
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  .price {
+    background: var(--theme-tables-hover);
+    padding: 2px 8px;
+
+    border-radius: 4px;
+  }
+</style>
