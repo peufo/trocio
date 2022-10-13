@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { slide } from 'svelte/transition'
+  import { fade, slide } from 'svelte/transition'
   import { Button, NavigationDrawer } from '$material'
 
   import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -37,37 +37,40 @@
       <TrocMap on:clickMarker={() => mobileMode && (active = false)} />
     </div>
 
-    <!-- SEARCH -->
+    <!-- LIST HEADER -->
     <div>
+      <!-- SEARCH FORM -->
       {#if $isActive('/trocs/index')}
-        <div class="simple-card " transition:slide|local>
-          <TrocSearch />
-        </div>
-      {:else}
-        <div transition:slide|local class="d-flex">
-          <div class="flex-grow-1" />
-          <a href="/trocs">
-            <Button depressed>
-              <IconLink icon={faSearch} class="mr-2" opacity />
-
-              Chercher un troc
-            </Button>
-          </a>
+        <div transition:slide|local style="padding-bottom: 1em;">
+          <div class="simple-card">
+            <TrocSearch />
+          </div>
         </div>
       {/if}
-    </div>
 
-    <!-- LIST HEADER -->
-    <div class="d-flex justify-space-between">
-      <h6>Mes trocs</h6>
-      <a href="{!$user ? '/login?callback=' : ''}/trocs/create">
-        <Button depressed class="secondary-color">
-          <IconLink icon={faPlus} class="mr-2" opacity />
-          Organiser
-        </Button>
-      </a>
-    </div>
+      <div class="d-flex">
+        {#if !$isActive('/trocs/index')}
+          <a
+            href="/trocs"
+            in:fade|local={{ duration: 100, delay: 100 }}
+            out:fade|local={{ duration: 100 }}
+          >
+            <Button depressed>
+              <IconLink icon={faSearch} class="mr-2" opacity />
+              Chercher
+            </Button>
+          </a>
+        {/if}
+        <div class="flex-grow-1" />
 
+        <a href="{!$user ? '/login?callback=' : ''}/trocs/create">
+          <Button depressed class="secondary-color">
+            <IconLink icon={faPlus} class="mr-2" opacity />
+            Organiser
+          </Button>
+        </a>
+      </div>
+    </div>
     <!-- LIST -->
     {#if !$user}
       <div>
