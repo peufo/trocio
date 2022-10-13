@@ -75,7 +75,11 @@
   </AppBar>
 </div>
 
-<Dialog bind:active={dialogLoginIsActive} class="pa-6">
+<Dialog
+  bind:active={dialogLoginIsActive}
+  class="pa-6"
+  style="background: var(--theme-cards);"
+>
   <div class="d-flex justify-center">
     <Login on:close={() => (dialogLoginIsActive = false)} />
   </div>

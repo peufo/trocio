@@ -4,6 +4,7 @@ import { TransitionConfig } from 'svelte/transition'
 
 interface DialogProps {
   class?: string
+  style?: string
   /** controls whether the dialog is visible or hidden */
   active?: boolean
   /** clicking outside of the dialog will not deactivate it */
