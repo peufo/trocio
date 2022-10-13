@@ -5,7 +5,6 @@
   import { afterPageLoad } from '@roxi/routify'
   import { Button, TextField, Icon, Divider } from '$material'
 
-  import { isDarkTheme } from '$lib/store/layout'
   import { userQuery } from '$lib/user/store'
   import notify from '$lib/notify'
   import RULES from '$lib/rules'
@@ -105,6 +104,7 @@
         solo
         bind:value={name}
         on:input={checkForm}
+        color="secondary"
       >
         <div slot="prepend">
           <Icon class="far fa-user" />
@@ -120,6 +120,7 @@
     bind:inputElement={mailInput}
     bind:value={mail}
     on:input={checkForm}
+    color="secondary"
   >
     <div slot="prepend">
       <Icon class="far fa-envelope" />
@@ -136,6 +137,7 @@
         type="password"
         bind:value={password}
         on:input={checkForm}
+        color="secondary"
       >
         <div slot="prepend">
           <Icon class="fas fa-key" />
@@ -152,6 +154,7 @@
         type="password"
         bind:value={password2}
         on:input={checkForm}
+        color="secondary"
       >
         <div slot="prepend">
           <Icon class="fas fa-key" />
