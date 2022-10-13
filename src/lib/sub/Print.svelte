@@ -1,8 +1,8 @@
 <script lang="ts">
   import { renderAmount } from '$lib/utils'
-  import type { SubscribeResum, SubscribeLookup, Article } from 'types'
+  import type { SubscribeResum, Article } from 'types'
 
-  export let subscribe: SubscribeResum & SubscribeLookup
+  export let subscribe: SubscribeResum
   export let validedArticles: Article[]
   export let soldArticles: Article[]
   export let recoverArticles: Article[]
