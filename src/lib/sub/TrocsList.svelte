@@ -39,7 +39,6 @@
         class="simple-card item"
         class:active={$params.trocId === sub.troc._id}
       >
-        <a href={`/trocs/${sub.troc._id}`} class="item-link"><span /></a>
         <div class="d-flex" style="gap: 1em;">
           <div style="padding-top: 2px;">{sub.troc.name}</div>
           <div class="flex-grow-1" />
@@ -81,6 +80,7 @@
               <div>{sub.troc.society || '-'}</div>
             </div>
           </div>
+          <a href={`/trocs/${sub.troc._id}`} class="item-link"><span /></a>
 
           <div class="d-flex flex-column">
             <div class="flex-grow-1" />
