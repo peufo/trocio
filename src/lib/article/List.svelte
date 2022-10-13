@@ -77,9 +77,9 @@
   }
 
   .price {
-    background: var(--theme-tables-hover);
+    background: var(--theme-cards);
     padding: 2px 8px;
-
-    border-radius: 4px;
+    translate: 2px 2px;
+    border-radius: 6px;
   }
 </style>
