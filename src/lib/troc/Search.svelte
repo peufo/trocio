@@ -70,6 +70,7 @@
   solo
   flat
   value={$queryTrocsParams.search || ''}
+  color="secondary"
   bind:inputElement={searchElement}
   on:input={handleSearch}
   on:change={handleSearch}
