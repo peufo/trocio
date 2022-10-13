@@ -104,7 +104,7 @@
       })
 
       if (article) dispatch('select', article)
-      else notify.error('Article introuvable')
+      else notify.warning('Article introuvable')
     } catch (error) {
       notify.error(error)
     }
