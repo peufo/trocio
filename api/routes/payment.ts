@@ -1,8 +1,8 @@
 import express from 'express'
 
-import { createPayment, getPaymentByUser } from '../controllers/payement'
+import { createPayment, getPayments } from '../controllers/payement'
 const router = express.Router()
 
-router.get('/by-user', getPaymentByUser).post('/', createPayment)
+router.get('/', getPayments).post('/', createPayment)
 
 export default router

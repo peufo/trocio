@@ -45,7 +45,7 @@
       {count}
       {title}
     </h6>
-    <div class="flex-grow-1">
+    <div class="flex-grow-1 ml-4">
       <slot name="head" />
     </div>
     <div>

@@ -42,7 +42,7 @@ export const getArticles: RequestHandler = async (req, res, next) => {
     if (Object.keys(sort).length) aggregate.sort(sort)
     aggregate
       .skip(+skip || 0)
-      .limit((+limit || 20) > 1000 ? 1000 : +limit || 20)
+      .limit((+limit || 20) > 10_000 ? 10_000 : +limit || 20)
 
     lookupUsers(aggregate)
     lookupSubscribe(aggregate, 'provider')

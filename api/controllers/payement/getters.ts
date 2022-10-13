@@ -1,18 +1,20 @@
 import { RequestHandler } from 'express'
 import mongoose from 'mongoose'
 
-import { IPaymentCreate } from '../../../types'
 import Payment from '../../models/payment'
 import Subscribe from '../../models/subscribe'
+import { populateUser } from '../lookup'
 
-export const getPaymentByUser: RequestHandler = async (req, res, next) => {
+const { ObjectId } = mongoose.Types
+
+export const getPayments: RequestHandler = async (req, res, next) => {
   try {
-    const { userSubId } = req.query
+    const { subscribeId } = req.query
 
     if (!req.session.user) throw 'Login required !'
-    if (!userSubId) throw 'userSubId is required'
+    if (typeof subscribeId !== 'string') throw 'userSubId is required'
 
-    const acceded = await Subscribe.findById(userSubId)
+    const acceded = await Subscribe.findById(subscribeId)
     if (!acceded) throw 'acceded not found'
 
     const accesor = await Subscribe.findOne({
@@ -21,15 +23,22 @@ export const getPaymentByUser: RequestHandler = async (req, res, next) => {
     })
     if (!accesor) throw 'accesor not found'
     if (
-      accesor._id.valueOf() !== userSubId &&
+      accesor._id.valueOf() !== subscribeId &&
       accesor.role !== 'admin' &&
       accesor.role !== 'cashier'
     )
       throw 'Not allowed'
 
-    const payments = await Payment.find({
-      userSubId,
-    })
+    const payments = await Payment.aggregate()
+      .match({
+        userSubId: new ObjectId(subscribeId),
+      })
+      .lookup(populateUser('acceptor'))
+      .lookup(populateUser('user'))
+      .addFields({
+        acceptor: { $arrayElemAt: ['$acceptor', 0] },
+        user: { $arrayElemAt: ['$user', 0] },
+      })
 
     res.json(payments)
   } catch (error) {

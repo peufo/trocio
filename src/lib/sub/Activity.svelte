@@ -16,7 +16,7 @@
   import Loader from '$lib/util/Loader.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
   import { useApi } from '$lib/api'
-  import notify from '$lib/notify'
+  import downloadCSV, { purchases } from '$lib/sub/downloadCSV'
 
   export let subscribeId: string
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
@@ -42,10 +42,6 @@
 
   dayjs.locale('fr')
   dayjs.extend(relativeTime)
-
-  function clickDownladCSV() {
-    notify.info('Fonctionnalité à venir')
-  }
 </script>
 
 {#if $queryResum.isLoading}
@@ -80,32 +76,28 @@
       count={totalProposedCount}
       sum={(resum.soldSum || 0) - (resum.feeSum || 0) - (resum.marginSum || 0)}
     >
-      <span slot="head">
-        <!-- Provide button -->
-        <span style="margin-left: 30px;">
-          {#if !modeAdmin}
-            <ArticleEditDialog {subscribeId} disabled={createArticleDisabled} />
-          {/if}
-
-          <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
-
-          <!-- Bouton pour télécharger le fichier .csv -->
-          {#if resum.proposedCount}
-            <Button
-              fab
-              text
-              size="small"
-              on:click={clickDownladCSV}
-              title="Télécharger les données des articles proposés"
-              style="opacity: .8;"
-            >
-              <Icon size=".8em" path={mdiFileDownloadOutline} />
-            </Button>
-          {/if}
-        </span>
-      </span>
-
       <ArticleProvidedTable {modeAdmin} {subscribeId} on:openTarifDialog />
+
+      <div slot="head">
+        <!-- Provide button -->
+
+        {#if !modeAdmin}
+          <ArticleEditDialog {subscribeId} disabled={createArticleDisabled} />
+        {/if}
+
+        <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
+
+        {#if resum.proposedCount}
+          <Button
+            icon
+            on:click={() => downloadCSV.proposed(subscribeId)}
+            title="Télécharger vos articles proposés"
+            style="opacity: .8;"
+          >
+            <Icon size=".8em" path={mdiFileDownloadOutline} />
+          </Button>
+        {/if}
+      </div>
     </DetailCard>
 
     <DetailCard
@@ -114,6 +106,18 @@
       sum={-(resum.purchasesSum || 0)}
     >
       <TablePurchases purchases={resum.purchases || []} />
+      <div slot="head">
+        {#if resum.purchasesCount}
+          <Button
+            icon
+            on:click={() => downloadCSV.purchases(subscribeId)}
+            title="Télécharger vos articles achetés"
+            style="opacity: .8;"
+          >
+            <Icon size=".8em" path={mdiFileDownloadOutline} />
+          </Button>
+        {/if}
+      </div>
     </DetailCard>
 
     <DetailCard
@@ -123,6 +127,18 @@
       open={paymentOpen}
     >
       <TablePayments payments={resum.payments || []} />
+      <div slot="head">
+        {#if resum.purchasesCount}
+          <Button
+            icon
+            on:click={() => downloadCSV.payments(subscribeId)}
+            title="Télécharger vos payments"
+            style="opacity: .8;"
+          >
+            <Icon size=".8em" path={mdiFileDownloadOutline} />
+          </Button>
+        {/if}
+      </div>
     </DetailCard>
   </div>
 {/if}
