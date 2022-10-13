@@ -74,15 +74,18 @@
         <a href="/login?callback=/trocs">Connectez-vous</a> pour voir vos trocs.
       </div>
     {:else}
-      <div
-        class="simple-card flex-grow-1"
-        style="overflow-y: auto; overflow-x: hidden;"
-      >
-        <SubTrocsList
-          offset={22}
-          on:click={() => mobileMode && (active = false)}
-        />
+      <div class="simple-card troc-list-container">
+        <SubTrocsList on:click={() => mobileMode && (active = false)} />
       </div>
     {/if}
   </div>
 </NavigationDrawer>
+
+<style>
+  .troc-list-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--theme-surface);
+  }
+</style>
