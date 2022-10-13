@@ -1,11 +1,11 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { Button, Icon } from '$material'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import { mdiFileDownloadOutline, mdiPrinter } from '@mdi/js'
   import 'dayjs/locale/fr'
 
+  import { Button, Icon, Menu, List, ListItem } from '$material'
   import type { SubscribeResum } from 'types'
   import { renderAmount } from '$lib/utils'
   import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
@@ -16,7 +16,7 @@
   import Loader from '$lib/util/Loader.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
   import { useApi } from '$lib/api'
-  import downloadCSV, { purchases } from '$lib/sub/downloadCSV'
+  import downloadCSV from '$lib/sub/downloadCSV'
 
   export let subscribeId: string
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
@@ -54,13 +54,32 @@
   </div>
 {:else if $queryResum.isSuccess && resum}
   <div in:fade|local class="d-flex flex-column pa-4 {klass}" style="gap: 1em;">
-    <div class="d-flex align-center">
+    <div class="d-flex align-center" style="gap: 0.5em;">
       <a href={`/print-subscribe?subscribeId=${subscribeId}`} target="_blank">
         <Button text size="small" style="opacity: 0.6;">
           <Icon path={mdiPrinter} size="1.1em" class="mr-2" />
           Version imprimable
         </Button>
       </a>
+
+      <Menu hover>
+        <div slot="activator">
+          <Button icon title="Télécharger vos données" style="opacity: .8;">
+            <Icon size=".8em" path={mdiFileDownloadOutline} />
+          </Button>
+        </div>
+        <List>
+          <ListItem on:click={() => downloadCSV.proposed(subscribeId)}>
+            Articles proposés
+          </ListItem>
+          <ListItem on:click={() => downloadCSV.purchases(subscribeId)}>
+            Articles achetés
+          </ListItem>
+          <ListItem on:click={() => downloadCSV.payments(subscribeId)}>
+            Payments
+          </ListItem>
+        </List>
+      </Menu>
 
       <div class="flex-grow-1" />
 
