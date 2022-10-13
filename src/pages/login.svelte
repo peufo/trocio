@@ -3,11 +3,12 @@
   import { redirect, params, afterPageLoad } from '@roxi/routify'
 
   import Login from '$lib/user/Login.svelte'
-  import { user } from '$lib/user/store'
+  import { user, userQuery } from '$lib/user/store'
 
   export let scoped
 
-  $afterPageLoad(() => {
+  $afterPageLoad(async () => {
+    await $userQuery
     if (!!$user) {
       $redirect($params.callback || '/')
     }
