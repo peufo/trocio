@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, tick } from 'svelte'
-  import { fly } from 'svelte/transition'
+  import { fade, fly } from 'svelte/transition'
   import { flip } from 'svelte/animate'
   import { Button, List, ListItem } from '$material'
   import { url, params, goto, redirect } from '@roxi/routify'
@@ -147,8 +147,14 @@
     <slot name="action" />
   </div>
 
-  {#if flatMode}
-    <div class="list-container simple-card">
+  {#if isFocus || flatMode}
+    <div
+      class="list-container simple-card"
+      class:fly-mode={!flatMode}
+      class:isFocus
+      in:fly|local={{ y: 50 }}
+      out:fade|local={{ duration: 100 }}
+    >
       {#if $querySearch.isError}
         <span>Oups, un problème est survenu</span>
       {:else}
@@ -188,33 +194,6 @@
         </div>
       {/if}
     </div>
-  {:else if isFocus}
-    <div class="list-container elevation-5 rounded" in:fly|local={{ y: 50 }}>
-      <List dense>
-        {#if $querySearch.isLoading}
-          <ListItem disabled><Loader /></ListItem>
-        {:else if $querySearch.isError}
-          <ListItem disabled>Oups, un problème est survenu</ListItem>
-        {:else}
-          {#each itemsFiltred as item, index}
-            <ListItem
-              active={selectedIndex === index}
-              on:click={() => handleSelect(item)}
-            >
-              {getValue(item)}
-
-              <span slot="subtitle">
-                {#if getValue2}{getValue2(item)}{/if}
-              </span>
-            </ListItem>
-          {:else}
-            <ListItem disabled>
-              Aucun résultat {#if searchValue} pour <b>{searchValue}</b>{/if}
-            </ListItem>
-          {/each}
-        {/if}
-      </List>
-    </div>
   {/if}
 </div>
 
@@ -245,7 +224,7 @@
     padding: 4px;
     background: var(--theme-surface);
 
-    .fly-mode {
+    &.fly-mode {
       position: absolute;
       width: 100%;
       min-width: 260px;
