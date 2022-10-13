@@ -105,7 +105,7 @@
 
       if (article) dispatch('select', article)
       else notify.warning('Article introuvable')
-    } catch (error) {
+    } catch (error: any) {
       notify.error(error)
     }
 
