@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
 
+  import { Chip } from '$material'
   import Loader from '$lib/util/Loader.svelte'
   import { renderAmount } from '$lib/utils'
   import { useInfinitApi } from '$lib/api'
@@ -37,9 +38,9 @@
             <div class="flex-grow-1" />
             <div class="d-flex">
               <div class="flex-grow-1" />
-              <div class="price text-caption">
+              <Chip label size="small">
                 {renderAmount(article.price, currency)}
-              </div>
+              </Chip>
             </div>
           </div>
         {/each}
@@ -69,17 +70,10 @@
 
 <style>
   .article {
-    background: var(--theme-controls-thumb-disabled);
+    background: var(--theme-navigation-drawer);
     max-width: calc(50% - 4px);
     flex-grow: 1;
     padding: 4px;
     border-radius: 8px;
-  }
-
-  .price {
-    background: var(--theme-cards);
-    padding: 2px 8px;
-    translate: 2px 2px;
-    border-radius: 6px;
   }
 </style>
