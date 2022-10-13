@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { fade, scale, slide } from 'svelte/transition'
+  import { fade, scale, slide, fly } from 'svelte/transition'
   import { flip } from 'svelte/animate'
   import { Button, Icon } from '$material'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
@@ -35,7 +35,6 @@
   /** Gestion de l'affichage des seléctions en mode mobile */
   let isSelectionOpen = false
   let isIndicatorAnimated = false
-  let countWithDelay = pendingItems.length
 
   onMount(() => {
     if (!$isMobile) magicSelect.focus()
@@ -73,18 +72,15 @@
       ...pendingItems.slice(0, index),
       ...pendingItems.slice(index + 1),
     ]
-    countWithDelay = pendingItems.length
   }
 
   function handleReset() {
     pendingItems = []
-    countWithDelay = 0
     setTimeout(closeSelection, 300)
   }
 
   function animeIndicator() {
     const duration = 1000
-    setTimeout(() => (countWithDelay = pendingItems.length), 0.57 * duration)
     if (!isIndicatorAnimated)
       setTimeout(() => (isIndicatorAnimated = false), duration)
     isIndicatorAnimated = true
@@ -175,7 +171,15 @@
           on:click={() => (isSelectionOpen = true)}
           style="font-size: large;"
         >
-          {countWithDelay}
+          {#key pendingItems.length}
+            <span
+              in:fly|local={{ y: -30, duration: 250, delay: 450 }}
+              out:fly|local={{ y: 30, duration: 250, delay: 150 }}
+              class="absolute-center"
+            >
+              {pendingItems.length}
+            </span>
+          {/key}
         </Button>
       </div>
     {/if}
@@ -264,6 +268,13 @@
 </div>
 
 <style lang="scss">
+  .absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+  }
+
   .wrapper {
     display: flex;
     gap: 1em;
