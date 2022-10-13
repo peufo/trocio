@@ -14,7 +14,6 @@ export async function getMismatchRaison(
 
   // Verifie le troc
   const exeptedTrocId = queryParams.exact_trocId
-  console.log(exeptedTrocId, _article.trocId)
   if (_article.trocId !== exeptedTrocId) return 'Ne correspond pas à ce troc'
 
   // Verifie l'état de l'article
