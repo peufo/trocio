@@ -210,7 +210,7 @@
 
   .or {
     transform: translateY(-50%);
-    background: var(--theme-cards);
+    background: var(--theme-surface);
     width: 35px;
     margin: auto;
     padding: 5px;
