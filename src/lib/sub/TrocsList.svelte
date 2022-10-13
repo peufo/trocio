@@ -1,9 +1,9 @@
 <script lang="ts">
   /**
-   * Liste les trocs auxquels l'utilisateur est abonné
+   * Liste abonement de l'utilisateur
    */
 
-  import { List, ListItem, Chip, Button } from '$material'
+  import { Chip, Button } from '$material'
   import {
     faCog,
     faCashRegister,
@@ -19,7 +19,6 @@
   import Loader from '$lib/util/Loader.svelte'
   import { useInfinitApi } from '$lib/api'
   import type { SubscribeLookup } from 'types'
-  import { isMobile } from '$lib/store/layout'
   import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons'
 
   dayjs.locale('fr')
@@ -32,26 +31,26 @@
 
 <div class="list-container">
   {#if $query.isSuccess}
-    {#each subscribes as { troc }}
+    {#each subscribes as sub}
       <div
         on:click
         class="simple-card item"
-        class:active={$params.trocId === troc._id}
+        class:active={$params.trocId === sub.troc._id}
       >
-        <a href={`/trocs/${troc._id}`} class="item-link"><span /></a>
+        <a href={`/trocs/${sub.troc._id}`} class="item-link"><span /></a>
         <div class="d-flex" style="gap: 1em;">
-          <div style="padding-top: 2px;">{troc.name}</div>
+          <div style="padding-top: 2px;">{sub.troc.name}</div>
           <div class="flex-grow-1" />
           <div style="translate: 4px 0px;">
-            {#if troc.is_try}
+            {#if sub.troc.is_try}
               <Chip size="small" label class="orange-text">
                 <span>Entrainement</span>
               </Chip>
-            {:else if troc.isClosed}
+            {:else if sub.troc.isClosed}
               <Chip size="small" label class="deep-orange-text">
                 <span>Terminé</span>
               </Chip>
-            {:else if troc.isOpen}
+            {:else if sub.troc.isOpen}
               <Chip size="small" label class="green-text">
                 <span>En cours</span>
               </Chip>
@@ -64,34 +63,35 @@
             class="flex-grow-1 d-flex flex-column"
             style="gap: 0.6em; line-height: 1em;"
           >
-            {#if !troc.is_try}
+            {#if !sub.troc.is_try}
               <div class="detail mt-1">
                 <IconLink icon={faMapMarkerAlt} opacity size="1.1em" />
-                <div>{troc.address}</div>
+                <div>{sub.troc.address}</div>
               </div>
               <div class="detail">
                 <IconLink icon={faCalendarAlt} opacity size="1.1em" />
-                <div>{dayjs(troc.schedule?.[0]?.open).fromNow()}</div>
+                <div>{dayjs(sub.troc.schedule?.[0]?.open).fromNow()}</div>
               </div>
             {/if}
 
             <div class="detail mt-1">
               <IconLink icon={faUserTie} opacity size="1.1em" />
-              <div>{troc.society || '-'}</div>
+              <div>{sub.troc.society || '-'}</div>
             </div>
           </div>
 
-          <div>
-            {#if troc.isAdmin}
+          <div class="d-flex flex-column">
+            <div class="flex-grow-1" />
+            {#if sub.role === 'admin'}
               <IconLink
-                href={`/admin?trocId=${troc._id}`}
+                href={`/admin?trocId=${sub.troc._id}`}
                 icon={faCog}
                 size="20px"
                 opacity
               />
-            {:else if troc.isCashier}
+            {:else if sub.role === 'cashier'}
               <IconLink
-                href={`/cashier?trocId=${troc._id}`}
+                href={`/cashier?trocId=${sub.troc._id}`}
                 icon={faCashRegister}
                 size="20px"
                 opacity
