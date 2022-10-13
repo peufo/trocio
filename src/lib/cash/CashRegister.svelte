@@ -175,6 +175,7 @@
     <div class="d-flex flex-wrap align-center pb-2" style="gap: 0.5em;">
       <div class:flex-grow-1={$isMobile}>
         <MagicSelect
+          placeholder="Chercher un client"
           bind:this={clientSelector}
           path="/subscribes"
           searchKey="q"
@@ -188,7 +189,7 @@
           solo
           keepValue
           dense
-          placeholder="Chercher un client"
+          disableFetchNext
         />
       </div>
 

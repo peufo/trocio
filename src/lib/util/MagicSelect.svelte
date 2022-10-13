@@ -19,6 +19,8 @@
   export let selectedItem: any = null
   export let queryParams: object = {}
   export let searchValue = ''
+  /** Désactive la pagination */
+  export let disableFetchNext = false
 
   /** Url path for search items */
   export let path: string
@@ -158,7 +160,7 @@
       {#if $querySearch.isError}
         <span>Oups, un problème est survenu</span>
       {:else}
-        {#each itemsFiltred as item, index (item._id)}
+        {#each itemsFiltred as item, index (item._id || item.userId)}
           <div
             class="item selectable simple-card"
             class:active={isFocus && selectedIndex === index}
@@ -181,7 +183,7 @@
           </div>
         {/if}
 
-        {#if $querySearch.hasNextPage && !$querySearch.isFetchingNextPage}
+        {#if !disableFetchNext && $querySearch.hasNextPage && !$querySearch.isFetchingNextPage}
           <Button on:click={() => $querySearch.fetchNextPage()} depressed>
             Afficher plus
           </Button>

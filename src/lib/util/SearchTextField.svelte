@@ -15,6 +15,7 @@
   export let icon = faSearch
   export let debounceTime = 200
   export let inputElement: HTMLInputElement | undefined = undefined
+
   // bind with url query
   export let searchKey = ''
   export const dispatch = createEventDispatcher()
