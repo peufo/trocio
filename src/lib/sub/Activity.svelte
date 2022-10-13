@@ -68,7 +68,7 @@
             <Icon size=".8em" path={mdiFileDownloadOutline} />
           </Button>
         </div>
-        <List>
+        <List dense>
           <ListItem on:click={() => downloadCSV.proposed(subscribeId)}>
             Articles proposés
           </ListItem>
