@@ -160,4 +160,8 @@
     display: flex;
     gap: 1em;
   }
+
+  .detail > div {
+    translate: 0px 1.5px;
+  }
 </style>
