@@ -397,7 +397,9 @@ export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
             validedCount: sumOfArticles('valided'),
             validedSum: sumOfArticles('valided', '$price'),
             refusedCount: sumOfArticles('refused'),
-            feeSum: sumOfArticles('valided', '$fee'),
+            feeSum: sumOfArticles('valided', '$fee', {
+              validedIncludNextStates: true,
+            }),
             soldCount: sumOfArticles('sold'),
             soldSum: sumOfArticles('sold', '$price'),
             marginSum: sumOfArticles('sold', '$margin'),

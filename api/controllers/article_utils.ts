@@ -36,16 +36,23 @@ export async function getMargin(article: Article) {
   return tarif && article.price ? tarif.margin * article.price : 0
 }
 
+interface MatcheStateOption {
+  /** Permet au query retourné d'être utilisé dans un aggregat */
+  modeAggregate?: boolean
+  /** Le article validés qui ont été vendu ou récupérer sont inclue */
+  validedIncludNextStates?: boolean
+}
+
 export function getMatchesByState(
   state: ArticleState | unknown,
-  modeAggregate = false
+  options: MatcheStateOption = {}
 ): mongoose.FilterQuery<Article>[] {
   if (typeof state !== 'string') return []
   // https://stackoverflow.com/questions/25497150/mongodb-aggregate-by-field-exists
-  const exist = modeAggregate
+  const exist = options.modeAggregate
     ? (key: ArticleState) => ({ $gt: [`$${key}`, null] })
     : (key: ArticleState) => ({ [key]: { $exists: true } })
-  const existNot = modeAggregate
+  const existNot = options.modeAggregate
     ? (key: ArticleState) => ({ $lte: [`$${key}`, null] })
     : (key: ArticleState) => ({ [key]: { $exists: false } })
 
@@ -56,16 +63,20 @@ export function getMatchesByState(
     sold: [exist('sold')],
     recover: [exist('recover')],
   }
+
+  if (options.validedIncludNextStates) states.valided = [exist('valided')]
+
   return states[state] || []
 }
 
 export const sumOfArticles = (
   key: ArticleState,
-  value: string | number = 1
+  value: string | number = 1,
+  options: MatcheStateOption = {}
 ) => ({
   $sum: {
     $cond: {
-      if: { $and: getMatchesByState(key, true) },
+      if: { $and: getMatchesByState(key, { modeAggregate: true, ...options }) },
       then: value,
       else: 0,
     },
