@@ -39,7 +39,7 @@
   }
 </script>
 
-<PaymentDialog bind:this={paymentDialog} />
+<PaymentDialog bind:this={paymentDialog} modeCorrection />
 
 {#if $isMobile}
   <Dialog bind:active>

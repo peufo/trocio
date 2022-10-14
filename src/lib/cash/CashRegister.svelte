@@ -216,7 +216,7 @@
       {#if subscribeId && balance && Math.abs(balance) > 0.01}
         <div transition:slide|local style={$isMobile ? 'width: 100%;' : ''}>
           <Button block class="secondary-color" on:click={openPaymentDialog}>
-            Règler {renderAmount(balance, $troc.currency)} en faveur du
+            Règler {renderAmount(-balance, $troc.currency)} en faveur du
             {balance > 0 ? 'client' : 'troc'}
           </Button>
         </div>
