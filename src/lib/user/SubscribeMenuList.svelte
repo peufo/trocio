@@ -10,7 +10,10 @@
     faCubes,
     faEdit,
   } from '@fortawesome/free-solid-svg-icons'
-  import { faCheckCircle } from '@fortawesome/free-regular-svg-icons'
+  import {
+    faCheckCircle,
+    faEnvelope,
+  } from '@fortawesome/free-regular-svg-icons'
   import { mdiCart } from '@mdi/js'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
@@ -78,7 +81,7 @@
   )
 </script>
 
-<List style="overflow-x: hidden;">
+<List style="overflow-x: hidden;" dense>
   {#if state === 'main'}
     <div in:fly|local={{ x: -200 }}>
       <ListItem disabled dense>
@@ -144,6 +147,17 @@
         </span>
         Corriger le solde
       </ListItem>
+      <a
+        href="mailto:{subscribe?.user?.mail}?subject=Troc.io - {$troc.name}"
+        target="_blank"
+      >
+        <ListItem>
+          <span slot="prepend">
+            <IconLink icon={faEnvelope} class="mr-3" size="1.1em" />
+          </span>
+          Envoyer un mail
+        </ListItem>
+      </a>
     </div>
   {/if}
 
