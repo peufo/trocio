@@ -218,8 +218,6 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
 
     const subscribes = await aggregate.skip(skip).limit(limit).exec()
 
-    console.log('TOTOTOTO', subscribes[0].user)
-
     // Inclue la recherche au delà du troc si le nombre de subscribes est inférieur à la limite
     // TODO: skip ne peu pas fonctioner avec cette méthode...
     if (q && includGlobalUser && limit > subscribes.length) {
