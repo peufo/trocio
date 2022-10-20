@@ -22,6 +22,7 @@
   import { troc } from '$lib/troc/store'
   import { api } from '$lib/api'
   import { ROLES } from '$lib/user/roles'
+  import notify from '$lib/notify'
 
   export let state: 'main' | 'role' | 'tarif' = 'main'
   export let subscribe: SubscribeLookup | undefined = undefined
@@ -150,6 +151,13 @@
       <a
         href="mailto:{subscribe?.user?.mail}?subject=Troc.io - {$troc.name}"
         target="_blank"
+        on:click={(event) => {
+          if (!subscribe?.validedByUser) {
+            const msg = `Vous ne pouvez pas envoyer un mail à cet utilisateur car il n'a pas validé sa participation.`
+            notify.warning(msg)
+            event.preventDefault()
+          }
+        }}
       >
         <ListItem>
           <span slot="prepend">
