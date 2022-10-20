@@ -193,7 +193,7 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     const aggregate = Subscribe.aggregate()
     aggregate.match(initialMatch)
 
-    lookupUser(aggregate)
+    lookupUser(aggregate, 'user', { mail: 1 })
     if (q)
       aggregate.match({
         $or: [
@@ -217,6 +217,8 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     if (Object.keys(sort).length) aggregate.sort(sort)
 
     const subscribes = await aggregate.skip(skip).limit(limit).exec()
+
+    console.log('TOTOTOTO', subscribes[0].user)
 
     // Inclue la recherche au delà du troc si le nombre de subscribes est inférieur à la limite
     // TODO: skip ne peu pas fonctioner avec cette méthode...
@@ -249,17 +251,8 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
 function hideMail(subscribes: SubscribeLookup[]): SubscribeLookup[] {
   return subscribes.map((sub) => {
     if (sub.validedByUser) return sub
-    if (!sub.userId) return sub
     if (!sub.user?.mail) return sub
-    const index = sub.user.mail.indexOf('@')
-    if (index > -1) {
-      sub.user.mail = sub.user.mail.replace(
-        sub.user.mail.slice(1, index - 1),
-        '*'.repeat(index - 2)
-      )
-    } else {
-      sub.user.mail = 'Invalid mail'
-    }
+    sub.user.mail = sub.user.mail.replace(/(?<=.+).+(?=.+@)/, '***')
     return sub
   })
 }
