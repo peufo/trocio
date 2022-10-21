@@ -24,7 +24,7 @@
 </script>
 
 <div class="container">
-  <svg width="400" height="400" viewBox="0 0 400 400">
+  <svg width="400" height="322" viewBox="0 0 400 322">
     <defs>
       <!-- Définit une pointe de flèche -->
       <marker
@@ -106,7 +106,7 @@
 
 <style>
   .container {
-    min-height: 400px;
+    min-height: 322px;
     max-width: 400px;
     margin: auto;
     position: relative;
@@ -129,7 +129,7 @@
   }
 
   .icon-buyer {
-    transform: translate(87%, 69%) scale(0.08);
+    transform: translate(89%, calc(100% - 45px)) scale(0.08);
   }
 
   .opacity {

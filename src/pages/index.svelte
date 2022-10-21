@@ -11,42 +11,50 @@
 </script>
 
 <main>
-  <div class="d-flex align-center justify-space-between flex-wrap">
-    <div class="title mr-6">Troc.io</div>
+  <div
+    class="d-flex flex-wrap justify-space-between align-center pb-16 pt-10"
+    style="gap: 2em;"
+  >
+    <div class="d-flex flex-column flex-grow-1">
+      <div class="title">Troc.io</div>
 
-    <a href="/trocs">
-      <Button flat class="secondary-color text-white" style="z-index: 2;">
-        Trouver un troc
-      </Button>
-    </a>
-  </div>
-
-  <div class="mt-3 mb-6 d-flex flex-wrap">
-    <div class="logo" style="width: 460px; height: 230px; z-index: 2;">
-      <Logo duration={40} cubeSize={50} />
+      <div
+        class="logo"
+        style="width: 260px; height: 230px; z-index: 2; margin: auto;"
+      >
+        <Logo duration={40} cubeSize={100} />
+      </div>
     </div>
 
-    <div style="max-width: 630px; margin: auto;">
-      <Card class="pa-4" style="z-index: 2;">
-        <CardText>
-          <p>
-            Trocio est un outil simple et efficace pour échanger vos objets.
-          </p>
-          <p>
-            Déstiné aux organisateurs ou aux amateurs de bonnes affaires, Trocio
-            améliore votre expérience sur des évenements éphemères.
-          </p>
-          <p>
-            L'interface fournit de nombreuses fonctionalitées qui vous
-            permettent de gagner un temps précieux, d'éviter des erreurs et
-            d'être informé en temps réel.
-          </p>
-        </CardText>
-      </Card>
+    <div class="flex-grow-1">
+      <div style="max-width: 630px; margin: auto;">
+        <Card class="pa-4" style="z-index: 2;">
+          <CardText>
+            <p>
+              Trocio est un outil simple et efficace pour échanger vos objets.
+            </p>
+            <p>
+              Déstiné aux organisateurs ou aux amateurs de bonnes affaires,
+              Trocio améliore votre expérience sur des évenements éphemères.
+            </p>
+            <p>
+              L'interface fournit de nombreuses fonctionalitées qui vous
+              permettent de gagner un temps précieux, d'éviter des erreurs et
+              d'être informé en temps réel.
+            </p>
+          </CardText>
+        </Card>
+        <div class="d-flex">
+          <div class="flex-grow-1" />
+          <a href="/trocs" style="z-index: 2; translate: -10px -50%;">
+            <Button class="secondary-color text-white">Trouver un troc</Button>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="mt-16 mb-16 pt-16 pb-16 text-center hideIfVerySmall">
+  <div class="mt-16 mb-16 pt-16 text-center hideIfVerySmall">
     <i class="fas fa-arrow-down" style="margin-right: 40px;" />
     <a href="#discover">
       <Button text size="large" style="width: 130px;">Découvrir</Button>
@@ -62,33 +70,39 @@
   </div>
 
   <section id="discover">
-    <div class="d-flex wrap-660" style="gap: 36px;">
-      <div class="mb-8">
+    <div
+      class="d-flex justify-space-between align-center wrap-660"
+      style="gap: 36px;"
+    >
+      <div>
         <h3>Découvrir</h3>
-
         <br />
-
         <p>
           Trouvez un troc qui correspond à vos attentes près de chez vous et
           fouillez dans les articles qui y sont proposés.
         </p>
-
         <br />
-
         <p>
           Il ne vous reste plus qu'à vous rendre sur place pour profiter de
           l'évènement.
         </p>
       </div>
-      <div class="flex-grow-1 centered">
+
+      <div class="centered flex-grow-1">
         <DrawingSearch />
       </div>
     </div>
   </section>
 
   <section id="propose">
-    <div class="d-flex wrap-1000" style="gap: 36px;">
-      <div class="mb-8">
+    <div
+      class="d-flex justify-space-between align-center wrap-1000"
+      style="gap: 36px;"
+    >
+      <div class="flex-grow-1 centered" style="min-width: 350px;">
+        <DrawingSold />
+      </div>
+      <div class="pb-16">
         <h3>Proposer</h3>
         <br />
         <p>
@@ -102,17 +116,13 @@
         <p>Suivez en temps réel votre solde et l'état de vos ventes.</p>
         <p>Récupérez vos gains et vos invendus quand vous le souhaitez.</p>
       </div>
-
-      <div class="flex-grow-1 centered" style="min-width: 350px;">
-        <DrawingSold />
-      </div>
     </div>
   </section>
 
   <section id="organize">
-    <h3>Organiser</h3>
+    <h3 class="pb-16 text-center">Organiser</h3>
 
-    <div class="mt-8 d-flex flex-wrap justify-space-around">
+    <div class="pt-16 d-flex flex-wrap justify-space-around">
       <div class="feature">
         <div class="feature-title">
           <i class="far fa-calendar-alt" />
@@ -192,9 +202,6 @@
           <p>
             Utilisez votre téléphone comme scanner pour réduire les temps de
             passage en caisse.
-            <span class="warning">
-              <i class="fas fa-exclamation-triangle" />&nbsp; En développement
-            </span>
           </p>
         </div>
       </div>
@@ -245,20 +252,19 @@
   .title {
     font-family: Dongle;
     font-size: 8em;
-  }
-
-  main {
-    font-size: 1.1em;
+    text-align: center;
+    width: 100%;
   }
 
   section {
-    margin-top: 160px;
+    margin-top: 200px;
     padding: 40px 0px;
   }
 
   main {
-    max-width: 1200px;
+    max-width: 1260px;
     margin: auto;
+    font-size: 1.1em;
   }
 
   .background-grey {
@@ -277,12 +283,12 @@
       flex-wrap: wrap;
     }
     section {
-      margin-top: 0;
+      margin-top: 100px;
     }
   }
   @media only screen and (max-width: 1000px) {
     .wrap-1000 {
-      flex-wrap: wrap;
+      flex-wrap: wrap-reverse;
     }
   }
 
@@ -297,7 +303,7 @@
     }
   }
 
-  @media only screen and (max-width: 1250px) {
+  @media only screen and (max-width: 1045px) {
     .logo {
       display: none;
     }
