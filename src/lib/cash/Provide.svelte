@@ -3,6 +3,7 @@
   import { mdiPrinterCheck, mdiPrinterOff } from '@mdi/js'
 
   import { Button, Icon } from '$material'
+  import notify from '$lib/notify'
   import Template from '$lib/cash/Template.svelte'
   import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import Loader from '$lib/util/Loader.svelte'
@@ -10,14 +11,13 @@
   import type { Article } from 'types'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import { troc } from '$lib/troc/store'
-  import notify from '$lib/notify'
+  import { isAutoPrint } from '$lib/cash/store'
 
   export let subscribeId: string
   let template: Template
   let tagsPrint: TagsPrint
 
   let pendingItems: Article[] = []
-  let autoPrint = true
   const queryClient = useQueryClient()
   const queryValid = useMutation(
     (valided: boolean) =>
@@ -33,7 +33,7 @@
       ),
     {
       onSuccess: async (articles: Article[]) => {
-        if (autoPrint && articles[0].valided) await tagsPrint.print()
+        if ($isAutoPrint && articles[0].valided) await tagsPrint.print()
         pendingItems = []
         queryClient.invalidateQueries('articles')
         queryClient.invalidateQueries('subscribes/resum')
@@ -43,9 +43,9 @@
   )
 
   function toggleAutoPrint() {
-    autoPrint = !autoPrint
+    $isAutoPrint = !$isAutoPrint
     notify.info(
-      `Impression automatique des étiquettes ${autoPrint ? '' : 'dés'}activé`
+      `Impression automatique des étiquettes ${$isAutoPrint ? '' : 'dés'}activé`
     )
   }
 </script>
@@ -72,7 +72,7 @@
   <div slot="options-selection" class="d-flex align-center" style="gap: 1em;">
     <div title="Impression automatique des étiquettes">
       <Button fab size="small" depressed on:click={toggleAutoPrint}>
-        <Icon path={autoPrint ? mdiPrinterCheck : mdiPrinterOff} />
+        <Icon path={$isAutoPrint ? mdiPrinterCheck : mdiPrinterOff} />
       </Button>
     </div>
   </div>

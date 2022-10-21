@@ -1,5 +1,15 @@
 import { quintOut, cubicOut } from 'svelte/easing'
+import { writable } from 'svelte/store'
 import type { Article, ArticleLookup, ArticleState } from 'types'
+
+/** Persistante boolean store */
+export const storeBoolean = (key: string, initialValue = false) => {
+  const stored = localStorage.getItem(key)
+  const value = stored === null ? initialValue : stored === 'true'
+  const store = writable(value)
+  store.subscribe((value) => localStorage.setItem(key, String(value)))
+  return store
+}
 
 /** @deprecated */
 export function getHeader(body, verb = 'POST') {

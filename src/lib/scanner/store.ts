@@ -1,14 +1,9 @@
-import { writable, readable } from 'svelte/store'
+import { readable } from 'svelte/store'
+import { storeBoolean } from '$lib/utils'
 
-const storeBool = (key: string) => {
-  const store = writable(localStorage.getItem(key) === 'true')
-  store.subscribe((value) => localStorage.setItem(key, String(value)))
-  return store
-}
-
-export const isAutoScanOn = storeBool('isAutoScanOn')
-export const isVibrateOn = storeBool('isVibrateOn')
-export const isFlashOn = storeBool('isFlashOn')
-export const isSoundOn = storeBool('isSoundOn')
+export const isAutoScanOn = storeBoolean('isAutoScanOn')
+export const isVibrateOn = storeBoolean('isVibrateOn')
+export const isFlashOn = storeBoolean('isFlashOn')
+export const isSoundOn = storeBoolean('isSoundOn')
 
 export const connectionPrefix = readable('trocio-p2p:')
