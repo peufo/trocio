@@ -62,7 +62,7 @@
         </Button>
       </a>
 
-      <Menu hover>
+      <Menu>
         <div slot="activator">
           <Button text size="small" style="opacity: .8;">
             <Icon path={mdiCloudDownload} size="1.2em" class="mr-2" />
