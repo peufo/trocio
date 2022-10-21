@@ -30,7 +30,6 @@
   import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
   import notify from '$lib/notify'
   import PeerQR from '$lib/cash/PeerQR.svelte'
-  import { connectionPrefix } from '$lib/scanner/store'
 
   let clientSelector: MagicSelect
   const subscribeKey = 'client_subscribe_id'
@@ -39,7 +38,8 @@
   let subscribe: SubscribeLookup | undefined = undefined
   let mainContainer: HTMLDivElement
 
-  const peerToken = $connectionPrefix + uuidv4()
+  const peerToken = uuidv4()
+  let peerConnections = 0
 
   $: TABS = [
     {
@@ -83,9 +83,11 @@
 
     const peer = new Peer(peerToken)
     peer.on('connection', (local) => {
-      console.log(`new connection`)
+      peerConnections++
+      local.on('close', () => peerConnections--)
+      local.on('error', () => peerConnections--)
       local.on('data', (data) => {
-        console.log('data', data)
+        console.log(`TODO: handle ${data}`)
       })
     })
 
@@ -289,7 +291,7 @@
       </div>
     {:else}
       <div in:fade|local class="centered flex-grow-1">
-        <PeerQR {peerToken} />
+        <PeerQR {peerToken} {peerConnections} />
       </div>
     {/if}
   </div>

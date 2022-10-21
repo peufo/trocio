@@ -94,7 +94,7 @@
 
     dispatch('detect', scanResult.data)
 
-    const wait = 1000
+    const wait = 1400
     setTimeout(() => {
       isProcessing = false
       if ($isAutoScanOn) scan()

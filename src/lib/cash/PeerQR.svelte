@@ -1,55 +1,55 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition'
   import QrCode from 'qrcode'
   import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
 
-  import { Button } from '$material'
   import IconLink from '$lib/util/IconLink.svelte'
-  import { isMobile } from '$lib/store/layout'
+  import { Icon } from '$material'
+  import { mdiCellphoneLink, mdiCellphoneLinkOff } from '@mdi/js'
+  import { fade, slide } from 'svelte/transition'
 
   export let peerToken: string
+  export let peerConnections: number
 
   let qrcode = ''
-  let isOpen = false
 
-  async function handleClick() {
+  $: {
     const scannerURL = `https://${location.host}/scanner?token=${peerToken}`
-    console.log(scannerURL)
-    qrcode = await QrCode.toDataURL(scannerURL)
-    isOpen = true
+    QrCode.toDataURL(scannerURL).then((qr) => (qrcode = qr))
   }
 </script>
 
-<div class="flex-column">
-  {#if isOpen}
-    <div in:fade|local style="text-align: center;">
-      <img src={qrcode} alt="Code QR de connection mobile" />
-      <p class="text-caption">
-        Connecter votre smartphone à cette caisse en scannant ce code QR.
+<div class="d-flex flex-column" style="gap: 1em;">
+  <IconLink icon={faCashRegister} size="3.3em" style="opacity: 0.2;" />
+  <div style="text-align: center;">
+    <img src={qrcode} alt="Code QR de connection mobile" />
+    <br />
+
+    {#if !!peerConnections}
+      <div in:slide|local>
+        <Icon path={mdiCellphoneLink} class="green-text" size="60" />
+      </div>
+    {/if}
+
+    {#if !!peerConnections}
+      <p in:fade|local class="text-caption">
+        Connection établie ({peerConnections})
       </p>
-    </div>
-  {:else}
-    <div class="flex-column">
-      <IconLink icon={faCashRegister} size="3.3em" style="opacity: 0.2;" />
-      {#if !$isMobile}
-        <Button on:click={handleClick} depressed>
-          Utiliser un smartphone comme scanner
-        </Button>
-      {/if}
-    </div>
-  {/if}
+    {:else}
+      <p in:fade|local class="text-caption">
+        Connectez votre smartphone à cette caisse
+      </p>
+    {/if}
+  </div>
 </div>
 
 <style>
-  .flex-column {
-    display: flex;
-    flex-direction: column;
-    gap: 2em;
-  }
-
   img {
     border-radius: 10px;
     border: 2px solid grey;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
+  }
+
+  .text-caption {
+    opacity: 0.8;
   }
 </style>

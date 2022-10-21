@@ -1,18 +1,12 @@
 <script lang="ts">
-  import { onMount, tick, onDestroy } from 'svelte'
+  import { onMount } from 'svelte'
   import { params } from '@roxi/routify'
   import { Peer, DataConnection } from 'peerjs'
 
   import Scanner from '$lib/scanner/Scanner.svelte'
-  import { connectionPrefix } from '$lib/scanner/store'
   import notify from '$lib/notify'
   import { Icon } from '$material'
-  import {
-    mdiCheck,
-    mdiLanConnect,
-    mdiLanDisconnect,
-    mdiLanPending,
-  } from '@mdi/js'
+  import { mdiLanConnect, mdiLanDisconnect, mdiLanPending } from '@mdi/js'
 
   let remote: DataConnection | undefined = undefined
   let isConnected = false
@@ -22,23 +16,30 @@
     if (token) connectTo(token)
   })
 
-  let pending = true
+  let pending = !!$params['token']
   onMount(() => {
     setTimeout(() => (pending = false), 1000)
-    return () => remote?.removeAllListeners()
+    return () => {
+      remote?.close()
+      remote?.removeAllListeners()
+      peer.disconnect()
+    }
   })
 
-  function connectTo(remoteToken: string) {
+  async function connectTo(remoteToken: string) {
     if (isConnected) return
+    console.log('try tzo connect', remoteToken)
     remote = peer.connect(remoteToken)
     remote.on('open', () => (isConnected = true))
     remote.on('close', () => (isConnected = false))
-    remote.on('error', (error) => notify.error(error.message))
+    remote.on('error', (error) => {
+      isConnected = false
+      notify.error(error.message)
+    })
   }
 
   function handleDetect(event: { detail: string }) {
     const detectedValue = event.detail
-    console.log({ detectedValue })
 
     // Si la connection est établi, envoyer la détection
     if (isConnected && remote) {
@@ -46,17 +47,23 @@
       return
     }
 
-    // Si le code est l'address du scanner, on tente une connection
-    if (detectedValue.startsWith(location.pathname)) {
-      console.log('Connect try', { detectedValue })
-      // TODO: récuperer et passer le token
-
-      connectTo(detectedValue)
-      return
+    // Si le code est l'adresse du scanner, on tente une connection
+    const baseUrl = location.origin + location.pathname
+    if (detectedValue.startsWith(baseUrl)) {
+      const paramsString = detectedValue.replace(baseUrl, '')
+      const searchParams = new URLSearchParams(paramsString)
+      const token = searchParams.get('token')
+      if (token) {
+        connectTo(token)
+        return
+      }
     }
 
+    handleDetectError()
+  }
+
+  function handleDetectError() {
     notify.warning(`Ce code QR ne permet pas de se connecter à une caisse`)
-    return
   }
 </script>
 

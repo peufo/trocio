@@ -5,5 +5,3 @@ export const isAutoScanOn = storeBoolean('isAutoScanOn')
 export const isVibrateOn = storeBoolean('isVibrateOn')
 export const isFlashOn = storeBoolean('isFlashOn')
 export const isSoundOn = storeBoolean('isSoundOn')
-
-export const connectionPrefix = readable('trocio-p2p:')
