@@ -12,7 +12,7 @@
   let messages: unknown[] = []
 
   peer.on('connection', (local) => {
-    console.log(`Alice is connected`)
+    console.log(`${name} has a new connection`)
     local.on('data', (data) => {
       messages = [...messages, data]
     })
