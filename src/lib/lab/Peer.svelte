@@ -30,6 +30,12 @@
     if (!remote) return
     remote.send(message)
   }
+
+  function handleDestroy() {
+    console.log(peer)
+    peer.destroy()
+    console.log(peer)
+  }
 </script>
 
 <h6>{name}</h6>
@@ -48,6 +54,8 @@
 </form>
 
 <br />
+
+<button on:click={handleDestroy}>Destroy</button>
 
 <ul>
   {#each messages as m}

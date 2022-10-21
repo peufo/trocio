@@ -21,8 +21,9 @@
 
   function connectTo(remoteToken: string) {
     if (isConnected) return
-    const peer = new Peer(remoteToken, { host: document.location.host })
+    const peer = new Peer(remoteToken)
     remote = peer.connect(remoteToken)
+    console.log(remote)
     remote.on('open', () => (isConnected = true))
     remote.on('close', () => (isConnected = false))
     remote.on('error', (error) => notify.error(error.message))
@@ -30,12 +31,15 @@
 
   function handleDetect(event: { detail: string }) {
     const detectedValue = event.detail
+    console.log({ detectedValue })
     if (!isConnected || !remote) {
-      if (detectedValue.startsWith($connectionPrefix)) {
+      const baseUrl = `https://${location.host}/scanner`
+      if (detectedValue.startsWith(baseUrl)) {
+        // récuperer et passer le token
         connectTo(detectedValue)
         return
       }
-      notify.warning(`Il ne s'agit pas d'un code QR de connection`)
+      notify.warning(`Ce code QR ne permet pas de se connecter à une caisse`)
       return
     }
     remote.send(detectedValue)

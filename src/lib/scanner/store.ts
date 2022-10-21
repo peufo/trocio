@@ -11,4 +11,4 @@ export const isVibrateOn = storeBool('isVibrateOn')
 export const isFlashOn = storeBool('isFlashOn')
 export const isSoundOn = storeBool('isSoundOn')
 
-export const connectionPrefix = readable('troc.io/yolo:')
+export const connectionPrefix = readable('trocio-p2p:')

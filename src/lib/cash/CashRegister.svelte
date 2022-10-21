@@ -4,13 +4,13 @@
   import { params, redirect } from '@roxi/routify'
   import { Button, Tabs, Tab } from '$material'
   import { useMutation } from '@sveltestack/svelte-query'
-  import QrCode from 'qrcode'
+  import { Peer } from 'peerjs'
+  import { v4 as uuidv4 } from 'uuid'
   import {
     faArrowRightArrowLeft,
     faArrowRightFromBracket,
     faArrowRightToBracket,
     faCartShopping,
-    faCashRegister,
     faUserAlt,
     faUserPlus,
   } from '@fortawesome/free-solid-svg-icons'
@@ -29,8 +29,8 @@
   import { renderAmount } from '$lib/utils'
   import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
   import notify from '$lib/notify'
+  import PeerQR from '$lib/cash/PeerQR.svelte'
   import { connectionPrefix } from '$lib/scanner/store'
-  import { v4 as uuidv4 } from 'uuid'
 
   let clientSelector: MagicSelect
   const subscribeKey = 'client_subscribe_id'
@@ -38,7 +38,8 @@
   let paymentDialog: PaymentDialog
   let subscribe: SubscribeLookup | undefined = undefined
   let mainContainer: HTMLDivElement
-  let qrcode = ''
+
+  const peerToken = $connectionPrefix + uuidv4()
 
   $: TABS = [
     {
@@ -80,18 +81,19 @@
       }).then((user) => clientSelector.setValue(user.name))
     }
 
-    // Génère le code QR pour la connection mobile
-    const token = connectionPrefix + uuidv4()
-    const scannerURL = `https://${location.host}/scanner?token=${token}`
-    QrCode.toDataURL(scannerURL, {
-      type: 'image/webp',
-      margin: 0,
-    }).then((code) => (qrcode = code))
+    const peer = new Peer(peerToken)
+    peer.on('connection', (local) => {
+      console.log(`new connection`)
+      local.on('data', (data) => {
+        console.log('data', data)
+      })
+    })
 
     // Ecoute les racourcis claviers
     document.addEventListener('keyup', handleShortcut)
     return () => {
       document.removeEventListener('keyup', handleShortcut)
+      peer.destroy()
     }
   })
 
@@ -287,10 +289,7 @@
       </div>
     {:else}
       <div in:fade|local class="centered flex-grow-1">
-        <div>
-          <IconLink icon={faCashRegister} size="3.5em" style="opacity: 0.2;" />
-          <img src={qrcode} alt="Code QR de connection mobile" />
-        </div>
+        <PeerQR {peerToken} />
       </div>
     {/if}
   </div>
