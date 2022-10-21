@@ -60,6 +60,10 @@
     if ($isMobile) animeIndicator()
   }
 
+  function handleSelectArticle(event: { detail: Article }) {
+    selectArticle(event.detail)
+  }
+
   async function handleDetectArticle(event: { detail: string }) {
     try {
       const articleId = event.detail
@@ -74,13 +78,17 @@
         return
       }
 
-      if (pendingItems.map(({ _id }) => _id).includes(article._id))
-        return notify.warning('Article déjà sélectioné')
-      pendingItems = [...pendingItems, article]
-      if ($isMobile) animeIndicator()
+      selectArticle(article)
     } catch (error: any) {
       notify.error(error)
     }
+  }
+
+  function selectArticle(article: Article) {
+    if (pendingItems.map(({ _id }) => _id).includes(article._id))
+      return notify.warning('Article déjà sélectioné')
+    pendingItems = [...pendingItems, article]
+    if ($isMobile) animeIndicator()
   }
 
   function handleRemove(index: number) {
@@ -115,7 +123,6 @@
       <Scanner
         on:close={() => (isScannerOpen = false)}
         on:detect={handleDetectArticle}
-        {queryParams}
       />
     {:else}
       <MagicSelect
@@ -134,7 +141,7 @@
         exepted={pendingItems.map((art) => art._id)}
         solo
         dense
-        on:select={handleDetectArticle}
+        on:select={handleSelectArticle}
       >
         <div slot="action" class="d-flex" style="gap: 4px;">
           {#if canSelectAll}
