@@ -21,6 +21,7 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import notify from '$lib/notify'
   import Scanner from '$lib/scanner/Scanner.svelte'
+  import { getMismatchRaison } from '$lib/scanner/utils'
 
   export let pendingItems: Article[] = []
   export let queryParams = {}
@@ -59,12 +60,27 @@
     if ($isMobile) animeIndicator()
   }
 
-  function handleSelectArticle(event: { detail: Article }) {
-    const article = event.detail
-    if (pendingItems.map(({ _id }) => _id).includes(article._id))
-      return notify.warning('Article déjà sélectioné')
-    pendingItems = [...pendingItems, article]
-    if ($isMobile) animeIndicator()
+  async function handleDetectArticle(event: { detail: string }) {
+    try {
+      const articleId = event.detail
+
+      const [article] = await api<Article[]>('/api/articles', {
+        params: { exact__id: articleId, ...queryParams },
+      })
+
+      if (!article) {
+        const raison = await getMismatchRaison(articleId, queryParams)
+        notify.warning(raison)
+        return
+      }
+
+      if (pendingItems.map(({ _id }) => _id).includes(article._id))
+        return notify.warning('Article déjà sélectioné')
+      pendingItems = [...pendingItems, article]
+      if ($isMobile) animeIndicator()
+    } catch (error: any) {
+      notify.error(error)
+    }
   }
 
   function handleRemove(index: number) {
@@ -98,7 +114,7 @@
     {#if isScannerOpen}
       <Scanner
         on:close={() => (isScannerOpen = false)}
-        on:select={handleSelectArticle}
+        on:detect={handleDetectArticle}
         {queryParams}
       />
     {:else}
@@ -118,7 +134,7 @@
         exepted={pendingItems.map((art) => art._id)}
         solo
         dense
-        on:select={handleSelectArticle}
+        on:select={handleDetectArticle}
       >
         <div slot="action" class="d-flex" style="gap: 4px;">
           {#if canSelectAll}
@@ -143,7 +159,7 @@
               fab
               depressed
               size="small"
-              title="Scanner des codes QR"
+              title="Scanner des étiquettes"
               on:click={() => (isScannerOpen = true)}
             >
               <Icon path={mdiQrcodeScan} />

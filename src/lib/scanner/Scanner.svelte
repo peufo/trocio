@@ -25,11 +25,11 @@
     isSoundOn,
     isVibrateOn,
   } from '$lib/scanner/options'
-  import { getState, getStateLabel, STATE_LABEL } from '$lib/utils'
   import { getMismatchRaison } from './utils'
 
   /** Params ajouter à la requet de l'article */
   export let queryParams: { [key: string]: string } = {}
+  export let isClosable = true
 
   const TIMEOUT = 9 // secondes
   let timeoutId: NodeJS.Timeout
@@ -45,7 +45,7 @@
   let overlay: HTMLDivElement
   let overlaySize: number
 
-  const dispatch = createEventDispatcher<{ close: void; select: Article }>()
+  const dispatch = createEventDispatcher<{ close: void; detect: string }>()
 
   onMount(async () => {
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
@@ -95,28 +95,13 @@
     if ($isSoundOn) audio.play()
     if ($isVibrateOn) navigator.vibrate([50])
 
-    // Garantie une pause un temps de traitement minimum pour évité les doubles scan
-    const minimalPause = 1000
-    const startTime = new Date().getTime()
+    dispatch('detect', scanResult.data)
 
-    // Récupère l'article scanner
-    try {
-      const [article] = await api<Article[]>('/api/articles', {
-        params: { exact__id: scanResult.data, ...queryParams },
-      })
-
-      if (article) dispatch('select', article)
-      else notify.warning(await getMismatchRaison(scanResult.data, queryParams))
-    } catch (error: any) {
-      notify.error(error)
-    }
-
-    const getNextState = () => {
+    const wait = 1000
+    setTimeout(() => {
       isProcessing = false
       if ($isAutoScanOn) scan()
-    }
-    const elapsedTime = new Date().getTime() - startTime
-    setTimeout(getNextState, minimalPause - elapsedTime)
+    }, wait)
   }
 </script>
 
@@ -177,10 +162,11 @@
     </Button>
 
     <div class="flex-grow-1" />
-
-    <Button icon outlined on:click={() => dispatch('close')}>
-      <Icon path={mdiClose} />
-    </Button>
+    {#if isClosable}
+      <Button icon outlined on:click={() => dispatch('close')}>
+        <Icon path={mdiClose} />
+      </Button>
+    {/if}
   </div>
 
   <div class="bottom-bar">
