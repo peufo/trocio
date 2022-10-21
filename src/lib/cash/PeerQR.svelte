@@ -19,7 +19,7 @@
 </script>
 
 <div class="d-flex flex-column" style="gap: 1em;">
-  <IconLink icon={faCashRegister} size="3.3em" style="opacity: 0.2;" />
+  <IconLink icon={faCashRegister} size="3.3em" style="opacity: 0.3;" />
   <div style="text-align: center;">
     <img src={qrcode} alt="Code QR de connection mobile" />
     <br />

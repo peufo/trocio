@@ -17,18 +17,14 @@
   })
 
   let pending = !!$params['token']
+
   onMount(() => {
-    setTimeout(() => (pending = false), 1000)
-    return () => {
-      remote?.close()
-      remote?.removeAllListeners()
-      peer.disconnect()
-    }
+    if (pending) setTimeout(() => (pending = false), 2000)
+    return () => peer.destroy()
   })
 
   async function connectTo(remoteToken: string) {
     if (isConnected) return
-    console.log('try tzo connect', remoteToken)
     remote = peer.connect(remoteToken)
     remote.on('open', () => (isConnected = true))
     remote.on('close', () => (isConnected = false))
@@ -81,7 +77,7 @@
       <div>
         <Icon path={mdiLanConnect} class="green-text mb-4" size="60" />
         <br />
-        Connecté à une caisse
+        Connection établi
       </div>
     {:else}
       <div>
