@@ -4,6 +4,7 @@
   import { params, redirect } from '@roxi/routify'
   import { Button, Tabs, Tab } from '$material'
   import { useMutation } from '@sveltestack/svelte-query'
+  import QrCode from 'qrcode'
   import {
     faArrowRightArrowLeft,
     faArrowRightFromBracket,
@@ -28,6 +29,8 @@
   import { renderAmount } from '$lib/utils'
   import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
   import notify from '$lib/notify'
+  import { connectionPrefix } from '$lib/scanner/store'
+  import { v4 as uuidv4 } from 'uuid'
 
   let clientSelector: MagicSelect
   const subscribeKey = 'client_subscribe_id'
@@ -35,6 +38,7 @@
   let paymentDialog: PaymentDialog
   let subscribe: SubscribeLookup | undefined = undefined
   let mainContainer: HTMLDivElement
+  let qrcode = ''
 
   $: TABS = [
     {
@@ -69,12 +73,22 @@
     $layout.innerHeight - mainContainer?.offsetTop - ($isMobile ? 6 : 16)
 
   onMount(() => {
+    // Seléctione le participant depuis l'url
     if (subscribeId) {
       api<{ subscribeId: string }, { name: string }>('/api/users/name', {
         params: { subscribeId },
       }).then((user) => clientSelector.setValue(user.name))
     }
 
+    // Génère le code QR pour la connection mobile
+    const token = connectionPrefix + uuidv4()
+    const scannerURL = `https://${location.host}/scanner?token=${token}`
+    QrCode.toDataURL(scannerURL, {
+      type: 'image/webp',
+      margin: 0,
+    }).then((code) => (qrcode = code))
+
+    // Ecoute les racourcis claviers
     document.addEventListener('keyup', handleShortcut)
     return () => {
       document.removeEventListener('keyup', handleShortcut)
@@ -275,6 +289,7 @@
       <div in:fade|local class="centered flex-grow-1">
         <div>
           <IconLink icon={faCashRegister} size="3.5em" style="opacity: 0.2;" />
+          <img src={qrcode} alt="Code QR de connection mobile" />
         </div>
       </div>
     {/if}

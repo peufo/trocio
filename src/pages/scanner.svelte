@@ -43,6 +43,7 @@
 </script>
 
 <div class="wrapper">
+  <p>isConnected: {isConnected}</p>
   <Scanner isClosable={false} on:detect={handleDetect} />
 </div>
 
