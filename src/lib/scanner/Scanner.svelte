@@ -23,7 +23,7 @@
     isFlashOn,
     isSoundOn,
     isVibrateOn,
-  } from '$lib/scanner/options'
+  } from '$lib/scanner/store'
 
   /** Params ajouter à la requet de l'article */
   export let isClosable = true
