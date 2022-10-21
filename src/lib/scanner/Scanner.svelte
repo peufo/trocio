@@ -17,18 +17,15 @@
   import { isMobile } from '$lib/store/layout'
   import notify from '$lib/notify'
   import soundPristine from '$assets/sounds/Pristine.wav'
-  import type { Article, ArticleState } from 'types'
-  import { api } from '$lib/api'
+
   import {
     isAutoScanOn,
     isFlashOn,
     isSoundOn,
     isVibrateOn,
   } from '$lib/scanner/options'
-  import { getMismatchRaison } from './utils'
 
   /** Params ajouter à la requet de l'article */
-  export let queryParams: { [key: string]: string } = {}
   export let isClosable = true
 
   const TIMEOUT = 9 // secondes
