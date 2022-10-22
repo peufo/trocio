@@ -101,7 +101,7 @@
       Utiliser une imprimantes d'étiquettes
     </Switch>
 
-    <Switch bind:checked={tag.useScanner}>Utiliser les codes barres</Switch>
+    <Switch bind:checked={tag.useScanner}>Utiliser les codes QR</Switch>
 
     <div class="d-flex flex-wrap mt-4" style="gap: 1em;">
       <Button

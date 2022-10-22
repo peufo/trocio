@@ -291,7 +291,11 @@
       </div>
     {:else}
       <div in:fade|local class="centered flex-grow-1">
-        <PeerQR {peerToken} {peerConnections} />
+        <PeerQR
+          {peerToken}
+          {peerConnections}
+          disabled={!$troc.tag.useScanner}
+        />
       </div>
     {/if}
   </div>

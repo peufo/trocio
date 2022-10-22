@@ -4,11 +4,12 @@
 
   import IconLink from '$lib/util/IconLink.svelte'
   import { Icon } from '$material'
-  import { mdiCellphoneLink, mdiCellphoneLinkOff } from '@mdi/js'
+  import { mdiCellphoneLink } from '@mdi/js'
   import { fade, slide } from 'svelte/transition'
 
   export let peerToken: string
   export let peerConnections: number
+  export let disabled: boolean
 
   let qrcode = ''
 
@@ -20,26 +21,29 @@
 
 <div class="d-flex flex-column" style="gap: 1em;">
   <IconLink icon={faCashRegister} size="3.3em" style="opacity: 0.3;" />
-  <div style="text-align: center;">
-    <img src={qrcode} alt="Code QR de connection mobile" />
-    <br />
 
-    {#if !!peerConnections}
-      <div in:slide|local>
-        <Icon path={mdiCellphoneLink} class="green-text" size="60" />
-      </div>
-    {/if}
+  {#if !disabled}
+    <div style="text-align: center;">
+      <img src={qrcode} alt="Code QR de connection mobile" />
+      <br />
 
-    {#if !!peerConnections}
-      <p in:fade|local class="text-caption">
-        Connection établie ({peerConnections})
-      </p>
-    {:else}
-      <p in:fade|local class="text-caption">
-        Connectez votre smartphone à cette caisse
-      </p>
-    {/if}
-  </div>
+      {#if !!peerConnections}
+        <div in:slide|local>
+          <Icon path={mdiCellphoneLink} class="green-text" size="60" />
+        </div>
+      {/if}
+
+      {#if !!peerConnections}
+        <p in:fade|local class="text-caption">
+          Connection établie ({peerConnections})
+        </p>
+      {:else}
+        <p in:fade|local class="text-caption">
+          Connectez votre smartphone à cette caisse
+        </p>
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>
