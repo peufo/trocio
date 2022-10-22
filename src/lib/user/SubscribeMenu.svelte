@@ -27,8 +27,8 @@
     paymentDialog.open(subscribe, 'Correction du solde')
   }
 
-  function handleSelectRoleOrTarif() {
-    if ($isMobile) setTimeout(close, 200)
+  function closeAfterClick(force = false) {
+    if ($isMobile || force) setTimeout(close, 200)
   }
 </script>
 
@@ -40,7 +40,8 @@
     {subscribe}
     dense={!$isMobile}
     on:soldCorrection={handleSoldCorrection}
-    on:roleSelect={handleSelectRoleOrTarif}
-    on:tarifSelect={handleSelectRoleOrTarif}
+    on:roleSelect={() => closeAfterClick()}
+    on:tarifSelect={() => closeAfterClick()}
+    on:sendMail={() => closeAfterClick(true)}
   />
 </MagicMenu>

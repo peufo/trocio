@@ -16,14 +16,11 @@
   let position = { x: 0, y: 0 }
   let mouseHover = false
   let paymentDialog: PaymentDialog
-  const MENU_HEIGHT = 320 // En dur désolé...
+  let menuHeight = 0
 
   export function open(event: MouseEvent) {
     position = { x: event.pageX - 92, y: event.pageY - 20 }
-    const { offsetHeight } = document.body
-    if (position.y + MENU_HEIGHT > offsetHeight) {
-      position.y = offsetHeight - MENU_HEIGHT
-    }
+
     active = true
     dispatch('open')
   }
@@ -34,6 +31,13 @@
   }
 
   const handleMouseLeave = debounce(() => mouseHover || close(), 400)
+
+  $: {
+    const { offsetHeight } = document.body
+    if (position.y + menuHeight > offsetHeight) {
+      position.y = offsetHeight - menuHeight - 10
+    }
+  }
 </script>
 
 <PaymentDialog bind:this={paymentDialog} modeCorrection />
@@ -45,6 +49,7 @@
 {:else if active}
   <div
     class="s-menu"
+    bind:offsetHeight={menuHeight}
     in:fade|local={{ duration: 150 }}
     out:fade|local={{ duration: 150 }}
     on:mouseenter={() => (mouseHover = true)}

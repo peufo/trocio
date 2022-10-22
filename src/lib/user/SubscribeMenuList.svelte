@@ -32,6 +32,7 @@
     soldCorrection: void
     roleSelect: void
     tarifSelect: void
+    sendMail: void
   }
   const dispatch = createEventDispatcher<EventsMap>()
   const queryClient = useQueryClient()
@@ -153,6 +154,7 @@
         href="mailto:{subscribe?.user?.mail}?subject=Troc.io - {$troc.name}"
         target="_blank"
         on:click={(event) => {
+          dispatch('sendMail')
           if (!subscribe?.validedByUser) {
             const msg = `Vous ne pouvez pas envoyer un mail à cet utilisateur car il n'a pas validé sa participation.`
             notify.warning(msg)
