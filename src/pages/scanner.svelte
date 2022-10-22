@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { params } from '@roxi/routify'
+  import { params, redirect, url } from '@roxi/routify'
   import { Peer, DataConnection } from 'peerjs'
 
   import Scanner from '$lib/scanner/Scanner.svelte'
@@ -35,6 +35,10 @@
       isConnected = false
       notify.error(error.message)
     })
+
+    if ($params['token'] !== remoteToken) {
+      $redirect($url(undefined, { token: remoteToken }))
+    }
   }
 
   function handleDetect(event: { detail: string }) {
