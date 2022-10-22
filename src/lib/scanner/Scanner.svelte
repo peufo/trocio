@@ -29,7 +29,7 @@
   export let isClosable = true
 
   const TIMEOUT = 9 // secondes
-  let timeoutId: NodeJS.Timeout
+  let intervalId: NodeJS.Timeout
   let time = TIMEOUT
 
   let qrScanner: QrScanner
@@ -56,6 +56,7 @@
       highlightScanRegion: true,
       overlay,
     })
+    console.log('onMount')
     scan()
 
     const handleFlashOn = (v: boolean) => {
@@ -68,22 +69,27 @@
 
   onDestroy(() => {
     qrScanner?.destroy()
-    clearInterval(timeoutId)
+    clearInterval(intervalId)
   })
 
   function scan() {
+    console.log('onScan')
     isScanning = true
     video.play()
     qrScanner.start()
-    clearInterval(timeoutId)
+    clearInterval(intervalId)
     time = TIMEOUT
-    timeoutId = setInterval(() => --time <= 0 && pause(), 1000)
+    intervalId = setInterval(() => {
+      if (--time <= 0) pause()
+    }, 1000)
   }
+
+  window.onfocus = scan
 
   function pause() {
     isScanning = false
-    video.pause()
-    clearInterval(timeoutId)
+    video?.pause()
+    clearInterval(intervalId)
   }
 
   async function onDetect(scanResult: { data: string }) {
