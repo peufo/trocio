@@ -5,15 +5,6 @@
 
   export let article: ArticleLookup
 
-  const intl = new Intl.DateTimeFormat(undefined, {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-  })
-
   const events = [
     {
       title: 'Proposé',

@@ -93,7 +93,8 @@ export function renderAmount(
   )
 }
 
-export function getState(article: Article | ArticleLookup): ArticleState {
+export function getState(article?: Article | ArticleLookup): ArticleState {
+  if (!article) return 'proposed'
   if (article.recover) return 'recover'
   if (article.sold) return 'sold'
   if (article.refused) return 'refused'

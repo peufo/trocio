@@ -15,7 +15,7 @@
     ArticleLookup,
     ArticleState,
   } from 'types'
-  import { getStateLabel } from '$lib/utils'
+  import { getState, getStateLabel } from '$lib/utils'
   import { troc } from '$lib/troc/store'
   import { api, useApi } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
@@ -92,6 +92,17 @@
     'cancel-sold': 'annulé la vente',
     'cancel-valided': 'annulé la validation',
   }
+
+  const cancelActions: { state: ArticleState; label: string }[] = [
+    { state: 'sold', label: 'la vente' },
+    { state: 'recover', label: 'la récupération' },
+    { state: 'valided', label: 'la validation' },
+    { state: 'refused', label: 'le refus' },
+  ]
+
+  $: cancelAction = cancelActions.find(
+    ({ state }) => state === getState(article)
+  )
 
   function handleEditDone(event: CustomEvent<Article>) {
     article = { ...article, ...event.detail }
@@ -177,37 +188,14 @@
         {#if modeAdmin}
           {#if $queryCancelEvent.isLoading}
             <Button disabled text><Loader /></Button>
-          {:else if article.sold}
+          {:else if cancelAction}
             <Button
               text
               class="red-text"
-              on:click={() => $queryCancelEvent.mutate('sold')}
+              on:click={() =>
+                cancelAction && $queryCancelEvent.mutate(cancelAction.state)}
             >
-              Annuler la vente
-            </Button>
-          {:else if article.recover}
-            <Button
-              text
-              class="red-text"
-              on:click={() => $queryCancelEvent.mutate('recover')}
-            >
-              Annuler la récupération
-            </Button>
-          {:else if article.valided}
-            <Button
-              text
-              class="red-text"
-              on:click={() => $queryCancelEvent.mutate('valided')}
-            >
-              Annuler la validation
-            </Button>
-          {:else if article.refused}
-            <Button
-              text
-              class="red-text"
-              on:click={() => $queryCancelEvent.mutate('refused')}
-            >
-              Annuler le refus
+              Annuler {cancelAction.label}
             </Button>
           {/if}
 
