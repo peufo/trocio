@@ -64,14 +64,15 @@
     selectArticle(event.detail)
   }
 
-  async function handleDetectArticle(event: { detail: string }) {
-    try {
-      const articleId = event.detail
+  function handleDetectArticle(event: { detail: string }) {
+    selectArticleId(event.detail)
+  }
 
+  export async function selectArticleId(articleId: string) {
+    try {
       const [article] = await api<Article[]>('/api/articles', {
         params: { exact__id: articleId, ...queryParams },
       })
-
       if (!article) {
         const raison = await getMismatchRaison(articleId, queryParams)
         notify.warning(raison)
@@ -84,7 +85,7 @@
     }
   }
 
-  function selectArticle(article: Article) {
+  export function selectArticle(article: Article) {
     if (pendingItems.map(({ _id }) => _id).includes(article._id))
       return notify.warning('Article déjà sélectioné')
     pendingItems = [...pendingItems, article]
@@ -161,7 +162,8 @@
               </Button>
             {/await}
           {/if}
-          {#if !disableScanner}
+
+          {#if !disableScanner && $isMobile}
             <Button
               fab
               depressed

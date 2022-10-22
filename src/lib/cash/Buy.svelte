@@ -11,6 +11,9 @@
   export let subscribeId: string
   let template: Template
 
+  export const selectArticleId = (articleId: string) =>
+    template.selectArticleId(articleId)
+
   let pendingItems: Article[] = []
   const queryClient = useQueryClient()
   const querySold = useMutation(

@@ -17,6 +17,9 @@
   let template: Template
   let tagsPrint: TagsPrint
 
+  export const selectArticleId = (articleId: string) =>
+    template.selectArticleId(articleId)
+
   let pendingItems: Article[] = []
   const queryClient = useQueryClient()
   const queryValid = useMutation(

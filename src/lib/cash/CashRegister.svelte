@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, SvelteComponent } from 'svelte'
   import { fade, slide } from 'svelte/transition'
   import { params, redirect } from '@roxi/routify'
   import { Button, Tabs, Tab } from '$material'
@@ -40,28 +40,16 @@
 
   const peerToken = uuidv4()
   let peerConnections = 0
+  let templateComponent: Provide | Recover | Buy | undefined
 
   $: TABS = [
-    {
-      ref: 'provide',
-      label: 'Dépot',
-      icon: faArrowRightToBracket,
-      component: Provide,
-    },
-    {
-      ref: 'recover',
-      label: 'Retrait',
-      icon: faArrowRightFromBracket,
-      component: Recover,
-    },
-    { ref: 'buy', label: 'Achat', icon: faCartShopping, component: Buy },
-    {
-      ref: 'resum',
-      label: 'Compte',
-      icon: faArrowRightArrowLeft,
-      component: $isMobile ? SubActivityMobile : SubActivity,
-    },
+    { label: 'Dépot', icon: faArrowRightToBracket },
+    { label: 'Retrait', icon: faArrowRightFromBracket },
+    { label: 'Achat', icon: faCartShopping },
+    { label: 'Compte', icon: faArrowRightArrowLeft },
   ]
+
+  $: tabIndex = $params[tabIndexKey] || 3
 
   $: subscribeId = $params[subscribeKey]
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>({
@@ -90,7 +78,9 @@
         if (state === 'disconnected') peerConnections--
       })
       local.on('data', (data) => {
-        console.log(`TODO: handle ${data}`)
+        if (typeof data !== 'string') return
+        if (!templateComponent) return
+        templateComponent.selectArticleId(data)
       })
     })
 
@@ -278,19 +268,29 @@
           </div>
         </Tabs>
 
-        {#each TABS as { component }, index}
-          {#if index == ($params[tabIndexKey] || 3)}
-            <div
-              in:fade|locale
-              style="
+        {#key tabIndex}
+          <div
+            in:fade|locale
+            style="
                 height: calc(100% - {$isMobile ? '56' : '48'}px);
                 overflow-y: auto;
               "
-            >
-              <svelte:component this={component} {subscribeId} modeAdmin />
-            </div>
-          {/if}
-        {/each}
+          >
+            {#if tabIndex === '0'}
+              <Provide bind:this={templateComponent} {subscribeId} />
+            {:else if tabIndex === '1'}
+              <Recover bind:this={templateComponent} {subscribeId} />
+            {:else if tabIndex === '2'}
+              <Buy bind:this={templateComponent} {subscribeId} />
+            {:else if tabIndex === '3'}
+              {#if $isMobile}
+                <SubActivityMobile {subscribeId} modeAdmin />
+              {:else}
+                <SubActivity {subscribeId} modeAdmin />
+              {/if}
+            {/if}
+          </div>
+        {/key}
       </div>
     {:else}
       <div in:fade|local class="centered flex-grow-1">
