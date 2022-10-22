@@ -1,8 +1,8 @@
 <script lang="ts">
   import QrCode from 'qrcode'
   import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
-  import { mdiCellphoneLink, mdiQrcodeScan, mdiScanner } from '@mdi/js'
-  import { fade, slide } from 'svelte/transition'
+  import { mdiCellphoneWireless, mdiQrcodeScan } from '@mdi/js'
+  import { fade } from 'svelte/transition'
 
   import { isMobile } from '$lib/store/layout'
   import IconLink from '$lib/util/IconLink.svelte'
@@ -20,42 +20,46 @@
   }
 </script>
 
-<div class="d-flex flex-column" style="gap: 1em;">
-  <IconLink icon={faCashRegister} size="3.3em" style="opacity: 0.3;" />
+{#if disabled}
+  <IconLink icon={faCashRegister} size="160" style="opacity: 0.3;" />
+{:else}
+  <div
+    class="d-flex flex-column justify-center"
+    style="gap: 0.5 em; text-align: center;"
+  >
+    {#if $isMobile}
+      <IconLink icon={mdiQrcodeScan} href="/scanner" fab />
+      <p class="text-caption">Se connecter à une caisse ?</p>
+    {:else}
+      <img src={qrcode} alt="Code QR de connexion mobile" />
 
-  {#if !disabled}
-    <div style="text-align: center;">
-      {#if $isMobile}
-        <IconLink icon={mdiQrcodeScan} href="/scanner" fab />
-        <p class="text-caption">Se connecter à une caisse ?</p>
+      {#if !!peerConnections}
+        <p in:fade|local class="text-caption">
+          Connexion établie ({peerConnections})
+        </p>
       {:else}
-        <img src={qrcode} alt="Code QR de connexion mobile" />
-        <br />
-        {#if !!peerConnections}
-          <div in:slide|local>
-            <Icon path={mdiCellphoneLink} class="green-text" size="60" />
-          </div>
-        {/if}
-
-        {#if !!peerConnections}
-          <p in:fade|local class="text-caption">
-            Connexion établie ({peerConnections})
-          </p>
-        {:else}
-          <p in:fade|local class="text-caption">
-            Connectez votre smartphone à cette caisse
-          </p>
-        {/if}
+        <p in:fade|local class="text-caption">Connectez votre smartphone</p>
       {/if}
-    </div>
-  {/if}
-</div>
+
+      <div class="d-flex justify-center" style="gap: 2em;">
+        <IconLink icon={faCashRegister} size="60" style="opacity: 0.3;" />
+        {#each Array(peerConnections) as p, i}
+          <div transition:fade|local>
+            <Icon path={mdiCellphoneWireless} class="green-text" size="60" />
+          </div>
+        {/each}
+      </div>
+    {/if}
+  </div>
+{/if}
 
 <style>
   img {
     border-radius: 10px;
     border: 2px solid grey;
     margin-bottom: 1em;
+    width: fit-content;
+    margin: auto;
   }
 
   .text-caption {
