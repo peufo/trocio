@@ -17,6 +17,9 @@ interface IconProps {
   label?: any
   /** styles added to the icon */
   style?: string
+  /** Icon viewPort */
+  viewWidth?: number | string
+  viewHeight?: number | string
 }
 
 declare class Icon extends SvelteComponentTyped<IconProps> {}

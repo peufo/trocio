@@ -86,6 +86,9 @@
       peerConnections++
       local.on('close', () => peerConnections--)
       local.on('error', () => peerConnections--)
+      local.on('iceStateChanged', (state) => {
+        if (state === 'disconnected') peerConnections--
+      })
       local.on('data', (data) => {
         console.log(`TODO: handle ${data}`)
       })

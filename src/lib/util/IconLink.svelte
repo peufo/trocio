@@ -8,7 +8,7 @@
   export let tip = ''
   export let href = ''
   export let clickable = false
-  export let icon: IconDefinition
+  export let icon: IconDefinition | string
   export let size = '24px'
   export let rotate = 0
   export let spin = false
@@ -22,6 +22,22 @@
   $: style = opacity
     ? style + 'opacity: 0.5;'
     : style.replace('opacity: 0.5;', '')
+
+  let path: string | string[] = ''
+  let viewWidth = 24
+  let viewHeight = 24
+
+  $: {
+    if (typeof icon === 'string') {
+      path = icon
+      viewWidth = 24
+      viewHeight = 24
+    } else {
+      path = icon.icon[4]
+      viewWidth = icon.icon[0]
+      viewHeight = icon.icon[1]
+    }
+  }
 </script>
 
 {#if !!tip}
@@ -29,11 +45,11 @@
     <Tooltip bottom>
       <span slot="tip" {title}>{tip}</span>
       <a {href} {target} {title}>
-        <Button icon={!fab} {fab} on:click class={buttonClass}>
+        <Button icon={!fab} {fab} on:click depressed class={buttonClass}>
           <Icon
-            path={icon.icon[4]}
-            viewWidth={icon.icon[0]}
-            viewHeight={icon.icon[1]}
+            {path}
+            {viewWidth}
+            {viewHeight}
             {size}
             {rotate}
             {spin}
@@ -48,11 +64,11 @@
   {:else}
     <Tooltip bottom>
       <span slot="tip" {title}>{tip}</span>
-      <Button icon={!fab} {fab} on:click class={buttonClass}>
+      <Button icon={!fab} {fab} depressed on:click class={buttonClass}>
         <Icon
-          path={icon.icon[4]}
-          viewWidth={icon.icon[0]}
-          viewHeight={icon.icon[1]}
+          {path}
+          {viewWidth}
+          {viewHeight}
           {size}
           {rotate}
           {spin}
@@ -66,11 +82,11 @@
   {/if}
 {:else if !!href}
   <a {href} {target} {title}>
-    <Button icon={!fab} {fab} on:click class={buttonClass}>
+    <Button icon={!fab} {fab} depressed on:click class={buttonClass}>
       <Icon
-        path={icon.icon[4]}
-        viewWidth={icon.icon[0]}
-        viewHeight={icon.icon[1]}
+        {path}
+        {viewWidth}
+        {viewHeight}
         {size}
         {rotate}
         {spin}
@@ -82,11 +98,11 @@
     </Button>
   </a>
 {:else if clickable}
-  <Button icon={!fab} {fab} on:click class={buttonClass}>
+  <Button icon={!fab} {fab} depressed on:click class={buttonClass}>
     <Icon
-      path={icon.icon[4]}
-      viewWidth={icon.icon[0]}
-      viewHeight={icon.icon[1]}
+      {path}
+      {viewWidth}
+      {viewHeight}
       {size}
       {rotate}
       {spin}
@@ -98,9 +114,9 @@
   </Button>
 {:else}
   <Icon
-    path={icon.icon[4]}
-    viewWidth={icon.icon[0]}
-    viewHeight={icon.icon[1]}
+    {path}
+    {viewWidth}
+    {viewHeight}
     {size}
     {rotate}
     {spin}
