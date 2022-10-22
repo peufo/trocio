@@ -28,6 +28,9 @@
     remote = peer.connect(remoteToken)
     remote.on('open', () => (isConnected = true))
     remote.on('close', () => (isConnected = false))
+    remote.on('iceStateChanged', (state) => {
+      if (state === 'disconnected') isConnected = false
+    })
     remote.on('error', (error) => {
       isConnected = false
       notify.error(error.message)
