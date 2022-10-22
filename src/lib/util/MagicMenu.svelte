@@ -7,20 +7,17 @@
 
   import { isMobile } from '$lib/store/layout'
 
-  import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
-
   export let active = false
 
   const dispatch = createEventDispatcher<{ open: void; close: void }>()
 
   let position = { x: 0, y: 0 }
   let mouseHover = false
-  let paymentDialog: PaymentDialog
+
   let menuHeight = 0
 
   export function open(event: MouseEvent) {
     position = { x: event.pageX - 92, y: event.pageY - 20 }
-
     active = true
     dispatch('open')
   }
@@ -39,8 +36,6 @@
     }
   }
 </script>
-
-<PaymentDialog bind:this={paymentDialog} modeCorrection />
 
 {#if $isMobile}
   <Dialog bind:active>

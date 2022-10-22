@@ -3,6 +3,7 @@
   import { Dialog, Divider, Button, Icon } from '$material'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiPrinter } from '@mdi/js'
+  import { faHistory } from '@fortawesome/free-solid-svg-icons'
 
   import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import { renderAmount } from '$lib/utils'
@@ -19,7 +20,7 @@
   import { api, useApi } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
-  import { faHistory } from '@fortawesome/free-solid-svg-icons'
+  import ArticleStateHistoric from '$lib/article/StateHistoric.svelte'
 
   export let active = false
   export let article: ArticleLookup | undefined
@@ -119,35 +120,7 @@
       </div>
     </div>
 
-    <p>
-      Proposé le {intl.format(new Date(article.createdAt))}
-      par <b>{article.provider?.name || article.providerSub?.name}</b>
-      pour <b>{renderAmount(article.price)}</b>
-    </p>
-    {#if article.valided}
-      <p>
-        Validé le {intl.format(new Date(article.valided))}
-        par <b>{article.validator?.name}</b>
-      </p>
-    {:else if article.refused}
-      <p>
-        Refusé le {intl.format(new Date(article.refused))}
-        par <b>{article.validator?.name}</b>
-      </p>
-    {/if}
-
-    {#if article.sold}
-      <p>
-        Vendu le {intl.format(new Date(article.sold))}
-        par <b>{article.seller?.name}</b>
-        à <b>{article.buyer?.name || article.buyerSub?.name}</b>
-      </p>
-    {:else if article.recover}
-      <p>
-        Récupèré le {intl.format(new Date(article.recover))}
-        par <b>{article.seller?.name}</b>
-      </p>
-    {/if}
+    <ArticleStateHistoric {article} />
 
     {#if $queryCorrections && $queryCorrections.isSuccess && !$queryCorrections.isLoading && $queryCorrections.data?.corrections?.length}
       {#if !correctionsVisible}
