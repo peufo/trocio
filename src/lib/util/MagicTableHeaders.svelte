@@ -13,10 +13,6 @@
 
   // Permet de remonter le query sans passer par $params (trop global)
   export let queryParams: { [key: string]: any } = {}
-  const queryParamsArray: { [key: string]: any }[] = []
-  $: queryParams = queryParamsArray.length
-    ? queryParamsArray.reduce((acc, cur) => ({ ...acc, ...cur }))
-    : {}
 
   $: headers = fields.filter((f) => !f.disabled && f.visible)
 
@@ -34,6 +30,6 @@
     this={components[field.format] || MagicTableHeaderDefault}
     {field}
     isLast={headers.length - 1 === index}
-    bind:queryParam={queryParamsArray[index]}
+    bind:queryParam={queryParams}
   />
 {/each}

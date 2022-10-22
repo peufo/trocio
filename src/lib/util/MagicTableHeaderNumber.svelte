@@ -21,7 +21,7 @@
 
   import type { FieldInteface, EnumOption } from 'types'
   import IconLink from '$lib/util/IconLink.svelte'
-  import { mdiClose, mdiCloseCircleOutline, mdiDelete } from '@mdi/js'
+  import { mdiClose } from '@mdi/js'
 
   export let field: Partial<FieldInteface>
   export let active = false
@@ -179,8 +179,8 @@
           class="ma-4"
           bind:value={min}
           type="number"
-          min={0}
-          step={5}
+          min="0"
+          step="5"
           on:change={handleChangeMin}
         >
           <span slot="prepend">
@@ -192,8 +192,8 @@
           class="ma-4"
           bind:value={max}
           type="number"
-          min={0}
-          step={5}
+          min="0"
+          step="5"
           on:change={handleChangeMax}
         >
           <span slot="prepend">
@@ -207,8 +207,8 @@
           bind:value={min}
           type="datetime-local"
           placeholder=" "
-          min={0}
-          step={5}
+          min="0"
+          step="5"
           on:change={handleChangeMinDate}
           on:input={handleChangeMinDate}
         >
@@ -222,8 +222,8 @@
           bind:value={max}
           type="datetime-local"
           placeholder=" "
-          min={0}
-          step={5}
+          min="0"
+          step="5"
           on:change={handleChangeMaxDate}
           on:input={handleChangeMaxDate}
         >
