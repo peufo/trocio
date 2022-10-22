@@ -25,7 +25,7 @@ export async function login(req, res, next) {
   if (!mail || !password) return next(Error('mail and password required'))
   UserModel.getAuthenticated(mail, password)
     .then((user) => {
-      console.log(`Nouvelle connection de ${user.name}`)
+      console.log(`Nouvelle connexion de ${user.name}`)
       req.session.user = user
       delete req.session.user.password //TODO: not work ?
       next()
@@ -86,7 +86,7 @@ export async function loginWithGoogle(req, res, next) {
                 .catch(() => console.log('Confirmation mail failed'))
               console.log(`Nouvelle utilisateur: ${user.name}`)
             }
-            console.log(`Nouvelle connection de ${user.name}`)
+            console.log(`Nouvelle connexion de ${user.name}`)
             req.session.user = user
 
             return res.redirect(state)

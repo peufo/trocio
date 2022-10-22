@@ -37,13 +37,13 @@
   function handleDetect(event: { detail: string }) {
     const detectedValue = event.detail
 
-    // Si la connection est établi, envoyer la détection
+    // Si la connexion est établi, envoyer la détection
     if (isConnected && remote) {
       remote.send(detectedValue)
       return
     }
 
-    // Si le code est l'adresse du scanner, on tente une connection
+    // Si le code est l'adresse du scanner, on tente une connexion
     const baseUrl = location.origin + location.pathname
     if (detectedValue.startsWith(baseUrl)) {
       const paramsString = detectedValue.replace(baseUrl, '')
@@ -71,13 +71,15 @@
       <div>
         <Icon path={mdiLanPending} class="blue-text mb-4" size="60" />
         <br />
-        Connection à une caisse...
+        Connexion à une caisse...
       </div>
     {:else if isConnected}
       <div>
         <Icon path={mdiLanConnect} class="green-text mb-4" size="60" />
         <br />
-        Connection établi
+        Connexion établie
+        <br />
+        Vous pouvez scanner des étiquettes
       </div>
     {:else}
       <div>

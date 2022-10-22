@@ -24,7 +24,7 @@
 
   {#if !disabled}
     <div style="text-align: center;">
-      <img src={qrcode} alt="Code QR de connection mobile" />
+      <img src={qrcode} alt="Code QR de connexion mobile" />
       <br />
 
       {#if !!peerConnections}
@@ -35,7 +35,7 @@
 
       {#if !!peerConnections}
         <p in:fade|local class="text-caption">
-          Connection établie ({peerConnections})
+          Connexion établie ({peerConnections})
         </p>
       {:else}
         <p in:fade|local class="text-caption">

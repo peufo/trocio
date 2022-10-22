@@ -2,7 +2,7 @@ import { api } from '$lib/api'
 import type { BaseResponse, User } from 'types'
 
 /**
- * Connection de l'utilisateur
+ * Connexion de l'utilisateur
  * Est automatiquement redirigé vers authenticate
  */
 export function login(mail: string, password: string) {

@@ -27,7 +27,7 @@ declare module 'express-session' {
   }
 }
 
-//Connection database
+// Connection database
 try {
   mongoose.connect(config.TROCIO_DB).then(() => {
     console.log(`DB connected: ${config.TROCIO_DB}`)
