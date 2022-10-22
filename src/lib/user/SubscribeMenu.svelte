@@ -13,11 +13,16 @@
   export let subscribe: SubscribeLookup | undefined = undefined
 
   let position = { x: 0, y: 0 }
-  let mouseIn = false
+  let mouseHover = false
   let paymentDialog: PaymentDialog
+  const MENU_HEIGHT = 320 // En dur désolé...
 
   export function open(event: MouseEvent, sub: SubscribeLookup) {
     position = { x: event.pageX - 92, y: event.pageY - 20 }
+    const { offsetHeight } = document.body
+    if (position.y + MENU_HEIGHT > offsetHeight) {
+      position.y = offsetHeight - MENU_HEIGHT
+    }
     state = 'main'
     subscribe = sub
     active = true
@@ -27,7 +32,7 @@
     active = false
   }
 
-  const handleMouseLeave = debounce(() => mouseIn || close(), 400)
+  const handleMouseLeave = debounce(() => mouseHover || close(), 400)
 
   function handleSoldCorrection() {
     active = false
@@ -56,9 +61,9 @@
     class="s-menu"
     in:fade|local={{ duration: 150 }}
     out:fade|local={{ duration: 150 }}
-    on:mouseenter={() => (mouseIn = true)}
+    on:mouseenter={() => (mouseHover = true)}
     on:mouseleave={() => {
-      mouseIn = false
+      mouseHover = false
       handleMouseLeave()
     }}
     style="left: {position.x}px; top: {position.y}px;"
