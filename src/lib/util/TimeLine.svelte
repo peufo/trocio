@@ -1,9 +1,13 @@
-<script lang="ts">
-  export let events: {
+<script lang="ts" context="module">
+  export type EventDescription = {
     title: string
     detail?: string
     time: string | number | Date
-  }[]
+  }
+</script>
+
+<script lang="ts">
+  export let events: EventDescription[]
 
   const intl = new Intl.DateTimeFormat(undefined, {
     weekday: 'short',
