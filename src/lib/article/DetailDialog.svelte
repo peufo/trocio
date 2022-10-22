@@ -251,7 +251,11 @@
           </Button>
 
           {#if modeAdmin || (!article.valided && !article.refused)}
-            <ArticleEditDialog {article} on:done={handleEditDone} />
+            <ArticleEditDialog
+              {article}
+              on:done={handleEditDone}
+              actionName="valider"
+            />
           {/if}
         {/if}
       </div>
