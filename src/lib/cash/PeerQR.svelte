@@ -28,6 +28,8 @@
     style="gap: 0.5 em; text-align: center;"
   >
     {#if $isMobile}
+      <IconLink icon={faCashRegister} size="160" style="opacity: 0.3;" />
+      <br />
       <IconLink icon={mdiQrcodeScan} href="/scanner" fab />
       <p class="text-caption">Se connecter à une caisse ?</p>
     {:else}

@@ -71,6 +71,7 @@
     <SubscribeMenuList
       {state}
       {subscribe}
+      dense
       on:soldCorrection={handleSoldCorrection}
     />
   </div>

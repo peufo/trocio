@@ -26,6 +26,7 @@
 
   export let state: 'main' | 'role' | 'tarif' = 'main'
   export let subscribe: SubscribeLookup | undefined = undefined
+  export let dense = false
 
   interface EventsMap {
     soldCorrection: void
@@ -82,7 +83,7 @@
   )
 </script>
 
-<List style="overflow-x: hidden;" dense>
+<List style="overflow-x: hidden;" {dense}>
   {#if state === 'main'}
     <div in:fly|local={{ x: -200 }}>
       <ListItem disabled dense>
