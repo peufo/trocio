@@ -100,6 +100,7 @@
 
 <style>
   .wrapper {
+    padding: 0.5em;
     max-width: 600px;
     margin: auto;
   }
