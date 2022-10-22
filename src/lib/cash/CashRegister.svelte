@@ -72,6 +72,7 @@
     const peer = new Peer(peerToken)
     peer.on('connection', (local) => {
       peerConnections++
+      notify.success('Nouveua smartphone connecté')
       local.on('close', () => peerConnections--)
       local.on('error', () => peerConnections--)
       local.on('iceStateChanged', (state) => {

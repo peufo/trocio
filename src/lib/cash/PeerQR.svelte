@@ -31,6 +31,20 @@
       <IconLink icon={mdiQrcodeScan} href="/scanner" fab />
       <p class="text-caption">Se connecter à une caisse ?</p>
     {:else}
+      <div class="d-flex justify-center" style="gap: 2em;">
+        <IconLink icon={faCashRegister} size="60" style="opacity: 0.3;" />
+        {#each Array(peerConnections) as p, i}
+          <div transition:fade|local>
+            <Icon
+              path={mdiCellphoneWireless}
+              class="secondary-text"
+              size="60"
+            />
+          </div>
+        {/each}
+      </div>
+      <br />
+
       <img src={qrcode} alt="Code QR de connexion mobile" />
 
       {#if !!peerConnections}
@@ -40,15 +54,6 @@
       {:else}
         <p in:fade|local class="text-caption">Connectez votre smartphone</p>
       {/if}
-
-      <div class="d-flex justify-center" style="gap: 2em;">
-        <IconLink icon={faCashRegister} size="60" style="opacity: 0.3;" />
-        {#each Array(peerConnections) as p, i}
-          <div transition:fade|local>
-            <Icon path={mdiCellphoneWireless} class="green-text" size="60" />
-          </div>
-        {/each}
-      </div>
     {/if}
   </div>
 {/if}
