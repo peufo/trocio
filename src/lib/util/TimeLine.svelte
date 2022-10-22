@@ -8,6 +8,7 @@
 
 <script lang="ts">
   export let events: EventDescription[]
+  export let hasNext = false
 
   const intl = new Intl.DateTimeFormat(undefined, {
     weekday: 'short',
@@ -19,15 +20,19 @@
   })
 </script>
 
-<div class="timeline">
-  {#each events as { title, detail, time }}
+<div class="timeline" class:hasNext>
+  {#each events as { title, detail, time }, index}
     <div>
       <div class="time text-caption">
         {intl.format(new Date(time))}
       </div>
       <div class="decorator">
         <div class="dot" />
-        <div class="line" />
+
+        <div
+          class="line"
+          class:hide={!hasNext && index === events.length - 1}
+        />
       </div>
       <div class="content">
         <b>{title}</b>
@@ -56,7 +61,7 @@
   }
 
   .decorator {
-    padding: 6px 0px;
+    padding-top: 6px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -71,7 +76,7 @@
       margin-top: 5px;
     }
 
-    & > .line {
+    & > .line:not(.hide) {
       width: 2px;
       height: 100%;
       background-color: var(--theme-dividers);

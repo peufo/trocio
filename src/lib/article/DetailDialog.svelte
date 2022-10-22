@@ -6,7 +6,6 @@
   import { faHistory } from '@fortawesome/free-solid-svg-icons'
 
   import ArticleEditDialog from '$lib/article/EditDialog.svelte'
-  import { renderAmount } from '$lib/utils'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import type {
     Article,
@@ -20,7 +19,9 @@
   import { api, useApi } from '$lib/api'
   import Loader from '$lib/util/Loader.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
-  import ArticleStateHistoric from '$lib/article/StateHistoric.svelte'
+  import ArticleHistoricState from '$lib/article/HistoricState.svelte'
+  import ArticleHistoricEdition from '$lib/article/HistoricEdition.svelte'
+  import TimeLine from '$lib/util/TimeLine.svelte'
 
   export let active = false
   export let article: ArticleLookup | undefined
@@ -40,12 +41,6 @@
   let correctionsVisible = false
 
   $: if (!active) correctionsVisible = false
-  $: queryCorrections = article
-    ? useApi<{ articleId: string }, ArticleCorrectionsLookup>([
-        'articles/corrections',
-        { articleId: article?._id },
-      ])
-    : null
 
   const queryDelete = useMutation(
     (data: { articleId: string }) =>
@@ -83,15 +78,6 @@
       },
     }
   )
-
-  const mapCorrectionEvent: { [key in ArticleCorrection['event']]: string } = {
-    'edit-name': 'changé le nom',
-    'edit-price': 'changé le prix',
-    'cancel-recover': 'annulé la récupération',
-    'cancel-refused': 'annulé le refus',
-    'cancel-sold': 'annulé la vente',
-    'cancel-valided': 'annulé la validation',
-  }
 
   const cancelActions: { state: ArticleState; label: string }[] = [
     { state: 'sold', label: 'la vente' },
@@ -131,37 +117,8 @@
       </div>
     </div>
 
-    <ArticleStateHistoric {article} />
-
-    {#if $queryCorrections && $queryCorrections.isSuccess && !$queryCorrections.isLoading && $queryCorrections.data?.corrections?.length}
-      {#if !correctionsVisible}
-        <div out:slide|local class="d-flex">
-          <div class="flex-grow-1" />
-          <Button
-            on:click={() => (correctionsVisible = true)}
-            size="small"
-            text
-          >
-            <IconLink icon={faHistory} class="mr-2" size="1em" opacity />
-            {$queryCorrections.data.corrections.length}
-            éditions
-          </Button>
-        </div>
-      {:else}
-        <div in:slide|local>
-          <b>Historique des éditions : </b>
-
-          {#each $queryCorrections.data.corrections as correction}
-            <div>
-              {intl.format(new Date(correction.timestamp))} -
-              {correction.author.name}
-              a
-              {mapCorrectionEvent[correction.event]}
-            </div>
-          {/each}
-        </div>
-      {/if}
-    {/if}
+    <ArticleHistoricState {article} />
+    <ArticleHistoricEdition {article} />
 
     <Divider class="mt-4 mb-4" />
 

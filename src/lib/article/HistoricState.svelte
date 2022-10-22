@@ -12,8 +12,7 @@
       {
         title: 'Proposé',
         time: article.createdAt,
-        detail: `par ${article.provider?.name || article.providerSub?.name}
-          pour ${renderAmount(article.price)}`,
+        detail: `par ${article.provider?.name || article.providerSub?.name}`,
       },
     ]
 
@@ -49,4 +48,4 @@
   }
 </script>
 
-<TimeLine {events} />
+<TimeLine {events} hasNext={!article.sold && !article.recover} />
