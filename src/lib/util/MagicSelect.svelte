@@ -91,6 +91,7 @@
     if (!$isMobile && keepFocus) inputElement.focus()
     else inputElement.blur()
     await tick()
+
     if (selectedIndex >= itemsFiltred.length)
       selectedIndex = itemsFiltred.length - 1
   }
@@ -126,7 +127,8 @@
   }
 
   function handleBlur() {
-    setTimeout(() => (isFocus = false), 200)
+    if (!flatMode) setTimeout(() => (isFocus = false), 200)
+    else isFocus = false
   }
 </script>
 
