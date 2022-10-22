@@ -50,18 +50,16 @@
   .time,
   .content {
     padding: 6px 16px;
+    width: calc(50% - 6px);
   }
 
   .time {
+    padding-top: 8px;
     text-align: right;
-    min-width: 180px;
-  }
-  .content {
-    flex-grow: 1;
   }
 
   .decorator {
-    padding-top: 6px;
+    padding-top: 7px;
     display: flex;
     flex-direction: column;
     gap: 10px;
