@@ -283,12 +283,10 @@
               <Recover bind:this={templateComponent} {subscribeId} />
             {:else if tabIndex === '2'}
               <Buy bind:this={templateComponent} {subscribeId} />
-            {:else if tabIndex === '3'}
-              {#if $isMobile}
-                <SubActivityMobile {subscribeId} modeAdmin />
-              {:else}
-                <SubActivity {subscribeId} modeAdmin />
-              {/if}
+            {:else if $isMobile}
+              <SubActivityMobile {subscribeId} modeAdmin />
+            {:else}
+              <SubActivity {subscribeId} modeAdmin />
             {/if}
           </div>
         {/key}
