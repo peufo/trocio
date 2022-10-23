@@ -28,7 +28,7 @@
 
     <div class="flex-grow-1">
       <div style="max-width: 630px; margin: auto;">
-        <Card class="pa-4" style="z-index: 2;">
+        <Card class="pa-4 simple-card">
           <CardText>
             <p>Trocio facilite l'organisation de commerces éphémère.</p>
             <p>
@@ -238,8 +238,6 @@
     </div>
   </section>
 </main>
-
-<div class="background-grey" />
 
 <style>
   :global #app {
