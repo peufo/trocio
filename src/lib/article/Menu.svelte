@@ -6,6 +6,7 @@
   import {
     faAngleLeft,
     faAngleRight,
+    faArrowRightArrowLeft,
     faArrowRightFromBracket,
     faArrowRightToBracket,
   } from '@fortawesome/free-solid-svg-icons'
@@ -95,6 +96,12 @@
   $: cancelAction = cancelActions.find(
     ({ state }) => state === getState(article)
   )
+
+  $: casheRegisterParams = {
+    trocId: $params.trocId,
+    client_subscribe_id: article?.providerSubId,
+    preselect_article: article?._id,
+  }
 </script>
 
 <MagicMenu bind:this={magicMenu} on:open={() => (state = 'main')}>
@@ -123,10 +130,8 @@
             {#if getState(article) === 'proposed'}
               <ListItem
                 href={$url('/admin/cash_register', {
-                  trocId: $params.trocId,
-                  client_subscribe_id: article.providerSubId,
+                  ...casheRegisterParams,
                   cash_register_tab_index: 0,
-                  preselect_article: article._id,
                 })}
               >
                 <span slot="prepend">
@@ -142,10 +147,8 @@
             {:else if getState(article) === 'valided'}
               <ListItem
                 href={$url('/admin/cash_register', {
-                  trocId: $params.trocId,
-                  client_subscribe_id: article.providerSubId,
+                  ...casheRegisterParams,
                   cash_register_tab_index: 1,
-                  preselect_article: article._id,
                 })}
               >
                 <span slot="prepend">
@@ -155,8 +158,40 @@
                     class="mr-3"
                   />
                 </span>
-
                 Vers le retrait
+              </ListItem>
+            {:else}
+              <ListItem
+                href={$url('/admin/cash_register', casheRegisterParams)}
+              >
+                <span slot="prepend">
+                  <IconLink
+                    icon={faArrowRightArrowLeft}
+                    size="1em"
+                    class="mr-3"
+                  />
+                </span>
+
+                Vers le fournisseur
+              </ListItem>
+            {/if}
+
+            {#if getState(article) === 'sold'}
+              <ListItem
+                href={$url('/admin/cash_register', {
+                  ...casheRegisterParams,
+                  client_subscribe_id: article.buyerSubId,
+                })}
+              >
+                <span slot="prepend">
+                  <IconLink
+                    icon={faArrowRightArrowLeft}
+                    size="1em"
+                    class="mr-3"
+                  />
+                </span>
+
+                Vers l'acheteur
               </ListItem>
             {/if}
           {/if}
