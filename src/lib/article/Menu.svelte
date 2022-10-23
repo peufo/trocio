@@ -1,8 +1,14 @@
 <script lang="ts">
   import { fly } from 'svelte/transition'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
+  import { url, params } from '@roxi/routify'
   import { mdiPrinter, mdiTrashCanOutline, mdiUndo } from '@mdi/js'
-  import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
+  import {
+    faAngleLeft,
+    faAngleRight,
+    faArrowRightFromBracket,
+    faArrowRightToBracket,
+  } from '@fortawesome/free-solid-svg-icons'
   import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
   import { Icon, List, ListItem } from '$material'
@@ -102,15 +108,58 @@
           <ListItem on:click={() => (state = 'historic-state')}>
             Évolution du status
             <span slot="append">
-              <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
+              <IconLink icon={faAngleRight} size="1.1em" class="ml-2" />
             </span>
           </ListItem>
           <ListItem on:click={() => (state = 'historic-edit')}>
             Voir les éditions
             <span slot="append">
-              <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
+              <IconLink icon={faAngleRight} size="1.1em" class="ml-2" />
             </span>
           </ListItem>
+
+          <!-- Liens vers la caisse -->
+          {#if modeAdmin}
+            {#if getState(article) === 'proposed'}
+              <ListItem
+                href={$url('/admin/cash_register', {
+                  trocId: $params.trocId,
+                  client_subscribe_id: article.providerSubId,
+                  cash_register_tab_index: 0,
+                  preselect_article: article._id,
+                })}
+              >
+                <span slot="prepend">
+                  <IconLink
+                    icon={faArrowRightToBracket}
+                    size="1em"
+                    class="mr-3"
+                  />
+                </span>
+
+                Vers le dépot
+              </ListItem>
+            {:else if getState(article) === 'valided'}
+              <ListItem
+                href={$url('/admin/cash_register', {
+                  trocId: $params.trocId,
+                  client_subscribe_id: article.providerSubId,
+                  cash_register_tab_index: 1,
+                  preselect_article: article._id,
+                })}
+              >
+                <span slot="prepend">
+                  <IconLink
+                    icon={faArrowRightFromBracket}
+                    size="1em"
+                    class="mr-3"
+                  />
+                </span>
+
+                Vers le retrait
+              </ListItem>
+            {/if}
+          {/if}
 
           <!-- Impression étitquette -->
           <ListItem
@@ -145,7 +194,7 @@
           {/if}
 
           <!-- Annulation de status -->
-          {#if cancelAction}
+          {#if modeAdmin && cancelAction}
             <ListItem
               on:click={() => {
                 if (!cancelAction) return

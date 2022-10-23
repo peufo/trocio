@@ -97,14 +97,14 @@
         <ListItem on:click={() => (state = 'role')}>
           Assigner un rôle
           <span slot="append">
-            <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
+            <IconLink icon={faAngleRight} size="1.1em" class="ml-2" />
           </span>
         </ListItem>
       {/if}
       <ListItem on:click={() => (state = 'tarif')}>
         Attribuer un tarif
         <span slot="append">
-          <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
+          <IconLink icon={faAngleRight} size="1.1em" class="ml-2" />
         </span>
       </ListItem>
 
@@ -126,7 +126,7 @@
         })}
       >
         <span slot="prepend">
-          <IconLink icon={faCubes} class="mr-3 mt-0 mb-0" size="1.1em" />
+          <IconLink icon={faCubes} class="mr-3" size="1.1em" />
         </span>
         Vers les articles
       </ListItem>

@@ -1,9 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { fade, scale, slide, fly } from 'svelte/transition'
   import { flip } from 'svelte/animate'
-  import { Button, Icon } from '$material'
-  import MagicSelect from '$lib/util/MagicSelect.svelte'
+  import { fade, scale, slide, fly } from 'svelte/transition'
+  import { params } from '@roxi/routify'
   import {
     mdiChevronDown,
     mdiClose,
@@ -13,6 +12,8 @@
   import { faTimes } from '@fortawesome/free-solid-svg-icons'
   import 'animate.css'
 
+  import { Button, Icon } from '$material'
+  import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { isMobile } from '$lib/store/layout'
   import { renderAmount } from '$lib/utils'
   import { troc } from '$lib/troc/store'
@@ -39,6 +40,8 @@
 
   onMount(() => {
     if (!$isMobile) magicSelect.focus()
+    if ($params['preselect_article'])
+      selectArticleId($params['preselect_article'])
   })
 
   export function closeSelection() {
