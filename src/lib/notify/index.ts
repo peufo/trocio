@@ -16,12 +16,18 @@ interface INotifyOptions {
   transitionParams?: ScaleParams
 }
 
-function parseArgs(textOrOptions: string | INotifyOptions, persistent = false) {
-  const options: INotifyOptions =
-    typeof textOrOptions === 'string'
-      ? { text: textOrOptions, persistent, duration: DURATION }
-      : textOrOptions
-  return options
+function parseArgs(
+  textOrOptions: string | INotifyOptions,
+  persistent = false
+): INotifyOptions {
+  const defaultOptions = { persistent, duration: DURATION }
+  if (textOrOptions instanceof Error) {
+    return { text: textOrOptions.message, ...defaultOptions }
+  }
+  if (typeof textOrOptions === 'string') {
+    return { text: textOrOptions, persistent, duration: DURATION }
+  }
+  return textOrOptions
 }
 
 function notify(text: string, persistent?: false): void
