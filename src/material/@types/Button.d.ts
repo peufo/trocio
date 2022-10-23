@@ -34,6 +34,8 @@ interface ButtonProps extends Partial<HTMLButtonElement> {
   ripple?: RippleOptions
   /** styles added to the button */
   style?: string
+  /** Button html element */
+  button?: HTMLButtonElement
 }
 
 declare class Button extends SvelteComponentTyped<ButtonProps> {}

@@ -12,7 +12,7 @@
   let subscribe: SubscribeLookup | undefined
   let message = ''
   let amount = '0'
-  let button: HTMLButtonElement | undefined
+  let button: HTMLButtonElement
 
   const queryClient = useQueryClient()
 
