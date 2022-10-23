@@ -43,10 +43,13 @@
 </div>
 
 <style lang="scss">
-  .timeline > div {
-    display: flex;
+  .timeline {
     margin-top: 10px;
     margin-bottom: 20px;
+  }
+
+  .timeline > div {
+    display: flex;
   }
 
   .time,
