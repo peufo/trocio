@@ -2,7 +2,7 @@
   import { fly } from 'svelte/transition'
   import { createEventDispatcher } from 'svelte'
   import { Icon, List, ListItem } from '$material'
-  import { params, url, goto } from '@roxi/routify'
+  import { params, url } from '@roxi/routify'
   import {
     faAngleLeft,
     faAngleRight,
@@ -109,11 +109,10 @@
       </ListItem>
 
       <ListItem
-        on:click={() =>
-          $goto($url('/admin/management_articles'), {
-            trocId: $params.trocId,
-            exact_buyerSubId: subscribe?._id,
-          })}
+        href={$url('/admin/management_articles', {
+          trocId: $params.trocId,
+          exact_buyerSubId: subscribe?._id,
+        })}
       >
         <span slot="prepend">
           <Icon path={mdiCart} class="mr-3" size="1.1em" />
@@ -121,11 +120,10 @@
         Vers les achats
       </ListItem>
       <ListItem
-        on:click={() =>
-          $goto($url('/admin/management_articles'), {
-            trocId: $params.trocId,
-            exact_providerSubId: subscribe?._id,
-          })}
+        href={$url('/admin/management_articles', {
+          trocId: $params.trocId,
+          exact_providerSubId: subscribe?._id,
+        })}
       >
         <span slot="prepend">
           <IconLink icon={faCubes} class="mr-3 mt-0 mb-0" size="1.1em" />
@@ -133,11 +131,10 @@
         Vers les articles
       </ListItem>
       <ListItem
-        on:click={() =>
-          $goto($url('/admin/cash_register'), {
-            trocId: $params.trocId,
-            client_subscribe_id: subscribe?._id,
-          })}
+        href={$url('/admin/cash_register', {
+          trocId: $params.trocId,
+          client_subscribe_id: subscribe?._id,
+        })}
       >
         <span slot="prepend">
           <IconLink icon={faCashRegister} class="mr-3" size="1.1em" />

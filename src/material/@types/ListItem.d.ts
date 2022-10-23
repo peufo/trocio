@@ -22,6 +22,8 @@ interface ListItemProps {
   ripple?: RippleOptions
   /** styles added to listitem */
   style?: string
+  /** href link */
+  href?: string
 }
 
 declare class ListItem extends SvelteComponentTyped<ListItemProps> {}
