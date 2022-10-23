@@ -102,7 +102,6 @@
         }).then((user) => {
           subscribrIdLoaded = subscribeId
           clientSelector.setValue(user.name)
-          console.log('LOADED')
         })
       }
     }
