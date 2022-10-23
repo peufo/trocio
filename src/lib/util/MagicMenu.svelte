@@ -8,6 +8,7 @@
   import { isMobile } from '$lib/store/layout'
 
   export let active = false
+  export let keepOpen = false
 
   const dispatch = createEventDispatcher<{ open: void; close: void }>()
 
@@ -23,7 +24,7 @@
   }
 
   export function close() {
-    active = false
+    if (!keepOpen) active = false
     dispatch('close')
   }
 

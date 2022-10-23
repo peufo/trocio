@@ -93,7 +93,7 @@
   )
 </script>
 
-<MagicMenu bind:this={magicMenu} on:open={() => (state = 'main')} on:close>
+<MagicMenu bind:this={magicMenu} on:open={() => (state = 'main')} keepOpen>
   {#if article}
     <List style="overflow-x: hidden;" dense={!$isMobile}>
       {#if state === 'main'}
@@ -148,7 +148,7 @@
             <span slot="prepend">
               <IconLink icon={faAngleLeft} size="1.2em" class="mr-4" />
             </span>
-            #{article.ref} - status
+            #{article.ref} - Évolution du status
           </ListItem>
 
           <ArticleHistoricState {article} />
@@ -161,7 +161,7 @@
             <span slot="prepend">
               <IconLink icon={faAngleLeft} size="1.2em" class="mr-4" />
             </span>
-            #{article.ref} - édition
+            #{article.ref} - Historique des éditions
           </ListItem>
           <ArticleHistoricEdition {article} />
         </div>

@@ -22,22 +22,17 @@
 
 <div class="timeline" class:hasNext>
   {#each events as { title, detail, time }, index}
-    <div>
-      <div class="time text-caption">
-        {intl.format(new Date(time))}
-      </div>
-      <div class="decorator">
-        <div class="dot" />
+    <div class="time text-caption">
+      {intl.format(new Date(time))}
+    </div>
+    <div class="decorator">
+      <div class="dot" />
 
-        <div
-          class="line"
-          class:hide={!hasNext && index === events.length - 1}
-        />
-      </div>
-      <div class="content">
-        <b>{title}</b>
-        <p class="text-caption">{detail}</p>
-      </div>
+      <div class="line" class:hide={!hasNext && index === events.length - 1} />
+    </div>
+    <div class="content">
+      <b>{title}</b>
+      <p class="text-caption">{detail}</p>
     </div>
   {/each}
 </div>
@@ -46,16 +41,15 @@
   .timeline {
     margin-top: 10px;
     margin-bottom: 20px;
-  }
-
-  .timeline > div {
-    display: flex;
+    display: grid;
+    grid-template-columns: max-content 12px 1fr;
+    justify-content: stretch;
+    max-width: 600px;
   }
 
   .time,
   .content {
     padding: 6px 16px;
-    width: calc(50% - 6px);
   }
 
   .time {
