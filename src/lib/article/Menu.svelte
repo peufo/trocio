@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fly } from 'svelte/transition'
+  import { FadeParams, fly } from 'svelte/transition'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { url, params } from '@roxi/routify'
   import { mdiPrinter, mdiTrashCanOutline, mdiUndo } from '@mdi/js'
@@ -29,6 +29,8 @@
   export let active = false
   export let modeAdmin = false
   export let disabledAutoClose = false
+  export let fadeParamsIn: FadeParams | undefined = undefined
+  export let fadeParamsOut: FadeParams | undefined = undefined
 
   let article: ArticleLookup | undefined
   let magicMenu: MagicMenu
@@ -38,10 +40,12 @@
     position?: { x: number; y: number }
   ) {
     article = _article
+    active = true
     magicMenu.open(position)
   }
 
   export function close() {
+    active = false
     magicMenu.close()
   }
 
@@ -108,7 +112,13 @@
   }
 </script>
 
-<MagicMenu bind:this={magicMenu} on:open={() => (state = 'main')}>
+<MagicMenu
+  bind:this={magicMenu}
+  on:open={() => (state = 'main')}
+  on:close
+  bind:fadeParamsIn
+  bind:fadeParamsOut
+>
   {#if article}
     <List style="overflow-x: hidden;" dense={!$isMobile}>
       {#if state === 'main'}

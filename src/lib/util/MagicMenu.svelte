@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { fade } from 'svelte/transition'
+  import { fade, FadeParams } from 'svelte/transition'
   import { debounce } from 'debounce'
 
   import { Dialog } from '$material'
@@ -9,13 +9,14 @@
 
   export let active = false
   export let persistent = true
+  export let fadeParamsIn: FadeParams = { duration: 150 }
+  export let fadeParamsOut: FadeParams = { duration: 150 }
 
   const dispatch = createEventDispatcher<{ open: void; close: void }>()
 
   type Position = { x: number; y: number }
   let position: Position = { x: 0, y: 0 }
   let mouseHover = false
-
   let menuHeight = 0
 
   export function open(_position?: Position) {
@@ -52,10 +53,9 @@
 {:else if active}
   <div
     class="s-menu"
-    class:persistent
     bind:offsetHeight={menuHeight}
-    in:fade|local={{ duration: 150 }}
-    out:fade|local={{ duration: 150 }}
+    in:fade|local={fadeParamsIn}
+    out:fade|local={fadeParamsOut}
     on:mouseenter={() => (mouseHover = true)}
     on:mouseleave={() => {
       mouseHover = false
@@ -72,9 +72,5 @@
     overflow-x: hidden;
     max-height: 400px;
     z-index: 50;
-  }
-
-  .s-menu.persistent {
-    position: initial;
   }
 </style>
