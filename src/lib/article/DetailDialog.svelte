@@ -18,6 +18,7 @@
   import ArticleHistoricEdition from '$lib/article/HistoricEdition.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
   import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
+  import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
   export let state: 'main' | 'historic-state' | 'historic-edit' = 'main'
   export let active = false
@@ -36,6 +37,7 @@
   }
 
   let tagsPrint: TagsPrint
+  let articleEditDialog: ArticleEditDialog
 
   const queryClient = useQueryClient()
   let correctionsVisible = false
@@ -89,10 +91,6 @@
   $: cancelAction = cancelActions.find(
     ({ state }) => state === getState(article)
   )
-
-  function handleEditDone(event: CustomEvent<Article>) {
-    article = { ...article, ...event.detail }
-  }
 </script>
 
 <MagicMenu bind:this={magicMenu} on:open={() => (state = 'main')} on:close>
@@ -117,12 +115,17 @@
           </ListItem>
 
           {#if modeAdmin || (!article.valided && !article.refused)}
-            <ArticleEditDialog
-              {article}
-              on:done={handleEditDone}
-              actionName="valider"
-              buttonType="list"
-            />
+            <ListItem
+              on:click={() => {
+                close()
+                articleEditDialog.open()
+              }}
+            >
+              <span slot="prepend">
+                <IconLink icon={faEdit} size="1.1em" class="mr-3" />
+              </span>
+              Éditer
+            </ListItem>
           {/if}
 
           <ListItem
@@ -173,6 +176,13 @@
     articles={[article]}
     tag={$troc.tag}
     currency={$troc.currency}
+  />
+
+  <ArticleEditDialog
+    bind:this={articleEditDialog}
+    {article}
+    actionName="valider"
+    buttonType="none"
   />
 {/if}
 

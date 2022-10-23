@@ -19,7 +19,7 @@
   export let listMode = false
   export let disabled = false
   export let fullscreen = $isMobile
-  export let buttonType: 'button' | 'icon' | 'list' = 'button'
+  export let buttonType: 'button' | 'icon' | 'none' = 'button'
   export let actionName = 'Proposer'
 
   let textarea: HTMLTextAreaElement | undefined
@@ -32,7 +32,12 @@
     doneList: Article[]
   }>()
 
-  function closeDialog() {
+  export function open() {
+    dispatch('open')
+    active = true
+  }
+
+  export function close() {
     dispatch('close')
     active = false
   }
@@ -40,16 +45,15 @@
   function handleClicOpen() {
     if (disabled && !$troc.is_try)
       return notify.warning(`L'ajout d'article est désactivé.`)
-    dispatch('open')
-    active = true
+    open()
   }
 
   function handleDone(event: CustomEvent<Article>) {
-    if (!keepOpen || article) closeDialog()
+    if (!keepOpen || article) close()
     dispatch('done', event.detail)
   }
   function handleDoneList(event: CustomEvent<Article[]>) {
-    if (!keepOpen) closeDialog()
+    if (!keepOpen) close()
     dispatch('doneList', event.detail)
   }
 </script>
@@ -65,12 +69,7 @@
   >
     <Icon path={mdiPlus} />
   </Button>
-{:else if buttonType === 'list'}
-  <ListItem>
-    <IconLink icon={faEdit} size="1.1em" class="mr-2" />
-    Éditer
-  </ListItem>
-{:else}
+{:else if buttonType === 'button'}
   <Button depressed on:click={handleClicOpen} class="secondary-color">
     {#if article}
       <IconLink icon={faEdit} opacity size="1.1em" class="mr-2" />
@@ -98,7 +97,7 @@
     </div>
     {#if fullscreen}
       <div class="flex-grow-1" />
-      <IconLink icon={faTimes} on:click={closeDialog} clickable />
+      <IconLink icon={faTimes} on:click={close} clickable />
     {/if}
   </div>
 
