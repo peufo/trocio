@@ -39,7 +39,9 @@
 <div class="container">
   {#if $queryTrocs.isSuccess}
     {#if !$trocs.length}
-      <div class="centered" in:fade style="height: 200px;">Pas de résultat</div>
+      <div class="text--disabled centered" in:fade style="height: 200px;">
+        Pas de résultat pour cette recherche
+      </div>
     {:else}
       <div in:fade class="list">
         {#each $trocs as troc (`nav-${troc._id}`)}
