@@ -45,6 +45,8 @@
 <style lang="scss">
   .timeline > div {
     display: flex;
+    margin-top: 10px;
+    margin-bottom: 20px;
   }
 
   .time,

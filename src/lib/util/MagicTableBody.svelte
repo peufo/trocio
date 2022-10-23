@@ -10,7 +10,9 @@
   /** Code ISO 4217 */
   export let currency: string | undefined = undefined
 
-  const dispatch = createEventDispatcher()
+  const dispatch = createEventDispatcher<{
+    click: { clickEvent: MouseEvent; item: any }
+  }>()
 
   $: items = $query?.data ? $query.data.pages.flat() : []
 </script>

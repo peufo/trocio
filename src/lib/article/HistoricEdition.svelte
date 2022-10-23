@@ -50,4 +50,10 @@
   }))
 </script>
 
-<TimeLine {events} />
+{#if events.length}
+  <TimeLine {events} />
+{:else}
+  <div class="pa-4 text-caption">
+    Aucune édition n'a été effectuée sur cette article
+  </div>
+{/if}

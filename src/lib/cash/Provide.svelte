@@ -82,7 +82,7 @@
 
   <div slot="actions-search">
     <ArticleEditDialog
-      icon
+      buttonType="icon"
       actionName="Ajouter"
       {subscribeId}
       on:done={({ detail }) => (pendingItems = [...pendingItems, detail])}

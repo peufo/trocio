@@ -15,8 +15,7 @@
 
   let searchValue = ''
   let fields = getFieldsLookup($params.trocId)
-  let articleSelected: ArticleLookup | undefined = undefined
-  let detailDialogActive = false
+  let articleDetailDialog: ArticleDetailDialog
 
   let queryParams = {}
 
@@ -29,18 +28,9 @@
       ...queryParams,
     },
   ])
-
-  function handleClick(event: { detail: { item: ArticleLookup } }) {
-    articleSelected = event.detail.item
-    detailDialogActive = true
-  }
 </script>
 
-<ArticleDetailDialog
-  bind:active={detailDialogActive}
-  article={articleSelected}
-  modeAdmin
-/>
+<ArticleDetailDialog bind:this={articleDetailDialog} modeAdmin />
 
 <div class="container">
   <div class="d-flex align-center mb-2">
@@ -71,7 +61,10 @@
       {fields}
       {query}
       currency={$troc.currency}
-      on:click={handleClick}
+      on:click={(event) => {
+        const { clickEvent, item } = event.detail
+        articleDetailDialog.open(clickEvent, item)
+      }}
     />
   </MagicTable>
 </div>

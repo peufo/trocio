@@ -1,9 +1,9 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { Dialog, Button, Checkbox, Icon } from '$material'
   import { faList, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
   import { faEdit } from '@fortawesome/free-regular-svg-icons'
   import { mdiPlus } from '@mdi/js'
+  import { Dialog, Button, Checkbox, Icon, ListItem } from '$material'
 
   import type { Article } from 'types'
   import { isMobile } from '$lib/store/layout'
@@ -19,7 +19,7 @@
   export let listMode = false
   export let disabled = false
   export let fullscreen = $isMobile
-  export let icon = false
+  export let buttonType: 'button' | 'icon' | 'list' = 'button'
   export let actionName = 'Proposer'
 
   let textarea: HTMLTextAreaElement | undefined
@@ -54,7 +54,7 @@
   }
 </script>
 
-{#if icon}
+{#if buttonType === 'icon'}
   <Button
     fab
     size="small"
@@ -65,8 +65,13 @@
   >
     <Icon path={mdiPlus} />
   </Button>
+{:else if buttonType === 'list'}
+  <ListItem>
+    <IconLink icon={faEdit} size="1.1em" class="mr-2" />
+    Éditer
+  </ListItem>
 {:else}
-  <Button dense depressed on:click={handleClicOpen} class="secondary-color">
+  <Button depressed on:click={handleClicOpen} class="secondary-color">
     {#if article}
       <IconLink icon={faEdit} opacity size="1.1em" class="mr-2" />
       éditer

@@ -1,43 +1,43 @@
 <script lang="ts">
-  import { slide } from 'svelte/transition'
-  import { Dialog, Divider, Button, Icon } from '$material'
+  import { fly } from 'svelte/transition'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { mdiPrinter } from '@mdi/js'
-  import { faHistory } from '@fortawesome/free-solid-svg-icons'
 
+  import { Divider, Button, Icon, List, ListItem } from '$material'
   import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
-  import type {
-    Article,
-    ArticleCorrection,
-    ArticleCorrectionsLookup,
-    ArticleLookup,
-    ArticleState,
-  } from 'types'
+  import type { Article, ArticleLookup, ArticleState } from 'types'
   import { getState, getStateLabel } from '$lib/utils'
   import { troc } from '$lib/troc/store'
-  import { api, useApi } from '$lib/api'
+  import { api } from '$lib/api'
+  import { isMobile } from '$lib/store/layout'
   import Loader from '$lib/util/Loader.svelte'
-  import IconLink from '$lib/util/IconLink.svelte'
+  import MagicMenu from '$lib/util/MagicMenu.svelte'
+
   import ArticleHistoricState from '$lib/article/HistoricState.svelte'
   import ArticleHistoricEdition from '$lib/article/HistoricEdition.svelte'
-  import TimeLine from '$lib/util/TimeLine.svelte'
+  import IconLink from '$lib/util/IconLink.svelte'
+  import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
+  export let state: 'main' | 'historic-state' | 'historic-edit' = 'main'
   export let active = false
-  export let article: ArticleLookup | undefined
   export let modeAdmin = false
+
+  let article: ArticleLookup | undefined
+  let magicMenu: MagicMenu
+
+  export function open(event: MouseEvent, _article: ArticleLookup) {
+    article = _article
+    magicMenu.open(event)
+  }
+
+  export function close() {
+    magicMenu.close()
+  }
 
   let tagsPrint: TagsPrint
 
   const queryClient = useQueryClient()
-  const intl = new Intl.DateTimeFormat(undefined, {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-  })
   let correctionsVisible = false
 
   $: if (!active) correctionsVisible = false
@@ -95,88 +95,127 @@
   }
 </script>
 
-{#if article}
-  {#if modeAdmin && $troc}
-    <TagsPrint
-      bind:this={tagsPrint}
-      articles={[article]}
-      tag={$troc.tag}
-      currency={$troc.currency}
-    />
-  {/if}
-
-  <Dialog bind:active class="pa-4" width="large">
-    <div class="d-flex mb-4">
-      <div class="text-h6">
-        #{article.ref} - {article.name}
-      </div>
-      <div class="flex-grow-1" />
-
-      <div class="text-subtitle-2 pt-1">
-        Statut : {getStateLabel(article)}
-      </div>
-    </div>
-
-    <ArticleHistoricState {article} />
-    <ArticleHistoricEdition {article} />
-
-    <Divider class="mt-4 mb-4" />
-
-    {#if $queryDelete.isLoading}
-      <div class="text-center">
-        <Button text disabled>
-          <Loader title="Suppression en cours" />
-        </Button>
-      </div>
-    {:else}
-      <div class="d-flex flex-wrap" style="gap: 0.5em;">
-        {#if !article.valided && !article.refused}
-          <Button
-            text
-            class="red-text mr-2"
-            on:click={() =>
-              confirm('Etes vous sur ?') &&
-              $queryDelete.mutate({ articleId: article?._id || '' })}
-          >
-            Supprimer
-          </Button>
-        {/if}
-
-        {#if modeAdmin}
-          {#if $queryCancelEvent.isLoading}
-            <Button disabled text><Loader /></Button>
-          {:else if cancelAction}
-            <Button
-              text
-              class="red-text"
-              on:click={() =>
-                cancelAction && $queryCancelEvent.mutate(cancelAction.state)}
-            >
-              Annuler {cancelAction.label}
-            </Button>
-          {/if}
-
-          <div class="flex-grow-1" />
-
-          <Button
-            fab
-            size="small"
-            title="Imprimer l'étiquette"
-            depressed
-            on:click={() => tagsPrint.print()}
-          >
-            <Icon path={mdiPrinter} />
-          </Button>
+<MagicMenu bind:this={magicMenu} on:open={() => (state = 'main')} on:close>
+  {#if article}
+    <List style="overflow-x: hidden;" dense={!$isMobile}>
+      {#if state === 'main'}
+        <div in:fly|local={{ x: -200 }}>
+          <ListItem disabled>
+            #{article.ref} - {article.name}
+          </ListItem>
+          <ListItem on:click={() => (state = 'historic-state')}>
+            Évolution du status
+            <span slot="append">
+              <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
+            </span>
+          </ListItem>
+          <ListItem on:click={() => (state = 'historic-edit')}>
+            Voir les éditions
+            <span slot="append">
+              <IconLink icon={faAngleRight} size="1.2em" class="ml-2" />
+            </span>
+          </ListItem>
 
           {#if modeAdmin || (!article.valided && !article.refused)}
             <ArticleEditDialog
               {article}
               on:done={handleEditDone}
               actionName="valider"
+              buttonType="list"
             />
           {/if}
-        {/if}
-      </div>
-    {/if}
-  </Dialog>
+
+          <ListItem
+            on:click={() => {
+              close()
+              tagsPrint.print()
+            }}
+          >
+            <span slot="prepend">
+              <Icon path={mdiPrinter} class="mr-3" size="1.1em" />
+            </span>
+            Imprimer l'étiquette
+          </ListItem>
+        </div>
+      {/if}
+
+      {#if state === 'historic-state'}
+        <div in:fly|local={{ x: 200 }}>
+          <ListItem on:click={() => (state = 'main')}>
+            <span slot="prepend">
+              <IconLink icon={faAngleLeft} size="1.2em" class="mr-4" />
+            </span>
+            #{article.ref} - status
+          </ListItem>
+
+          <ArticleHistoricState {article} />
+        </div>
+      {/if}
+
+      {#if state === 'historic-edit'}
+        <div in:fly|local={{ x: 200 }}>
+          <ListItem on:click={() => (state = 'main')}>
+            <span slot="prepend">
+              <IconLink icon={faAngleLeft} size="1.2em" class="mr-4" />
+            </span>
+            #{article.ref} - édition
+          </ListItem>
+          <ArticleHistoricEdition {article} />
+        </div>
+      {/if}
+    </List>
+  {/if}
+</MagicMenu>
+
+{#if $troc && article}
+  <TagsPrint
+    bind:this={tagsPrint}
+    articles={[article]}
+    tag={$troc.tag}
+    currency={$troc.currency}
+  />
 {/if}
+
+<!--
+
+  {#if $queryDelete.isLoading}
+    <div class="text-center">
+      <Button text disabled>
+        <Loader title="Suppression en cours" />
+      </Button>
+    </div>
+  {:else}
+    <div class="d-flex flex-wrap" style="gap: 0.5em;">
+      {#if !article.valided && !article.refused}
+        <Button
+          text
+          class="red-text mr-2"
+          on:click={() =>
+            confirm('Etes vous sur ?') &&
+            $queryDelete.mutate({ articleId: article?._id || '' })}
+        >
+          Supprimer
+        </Button>
+      {/if}
+
+      {#if modeAdmin}
+        {#if $queryCancelEvent.isLoading}
+          <Button disabled text><Loader /></Button>
+        {:else if cancelAction}
+          <Button
+            text
+            class="red-text"
+            on:click={() =>
+              cancelAction && $queryCancelEvent.mutate(cancelAction.state)}
+          >
+            Annuler {cancelAction.label}
+          </Button>
+        {/if}
+
+        <div class="flex-grow-1" />
+
+
+      {/if}
+    </div>
+  {/if}
+-->
