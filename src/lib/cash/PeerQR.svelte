@@ -24,10 +24,6 @@
   let menuActive = false
   let timeoutMenu: NodeJS.Timer
 
-  onMount(() => {
-    openArticleMenu('62f2587d4da937add0804ba2')
-  })
-
   onDestroy(() => clearTimeout(timeoutMenu))
 
   export async function openArticleMenu(articleId: string) {
@@ -38,7 +34,8 @@
 
       menuActive = true
       articleMenu.open(article)
-      timeoutMenu = setTimeout(() => articleMenu.close(), 3000)
+      clearTimeout(timeoutMenu)
+      timeoutMenu = setTimeout(() => articleMenu.close(), 10_000)
     } catch (error: any) {
       notify.error(error)
     }
@@ -58,8 +55,11 @@
       {#if $isMobile}
         <IconLink icon={faCashRegister} size="160" style="opacity: 0.3;" />
         <br />
-        <IconLink icon={mdiQrcodeScan} href="/scanner" fab />
-        <p class="text-caption text-center">Se connecter à une caisse ?</p>
+        <p class="text-caption text-center">
+          <IconLink icon={mdiQrcodeScan} href="/scanner" fab />
+          <br />
+          Se connecter à une caisse ?
+        </p>
       {:else}
         <div class="d-flex justify-center" style="gap: 2em;">
           <IconLink icon={faCashRegister} size="60" style="opacity: 0.3;" />

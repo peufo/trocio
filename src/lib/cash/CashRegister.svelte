@@ -41,6 +41,7 @@
   const peerToken = uuidv4()
   let peerConnections = 0
   let templateComponent: Provide | Recover | Buy | undefined
+  let peerQR: PeerQR
 
   $: TABS = [
     { label: 'Dépot', icon: faArrowRightToBracket },
@@ -72,7 +73,7 @@
     const peer = new Peer(peerToken)
     peer.on('connection', (local) => {
       peerConnections++
-      notify.success('Nouveua smartphone connecté')
+      notify.success('Nouveau smartphone connecté')
       local.on('close', () => peerConnections--)
       local.on('error', () => peerConnections--)
       local.on('iceStateChanged', (state) => {
@@ -80,8 +81,11 @@
       })
       local.on('data', (data) => {
         if (typeof data !== 'string') return
-        if (!templateComponent) return
-        templateComponent.selectArticleId(data)
+        if (templateComponent) {
+          templateComponent.selectArticleId(data)
+        } else {
+          peerQR.openArticleMenu(data)
+        }
       })
     })
 
@@ -294,6 +298,7 @@
     {:else}
       <div in:fade|local class="centered flex-grow-1">
         <PeerQR
+          bind:this={peerQR}
           {peerToken}
           {peerConnections}
           disabled={!$troc.tag.useScanner}
