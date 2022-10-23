@@ -66,7 +66,7 @@
 
 <TextField
   clearable
-  placeholder="Recherche"
+  placeholder="Chercher"
   solo
   flat
   value={$queryTrocsParams.search || ''}
