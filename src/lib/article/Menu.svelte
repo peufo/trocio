@@ -1,24 +1,22 @@
 <script lang="ts">
   import { fly } from 'svelte/transition'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { mdiPrinter } from '@mdi/js'
+  import { mdiPrinter, mdiTrashCanOutline, mdiUndo } from '@mdi/js'
+  import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
+  import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
-  import { Divider, Button, Icon, List, ListItem } from '$material'
+  import { Icon, List, ListItem } from '$material'
   import ArticleEditDialog from '$lib/article/EditDialog.svelte'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
-  import type { Article, ArticleLookup, ArticleState } from 'types'
-  import { getState, getStateLabel } from '$lib/utils'
+  import type { ArticleLookup, ArticleState } from 'types'
+  import { getState } from '$lib/utils'
   import { troc } from '$lib/troc/store'
   import { api } from '$lib/api'
   import { isMobile } from '$lib/store/layout'
-  import Loader from '$lib/util/Loader.svelte'
   import MagicMenu from '$lib/util/MagicMenu.svelte'
-
   import ArticleHistoricState from '$lib/article/HistoricState.svelte'
   import ArticleHistoricEdition from '$lib/article/HistoricEdition.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
-  import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
-  import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
   export let state: 'main' | 'historic-state' | 'historic-edit' = 'main'
   export let active = false
@@ -114,20 +112,7 @@
             </span>
           </ListItem>
 
-          {#if modeAdmin || (!article.valided && !article.refused)}
-            <ListItem
-              on:click={() => {
-                close()
-                articleEditDialog.open()
-              }}
-            >
-              <span slot="prepend">
-                <IconLink icon={faEdit} size="1.1em" class="mr-3" />
-              </span>
-              Éditer
-            </ListItem>
-          {/if}
-
+          <!-- Impression étitquette -->
           <ListItem
             on:click={() => {
               close()
@@ -139,6 +124,62 @@
             </span>
             Imprimer l'étiquette
           </ListItem>
+
+          <!-- Edition du nom et du prix -->
+          {#if modeAdmin || (!article.valided && !article.refused)}
+            <ListItem
+              on:click={() => {
+                close()
+                articleEditDialog.open()
+              }}
+            >
+              <span slot="prepend">
+                <IconLink
+                  icon={faEdit}
+                  size="1em"
+                  class="mr-3 secondary-text"
+                />
+              </span>
+              Éditer
+            </ListItem>
+          {/if}
+
+          <!-- Annulation de status -->
+          {#if cancelAction}
+            <ListItem
+              on:click={() => {
+                if (!cancelAction) return
+                $queryCancelEvent.mutate(cancelAction.state)
+                close()
+              }}
+            >
+              <span slot="prepend">
+                <Icon path={mdiUndo} class="mr-3 orange-text" size="1.1em" />
+              </span>
+
+              Annuler {cancelAction.label}
+            </ListItem>
+          {/if}
+
+          <!-- Suppression -->
+          {#if !article.valided && !article.refused}
+            <ListItem
+              on:click={() => {
+                if (!confirm('Etes vous sur ?')) return
+                $queryDelete.mutate({ articleId: article?._id || '' })
+                close()
+              }}
+            >
+              <span slot="prepend">
+                <Icon
+                  path={mdiTrashCanOutline}
+                  class="mr-3 red-text"
+                  size="1.1em"
+                />
+              </span>
+              Supprimer
+            </ListItem>
+          {/if}
         </div>
       {/if}
 
@@ -185,47 +226,3 @@
     buttonType="none"
   />
 {/if}
-
-<!--
-
-  {#if $queryDelete.isLoading}
-    <div class="text-center">
-      <Button text disabled>
-        <Loader title="Suppression en cours" />
-      </Button>
-    </div>
-  {:else}
-    <div class="d-flex flex-wrap" style="gap: 0.5em;">
-      {#if !article.valided && !article.refused}
-        <Button
-          text
-          class="red-text mr-2"
-          on:click={() =>
-            confirm('Etes vous sur ?') &&
-            $queryDelete.mutate({ articleId: article?._id || '' })}
-        >
-          Supprimer
-        </Button>
-      {/if}
-
-      {#if modeAdmin}
-        {#if $queryCancelEvent.isLoading}
-          <Button disabled text><Loader /></Button>
-        {:else if cancelAction}
-          <Button
-            text
-            class="red-text"
-            on:click={() =>
-              cancelAction && $queryCancelEvent.mutate(cancelAction.state)}
-          >
-            Annuler {cancelAction.label}
-          </Button>
-        {/if}
-
-        <div class="flex-grow-1" />
-
-
-      {/if}
-    </div>
-  {/if}
--->
