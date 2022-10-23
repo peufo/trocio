@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { onMount, SvelteComponent } from 'svelte'
+  import { onMount } from 'svelte'
   import { fade, slide } from 'svelte/transition'
-  import { params, redirect } from '@roxi/routify'
+  import { params, redirect, afterPageLoad } from '@roxi/routify'
   import { Button, Tabs, Tab } from '$material'
   import { useMutation } from '@sveltestack/svelte-query'
   import { Peer } from 'peerjs'
@@ -62,14 +62,9 @@
   $: mainContainerHeight =
     $layout.innerHeight - mainContainer?.offsetTop - ($isMobile ? 6 : 16)
 
-  onMount(() => {
-    // Seléctione le participant depuis l'url
-    if (subscribeId) {
-      api<{ subscribeId: string }, { name: string }>('/api/users/name', {
-        params: { subscribeId },
-      }).then((user) => clientSelector.setValue(user.name))
-    }
+  $afterPageLoad(createUserLoader())
 
+  onMount(() => {
     const peer = new Peer(peerToken)
     peer.on('connection', (local) => {
       peerConnections++
@@ -96,6 +91,22 @@
       peer.destroy()
     }
   })
+
+  function createUserLoader() {
+    let subscribrIdLoaded = ''
+    return () => {
+      if (!subscribeId) subscribrIdLoaded = ''
+      else if (subscribeId !== subscribrIdLoaded) {
+        api<{ subscribeId: string }, { name: string }>('/api/users/name', {
+          params: { subscribeId },
+        }).then((user) => {
+          subscribrIdLoaded = subscribeId
+          clientSelector.setValue(user.name)
+          console.log('LOADED')
+        })
+      }
+    }
+  }
 
   function handleShortcut(event: KeyboardEvent) {
     if (event.key === 'Escape') {
