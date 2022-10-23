@@ -249,6 +249,7 @@
     font-size: 8em;
     text-align: center;
     width: 100%;
+    opacity: 0.6;
   }
 
   section {
