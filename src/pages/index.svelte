@@ -30,17 +30,14 @@
       <div style="max-width: 630px; margin: auto;">
         <Card class="pa-4" style="z-index: 2;">
           <CardText>
+            <p>Trocio facilite l'organisation de commerces éphémère.</p>
             <p>
-              Trocio est un outil simple et efficace pour échanger vos objets.
+              <b>Pour les organisateurs,</b><br /> c'est une gestion complette des
+              flux d'articles, des utilisateurs et des paiements.
             </p>
             <p>
-              Déstiné aux organisateurs ou aux amateurs de bonnes affaires,
-              Trocio améliore votre expérience sur des évenements éphemères.
-            </p>
-            <p>
-              L'interface fournit de nombreuses fonctionalitées qui vous
-              permettent de gagner un temps précieux, d'éviter des erreurs et
-              d'être informé en temps réel.
+              <b>Pour les participants,</b><br /> c'est des passages en caisse fluidifier
+              et un retour sur ses ventes en temps réel.
             </p>
           </CardText>
         </Card>
