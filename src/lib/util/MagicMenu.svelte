@@ -70,8 +70,11 @@
 <style>
   .s-menu {
     overflow-x: hidden;
-
     max-height: 400px;
     z-index: 50;
+  }
+
+  .s-menu.persistent {
+    position: initial;
   }
 </style>

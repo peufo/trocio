@@ -1,18 +1,43 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
+  import { fade, slide } from 'svelte/transition'
   import QrCode from 'qrcode'
   import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
   import { mdiCellphoneWireless, mdiQrcodeScan } from '@mdi/js'
-  import { fade } from 'svelte/transition'
+  import { params } from '@roxi/routify'
 
+  import type { Article, ArticleLookup } from 'types'
   import { isMobile } from '$lib/store/layout'
   import IconLink from '$lib/util/IconLink.svelte'
   import { Icon } from '$material'
+  import { api } from '$lib/api'
+  import notify from '$lib/notify'
+  import ArticleMenu from '$lib/article/Menu.svelte'
 
   export let peerToken: string
   export let peerConnections: number
   export let disabled: boolean
 
   let qrcode = ''
+
+  let articleMenu: ArticleMenu
+  let timeoutMenu: NodeJS.Timer
+
+  onMount(() => {
+    openArticleMenu('62f25a414da937add0804d1e')
+  })
+
+  export async function openArticleMenu(articleId: string) {
+    try {
+      const [article] = await api<ArticleLookup[]>('/api/articles', {
+        params: { exact__id: articleId, trocId: $params['trocId'] },
+      })
+
+      articleMenu.open(article)
+    } catch (error: any) {
+      notify.error(error)
+    }
+  }
 
   $: {
     const scannerURL = `https://${location.host}/scanner?token=${peerToken}`
@@ -23,15 +48,12 @@
 {#if disabled}
   <IconLink icon={faCashRegister} size="160" style="opacity: 0.3;" />
 {:else}
-  <div
-    class="d-flex flex-column justify-center"
-    style="gap: 0.5 em; text-align: center;"
-  >
+  <div class="d-flex flex-column justify-center" style="gap: 0.5 em;">
     {#if $isMobile}
       <IconLink icon={faCashRegister} size="160" style="opacity: 0.3;" />
       <br />
       <IconLink icon={mdiQrcodeScan} href="/scanner" fab />
-      <p class="text-caption">Se connecter à une caisse ?</p>
+      <p class="text-caption text-center">Se connecter à une caisse ?</p>
     {:else}
       <div class="d-flex justify-center" style="gap: 2em;">
         <IconLink icon={faCashRegister} size="60" style="opacity: 0.3;" />
@@ -50,13 +72,20 @@
       <img src={qrcode} alt="Code QR de connexion mobile" />
 
       {#if !!peerConnections}
-        <p in:fade|local class="text-caption">
+        <p in:fade|local class="text-caption text-center">
           Connexion établie ({peerConnections})
         </p>
       {:else}
-        <p in:fade|local class="text-caption">Connectez votre smartphone</p>
+        <p in:fade|local class="text-caption text-center">
+          Connectez votre smartphone
+        </p>
       {/if}
     {/if}
+
+    <div>
+      Vous avez scanner un article
+      <ArticleMenu bind:this={articleMenu} />
+    </div>
   </div>
 {/if}
 

@@ -8,7 +8,7 @@
   type TNotify = 'info' | 'success' | 'warning' | 'error'
 
   export let type: TNotify = 'info'
-  export let text = 'Hey ✌️'
+  export let text = ''
   export let title = ''
   export let duration = 3000
   export let transitionParams: ScaleParams = { duration: 300 }

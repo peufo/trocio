@@ -57,7 +57,7 @@
     {fields}
     query={queryArticles}
     on:click={({ detail }) => {
-      articleMenu.open(detail.clickEvent, detail.item)
+      articleMenu.open(detail.item, detail.clickEvent)
     }}
   />
 </MagicTable>

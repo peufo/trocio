@@ -16,7 +16,7 @@ interface INotifyOptions {
   transitionParams?: ScaleParams
 }
 
-function parsArgs(textOrOptions: string | INotifyOptions, persistent = false) {
+function parseArgs(textOrOptions: string | INotifyOptions, persistent = false) {
   const options: INotifyOptions =
     typeof textOrOptions === 'string'
       ? { text: textOrOptions, persistent, duration: DURATION }
@@ -27,7 +27,8 @@ function parsArgs(textOrOptions: string | INotifyOptions, persistent = false) {
 function notify(text: string, persistent?: false): void
 function notify(options: INotifyOptions, persistent?: false): void
 function notify(textOrOptions: string | INotifyOptions, persistent = false) {
-  const options = parsArgs(textOrOptions, persistent)
+  const options = parseArgs(textOrOptions, persistent)
+  if (!options.text && !options.title) return
   const notify = new Notify({
     target: document.body,
     props: options,
@@ -42,7 +43,7 @@ function notify(textOrOptions: string | INotifyOptions, persistent = false) {
 function success(text: string, persistent?: false): void
 function success(options: INotifyOptions): void
 function success(textOrOptions: string | INotifyOptions, persistent = false) {
-  const options = parsArgs(textOrOptions, persistent)
+  const options = parseArgs(textOrOptions, persistent)
   options.type = 'success'
   notify(options)
 }
@@ -50,14 +51,14 @@ function success(textOrOptions: string | INotifyOptions, persistent = false) {
 function info(text: string, persistent?: false): void
 function info(options: INotifyOptions): void
 function info(textOrOptions: string | INotifyOptions, persistent = false) {
-  const options = parsArgs(textOrOptions, persistent)
+  const options = parseArgs(textOrOptions, persistent)
   options.type = 'info'
   notify(options)
 }
 function warning(text: string, persistent?: false): void
 function warning(options: INotifyOptions): void
 function warning(textOrOptions: string | INotifyOptions, persistent = false) {
-  const options = parsArgs(textOrOptions, persistent)
+  const options = parseArgs(textOrOptions, persistent)
   options.type = 'warning'
   notify(options)
 }
@@ -65,7 +66,7 @@ function warning(textOrOptions: string | INotifyOptions, persistent = false) {
 function error(text: string, persistent?: false): void
 function error(options: INotifyOptions): void
 function error(textOrOptions: string | INotifyOptions, persistent = false) {
-  const options = parsArgs(textOrOptions, persistent)
+  const options = parseArgs(textOrOptions, persistent)
   options.type = 'error'
   notify(options)
 }

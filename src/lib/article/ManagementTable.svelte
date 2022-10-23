@@ -44,7 +44,7 @@
     class="simple-card"
     style="
       min-height: 400px;
-      max-height: {$layout.mainHeight - ($troc.is_try ? 124 : 76)}px;
+      max-height: {$layout.mainHeight - ($troc?.is_try ? 124 : 76)}px;
     "
   >
     <thead>
@@ -61,9 +61,8 @@
       {fields}
       {query}
       currency={$troc.currency}
-      on:click={(event) => {
-        const { clickEvent, item } = event.detail
-        articleMenu.open(clickEvent, item)
+      on:click={({ detail }) => {
+        articleMenu.open(detail.item, detail.clickEvent)
       }}
     />
   </MagicTable>

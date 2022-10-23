@@ -28,13 +28,17 @@
   export let state: 'main' | 'historic-state' | 'historic-edit' = 'main'
   export let active = false
   export let modeAdmin = false
+  export let disabledAutoClose = false
 
   let article: ArticleLookup | undefined
   let magicMenu: MagicMenu
 
-  export function open(event: MouseEvent, _article: ArticleLookup) {
+  export function open(
+    _article: ArticleLookup,
+    position?: { x: number; y: number }
+  ) {
     article = _article
-    magicMenu.open(event)
+    magicMenu.open(position)
   }
 
   export function close() {
@@ -199,7 +203,7 @@
           <!-- Impression étitquette -->
           <ListItem
             on:click={() => {
-              close()
+              if (!disabledAutoClose) close()
               tagsPrint.print()
             }}
           >
@@ -213,7 +217,7 @@
           {#if modeAdmin || (!article.valided && !article.refused)}
             <ListItem
               on:click={() => {
-                close()
+                if (!disabledAutoClose) close()
                 articleEditDialog.open()
               }}
             >
@@ -234,7 +238,7 @@
               on:click={() => {
                 if (!cancelAction) return
                 $queryCancelEvent.mutate(cancelAction.state)
-                close()
+                if (!disabledAutoClose) close()
               }}
             >
               <span slot="prepend">
@@ -251,7 +255,7 @@
               on:click={() => {
                 if (!confirm('Etes vous sur ?')) return
                 $queryDelete.mutate({ articleId: article?._id || '' })
-                close()
+                if (!disabledAutoClose) close()
               }}
             >
               <span slot="prepend">
