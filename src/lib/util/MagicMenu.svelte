@@ -8,27 +8,34 @@
   import { isMobile } from '$lib/store/layout'
 
   export let active = false
-  export let keepOpen = false
+  export let persistent = true
 
   const dispatch = createEventDispatcher<{ open: void; close: void }>()
 
-  let position = { x: 0, y: 0 }
+  type Position = { x: number; y: number }
+  let position: Position = { x: 0, y: 0 }
   let mouseHover = false
 
   let menuHeight = 0
 
-  export function open(event: MouseEvent) {
-    position = { x: event.pageX - 92, y: event.pageY - 20 }
+  export function open(_position?: Position) {
+    persistent = !_position
+    if (_position) {
+      position = { x: _position.x - 92, y: _position.y - 20 }
+    }
     active = true
     dispatch('open')
   }
 
   export function close() {
-    if (!keepOpen) active = false
+    active = false
     dispatch('close')
   }
 
-  const handleMouseLeave = debounce(() => mouseHover || close(), 400)
+  const handleMouseLeave = debounce(() => {
+    if (persistent) return
+    mouseHover || close()
+  }, 400)
 
   $: {
     const { offsetHeight } = document.body
@@ -45,6 +52,7 @@
 {:else if active}
   <div
     class="s-menu"
+    class:persistent
     bind:offsetHeight={menuHeight}
     in:fade|local={{ duration: 150 }}
     out:fade|local={{ duration: 150 }}
@@ -61,7 +69,8 @@
 
 <style>
   .s-menu {
-    overflow: hidden;
+    overflow-x: hidden;
+
     max-height: 400px;
     z-index: 50;
   }
