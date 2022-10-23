@@ -94,6 +94,7 @@
       <ArticleMenu
         bind:this={articleMenu}
         modeAdmin
+        useRelativeCashierUrl
         on:close={() => (menuActive = false)}
         fadeParamsIn={{ duration: 150, delay: 150 }}
       />

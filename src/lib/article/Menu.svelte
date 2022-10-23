@@ -32,6 +32,13 @@
   export let fadeParamsIn: FadeParams | undefined = undefined
   export let fadeParamsOut: FadeParams | undefined = undefined
 
+  /**
+   * Si vrai les liens vers la caisse de sont pas absolue
+   * patch rapide pasque la ... plein le cul
+   */
+  export let useRelativeCashierUrl = false
+  $: cashierURl = useRelativeCashierUrl ? undefined : '/admin/cash_register'
+
   let article: ArticleLookup | undefined
   let magicMenu: MagicMenu
 
@@ -143,7 +150,7 @@
           {#if modeAdmin}
             {#if getState(article) === 'proposed'}
               <ListItem
-                href={$url('/admin/cash_register', {
+                href={$url(cashierURl, {
                   ...casheRegisterParams,
                   cash_register_tab_index: 0,
                 })}
@@ -160,7 +167,7 @@
               </ListItem>
             {:else if getState(article) === 'valided'}
               <ListItem
-                href={$url('/admin/cash_register', {
+                href={$url(cashierURl, {
                   ...casheRegisterParams,
                   cash_register_tab_index: 1,
                 })}
@@ -175,9 +182,7 @@
                 Vers le retrait
               </ListItem>
             {:else}
-              <ListItem
-                href={$url('/admin/cash_register', casheRegisterParams)}
-              >
+              <ListItem href={$url(cashierURl, casheRegisterParams)}>
                 <span slot="prepend">
                   <IconLink
                     icon={faArrowRightArrowLeft}
@@ -192,7 +197,7 @@
 
             {#if getState(article) === 'sold'}
               <ListItem
-                href={$url('/admin/cash_register', {
+                href={$url(cashierURl, {
                   ...casheRegisterParams,
                   client_subscribe_id: article.buyerSubId,
                 })}
