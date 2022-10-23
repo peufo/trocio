@@ -1,6 +1,6 @@
 <script lang="ts">
   /** Affiche soit le bouton pour participer, soit l'activité d'un utilisateur sur un troc */
-  import { useMutation } from '@sveltestack/svelte-query'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { goto } from '@roxi/routify'
   import { Button } from '$material'
   import { fade } from 'svelte/transition'
@@ -11,11 +11,16 @@
 
   export let troc: TrocLookup
 
+  const queryClient = useQueryClient()
+
   const createSubscribe = useMutation((data: SubscribeBase) =>
     api<SubscribeBase, SubscribeLookup>('/api/subscribes', {
       method: 'post',
       data,
-      success: 'Nouvelle participation',
+      success: () => {
+        queryClient.invalidateQueries('subscribes/me')
+        return 'Nouvelle participation'
+      },
     })
   )
 
