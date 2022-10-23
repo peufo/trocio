@@ -108,7 +108,7 @@
   $: casheRegisterParams = {
     trocId: $params.trocId,
     client_subscribe_id: article?.providerSubId,
-    preselect_article: article?._id,
+    select_article: article?._id,
   }
 </script>
 

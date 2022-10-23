@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { flip } from 'svelte/animate'
   import { fade, scale, slide, fly } from 'svelte/transition'
-  import { params } from '@roxi/routify'
+  import { params, redirect } from '@roxi/routify'
   import {
     mdiChevronDown,
     mdiClose,
@@ -15,7 +15,7 @@
   import { Button, Icon } from '$material'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
   import { isMobile } from '$lib/store/layout'
-  import { renderAmount } from '$lib/utils'
+  import { renderAmount, removeParams } from '$lib/utils'
   import { troc } from '$lib/troc/store'
   import { api } from '$lib/api'
   import type { Article } from 'types'
@@ -40,8 +40,10 @@
 
   onMount(() => {
     if (!$isMobile) magicSelect.focus()
-    if ($params['preselect_article'])
-      selectArticleId($params['preselect_article'])
+    if ($params['select_article']) {
+      selectArticleId($params['select_article'])
+      $redirect(undefined, removeParams($params, ['select_article']))
+    }
   })
 
   export function closeSelection() {

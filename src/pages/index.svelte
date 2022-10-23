@@ -262,17 +262,6 @@
     font-size: 1.1em;
   }
 
-  .background-grey {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 150%;
-    height: 580px;
-    background: rgba(204, 204, 204, 0.404);
-    transform-origin: bottom left;
-    transform: rotate(-10deg);
-  }
-
   @media only screen and (max-width: 660px) {
     .wrap-660 {
       flex-wrap: wrap;

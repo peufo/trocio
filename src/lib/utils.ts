@@ -11,6 +11,15 @@ export const storeBoolean = (key: string, initialValue = false) => {
   return store
 }
 
+type Params = { [key: string]: string }
+export function removeParams(params: Params, keys: string[]): Params {
+  const newParams: Params = {}
+  for (const key in params) {
+    if (!keys.includes(key)) newParams[key] = params[key]
+  }
+  return newParams
+}
+
 /** @deprecated */
 export function getHeader(body, verb = 'POST') {
   return {
