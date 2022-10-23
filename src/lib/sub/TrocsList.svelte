@@ -103,7 +103,7 @@
         </div>
       </div>
     {:else}
-      <div class="text--disabled text-center">
+      <div class="text--disabled text-center pt-8">
         Vous n'avez pas encore de troc
       </div>
     {/each}
