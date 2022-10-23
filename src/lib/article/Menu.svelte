@@ -93,7 +93,7 @@
   )
 </script>
 
-<MagicMenu bind:this={magicMenu} on:open={() => (state = 'main')} keepOpen>
+<MagicMenu bind:this={magicMenu} on:open={() => (state = 'main')}>
   {#if article}
     <List style="overflow-x: hidden;" dense={!$isMobile}>
       {#if state === 'main'}

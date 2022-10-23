@@ -4,7 +4,7 @@
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import { useInfinitApi } from '$lib/api'
   import type { ArticleLookup, ParamsArticleAPI } from 'types'
-  import ArticleDetailDialog from '$lib/article/DetailDialog.svelte'
+  import ArticleMenu from '$lib/article/Menu.svelte'
 
   import { getFields } from '$lib/article/fields'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
@@ -14,8 +14,7 @@
 
   let searchValue = ''
   let fields = getFields()
-  let articleSelected: ArticleLookup | undefined = undefined
-  let detailDialogActive = false
+  let articleMenu: ArticleMenu
 
   let queryParams = {}
 
@@ -29,18 +28,9 @@
       ...queryParams,
     },
   ])
-
-  function handleClick(event: { detail: { item: ArticleLookup } }) {
-    articleSelected = event.detail.item
-    detailDialogActive = true
-  }
 </script>
 
-<ArticleDetailDialog
-  bind:active={detailDialogActive}
-  article={articleSelected}
-  {modeAdmin}
-/>
+<ArticleMenu bind:this={articleMenu} {modeAdmin} />
 
 <MagicTable
   query={queryArticles}
@@ -63,5 +53,11 @@
       <MagicTableHeaders {fields} bind:queryParams />
     </tr>
   </thead>
-  <MagicTableBody {fields} query={queryArticles} on:click={handleClick} />
+  <MagicTableBody
+    {fields}
+    query={queryArticles}
+    on:click={({ detail }) => {
+      articleMenu.open(detail.clickEvent, detail.item)
+    }}
+  />
 </MagicTable>

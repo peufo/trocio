@@ -11,11 +11,11 @@
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc } from '$lib/troc/store'
   import { getFieldsLookup } from '$lib/article/fields'
-  import ArticleDetailDialog from '$lib/article/DetailDialog.svelte'
+  import ArticleMenu from '$lib/article/Menu.svelte'
 
   let searchValue = ''
   let fields = getFieldsLookup($params.trocId)
-  let articleDetailDialog: ArticleDetailDialog
+  let articleMenu: ArticleMenu
 
   let queryParams = {}
 
@@ -30,7 +30,7 @@
   ])
 </script>
 
-<ArticleDetailDialog bind:this={articleDetailDialog} modeAdmin />
+<ArticleMenu bind:this={articleMenu} modeAdmin />
 
 <div class="container">
   <div class="d-flex align-center mb-2">
@@ -63,7 +63,7 @@
       currency={$troc.currency}
       on:click={(event) => {
         const { clickEvent, item } = event.detail
-        articleDetailDialog.open(clickEvent, item)
+        articleMenu.open(clickEvent, item)
       }}
     />
   </MagicTable>
