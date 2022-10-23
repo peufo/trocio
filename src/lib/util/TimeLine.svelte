@@ -39,8 +39,7 @@
 
 <style lang="scss">
   .timeline {
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin: 10px 20px;
     display: grid;
     grid-template-columns: max-content 12px 1fr;
     justify-content: stretch;
