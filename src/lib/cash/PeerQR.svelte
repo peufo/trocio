@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte'
-  import { fade, slide } from 'svelte/transition'
+  import { onDestroy } from 'svelte'
+  import { fade } from 'svelte/transition'
   import QrCode from 'qrcode'
   import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
   import { mdiCellphoneWireless, mdiQrcodeScan } from '@mdi/js'
   import { params } from '@roxi/routify'
 
-  import type { Article, ArticleLookup } from 'types'
+  import type { ArticleLookup } from 'types'
   import { isMobile } from '$lib/store/layout'
   import IconLink from '$lib/util/IconLink.svelte'
   import { Icon } from '$material'
@@ -31,11 +31,13 @@
       const [article] = await api<ArticleLookup[]>('/api/articles', {
         params: { exact__id: articleId, trocId: $params['trocId'] },
       })
+      if (!article) throw new Error('Article introuvable !')
 
       menuActive = true
       articleMenu.open(article)
+      notify.success('Article scanner !')
       clearTimeout(timeoutMenu)
-      timeoutMenu = setTimeout(() => articleMenu.close(), 10_000)
+      timeoutMenu = setTimeout(() => articleMenu.close(), 12_000)
     } catch (error: any) {
       notify.error(error)
     }
