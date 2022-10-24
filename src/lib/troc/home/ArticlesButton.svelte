@@ -11,16 +11,17 @@
 </script>
 
 <div data-state={state}>
-  <a
+  <Button
+    depressed
+    class="d-flex"
+    style="width: 100%;"
     href={$url('/admin/management_articles', {
       trocId,
       exact_state: state,
     })}
   >
-    <Button depressed class="d-flex" style="width: 100%;">
-      {label}{count > 1 ? 's' : ''}
-      <div class="flex-grow-1" />
-      {count}
-    </Button>
-  </a>
+    {label}{count > 1 ? 's' : ''}
+    <div class="flex-grow-1" />
+    {count}
+  </Button>
 </div>

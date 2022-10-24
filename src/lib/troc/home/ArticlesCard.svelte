@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Card, CardTitle, Button } from '$material'
   import { faCubes } from '@fortawesome/free-solid-svg-icons'
+  import { url } from '@roxi/routify'
 
+  import { Card, CardTitle, Button } from '$material'
   import IconLink from '$lib/util/IconLink.svelte'
   import { useApi } from '$lib/api'
   import type { ArticleState } from 'types'
@@ -16,9 +17,16 @@
 
 {#if $query.data}
   <Card>
-    <CardTitle class="ml-3 mr-4">
-      <IconLink icon={faCubes} class="mr-4" />
-      Articles
+    <CardTitle class="mr-4">
+      <Button
+        href={$url('./management_articles', { trocId })}
+        title="Acceder à la gestion des articles"
+        depressed
+      >
+        <IconLink icon={faCubes} class="mr-4" opacity />
+        Articles
+      </Button>
+
       <div class="flex-grow-1" />
       {$query.data.total}
     </CardTitle>

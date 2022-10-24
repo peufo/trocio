@@ -17,15 +17,11 @@
     { ref: 'tarif', label: 'Tarifications', icon: faCoins },
     { ref: 'tag', label: 'Étiquetage', icon: faTag },
     { ref: 'statistic', label: 'Statistiques', icon: faChartPie },
-    { ref: 'cash_register', label: 'Caisse', icon: faCashRegister },
   ]
 </script>
 
 <Card>
-  <CardTitle>
-    <Icon path={mdiCogs} class="mr-2" />
-    Autres liens
-  </CardTitle>
+  <CardTitle>Autres liens</CardTitle>
 
   <div class="pa-4 d-flex flex-column" style="gap: 0.5em;">
     {#each links as link}

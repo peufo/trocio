@@ -42,51 +42,55 @@
 
 <!-- Participants  -->
 <Card>
-  <CardTitle class="ml-3 mr-4">
-    <IconLink icon={faUsers} class="mr-2" />
-    Participation{total > 1 ? 's' : ''}
+  <CardTitle class="mr-4">
+    <Button
+      href={$url('./management_users', { trocId })}
+      title="Acceder à la caisse"
+      depressed
+    >
+      <IconLink icon={faUsers} class="mr-4" opacity />
+      Participation{total > 1 ? 's' : ''}
+    </Button>
+
     <div class="flex-grow-1" />
     {total}
   </CardTitle>
 
   <div class="pa-4 d-flex flex-column" style="gap: 0.5em;">
     {#each ROLES as role, index (role.key)}
-      <a
+      <Button
+        depressed
+        style="width: 100%;"
         href={$url('/admin/management_users', {
           trocId,
           exact_role: role.key,
         })}
       >
-        <Button depressed style="width: 100%;">
-          {#if role.icon}
-            <IconLink icon={role.icon} opacity class="mr-2" size="1.2em" />
-          {/if}
-          {role.label}{counts[index] > 1 ? 's' : ''}
-          <div class="flex-grow-1" />
-          {counts[index]}
-        </Button>
-      </a>
+        {#if role.icon}
+          <IconLink icon={role.icon} opacity class="mr-2" size="1.2em" />
+        {/if}
+        {role.label}{counts[index] > 1 ? 's' : ''}
+        <div class="flex-grow-1" />
+        {counts[index]}
+      </Button>
     {/each}
 
     {#if countGuest}
-      <a
+      <Button
+        text
+        class="mb-2 "
+        size="x-small"
+        title={`${countGuest} utilsateurs n'ont pas validées leur participation`}
         href={$url('/admin/management_users', {
           trocId,
           exact_validedByUser: false,
         })}
       >
-        <Button
-          text
-          class="mb-2 "
-          size="x-small"
-          title={`${countGuest} utilsateurs n'ont pas validées leur participation`}
-        >
-          dont
-          {countGuest}
-          participation{countGuest > 1 ? 's' : ''}
-          non validée{countGuest > 1 ? 's' : ''}
-        </Button>
-      </a>
+        dont
+        {countGuest}
+        participation{countGuest > 1 ? 's' : ''}
+        non validée{countGuest > 1 ? 's' : ''}
+      </Button>
     {/if}
   </div>
 </Card>
