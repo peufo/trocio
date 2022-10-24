@@ -72,5 +72,6 @@
     overflow-x: hidden;
     max-height: 400px;
     z-index: 50;
+    position: fixed;
   }
 </style>
