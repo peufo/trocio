@@ -1,13 +1,7 @@
 <script lang="ts">
   import { url } from '@roxi/routify'
-  import { Button, Card, CardTitle, Icon } from '$material'
-  import {
-    faCoins,
-    faTag,
-    faChartPie,
-    faCashRegister,
-  } from '@fortawesome/free-solid-svg-icons'
-  import { mdiCogs } from '@mdi/js'
+  import { Button, Card, CardTitle } from '$material'
+  import { faCoins, faTag, faChartPie } from '@fortawesome/free-solid-svg-icons'
 
   import IconLink from '$lib/util/IconLink.svelte'
 
