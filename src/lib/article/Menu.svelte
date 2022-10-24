@@ -2,7 +2,7 @@
   import { FadeParams, fly } from 'svelte/transition'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { url, params } from '@roxi/routify'
-  import { mdiPrinter, mdiTrashCanOutline, mdiUndo } from '@mdi/js'
+  import { mdiTagOutline, mdiTrashCanOutline, mdiUndo } from '@mdi/js'
   import {
     faAngleLeft,
     faAngleRight,
@@ -223,7 +223,7 @@
             }}
           >
             <span slot="prepend">
-              <Icon path={mdiPrinter} class="mr-3" size="1.1em" />
+              <Icon path={mdiTagOutline} class="mr-3" size="1.1em" />
             </span>
             Imprimer l'étiquette
           </ListItem>

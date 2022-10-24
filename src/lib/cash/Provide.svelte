@@ -1,6 +1,6 @@
 <script lang="ts">
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { mdiPrinterCheck, mdiPrinterOff } from '@mdi/js'
+  import { mdiTagArrowRightOutline, mdiTagOffOutline } from '@mdi/js'
 
   import { Button, Icon } from '$material'
   import notify from '$lib/notify'
@@ -75,7 +75,9 @@
   <div slot="options-selection" class="d-flex align-center" style="gap: 1em;">
     <div title="Impression automatique des étiquettes">
       <Button fab size="small" depressed on:click={toggleAutoPrint}>
-        <Icon path={$isAutoPrint ? mdiPrinterCheck : mdiPrinterOff} />
+        <Icon
+          path={$isAutoPrint ? mdiTagArrowRightOutline : mdiTagOffOutline}
+        />
       </Button>
     </div>
   </div>

@@ -45,7 +45,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.1.2",
     "@fortawesome/free-regular-svg-icons": "^6.1.2",
     "@fortawesome/free-solid-svg-icons": "^6.1.2",
-    "@mdi/js": "^5.9.55",
+    "@mdi/js": "^7.0.96",
     "@sveltestack/svelte-query": "^1.4.0",
     "animate.css": "^4.1.1",
     "axios": "^0.21.2",
