@@ -53,6 +53,7 @@
 {:else if active}
   <div
     class="s-menu"
+    class:persistent
     bind:offsetHeight={menuHeight}
     in:fade|local={fadeParamsIn}
     out:fade|local={fadeParamsOut}
@@ -72,6 +73,8 @@
     overflow-x: hidden;
     max-height: 400px;
     z-index: 50;
+  }
+  .s-menu:not(.persistent) {
     position: fixed;
   }
 </style>
