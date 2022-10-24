@@ -12,7 +12,7 @@ interface IconProps {
   /** disables the icon */
   disabled?: boolean
   /** svg path for the icon */
-  path?: any
+  path?: string | string[]
   /** label for the icon */
   label?: any
   /** styles added to the icon */

@@ -19,12 +19,12 @@
   export let value = ITEM.index()
   export let active = false
   export let dense = false
-  export let disabled = null
+  export let disabled = false
   export let multiline = false
   export let link = role
   export let selectable = !link
   export let ripple = getContext('S_ListItemRipple') || role || false
-  export let style = null
+  export let style = ''
   export let href = ''
 
   ITEM.register((values) => {

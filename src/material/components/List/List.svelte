@@ -1,25 +1,22 @@
 <script>
-  import { setContext, getContext } from 'svelte';
+  import { setContext, getContext } from 'svelte'
 
-  let klass = '';
-  export { klass as class };
-  export let dense = null;
-  export let disabled = null;
-  export let flat = false;
-  export let rounded = false;
-  export let nav = false;
-  export let outlined = false;
-  export let style = null;
+  let klass = ''
+  export { klass as class }
+  export let dense = false
+  export let disabled = false
+  export let flat = false
+  export let rounded = false
+  export let nav = false
+  export let outlined = false
+  export let style = ''
 
-  let role = null;
+  let role = null
   if (!getContext('S_ListItemRole')) {
-    setContext('S_ListItemRole', 'listitem');
-    role = 'list';
+    setContext('S_ListItemRole', 'listitem')
+    role = 'list'
   }
 </script>
-
-<style lang="scss" src="./List.scss" global>
-</style>
 
 <div
   {role}
@@ -31,6 +28,10 @@
   class:nav
   class:outlined
   class:rounded
-  {style}>
+  {style}
+>
   <slot />
 </div>
+
+<style lang="scss" src="./List.scss" global>
+</style>
