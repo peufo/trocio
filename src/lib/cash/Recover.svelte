@@ -8,7 +8,7 @@
   import type { Article } from 'types'
   import TagsPrint from '$lib/troc/TagsPrint.svelte'
   import { troc } from '$lib/troc/store'
-  import { mdiPrinter } from '@mdi/js'
+  import { mdiTagOutline } from '@mdi/js'
 
   export let subscribeId: string
   let template: Template
@@ -68,7 +68,7 @@
         class="secondary-color"
         on:click={() => tagsPrint.print()}
       >
-        <Icon path={mdiPrinter} />
+        <Icon path={mdiTagOutline} />
       </Button>
 
       <Button class="primary-color" on:click={() => $queryRecover.mutate()}>

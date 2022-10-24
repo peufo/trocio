@@ -13,13 +13,13 @@
   export let depressed = false
   export let outlined = false
   export let rounded = false
-  export let disabled = null
+  export let disabled = false
   export let active = false
   export let activeClass = 'active'
   export let type = 'button'
   export let ripple = {}
-  export let style = null
-  export let button = null
+  export let style = ''
+  export let button = undefined
   export let href = ''
 </script>
 
