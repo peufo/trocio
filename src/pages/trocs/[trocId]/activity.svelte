@@ -16,7 +16,7 @@
   <SubActivityMobile
     subscribeId={$troc.subscribe._id}
     currency={$troc.currency}
-    createArticleDisabled={!$troc.is_try || $troc.isClosed}
+    createArticleDisabled={$troc.isClosed}
   />
 </EnsureSubscribe>
 
