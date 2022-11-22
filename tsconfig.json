@@ -6,6 +6,7 @@
   },
 
   "compilerOptions": {
+    "outDir": "dist",
     "paths": {
       "$lib/*": ["./src/lib/*"],
       "$assets/*": ["./src/assets/*"],
@@ -46,5 +47,5 @@
    * to avoid limiting type declarations.
    */
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
-  "exclude": ["node_modules", ".routify"]
+  "exclude": ["node_modules"]
 }
