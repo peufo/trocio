@@ -2,7 +2,7 @@
   import { createEventDispatcher, tick } from 'svelte'
   import { fade, fly } from 'svelte/transition'
   import { flip } from 'svelte/animate'
-  import { Button, List, ListItem } from '$material'
+  import { Button } from '$material'
   import { url, params, goto, redirect } from '@roxi/routify'
 
   import { isMobile } from '$lib/store/layout'
