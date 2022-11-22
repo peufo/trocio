@@ -1,17 +1,25 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
+  import { faUser } from '@fortawesome/free-solid-svg-icons'
 
   import { getFields } from '$lib/user/fields'
-  import { useInfinitApi } from '$lib/api'
+  import { api, useInfinitApi } from '$lib/api'
   import MagicTable from '$lib/util/MagicTable.svelte'
   import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
-  import type { SubscribeLookup, ParamsSubscribeAPI } from 'types'
+  import type {
+    SubscribeLookup,
+    ParamsSubscribeAPI,
+    ISubscribe,
+    RoleEnum,
+  } from 'types'
   import layout, { isMobile } from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import { troc } from '$lib/troc/store'
   import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
+  import MagicSelect from '$lib/util/MagicSelect.svelte'
 
   let subscribeMenu: SubscribeMenu
 
@@ -19,6 +27,7 @@
   let queryParams = {}
 
   let fields = getFields($troc)
+  const queryClient = useQueryClient()
 
   $: query = useInfinitApi<ParamsSubscribeAPI, SubscribeLookup[]>([
     'subscribes',
@@ -29,15 +38,63 @@
       ...queryParams,
     },
   ])
+
+  interface CreateSubscribeBody {
+    userId: string
+    trocId: string
+    role?: RoleEnum
+  }
+
+  const createSubscribe = useMutation(
+    (data: CreateSubscribeBody) =>
+      api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
+        method: 'post',
+        data,
+        success: 'Nouvelle participation créée',
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('subscribes')
+      },
+    }
+  )
+
+  function handleSelectNewSub(event: any) {
+    const { userId } = event.detail
+    if (!userId) return
+
+    $createSubscribe.mutate({
+      trocId: $troc._id,
+      userId: event.detail.userId,
+      role: 'basic',
+    })
+  }
+
+  const getValue = (sub: SubscribeLookup) => sub.user?.name || sub.name
+  const getValue2 = (sub: SubscribeLookup) => sub.user?.mail || ''
+  const getKey = (sub: SubscribeLookup) => sub._id || ''
 </script>
 
 <SubscribeMenu bind:this={subscribeMenu} />
 
 <div class="container">
-  <div class="d-flex align-center mb-2">
+  <div class="d-flex align-center mb-2 flex-wrap" style="gap: 1em;">
     <h6>{$isMobile ? 'Participants' : 'Gestion des participants'}</h6>
-    <div class="flex-grow-1" />
-    <MagicTableFieldSelect bind:fields />
+    <MagicSelect
+      placeholder="Inviter un participant"
+      on:select={handleSelectNewSub}
+      path="/subscribes"
+      queryParams={{ exact_trocId: $troc._id, includGlobalUser: true }}
+      searchKey="q"
+      {getValue}
+      {getValue2}
+      {getKey}
+      solo
+      dense
+      icon={faUser}
+    />
+
+    <MagicTableFieldSelect bind:fields style="margin-left: auto" />
   </div>
 
   <MagicTable

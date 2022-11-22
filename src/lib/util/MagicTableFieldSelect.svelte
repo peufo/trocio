@@ -5,6 +5,7 @@
   import type { FieldInteface } from 'types'
 
   export let fields: Partial<FieldInteface>[]
+  export let style = ''
 
   onMount(() => {
     // show fields if query exist in url
@@ -34,7 +35,7 @@
   }
 </script>
 
-<Menu closeOnClick={false} right style="max-height: none;">
+<Menu closeOnClick={false} right style="max-height: none; {style}">
   <div slot="activator">
     <Button depressed>Champs visibles</Button>
   </div>
