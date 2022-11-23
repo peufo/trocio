@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { faChartBar, faChartArea } from '@fortawesome/free-solid-svg-icons'
   import { grey } from '$material/utils/colors'
+  import dayjs from 'dayjs'
   import Plotly from 'plotly.js-dist'
 
   // For use typescript
@@ -27,6 +28,8 @@
   $: if ((isMounted && ($isDarkTheme || true)) || mode || true) load()
 
   const config = { responsive: true, displayModeBar: false }
+
+  const HOUR = 1000 * 60 * 60
 
   function load() {
     isLoading = true
@@ -280,15 +283,14 @@
         {
           text: 'Fermeture',
           arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
-          x: $troc.schedule[$troc.schedule.length - 1].close,
+          x: $troc.schedule.at(-1)?.close,
         },
       ]
-      if (layout.xaxis)
-        layout.xaxis.range = [
-          new Date($troc.schedule[0].open).getTime() - 1000 * 60 * 60 * 24,
-          new Date($troc.schedule[$troc.schedule.length - 1].close).getTime() +
-            1000 * 60 * 60 * 6,
-        ]
+
+      const timeOpen = +dayjs($troc.schedule[0].open).add(-1, 'week')
+      const timeNow = +dayjs().add(-1, 'week')
+      const timeClose = +dayjs($troc.schedule.at(-1)?.close).add(6, 'hour')
+      layout.xaxis.range = [timeOpen < timeNow ? timeOpen : timeNow, timeClose]
     }
     if (mode === 'sums') {
       layout.yaxis = {
