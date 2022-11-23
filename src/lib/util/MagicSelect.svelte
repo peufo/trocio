@@ -263,8 +263,7 @@
 
   .wrapper {
     position: relative;
-    width: 220px;
-    transition: width 220ms;
+    min-width: 200px;
   }
 
   .wrapper.reduced {

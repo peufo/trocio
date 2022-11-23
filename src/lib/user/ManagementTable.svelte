@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fade, TransitionConfig } from 'svelte/transition'
   import { params } from '@roxi/routify'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
@@ -80,28 +81,30 @@
 <SubscribeMenu bind:this={subscribeMenu} />
 
 <div class="container">
-  <div class="d-flex align-center mb-2 flex-wrap" style="gap: 1em;">
+  <div class="d-flex align-center mb-2" style="gap: 1em;">
     <h6>{$isMobile ? 'Participants' : 'Gestion des participants'}</h6>
-    <MagicSelect
-      placeholder="Inviter un participant"
-      on:select={handleSelectNewSub}
-      path="/subscribes"
-      queryParams={{ exact_trocId: $troc._id, includGlobalUser: true }}
-      searchKey="q"
-      {getValue}
-      {getValue2}
-      {getKey}
-      solo
-      dense
-      icon={faUserPlus}
-      reduceMode={$isMobile}
-      on:focus={() => (magicSelectIsFocus = true)}
-      on:blur={() => (magicSelectIsFocus = false)}
-    />
+    <div class="flex-shrink-0">
+      <MagicSelect
+        placeholder="Inviter un participant"
+        on:select={handleSelectNewSub}
+        path="/subscribes"
+        queryParams={{ exact_trocId: $troc._id, includGlobalUser: true }}
+        searchKey="q"
+        {getValue}
+        {getValue2}
+        {getKey}
+        solo
+        dense
+        icon={faUserPlus}
+        reduceMode={$isMobile}
+        on:focus={() => (magicSelectIsFocus = true)}
+        on:blur={() => (magicSelectIsFocus = false)}
+      />
+    </div>
 
     <div class="flex-grow-1" />
     {#if !$isMobile || !magicSelectIsFocus}
-      <MagicTableFieldSelect bind:fields style="margin-left: auto" />
+      <MagicTableFieldSelect bind:fields />
     {/if}
   </div>
 
