@@ -1,7 +1,6 @@
 <script lang="ts">
   import { fly } from 'svelte/transition'
   import { createEventDispatcher } from 'svelte'
-  import { Icon, List, ListItem } from '$material'
   import { params, url } from '@roxi/routify'
   import {
     faAngleLeft,
@@ -17,6 +16,7 @@
   import { mdiCart } from '@mdi/js'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
+  import { Icon, List, ListItem } from '$material'
   import IconLink from '$lib/util/IconLink.svelte'
   import type { SubscribeLookup, ISubscribe, RoleEnum } from 'types'
   import { troc } from '$lib/troc/store'
@@ -33,6 +33,7 @@
     roleSelect: void
     tarifSelect: void
     sendMail: void
+    prefixClick: void
   }
   const dispatch = createEventDispatcher<EventsMap>()
   const queryClient = useQueryClient()
@@ -101,12 +102,22 @@
           </span>
         </ListItem>
       {/if}
+
       <ListItem on:click={() => (state = 'tarif')}>
         Attribuer un tarif
         <span slot="append">
           <IconLink icon={faAngleRight} size="1.1em" class="ml-2" />
         </span>
       </ListItem>
+
+      {#if subscribe?.role === 'trader'}
+        <ListItem on:click={() => dispatch('prefixClick')}>
+          <span slot="prepend" class="prefix mr-3">
+            {subscribe.prefix}
+          </span>
+          Changer le prefix
+        </ListItem>
+      {/if}
 
       <ListItem
         href={$url('/admin/management_articles', {
@@ -244,3 +255,16 @@
     </div>
   {/if}
 </List>
+
+<style>
+  .prefix {
+    display: grid;
+    place-content: center;
+    font-size: small;
+    font-weight: bold;
+    border: solid 1px var(--theme-text-fields-outlined);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
+</style>

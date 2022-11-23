@@ -19,7 +19,6 @@
   } from 'types'
   import { useInfinitApi } from '$lib/api'
   import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
-  import PrefixDialog from '$lib/user/PrefixDialog.svelte'
 
   import MagicSelect from '$lib/util/MagicSelect.svelte'
 
@@ -164,14 +163,6 @@
 
 <SubscribeMenu bind:this={subscribeMenu} />
 
-<PrefixDialog
-  bind:active={prefixDialogActive}
-  subscribe={selectedSubscribe}
-  disabledPrefixs={$queryTraders.data?.pages
-    .flat()
-    .map((t) => t.prefix || '') || []}
-/>
-
 <div style="max-width: 700px; margin: auto;">
   <h6 class="mb-5">Gestion des collaborateurs</h6>
 
@@ -289,7 +280,7 @@
     query={queryTraders}
   >
     <List>
-      {#each $queryTraders.data?.pages.flat() || [] as subscribe, index}
+      {#each $queryTraders.data?.pages.flat() || [] as subscribe}
         <div on:click={(event) => handleClick(event, subscribe)}>
           <ListItem>
             <div

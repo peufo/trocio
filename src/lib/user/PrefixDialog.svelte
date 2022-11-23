@@ -9,19 +9,26 @@
   } from '$material'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
 
-  import { api } from '$lib/api'
-  import type { SubscribeLookup, TrocLookup } from 'types'
+  import { api, useApi } from '$lib/api'
+  import type { ParamsSubscribeAPI, SubscribeLookup, TrocLookup } from 'types'
   import Loader from '$lib/util/Loader.svelte'
   import { params } from '@roxi/routify'
 
-  export let active = false
-  export let subscribe: undefined | SubscribeLookup = undefined
-  /** Liste des prefix déjà utilisé */
-  export let disabledPrefixs: string[]
+  let active = false
+  let subscribe: undefined | SubscribeLookup = undefined
+  let selectedPrefix = ''
+
+  export function open(sub: SubscribeLookup) {
+    selectedPrefix = sub.prefix || ''
+    subscribe = sub
+    active = true
+  }
+
+  export function close() {
+    active = false
+  }
 
   const queryClient = useQueryClient()
-
-  $: selectedPrefix = subscribe?.prefix || ''
 
   const setTraderPrefix = useMutation(
     (data: { trocId: string; userId: string; prefix: string }) =>
@@ -32,7 +39,7 @@
       }),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(['subscribes', { exact_role: 'trader' }])
+        queryClient.invalidateQueries('subscribes')
       },
     }
   )
@@ -41,13 +48,20 @@
   for (let index = 65; index < 91; index++) {
     prefixs.push(String.fromCharCode(index))
   }
+
+  /** Liste des prefix déjà utilisé */
+  $: queryTraders = useApi<ParamsSubscribeAPI, SubscribeLookup[]>([
+    'subscribes',
+    { exact_trocId: $params.trocId, exact_role: 'trader', limit: 100 },
+  ])
+  $: disabledPrefixs = $queryTraders.data?.map((sub) => sub.prefix || '') || []
 </script>
 
 <Dialog bind:active>
   {#if subscribe}
     <Card>
       <CardTitle>
-        <h6>Choix du prefix de {subscribe.user.name}</h6>
+        <h6>Choix du prefix de {subscribe.user?.name}</h6>
       </CardTitle>
 
       <CardText>
@@ -77,7 +91,7 @@
               $setTraderPrefix.mutate(
                 {
                   trocId: $params.trocId,
-                  userId: subscribe?.user._id || '',
+                  userId: subscribe?.user?._id || '',
                   prefix: selectedPrefix,
                 },
                 {
