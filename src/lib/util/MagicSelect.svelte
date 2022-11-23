@@ -138,7 +138,6 @@
   }
 
   function handleFocus(event: FocusEvent) {
-    console.log('focus')
     isFocus = true
     isOpen = true
     dispatch('focus', event)
@@ -148,7 +147,6 @@
 
   const closeDebounced = debounce(() => (isOpen = isFocus), 200)
   function handleBlur(event: FocusEvent) {
-    console.log('blur')
     isFocus = false
     dispatch('blur', event)
     if (!flatMode) closeDebounced()
