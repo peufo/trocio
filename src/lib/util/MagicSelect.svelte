@@ -158,14 +158,20 @@
       `.item[data-index="${selectedIndex}"]`
     ) as HTMLLIElement
     if (!el) return
-    const top = el.offsetTop - 3
+
+    const offsetTop = flatMode ? -53 : -3
+    const offsetBottom = flatMode ? -43 : 6
+
+    const top = el.offsetTop + offsetTop
     if (top < listContainer.scrollTop) {
       listContainer.scrollTo({ top })
       return
     }
     const bottom = el.offsetTop + el.offsetHeight
     const delta =
-      bottom - (listContainer.scrollTop + listContainer.offsetHeight) + 6
+      bottom -
+      (listContainer.scrollTop + listContainer.offsetHeight) +
+      offsetBottom
     if (delta > 0) {
       listContainer.scrollTo({ top: listContainer.scrollTop + delta })
       return
@@ -282,7 +288,6 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    max-height: 360px;
     gap: 4px;
     border-radius: 8px;
     overflow-y: auto;
@@ -291,6 +296,7 @@
 
     &.fly-mode {
       position: absolute;
+      max-height: 360px;
       width: 100%;
       min-width: 260px;
       margin-top: 4px;
