@@ -121,7 +121,7 @@
           <IconLink icon={faTruck} class="mr-2" />
         </span>
 
-        <div slot="actions" class="flex-grow-1">
+        <div slot="actions">
           <ButtonGroup borderless mandatory bind:value={plotStockMode}>
             <ButtonGroupItem value="sums">Valeur</ButtonGroupItem>
             <ButtonGroupItem value="numbers">Nombre</ButtonGroupItem>
