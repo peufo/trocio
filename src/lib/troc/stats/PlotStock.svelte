@@ -29,8 +29,6 @@
 
   const config = { responsive: true, displayModeBar: false }
 
-  const HOUR = 1000 * 60 * 60
-
   function load() {
     isLoading = true
     Promise.all([loadPlotStock(), loadHisto()]).then(() => {
