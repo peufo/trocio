@@ -2,9 +2,10 @@
   import { createEventDispatcher, tick } from 'svelte'
   import { fade, fly } from 'svelte/transition'
   import { flip } from 'svelte/animate'
-  import { Button } from '$material'
   import { url, params, goto, redirect } from '@roxi/routify'
+  import { debounce } from 'debounce'
 
+  import { Button } from '$material'
   import { isMobile } from '$lib/store/layout'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import Loader from '$lib/util/Loader.svelte'
@@ -44,12 +45,22 @@
   /** func used for obtain the secoundary name from item */
   export let getValue2: ((item: any) => string) | undefined = undefined
 
-  /** Si vrai, les choix sont en permanance visible */
+  /** Les choix sont en permanance visible */
   export let flatMode = false
+  /** Le champ est reduit à un simple îcon*/
+  export let reduceMode = false
 
-  let selectedIndex = 0
+  export let isOpen = false
   let isFocus = false
-  const dispatch = createEventDispatcher()
+  let selectedIndex = 0
+
+  interface EventsMap {
+    select: any
+    focus: FocusEvent
+    blur: FocusEvent
+  }
+
+  const dispatch = createEventDispatcher<EventsMap>()
 
   export function focus() {
     inputElement?.focus()
@@ -120,19 +131,31 @@
     }
   }
 
-  function handleFocus() {
+  function handleFocus(event: FocusEvent) {
+    console.log('focus')
     isFocus = true
+    isOpen = true
+    dispatch('focus', event)
     selectedIndex = 0
     if (keepValue) clear()
   }
 
-  function handleBlur() {
-    if (!flatMode) setTimeout(() => (isFocus = false), 200)
-    else isFocus = false
+  const closeDebounced = debounce(() => (isOpen = isFocus), 200)
+  function handleBlur(event: FocusEvent) {
+    console.log('blur')
+    isFocus = false
+    dispatch('blur', event)
+    if (!flatMode) closeDebounced()
+    else isOpen = false
   }
 </script>
 
-<div class:flatMode class="wrapper {klass}" {style}>
+<div
+  class:flatMode
+  class="wrapper {reduceMode && !isOpen ? 'reduced' : ''} {klass}"
+  {style}
+  on:click={focus}
+>
   <div class="d-flex" style="gap: 4px;">
     <SearchTextField
       bind:inputElement
@@ -142,7 +165,7 @@
       on:blur={handleBlur}
       autocomplete="off"
       placeholder={keepValue && !!selectedItem ? ' ' : ''}
-      class="flex-grow-1"
+      class="flex-grow-1 "
       {...$$restProps}
     >
       {label}
@@ -151,11 +174,10 @@
     <slot name="action" />
   </div>
 
-  {#if isFocus || flatMode}
+  {#if isOpen || flatMode}
     <div
       class="list-container simple-card"
       class:fly-mode={!flatMode}
-      class:isFocus
       in:fly|local={{ y: 50 }}
       out:fade|local={{ duration: 100 }}
     >
@@ -165,7 +187,7 @@
         {#each itemsFiltred as item, index (item._id || item.userId)}
           <div
             class="item selectable simple-card"
-            class:active={isFocus && selectedIndex === index}
+            class:active={isOpen && selectedIndex === index}
             animate:flip={{ duration: 200 }}
             on:click={() => handleSelect(item)}
           >
@@ -209,6 +231,12 @@
   .wrapper {
     position: relative;
     min-width: 200px;
+    transition: all 1s;
+  }
+
+  .wrapper.reduced {
+    min-width: 0px;
+    width: 48px;
   }
 
   .wrapper.flatMode {

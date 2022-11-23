@@ -1,63 +1,65 @@
 <script>
-  import Input from '../Input';
-  import Icon from '../Icon';
-  import uid from '../../internal/uid';
-  import clearIcon from '../../internal/Icons/close';
+  import Input from '../Input'
+  import Icon from '../Icon'
+  import uid from '../../internal/uid'
+  import clearIcon from '../../internal/Icons/close'
 
-  let klass = '';
-  export { klass as class };
-  export let value = '';
-  export let color = 'primary';
-  export let filled = false;
-  export let solo = false;
-  export let outlined = false;
-  export let flat = false;
-  export let dense = false;
-  export let rounded = false;
-  export let clearable = false;
-  export let readonly = false;
-  export let disabled = false;
-  export let placeholder = null;
-  export let hint = '';
-  export let counter = false;
-  export let messages = [];
-  export let rules = [];
-  export let errorCount = 1;
-  export let validateOnBlur = false;
-  export let error = false;
-  export let success = false;
-  export let id = `s-input-${uid(5)}`;
-  export let style = null;
-  export let inputElement = null;
+  let klass = ''
+  export { klass as class }
+  export let value = ''
+  export let color = 'primary'
+  export let filled = false
+  export let solo = false
+  export let outlined = false
+  export let flat = false
+  export let dense = false
+  export let rounded = false
+  export let clearable = false
+  export let readonly = false
+  export let disabled = false
+  export let placeholder = ''
+  export let hint = ''
+  export let counter = false
+  export let messages = []
+  export let rules = []
+  export let errorCount = 1
+  export let validateOnBlur = false
+  export let error = false
+  export let success = false
+  export let id = `s-input-${uid(5)}`
+  export let style = ''
+  export let inputElement = undefined
 
-  let focused = false;
-  $: labelActive = !!placeholder || value || focused;
-  let errorMessages = [];
+  let focused = false
+  $: labelActive = !!placeholder || value || focused
+  let errorMessages = []
 
   export function validate() {
-    errorMessages = rules.map((r) => r(value)).filter((r) => typeof r === 'string');
-    if (errorMessages.length) error = true;
+    errorMessages = rules
+      .map((r) => r(value))
+      .filter((r) => typeof r === 'string')
+    if (errorMessages.length) error = true
     else {
-      error = false;
+      error = false
     }
-    return error;
+    return error
   }
 
   function onFocus() {
-    focused = true;
+    focused = true
   }
 
   function onBlur() {
-    focused = false;
-    if (validateOnBlur) validate();
+    focused = false
+    if (validateOnBlur) validate()
   }
 
   function clear() {
-    value = '';
+    value = ''
   }
 
   function onInput() {
-    if (!validateOnBlur) validate();
+    if (!validateOnBlur) validate()
   }
 </script>
 
@@ -69,7 +71,8 @@
   {disabled}
   {error}
   {success}
-  {style}>
+  {style}
+>
   <!-- Slot for prepend outside the input. -->
   <slot slot="prepend-outer" name="prepend-outer" />
   <div
@@ -78,7 +81,8 @@
     class:solo
     class:outlined
     class:flat
-    class:rounded>
+    class:rounded
+  >
     <!-- Slot for prepend inside the input. -->
     <slot name="prepend" />
 
@@ -106,7 +110,8 @@
         on:keypress
         on:keydown
         on:keyup
-        {...$$restProps} />
+        {...$$restProps}
+      />
     </div>
 
     {#if clearable && value !== ''}
@@ -126,7 +131,8 @@
     <div>
       <span>{hint}</span>
       {#each messages as message}<span>{message}</span>{/each}
-      {#each errorMessages.slice(0, errorCount) as message}<span>{message}</span>{/each}
+      {#each errorMessages.slice(0, errorCount) as message}<span>{message}</span
+        >{/each}
     </div>
     {#if counter}<span>{value.length} / {counter}</span>{/if}
   </div>

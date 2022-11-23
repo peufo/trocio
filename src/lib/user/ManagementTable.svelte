@@ -1,7 +1,7 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { faUser } from '@fortawesome/free-solid-svg-icons'
+  import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
   import { getFields } from '$lib/user/fields'
   import { api, useInfinitApi } from '$lib/api'
@@ -91,9 +91,11 @@
       {getKey}
       solo
       dense
-      icon={faUser}
+      icon={faUserPlus}
+      reduceMode={$isMobile}
     />
 
+    <div class="flex-grow-1" />
     <MagicTableFieldSelect bind:fields style="margin-left: auto" />
   </div>
 

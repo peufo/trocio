@@ -51,7 +51,7 @@ interface TextFieldProps extends Partial<HTMLInputElement> {
   /** Styles to add to text field wrapper. */
   style?: string
   /** Reference to text field element in the DOM. */
-  inputElement?: Element
+  inputElement?: HTMLInputElement
 }
 
 declare class TextField extends SvelteComponentTyped<TextFieldProps> {}

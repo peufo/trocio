@@ -12,6 +12,7 @@
       "$assets/*": ["./src/assets/*"],
       "$material": ["./src/material"]
     },
+    "noUnusedLocals": true,
 
     "moduleResolution": "node",
     "target": "es2019",
