@@ -73,6 +73,8 @@
   const getValue = (sub: SubscribeLookup) => sub.user?.name || sub.name
   const getValue2 = (sub: SubscribeLookup) => sub.user?.mail || ''
   const getKey = (sub: SubscribeLookup) => sub._id || ''
+
+  let magicSelectIsFocus = false
 </script>
 
 <SubscribeMenu bind:this={subscribeMenu} />
@@ -93,10 +95,14 @@
       dense
       icon={faUserPlus}
       reduceMode={$isMobile}
+      on:focus={() => (magicSelectIsFocus = true)}
+      on:blur={() => (magicSelectIsFocus = false)}
     />
 
     <div class="flex-grow-1" />
-    <MagicTableFieldSelect bind:fields style="margin-left: auto" />
+    {#if !$isMobile || !magicSelectIsFocus}
+      <MagicTableFieldSelect bind:fields style="margin-left: auto" />
+    {/if}
   </div>
 
   <MagicTable
