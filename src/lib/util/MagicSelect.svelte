@@ -53,6 +53,7 @@
   export let isOpen = false
   let isFocus = false
   let selectedIndex = 0
+  let listContainer: HTMLDivElement
 
   interface EventsMap {
     select: any
@@ -122,11 +123,13 @@
       case 'ArrowDown':
         event.preventDefault()
         if (++selectedIndex >= itemsFiltred.length) selectedIndex = 0
+        scrollToSelected()
         break
 
       case 'ArrowUp':
         event.preventDefault()
         if (--selectedIndex < 0) selectedIndex = itemsFiltred.length - 1
+        scrollToSelected()
         break
 
       default:
@@ -150,6 +153,25 @@
     dispatch('blur', event)
     if (!flatMode) closeDebounced()
     else isOpen = false
+  }
+
+  function scrollToSelected() {
+    const el = listContainer.querySelector(
+      `.item[data-index="${selectedIndex}"]`
+    ) as HTMLLIElement
+    if (!el) return
+    const top = el.offsetTop - 3
+    if (top < listContainer.scrollTop) {
+      listContainer.scrollTo({ top })
+      return
+    }
+    const bottom = el.offsetTop + el.offsetHeight
+    const delta =
+      bottom - (listContainer.scrollTop + listContainer.offsetHeight) + 6
+    if (delta > 0) {
+      listContainer.scrollTo({ top: listContainer.scrollTop + delta })
+      return
+    }
   }
 </script>
 
@@ -182,6 +204,7 @@
   {#if isOpen || flatMode}
     <div
       class="list-container simple-card"
+      bind:this={listContainer}
       class:fly-mode={!flatMode}
       in:fly|local={{ y: 50 }}
       out:fade|local={{ duration: 100 }}
@@ -195,6 +218,7 @@
             class:active={isOpen && selectedIndex === index}
             animate:flip={{ duration: 200 }}
             on:click={() => handleSelect(item)}
+            data-index={index}
           >
             <span class="text-subtitle-1">{getValue(item)}</span>
             {#if getValue2}
@@ -261,6 +285,7 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    max-height: 360px;
     gap: 4px;
     border-radius: 8px;
     overflow-y: auto;
