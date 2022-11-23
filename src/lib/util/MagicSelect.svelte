@@ -65,6 +65,9 @@
   export function focus() {
     inputElement?.focus()
   }
+  export function blur() {
+    inputElement?.blur()
+  }
 
   export function clear() {
     if (selectKey) {
@@ -154,7 +157,9 @@
   class:flatMode
   class="wrapper {reduceMode && !isOpen ? 'reduced' : ''} {klass}"
   {style}
-  on:click={focus}
+  on:click={() => {
+    if (reduceMode && !isOpen) focus()
+  }}
 >
   <div class="d-flex" style="gap: 4px;">
     <SearchTextField
@@ -208,7 +213,13 @@
         {/if}
 
         {#if !disableFetchNext && $querySearch.hasNextPage && !$querySearch.isFetchingNextPage}
-          <Button on:click={() => $querySearch.fetchNextPage()} depressed>
+          <Button
+            on:click={() => {
+              $querySearch.fetchNextPage()
+              focus()
+            }}
+            depressed
+          >
             Afficher plus
           </Button>
         {/if}
@@ -230,8 +241,8 @@
 
   .wrapper {
     position: relative;
-    min-width: 200px;
-    transition: all 1s;
+    width: 220px;
+    transition: width 220ms;
   }
 
   .wrapper.reduced {
