@@ -114,7 +114,7 @@ export function useInfinitApi<RequestQuery = any, RequestResult = RequestQuery>(
     | [string, RequestQuery]
     | UseInfiniteApiQueryOptions<RequestQuery, RequestResult>,
   apiOptions: ApiOptions<RequestQuery, RequestResult> = {},
-  firstLimit = 10,
+  firstLimit = 20,
   nextLimit = firstLimit
 ) {
   const queryFn = (context: QueryFunctionContext<[string, RequestQuery]>) => {
