@@ -8,7 +8,7 @@
   import Loader from '$lib/util/Loader.svelte'
   import { Button } from '$material'
   /** Choose if the mode for fetch more items */
-  export let mode: 'button' | 'scroll' = 'scroll'
+  export let mode: 'button' | 'scroll' = 'button'
   export let query: UseInfiniteQueryStoreResult<any, any, any, any>
   export let dense = false
   export let style = ''
