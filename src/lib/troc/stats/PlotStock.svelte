@@ -364,48 +364,44 @@
       },
       yaxis: { title: 'Nombre' },
       margin: { t: 30, l: 60, r: 30 },
-      annotations: [
-        {
-          text: ` Moy. mis en vente: <b>
-            ${renderAmount(averageProvided, $troc.currency)}
-          </b>`,
-          x: averageProvided,
-          y: 0,
-          arrowhead: 0,
-          arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
-          textangle: '-45',
-          xanchor: 'left',
-          ax: 30,
-          ay: -30,
-        },
-        {
-          text: ` Moy. vendu: <b>
-            ${renderAmount(averageSolded, $troc.currency)}
-          </b>`,
-          x: averageSolded,
-          y: 0,
-          arrowhead: 0,
-          arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
-          textangle: '-45',
-          xanchor: 'left',
-          ax: 30,
-          ay: -30,
-        },
-        {
-          text: ` Moy. récupéré: <b>
-            ${renderAmount(averageRecovered, $troc.currency)}
-          </b>`,
-          x: averageRecovered,
-          y: 0,
-          arrowhead: 0,
-          arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
-          textangle: '-45',
-          xanchor: 'left',
-          ax: 30,
-          ay: -30,
-        },
-      ],
+      annotations: [],
     }
+
+    const baseAnnotation = {
+      y: 0,
+      arrowhead: 0,
+      arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
+      textangle: '-45',
+      xanchor: 'left',
+      ax: 30,
+      ay: -30,
+    }
+
+    if (averageProvided)
+      layout.annotations.push({
+        ...baseAnnotation,
+        x: averageProvided,
+        text: ` Moy. mis en vente: <b>
+          ${renderAmount(averageProvided, $troc.currency)}
+        </b>`,
+      })
+    if (averageSolded)
+      layout.annotations.push({
+        ...baseAnnotation,
+        x: averageSolded,
+        text: ` Moy. vendu: <b>
+          ${renderAmount(averageSolded, $troc.currency)}
+        </b>`,
+      })
+    if (averageRecovered)
+      layout.annotations.push({
+        ...baseAnnotation,
+        x: averageRecovered,
+        text: ` Moy. récupéré: <b>
+          ${renderAmount(averageRecovered, $troc.currency)}
+        </b>`,
+      })
+
     return layout
   }
 
