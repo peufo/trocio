@@ -85,7 +85,7 @@
           </p>
         {:else}
           <p in:fade|local class="text-caption text-center">
-            Connectez votre smartphone
+            Connecter un smartphone
           </p>
         {/if}
       {/if}
