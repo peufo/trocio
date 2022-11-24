@@ -1,5 +1,5 @@
 <script lang="ts">
-  import MagicTable from '$lib/util/MagicTable.svelte'
+  import MagicTableWrapper from '$lib/util/MagicTableWrapper.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import { useInfinitApi } from '$lib/api'
@@ -32,7 +32,7 @@
 
 <ArticleMenu bind:this={articleMenu} {modeAdmin} />
 
-<MagicTable
+<MagicTableWrapper
   query={queryArticles}
   mode="button"
   class="mb-2"
@@ -60,4 +60,4 @@
       articleMenu.open(detail.item, detail.clickEvent)
     }}
   />
-</MagicTable>
+</MagicTableWrapper>

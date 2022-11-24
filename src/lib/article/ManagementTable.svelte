@@ -1,7 +1,7 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
 
-  import MagicTable from '$lib/util/MagicTable.svelte'
+  import MagicTableWrapper from '$lib/util/MagicTableWrapper.svelte'
   import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
@@ -39,7 +39,7 @@
     <MagicTableFieldSelect bind:fields />
   </div>
 
-  <MagicTable
+  <MagicTableWrapper
     {query}
     class="simple-card"
     style="
@@ -65,5 +65,5 @@
         articleMenu.open(detail.item, detail.clickEvent)
       }}
     />
-  </MagicTable>
+  </MagicTableWrapper>
 </div>

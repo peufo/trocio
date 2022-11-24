@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { fade, TransitionConfig } from 'svelte/transition'
   import { params } from '@roxi/routify'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
   import { getFields } from '$lib/user/fields'
   import { api, useInfinitApi } from '$lib/api'
-  import MagicTable from '$lib/util/MagicTable.svelte'
+  import MagicTableWrapper from '$lib/util/MagicTableWrapper.svelte'
   import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
@@ -108,7 +107,7 @@
     {/if}
   </div>
 
-  <MagicTable
+  <MagicTableWrapper
     {query}
     class="simple-card"
     style="
@@ -133,5 +132,5 @@
       on:click={({ detail }) =>
         subscribeMenu.open(detail.clickEvent, detail.item)}
     />
-  </MagicTable>
+  </MagicTableWrapper>
 </div>

@@ -1,9 +1,9 @@
 <script lang="ts">
   import { params, goto, url } from '@roxi/routify'
-  import { TextField, Ripple, Button } from '$material'
   import debounce from 'debounce'
-  import MagicTable from '$lib/util/MagicTable.svelte'
 
+  import { Ripple } from '$material'
+  import MagicTableWrapper from '$lib/util/MagicTableWrapper.svelte'
   import { layout } from '$lib/store/layout'
   import type { SubscribeLookup, ParamsAPI } from 'types'
   import IconLink from '$lib/util/IconLink.svelte'
@@ -12,7 +12,6 @@
   import { troc, useAddApply } from '$lib/troc/store'
   import { faCheck, faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons'
   import notify from '$lib/notify'
-  import qs from 'qs'
 
   let searchUserDebounced = ''
 
@@ -71,7 +70,7 @@
 <div class="container">
   <h6 class="mb-5">Attribution des tarifs</h6>
 
-  <MagicTable
+  <MagicTableWrapper
     class="simple-card"
     query={subscribesQuery}
     style="max-height: {$layout.mainHeight - 94}px;"
@@ -152,7 +151,7 @@
         </tr>
       {/each}
     </tbody>
-  </MagicTable>
+  </MagicTableWrapper>
 </div>
 
 <style>
