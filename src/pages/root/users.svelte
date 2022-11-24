@@ -57,8 +57,8 @@
         Chargement des détails
       {:then}
         <pre>
-              {@html syntaxHighlight(JSON.stringify(userSelected, null, 2))}
-            </pre>
+          {@html syntaxHighlight(JSON.stringify(userSelected, null, 2))}
+        </pre>
       {/await}
     </div>
     <div>

@@ -18,7 +18,7 @@
   export let transition = fade
   export let transitionOpts = {}
   export let index = 4
-  export let style = null
+  export let style = ''
 </script>
 
 <aside

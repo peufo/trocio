@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { url, layout } from '@roxi/routify'
-  import { NavigationDrawer, List, ListItem, Divider } from '$material'
+  import { url, layout, isActive } from '@roxi/routify'
+  import { NavigationDrawer, List, ListItem } from '$material'
   import { layout as lay } from '$lib/store/layout'
 
   let isRootUser = false
@@ -23,8 +23,6 @@
 {:else}
   <div class="d-flex">
     <NavigationDrawer style="height: {$lay.mainHeight}px;">
-      <h5 class="pl-4 pt-2">Root control</h5>
-      <Divider />
       <List nav>
         <a href={$layout.path}>
           <ListItem>
@@ -33,7 +31,7 @@
         </a>
         {#each $layout.children as node}
           <a href={node.path}>
-            <ListItem active={$url() === node.path}>
+            <ListItem active={$isActive(node.path)}>
               {node.title}
             </ListItem>
           </a>
