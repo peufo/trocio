@@ -21,7 +21,7 @@ export function removeParams(params: Params, keys: string[]): Params {
 }
 
 /** @deprecated */
-export function getHeader(body, verb = 'POST') {
+export function getHeader(body: object, verb = 'POST') {
   return {
     method: verb,
     headers: { 'Content-Type': 'application/json' },

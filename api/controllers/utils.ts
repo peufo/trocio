@@ -1,4 +1,4 @@
-import mongoose, { FilterQuery } from 'mongoose'
+import mongoose, { FilterQuery, PipelineStage } from 'mongoose'
 const { ObjectId } = mongoose.Types
 
 /**
@@ -7,12 +7,12 @@ const { ObjectId } = mongoose.Types
 export function dynamicQuery(
   requestQuery: object,
   ignore?: string | string[]
-): { match: FilterQuery<any>; sort: object } {
+): { match: FilterQuery<any>; sort: PipelineStage.Sort['$sort'] } {
   const match: { $or: FilterQuery<any>[]; $and: FilterQuery<any>[] } = {
     $or: [],
     $and: [],
   }
-  let sort: object = {}
+  let sort: PipelineStage.Sort['$sort'] = {}
   const QUERY_SEARCH = 'search_'
   const QUERY_OR_SEARCH = 'or_search_'
   const QUERY_SORT = 'sort_'
@@ -72,8 +72,8 @@ export function dynamicQuery(
       // Number and Date test
     } else if (!isNaN(value) || !isNaN(new Date(value).getTime())) {
       // add sort
-      if (key.startsWith(QUERY_SORT)) {
-        sort[key.replace(QUERY_SORT, '')] = +value
+      if (key.startsWith(QUERY_SORT) && (+value === 1 || +value === -1)) {
+        sort[key.replace(QUERY_SORT, '')] = (+value as 1) || -1
 
         // add filter min
       } else if (key.startsWith(QUERY_FILTER_MIN)) {

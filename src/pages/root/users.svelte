@@ -1,15 +1,19 @@
 <script lang="ts">
   import notify from '$lib/notify'
-
-  import MagicSelect from '$lib/util/MagicSelect.svelte'
-  import { getHeader, syntaxHighlight } from '$lib/utils'
   import { faUser } from '@fortawesome/free-solid-svg-icons'
+
+  // import {useInfinitApi} from '$lib/api'
+  // import MagicTable from '$lib/util/MagicTable.svelte'
+  import MagicSelect from '$lib/util/MagicSelect.svelte'
+  import { syntaxHighlight } from '$lib/utils'
   import { Button } from '$material'
   import type { User } from 'types'
 
   let userSelected: User | null = null
   let userSelectedPromise: Promise<void>
   let addCreditPromise: Promise<string | void>
+
+  // $: query = useInfinitApi<>('/api/root/users', )
 
   async function selectUser(event: any) {
     try {
@@ -25,10 +29,13 @@
   async function addCredit() {
     try {
       if (!userSelected) return
-      let res = await fetch(
-        `/api/root/addcredit`,
-        getHeader({ user: userSelected?._id })
-      )
+      let res = await fetch(`/api/root/addcredit`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user: userSelected?._id }),
+      })
       let json = await res.json()
       if (json.error) return notify.error(json.message)
       userSelected.creditTroc++

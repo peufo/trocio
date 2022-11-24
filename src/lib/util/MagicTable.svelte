@@ -1,0 +1,50 @@
+<script lang="ts">
+  import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
+
+  import SearchTextField from '$lib/util/SearchTextField.svelte'
+  import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
+  import MagicTableWrapper from '$lib/util/MagicTableWrapper.svelte'
+  import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
+  import MagicTableBody from '$lib/util/MagicTableBody.svelte'
+  import type { FieldInteface } from 'types'
+
+  let klass = ''
+  export { klass as class }
+  export let style = ''
+  export let query: UseInfiniteQueryStoreResult<any, any, any, any>
+  export let queryParams = {}
+  export let fields: FieldInteface[]
+
+  export let wrapperStyle = ''
+  export let currency = ''
+
+  // export let disableSearch = false
+
+  export let searchValue = ''
+</script>
+
+<div {style} class={klass}>
+  <div class="d-flex align-center mb-2">
+    <slot name="title" />
+    <div class="flex-grow-1" />
+    <MagicTableFieldSelect bind:fields />
+  </div>
+
+  <MagicTableWrapper
+    {query}
+    class="simple-card"
+    style="min-height: 400px; {wrapperStyle}"
+  >
+    <thead>
+      <tr>
+        <th colspan="2" style="padding-left: 0px;">
+          <SearchTextField bind:search={searchValue} flat solo dense />
+        </th>
+
+        <MagicTableHeaders {fields} bind:queryParams />
+      </tr>
+    </thead>
+
+    <MagicTableBody {fields} {query} {currency} on:click />
+  </MagicTableWrapper>
+</div>

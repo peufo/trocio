@@ -9,6 +9,7 @@ import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
 import { getOptions, setOption } from '../controllers/option'
 import { migration, cleanUpArticlesMargin } from '../controllers/root'
+import { dynamicQuery } from '../controllers/utils'
 
 const router = Router()
 const { ObjectId } = mongoose.Types
@@ -47,9 +48,14 @@ router
   })
   .get('/users', async (req, res, next) => {
     try {
-      const { limit = 100 } = req.query
-      // @ts-ignore
-      const users = await User.find(req.query).limit(limit)
+      const { limit = 20, skip = 0 } = req.query
+      let { match, sort } = dynamicQuery(req.query)
+      if (match.$and && match.$and.length === 0) delete match.$and
+      if (match.$or && match.$or.length === 0) delete match.$or
+      const aggregate = User.aggregate().match(match)
+      if (Object.keys(sort).length) aggregate.sort(sort)
+      aggregate.skip(+skip).limit(+limit)
+      const users = await aggregate.exec()
       res.json(users)
     } catch (error) {
       next(error)
