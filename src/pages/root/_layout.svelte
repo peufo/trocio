@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { url, layout, isActive } from '@roxi/routify'
+  import { layout, isActive } from '@roxi/routify'
   import { NavigationDrawer, List, ListItem } from '$material'
   import { layout as lay } from '$lib/store/layout'
 
@@ -31,7 +31,10 @@
         </a>
         {#each $layout.children as node}
           <a href={node.path}>
-            <ListItem active={$isActive(node.path)}>
+            <ListItem
+              active={$isActive(node.path)}
+              activeClass="secondary-color"
+            >
               {node.title}
             </ListItem>
           </a>
