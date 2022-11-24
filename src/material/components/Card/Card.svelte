@@ -1,22 +1,19 @@
 <script>
-  import ProgressLinear from '../ProgressLinear';
+  import ProgressLinear from '../ProgressLinear'
 
-  let klass = '';
-  export { klass as class };
-  export let flat = false;
-  export let tile = false;
-  export let outlined = false;
-  export let raised = false;
-  export let shaped = false;
-  export let hover = false;
-  export let link = false;
-  export let loading = false;
-  export let disabled = false;
-  export let style = null;
+  let klass = ''
+  export { klass as class }
+  export let flat = false
+  export let tile = false
+  export let outlined = false
+  export let raised = false
+  export let shaped = false
+  export let hover = false
+  export let link = false
+  export let loading = false
+  export let disabled = false
+  export let style = ''
 </script>
-
-<style lang="scss" src="./Card.scss" global>
-</style>
 
 <div
   class="s-card {klass}"
@@ -28,7 +25,8 @@
   class:hover
   class:link
   class:disabled
-  {style}>
+  {style}
+>
   {#if loading}
     <slot name="progress">
       <ProgressLinear indeterminate />
@@ -36,3 +34,6 @@
   {/if}
   <slot />
 </div>
+
+<style lang="scss" src="./Card.scss" global>
+</style>

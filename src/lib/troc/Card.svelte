@@ -28,7 +28,7 @@
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
   import 'dayjs/locale/fr'
-  import { mdiPhone, mdiWeb, mdiMail } from '@mdi/js'
+  import { mdiPhone, mdiWeb } from '@mdi/js'
 
   import IconLink from '$lib/util/IconLink.svelte'
   import { user } from '$lib/user/store'
