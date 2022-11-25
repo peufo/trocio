@@ -46,6 +46,11 @@
       key: 'mail',
     },
     {
+      label: 'Crédit',
+      key: 'creditTroc',
+      type: 'number',
+    },
+    {
       label: 'Mail validé',
       key: 'mailvalided',
       type: 'boolean',
