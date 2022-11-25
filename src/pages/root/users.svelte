@@ -6,11 +6,13 @@
   import type { DynamicQuery, User, FieldInteface } from 'types'
 
   let searchValue = ''
+  let queryParams = {}
   $: query = useInfinitApi<DynamicQuery<User>, User>([
     'root/users',
     {
       or_search_name: searchValue,
       or_search_mail: searchValue,
+      ...queryParams,
     },
   ])
 
@@ -50,7 +52,11 @@
     {
       label: 'Condition accepté',
       queryKey: 'acceptTerms',
-      hidden: true,
+    },
+    {
+      label: 'Tentative de connection',
+      queryKey: 'loginAttempts',
+      format: 'number',
     },
   ]
 </script>
@@ -59,6 +65,7 @@
   <MagicTable
     {query}
     {fields}
+    bind:queryParams
     bind:searchValue
     wrapperStyle="max-height: {$layout.mainHeight - 76}px;"
   >

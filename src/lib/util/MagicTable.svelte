@@ -12,16 +12,15 @@
     title: {}
   }
 
+  export let query: UseInfiniteQueryStoreResult<any, any, any, any>
+  export let queryParams: { [key: string]: unknown }
+  export let fields: FieldInteface[]
+
   let klass = ''
   export { klass as class }
   export let style = ''
-  export let query: UseInfiniteQueryStoreResult<any, any, any, any>
-  export let queryParams = {}
-  export let fields: FieldInteface[]
-
   export let wrapperStyle = ''
   export let currency = ''
-
   export let searchColSpan = 2
   export let searchValue = ''
 </script>

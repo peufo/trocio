@@ -13,6 +13,7 @@
 
   /** Permet de remonter le query sans passer par $params (trop global) */
   export let queryParams: { [key: string]: any } = {}
+  console.log({ queryParams })
 
   /** Nombre de colonne laisser pour le champ de recherche */
   export let searchColSpan = 0

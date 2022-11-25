@@ -23,7 +23,7 @@
   import IconLink from '$lib/util/IconLink.svelte'
   import { mdiClose } from '@mdi/js'
 
-  export let field: Partial<FieldInteface>
+  export let field: FieldInteface
   export let active = false
   export let min = ''
   export let max = ''
@@ -76,6 +76,7 @@
     if (!field.queryKey) return
     const query = $params
     query[keySort] = option.key
+    console.log({ queryParam })
     queryParam[keySort] = option.key
     if (!option.key) {
       delete query[keySort]
