@@ -8,6 +8,10 @@
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
   import type { FieldInteface } from 'types'
 
+  interface $$Slots {
+    title: {}
+  }
+
   let klass = ''
   export { klass as class }
   export let style = ''

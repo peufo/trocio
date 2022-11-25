@@ -56,6 +56,10 @@ export interface Article extends ArticleCreate {
   sellerId: string
 }
 
+export interface ArticleWithState extends Article {
+  state: ArticleState
+}
+
 export interface ArticleLookup extends Article {
   provider?: User
   providerSub?: ISubscribe

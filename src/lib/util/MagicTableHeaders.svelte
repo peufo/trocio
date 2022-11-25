@@ -14,7 +14,7 @@
   // Permet de remonter le query sans passer par $params (trop global)
   export let queryParams: { [key: string]: any } = {}
 
-  $: headers = fields.filter((f) => !f.disabled && f.visible)
+  $: headers = fields.filter((f) => !f.disabled && !f.hidden)
 
   const components: Partial<Record<FieldInteface['format'], any>> = {
     enum: MagicTableHeaderEnum,

@@ -14,17 +14,17 @@
     )
     for (const queryKey in $params) {
       queryKeyRegexps.forEach((regex, index) => {
-        if (queryKey.match(regex)) fields[index].visible = true
+        if (queryKey.match(regex)) fields[index].hidden = false
       })
     }
   })
 
   function handleClick(index: number) {
     const field = fields[index]
-    fields[index].visible = !field.visible
+    fields[index].hidden = !field.hidden
 
     // Disable filters and sort if field is hidden
-    if (!field.visible) {
+    if (field.hidden) {
       const query = $params
       const regexp = new RegExp(`${field.queryKey}$`)
       for (const queryKey in query) {
@@ -46,7 +46,7 @@
           <Checkbox
             style="margin-right: 0px;"
             disabled={field.disabled}
-            checked={field.visible}
+            checked={!field.hidden}
           />
         </span>
         {field.label}

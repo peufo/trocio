@@ -20,7 +20,7 @@
 <tbody>
   {#each items as item}
     <tr>
-      {#each fields.filter((f) => f.visible) as field}
+      {#each fields.filter((f) => !f.hidden) as field}
         <td
           on:click={(clickEvent) => dispatch('click', { clickEvent, item })}
           class:currency={field.format === 'currency'}

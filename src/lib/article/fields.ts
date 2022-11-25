@@ -1,6 +1,7 @@
 import { faDotCircle } from '@fortawesome/free-solid-svg-icons'
 import type {
   Article,
+  ArticleWithState,
   ArticleLookup,
   FieldInteface,
   SelectOption,
@@ -8,11 +9,11 @@ import type {
 } from 'types'
 import { getStateLabel } from '$lib/utils'
 
-export function getFields(): FieldInteface<Article>[] {
+export function getFields(): FieldInteface<ArticleWithState>[] {
   return [
     {
       label: '#',
-      visible: true,
+
       queryKey: 'ref',
       format: 'string',
       cellWidth: 50,
@@ -20,7 +21,7 @@ export function getFields(): FieldInteface<Article>[] {
     },
     {
       label: 'Désignation',
-      visible: true,
+
       queryKey: 'name',
       format: 'string',
       cellWidth: 300,
@@ -28,7 +29,7 @@ export function getFields(): FieldInteface<Article>[] {
     },
     {
       label: 'Statut',
-      visible: true,
+
       format: 'enum',
       queryKey: 'state',
       getValue: getStateLabel,
@@ -37,7 +38,7 @@ export function getFields(): FieldInteface<Article>[] {
     },
     {
       label: 'Création',
-      visible: false,
+      hidden: true,
       queryKey: 'createdAt',
       format: 'date',
       cellWidth: 170,
@@ -45,7 +46,7 @@ export function getFields(): FieldInteface<Article>[] {
 
     {
       label: 'Validation',
-      visible: false,
+      hidden: true,
       queryKey: 'valided',
       format: 'date',
       cellWidth: 170,
@@ -53,35 +54,35 @@ export function getFields(): FieldInteface<Article>[] {
 
     {
       label: 'Vente',
-      visible: false,
+      hidden: true,
       queryKey: 'sold',
       format: 'date',
       cellWidth: 170,
     },
     {
       label: 'Récupération',
-      visible: false,
+      hidden: true,
       queryKey: 'recover',
       format: 'date',
       cellWidth: 170,
     },
     {
       label: 'Frais',
-      visible: true,
+
       queryKey: 'fee',
       format: 'currency',
       cellWidth: 50,
     },
     {
       label: 'Marge',
-      visible: true,
+
       queryKey: 'margin',
       format: 'currency',
       cellWidth: 50,
     },
     {
       label: 'Prix',
-      visible: true,
+
       queryKey: 'price',
       format: 'currency',
       cellWidth: 50,
@@ -105,12 +106,12 @@ function selectOptionUser(trocId: string): SelectOption {
  */
 export function getFieldsLookup(
   trocId: string
-): FieldInteface<Article & ArticleLookup>[] {
+): FieldInteface<ArticleWithState & ArticleLookup>[] {
   return [
     ...getFields(),
     {
       label: 'Fournisseur',
-      visible: true,
+
       queryKey: 'providerSubId',
       getValue: (art) => art?.provider?.name || art?.providerSub?.name,
       cellWidth: 70,
@@ -119,7 +120,7 @@ export function getFieldsLookup(
     },
     {
       label: 'Validateur',
-      visible: false,
+      hidden: true,
       queryKey: 'validatorSubId',
       format: 'select',
       getValue: (art) => art?.validator?.name,
@@ -128,7 +129,7 @@ export function getFieldsLookup(
     },
     {
       label: 'Caissier',
-      visible: false,
+      hidden: true,
       queryKey: 'sellerSubId',
       format: 'select',
       getValue: (art) => art?.seller?.name,
@@ -137,7 +138,7 @@ export function getFieldsLookup(
     },
     {
       label: 'Client',
-      visible: false,
+      hidden: true,
       queryKey: 'buyerSubId',
       format: 'select',
       getValue: (art) => art.buyer?.name,

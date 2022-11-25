@@ -32,19 +32,18 @@ export interface SelectOption {
 export interface FieldInteface<Type = any> {
   /** Text visible dans l'entête */
   label: string
-  /** Champs visible */
-  visible: boolean
+  /**
+   * Clé utilisé pour le query de l'url.
+   * Est utilisé pour obtenir la valeur si getValue n'est pas défini
+   */
+  queryKey: string & keyof Type
   /**
    * Formate la valeur afficher. 'string' par défaut
    * Adapte le menu de l'entête
    */
   format: 'string' | 'number' | 'user' | 'enum' | 'select' | 'currency' | 'date'
-  /**
-   * Clé utilisé pour le query de l'url.
-   * Est utilisé pour obtenir la valeur si getValue n'est pas défini
-   */
-  // queryKey: Record<`${DynamicQuery}_${keyof Type}`, string | number>
-  queryKey: string
+  /** Champs cacher */
+  hidden?: boolean
   /** Clé ou fonction retournant la valeur à afficher */
   getValue?: (value: Type) => string | number | undefined
   /** Largeur de la colonne */
