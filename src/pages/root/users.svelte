@@ -5,10 +5,16 @@
   import { layout } from '$lib/store/layout'
   import type { DynamicQuery, User, FieldInteface } from 'types'
 
+  let searchValue = ''
+  $: query = useInfinitApi<DynamicQuery<User>, User>([
+    'root/users',
+    {
+      or_search_name: searchValue,
+      or_search_mail: searchValue,
+    },
+  ])
+
   let userSelected: User | null = null
-
-  $: query = useInfinitApi<DynamicQuery<User>, User>(['root/users', {}])
-
   async function addCredit() {
     try {
       if (!userSelected) return
@@ -42,7 +48,7 @@
       queryKey: 'mailvalided',
     },
     {
-      label: 'Condition accepter',
+      label: 'Condition accepté',
       queryKey: 'acceptTerms',
       hidden: true,
     },
@@ -53,6 +59,7 @@
   <MagicTable
     {query}
     {fields}
+    bind:searchValue
     wrapperStyle="max-height: {$layout.mainHeight - 76}px;"
   >
     <h6 slot="title">Users</h6>
