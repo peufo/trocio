@@ -1,6 +1,8 @@
 <script lang="ts">
   import { params, goto, url } from '@roxi/routify'
+
   import { onMount } from 'svelte'
+  import { isMobile } from '$lib/store/layout'
   import { Button, Menu, List, ListItem, Checkbox } from '$material'
   import type { FieldInteface } from 'types'
 
@@ -35,7 +37,7 @@
   }
 </script>
 
-<Menu closeOnClick={false} right style="max-height: none; {style}">
+<Menu closeOnClick={$isMobile} right style="max-height: none; {style}">
   <div slot="activator">
     <Button depressed>Champs visibles</Button>
   </div>
