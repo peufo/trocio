@@ -4,7 +4,7 @@
   import { Card, CardTitle, Button } from '$material'
   import { faUsers } from '@fortawesome/free-solid-svg-icons'
 
-  import type { DynamicQuerySubscribe } from 'types'
+  import type { ISubscribe, DynamicQuery } from 'types'
   import IconLink from '$lib/util/IconLink.svelte'
   import { ROLES } from '$lib/user/roles'
   import { api } from '$lib/api'
@@ -18,7 +18,7 @@
   onMount(async () => {
     counts = await Promise.all(
       ROLES.map((role) =>
-        api<DynamicQuerySubscribe, number>('/api/subscribes/count', {
+        api<DynamicQuery<ISubscribe>, number>('/api/subscribes/count', {
           params: {
             exact_trocId: trocId,
             exact_role: role.key,
@@ -26,7 +26,7 @@
         })
       )
     )
-    countGuest = await api<DynamicQuerySubscribe, number>(
+    countGuest = await api<DynamicQuery<ISubscribe>, number>(
       '/api/subscribes/count',
       {
         params: {

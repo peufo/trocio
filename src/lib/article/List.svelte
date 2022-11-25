@@ -5,7 +5,7 @@
   import Loader from '$lib/util/Loader.svelte'
   import { renderAmount } from '$lib/utils'
   import { useInfinitApi } from '$lib/api'
-  import type { Article, DynamicQueryArticle } from 'types'
+  import type { Article, DynamicQuery } from 'types'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
 
   export let trocId = ''
@@ -15,7 +15,7 @@
   let klass = ''
   export { klass as class }
 
-  $: queryArticles = useInfinitApi<DynamicQueryArticle, Article>([
+  $: queryArticles = useInfinitApi<DynamicQuery<Article>, Article>([
     'articles',
     { exact_trocId: trocId, or_search_name: search },
   ])

@@ -1,7 +1,7 @@
 import type { Article } from './article'
 import type { ISubscribe } from './subscribe'
 
-export type DynamicQuery =
+export type DynamicQueryKey =
   | 'exact'
   | 'search'
   | 'or_search'
@@ -10,12 +10,8 @@ export type DynamicQuery =
   | 'min'
   | 'max'
 
-export type DynamicQueryArticle = Partial<
-  Record<`${DynamicQuery}_${keyof Article}`, string | number | boolean>
->
-
-export type DynamicQuerySubscribe = Partial<
-  Record<`${DynamicQuery}_${keyof ISubscribe}`, string | number | boolean>
+export type DynamicQuery<Type> = Partial<
+  Record<`${DynamicQueryKey}_${string & keyof Type}`, string | number | boolean>
 >
 
 export interface ParamsAPI {
