@@ -28,14 +28,13 @@
       console.trace(error)
     }
   }
-  /*
+
   const fields: FieldInteface<User>[] = [
     {
       label: 'Name',
-      queryKey: 's'
-    }
+      queryKey: 's',
+    },
   ]
-*/
 </script>
 
 <MagicTable {query} {fields}>
