@@ -36,7 +36,7 @@ export interface FieldInteface<Type = any> {
    * Clé utilisé pour le query de l'url.
    * Est utilisé pour obtenir la valeur si getValue n'est pas défini
    */
-  queryKey: string & keyof Type
+  key: string & keyof Type
   /**
    * Formate la valeur afficher. 'string' par défaut
    * Adapte le menu de l'entête

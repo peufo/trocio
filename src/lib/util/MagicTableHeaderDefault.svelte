@@ -11,9 +11,9 @@
   export let field: Partial<FieldInteface>
   let search = ''
   let queryKey =
-    !field.format || field.format === 'string'
-      ? `or_search_${field.queryKey}`
-      : `user_search_${field.queryKey}`
+    !field.key || field.key === 'string'
+      ? `or_search_${field.key}`
+      : `user_search_${field.key}`
 
   onMount(() => {
     search = $params[queryKey] || ''

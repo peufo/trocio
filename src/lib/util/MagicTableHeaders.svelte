@@ -20,7 +20,7 @@
 
   $: headers = fields.filter((f, i) => i >= searchColSpan && !f.hidden)
 
-  const components: Partial<Record<string & FieldInteface['format'], any>> = {
+  const components: Partial<Record<string & FieldInteface['type'], any>> = {
     string: MagicTableHeaderDefault,
     enum: MagicTableHeaderEnum,
     select: MagicTableHeaderSelect,
@@ -30,9 +30,9 @@
   }
 </script>
 
-{#each headers as field, index (field.queryKey)}
+{#each headers as field, index (field.key)}
   <svelte:component
-    this={field.format ? components[field.format] : MagicTableHeaderDefault}
+    this={field.type ? components[field.type] : MagicTableHeaderDefault}
     {field}
     isLast={headers.length - 1 === index}
     bind:queryParam={queryParams}

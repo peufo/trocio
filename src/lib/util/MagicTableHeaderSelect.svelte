@@ -10,7 +10,7 @@
   export let field: Partial<FieldInteface>
   export let queryParam: { [key: string]: any } = {}
 
-  let key = `exact_${field.queryKey}`
+  let key = `exact_${field.key}`
   let inputElement: HTMLInputElement
   let active = false
   let filterLabel = ''

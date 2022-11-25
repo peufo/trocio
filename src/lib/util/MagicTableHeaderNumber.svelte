@@ -35,25 +35,25 @@
   export let filterLabel = ''
   export let sortIcon: IconDefinition | undefined
 
-  let keySort = `sort_${field.queryKey}`
-  let keyMin = `min_${field.queryKey}`
-  let keyMax = `max_${field.queryKey}`
+  let keySort = `sort_${field.key}`
+  let keyMin = `min_${field.key}`
+  let keyMax = `max_${field.key}`
 
   const sortOptions: EnumOption[] = [
     {
       icon: faBars,
       label: 'Non trié',
-      key: '',
+      value: '',
     },
     {
       icon: faSortAmountDownAlt,
-      label: field.format === 'date' ? `Plus vieux d'abord` : `Croissant`,
-      key: 1,
+      label: field.type === 'date' ? `Plus vieux d'abord` : `Croissant`,
+      value: 1,
     },
     {
       icon: faSortAmountDown,
-      label: field.format === 'date' ? `Plus récent d'abord` : `Décroissant`,
-      key: -1,
+      label: field.type === 'date' ? `Plus récent d'abord` : `Décroissant`,
+      value: -1,
     },
   ]
 
@@ -62,7 +62,7 @@
     min = $params[keyMin] || ''
     max = $params[keyMax] || ''
     if (sortValue) {
-      sortIcon = sortOptions.find((opt) => opt.key === sortValue)?.icon
+      sortIcon = sortOptions.find((opt) => opt.value === sortValue)?.icon
       queryParam[keySort] = sortValue
     }
     if (min) queryParam[keyMin] = min
@@ -73,12 +73,11 @@
 
   function handleClickSort(option: EnumOption) {
     active = false
-    if (!field.queryKey) return
+    if (!field.key) return
     const query = $params
-    query[keySort] = option.key
-    console.log({ queryParam })
-    queryParam[keySort] = option.key
-    if (!option.key) {
+    query[keySort] = option.value
+    queryParam[keySort] = option.value
+    if (!option.value) {
       delete query[keySort]
       delete queryParam[keySort]
       sortIcon = undefined
@@ -89,7 +88,7 @@
   }
 
   function handleChangeFilter() {
-    if (!field.queryKey) return
+    if (!field.key) return
     const query = $params
 
     query[keyMin] = min
@@ -175,7 +174,7 @@
 
       <Divider />
 
-      {#if field.format == 'number' || field.format == 'currency'}
+      {#if field.type == 'number' || field.type == 'currency'}
         <TextField
           class="ma-4"
           bind:value={min}
@@ -202,7 +201,7 @@
           </span>
           Maximum
         </TextField>
-      {:else if field.format === 'date'}
+      {:else if field.type === 'date'}
         <TextField
           class="ma-4"
           bind:value={min}

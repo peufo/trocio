@@ -13,13 +13,13 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
   return [
     {
       label: '#',
-      queryKey: 'ref',
+      key: 'ref',
       cellWidth: 50,
       disabled: true,
     },
     {
       label: 'Désignation',
-      queryKey: 'name',
+      key: 'name',
       cellWidth: 300,
       disabled: true,
     },
@@ -27,7 +27,7 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
       label: 'Statut',
 
       type: 'enum',
-      queryKey: 'state',
+      key: 'state',
       getValue: getStateLabel,
       cellWidth: 90,
       enumOptions: stateEnumOptions,
@@ -35,7 +35,7 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
     {
       label: 'Création',
       hidden: true,
-      queryKey: 'createdAt',
+      key: 'createdAt',
       type: 'date',
       cellWidth: 170,
     },
@@ -43,7 +43,7 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
     {
       label: 'Validation',
       hidden: true,
-      queryKey: 'valided',
+      key: 'valided',
       type: 'date',
       cellWidth: 170,
     },
@@ -51,35 +51,35 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
     {
       label: 'Vente',
       hidden: true,
-      queryKey: 'sold',
+      key: 'sold',
       type: 'date',
       cellWidth: 170,
     },
     {
       label: 'Récupération',
       hidden: true,
-      queryKey: 'recover',
+      key: 'recover',
       type: 'date',
       cellWidth: 170,
     },
     {
       label: 'Frais',
 
-      queryKey: 'fee',
+      key: 'fee',
       type: 'currency',
       cellWidth: 50,
     },
     {
       label: 'Marge',
 
-      queryKey: 'margin',
+      key: 'margin',
       type: 'currency',
       cellWidth: 50,
     },
     {
       label: 'Prix',
 
-      queryKey: 'price',
+      key: 'price',
       type: 'currency',
       cellWidth: 50,
     },
@@ -108,7 +108,7 @@ export function getFieldsLookup(
     {
       label: 'Fournisseur',
 
-      queryKey: 'providerSubId',
+      key: 'providerSubId',
       getValue: (art) => art?.provider?.name || art?.providerSub?.name,
       cellWidth: 70,
       type: 'select',
@@ -117,7 +117,7 @@ export function getFieldsLookup(
     {
       label: 'Validateur',
       hidden: true,
-      queryKey: 'validatorSubId',
+      key: 'validatorSubId',
       type: 'select',
       getValue: (art) => art?.validator?.name,
       cellWidth: 50,
@@ -126,7 +126,7 @@ export function getFieldsLookup(
     {
       label: 'Caissier',
       hidden: true,
-      queryKey: 'sellerSubId',
+      key: 'sellerSubId',
       type: 'select',
       getValue: (art) => art?.seller?.name,
       cellWidth: 50,
@@ -135,7 +135,7 @@ export function getFieldsLookup(
     {
       label: 'Client',
       hidden: true,
-      queryKey: 'buyerSubId',
+      key: 'buyerSubId',
       type: 'select',
       getValue: (art) => art.buyer?.name,
       cellWidth: 50,

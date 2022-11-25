@@ -11,7 +11,7 @@
   export let field: Partial<FieldInteface>
   export let queryParam: { [key: string]: any } = {}
 
-  const key = `exact_${field.queryKey}`
+  const key = `exact_${field.key}`
   let queryLabel = ''
 
   onMount(() => {
@@ -27,8 +27,7 @@
   })
 
   function handleClick(option: EnumOption) {
-    if (!field.queryKey) return
-    // const key = `exact_${field.queryKey}`
+    if (!field.key) return
     const query = $params
     query[key] = option.value
     if (option.value === null) {

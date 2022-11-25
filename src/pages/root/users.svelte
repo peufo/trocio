@@ -39,24 +39,24 @@
   const fields: FieldInteface<User>[] = [
     {
       label: 'Name',
-      queryKey: 'name',
+      key: 'name',
     },
     {
       label: 'Mail',
-      queryKey: 'mail',
+      key: 'mail',
     },
     {
       label: 'Mail validé',
-      queryKey: 'mailvalided',
+      key: 'mailvalided',
     },
     {
       label: 'Condition accepté',
-      queryKey: 'acceptTerms',
+      key: 'acceptTerms',
     },
     {
       label: 'Tentative de connection',
-      queryKey: 'loginAttempts',
-      format: 'number',
+      key: 'loginAttempts',
+      type: 'number',
     },
   ]
 </script>

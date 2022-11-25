@@ -11,9 +11,7 @@
 
   onMount(() => {
     // show fields if query exist in url
-    const queryKeyRegexps = fields.map(
-      ({ queryKey }) => new RegExp(`${queryKey}$`)
-    )
+    const queryKeyRegexps = fields.map(({ key }) => new RegExp(`${key}$`))
     for (const queryKey in $params) {
       queryKeyRegexps.forEach((regex, index) => {
         if (queryKey.match(regex)) fields[index].hidden = false
@@ -28,7 +26,7 @@
     // Disable filters and sort if field is hidden
     if (field.hidden) {
       const query = $params
-      const regexp = new RegExp(`${field.queryKey}$`)
+      const regexp = new RegExp(`${field.key}$`)
       for (const queryKey in query) {
         if (queryKey.match(regexp)) delete query[queryKey]
       }

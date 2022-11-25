@@ -15,7 +15,7 @@
   function getValue(item: any, field: FieldInteface) {
     return typeof field.getValue === 'function'
       ? field.getValue(item)
-      : item[field.queryKey]
+      : item[field.key]
   }
 </script>
 
