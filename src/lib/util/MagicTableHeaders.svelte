@@ -11,12 +11,16 @@
 
   export let fields: FieldInteface[]
 
-  // Permet de remonter le query sans passer par $params (trop global)
+  /** Permet de remonter le query sans passer par $params (trop global) */
   export let queryParams: { [key: string]: any } = {}
 
-  $: headers = fields.filter((f) => !f.disabled && !f.hidden)
+  /** Nombre de colonne laisser pour le champ de recherche */
+  export let searchColSpan = 0
 
-  const components: Partial<Record<FieldInteface['format'], any>> = {
+  $: headers = fields.filter((f, i) => i >= searchColSpan && !f.hidden)
+
+  const components: Partial<Record<string & FieldInteface['format'], any>> = {
+    string: MagicTableHeaderDefault,
     enum: MagicTableHeaderEnum,
     select: MagicTableHeaderSelect,
     number: MagicTableHeaderNumber,
@@ -27,7 +31,7 @@
 
 {#each headers as field, index (field.queryKey)}
   <svelte:component
-    this={components[field.format] || MagicTableHeaderDefault}
+    this={field.format ? components[field.format] : MagicTableHeaderDefault}
     {field}
     isLast={headers.length - 1 === index}
     bind:queryParam={queryParams}

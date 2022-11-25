@@ -53,7 +53,7 @@
           <SearchTextField bind:search={searchValue} flat solo dense />
         </th>
 
-        <MagicTableHeaders {fields} bind:queryParams />
+        <MagicTableHeaders {fields} bind:queryParams searchColSpan={2} />
       </tr>
     </thead>
 

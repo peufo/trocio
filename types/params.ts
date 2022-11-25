@@ -21,7 +21,9 @@ export interface ParamsAPI {
   skip?: number
 }
 
-export interface ParamsSubscribeAPI extends DynamicQuerySubscribe, ParamsAPI {
+export interface ParamsSubscribeAPI
+  extends DynamicQuery<ISubscribe>,
+    ParamsAPI {
   /** Inclue le résumé des interactions d'un participant sur un troc */
   includResum?: boolean
   /** Inclue les détails du tarif attribué au client */
@@ -30,7 +32,7 @@ export interface ParamsSubscribeAPI extends DynamicQuerySubscribe, ParamsAPI {
   includGlobalUser?: boolean
 }
 
-export interface ParamsArticleAPI extends DynamicQueryArticle, ParamsAPI {
+export interface ParamsArticleAPI extends DynamicQuery<Article>, ParamsAPI {
   /** Sélection de fournisseurs (id) dont on souhaite récupérer les articles */
   provider?: string[]
   /** Sélection de fournisseurs (id) dont on ne souhaite pas récupérer les articles */

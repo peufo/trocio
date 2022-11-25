@@ -29,6 +29,7 @@ export function getFields(troc: TrocLookup): FieldInteface[] {
     {
       label: `Validé par l'utilisateur`,
       hidden: true,
+
       queryKey: 'validedByUser',
       format: 'enum',
       cellWidth: 50,

@@ -22,8 +22,7 @@
   export let wrapperStyle = ''
   export let currency = ''
 
-  // export let disableSearch = false
-
+  export let searchColSpan = 2
   export let searchValue = ''
 </script>
 
@@ -41,11 +40,11 @@
   >
     <thead>
       <tr>
-        <th colspan="2" style="padding-left: 0px;">
+        <th colspan={searchColSpan} style="padding-left: 0px;">
           <SearchTextField bind:search={searchValue} flat solo dense />
         </th>
 
-        <MagicTableHeaders {fields} bind:queryParams />
+        <MagicTableHeaders {fields} bind:queryParams {searchColSpan} />
       </tr>
     </thead>
 

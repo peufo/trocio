@@ -1,14 +1,13 @@
 <script lang="ts">
   import notify from '$lib/notify'
-
   import { useInfinitApi } from '$lib/api'
   import MagicTable from '$lib/util/MagicTable.svelte'
-
+  import { layout } from '$lib/store/layout'
   import type { DynamicQuery, User, FieldInteface } from 'types'
 
   let userSelected: User | null = null
 
-  $: query = useInfinitApi<DynamicQuery<User>, User>(['/api/root/users', {}])
+  $: query = useInfinitApi<DynamicQuery<User>, User>(['root/users', {}])
 
   async function addCredit() {
     try {
@@ -32,11 +31,30 @@
   const fields: FieldInteface<User>[] = [
     {
       label: 'Name',
-      queryKey: 's',
+      queryKey: 'name',
+    },
+    {
+      label: 'Mail',
+      queryKey: 'mail',
+    },
+    {
+      label: 'Mail validé',
+      queryKey: 'mailvalided',
+    },
+    {
+      label: 'Condition accepter',
+      queryKey: 'acceptTerms',
+      hidden: true,
     },
   ]
 </script>
 
-<MagicTable {query} {fields}>
-  <h6 slot="title">Users</h6>
-</MagicTable>
+<div class="pa-4">
+  <MagicTable
+    {query}
+    {fields}
+    wrapperStyle="max-height: {$layout.mainHeight - 76}px;"
+  >
+    <h6 slot="title">Users</h6>
+  </MagicTable>
+</div>
