@@ -22,7 +22,7 @@
       if (queryValue === 'false') queryValue = false
       queryParam[key] = queryValue
       queryLabel =
-        field.enumOptions?.find((opt) => opt.key === queryValue)?.label || ''
+        field.enumOptions?.find((opt) => opt.value === queryValue)?.label || ''
     }
   })
 
@@ -30,14 +30,14 @@
     if (!field.queryKey) return
     // const key = `exact_${field.queryKey}`
     const query = $params
-    query[key] = option.key
-    if (option.key === null) {
+    query[key] = option.value
+    if (option.value === null) {
       delete query[key]
       queryLabel = ''
       queryParam = {}
     } else {
       queryLabel = option.label
-      queryParam[key] = option.key
+      queryParam[key] = option.value
     }
     $goto($url(), query)
   }
@@ -45,7 +45,7 @@
   function clearSelection(event: CustomEvent<PointerEvent>) {
     event.detail.stopPropagation()
     handleClick({
-      key: null,
+      value: null,
       label: '',
     })
   }

@@ -22,9 +22,9 @@
 {#if typeof value === 'string' || typeof value === 'number'}
   {#if !value}
     <span> - </span>
-  {:else if field.format === 'date'}
+  {:else if field.type === 'date'}
     <span> {new Date(value).toLocaleString()} </span>
-  {:else if field.format === 'currency'}
+  {:else if field.type === 'currency'}
     <span>{renderAmount(value, currency)}</span>
   {:else}
     <span>{value}</span>

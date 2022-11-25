@@ -191,7 +191,7 @@
         </span>
       </ListItem>
 
-      {#each ROLES as { label, icon, key }}
+      {#each ROLES as { label, icon, value: key }}
         <ListItem
           active={key === subscribe?.role}
           disabled={key === subscribe?.role}

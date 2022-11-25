@@ -5,7 +5,7 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 /** Option of menu */
 export interface EnumOption<TValue = string | number | boolean | null> {
   /** Valeur envoyé par la requête */
-  key: TValue
+  value: TValue
   /** Label visible de l'élément */
   label: string
   /** Icon de l'élément */
@@ -41,14 +41,7 @@ export interface FieldInteface<Type = any> {
    * Formate la valeur afficher. 'string' par défaut
    * Adapte le menu de l'entête
    */
-  format?:
-    | 'string'
-    | 'number'
-    | 'user'
-    | 'enum'
-    | 'select'
-    | 'currency'
-    | 'date'
+  type?: 'string' | 'number' | 'user' | 'enum' | 'select' | 'currency' | 'date'
   /** Champs cacher */
   hidden?: boolean
   /** Clé ou fonction retournant la valeur à afficher */

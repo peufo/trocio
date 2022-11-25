@@ -26,7 +26,7 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
     {
       label: 'Statut',
 
-      format: 'enum',
+      type: 'enum',
       queryKey: 'state',
       getValue: getStateLabel,
       cellWidth: 90,
@@ -36,7 +36,7 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
       label: 'Création',
       hidden: true,
       queryKey: 'createdAt',
-      format: 'date',
+      type: 'date',
       cellWidth: 170,
     },
 
@@ -44,7 +44,7 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
       label: 'Validation',
       hidden: true,
       queryKey: 'valided',
-      format: 'date',
+      type: 'date',
       cellWidth: 170,
     },
 
@@ -52,35 +52,35 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
       label: 'Vente',
       hidden: true,
       queryKey: 'sold',
-      format: 'date',
+      type: 'date',
       cellWidth: 170,
     },
     {
       label: 'Récupération',
       hidden: true,
       queryKey: 'recover',
-      format: 'date',
+      type: 'date',
       cellWidth: 170,
     },
     {
       label: 'Frais',
 
       queryKey: 'fee',
-      format: 'currency',
+      type: 'currency',
       cellWidth: 50,
     },
     {
       label: 'Marge',
 
       queryKey: 'margin',
-      format: 'currency',
+      type: 'currency',
       cellWidth: 50,
     },
     {
       label: 'Prix',
 
       queryKey: 'price',
-      format: 'currency',
+      type: 'currency',
       cellWidth: 50,
     },
   ]
@@ -111,14 +111,14 @@ export function getFieldsLookup(
       queryKey: 'providerSubId',
       getValue: (art) => art?.provider?.name || art?.providerSub?.name,
       cellWidth: 70,
-      format: 'select',
+      type: 'select',
       selectOption: selectOptionUser(trocId),
     },
     {
       label: 'Validateur',
       hidden: true,
       queryKey: 'validatorSubId',
-      format: 'select',
+      type: 'select',
       getValue: (art) => art?.validator?.name,
       cellWidth: 50,
       selectOption: selectOptionUser(trocId),
@@ -127,7 +127,7 @@ export function getFieldsLookup(
       label: 'Caissier',
       hidden: true,
       queryKey: 'sellerSubId',
-      format: 'select',
+      type: 'select',
       getValue: (art) => art?.seller?.name,
       cellWidth: 50,
       selectOption: selectOptionUser(trocId),
@@ -136,7 +136,7 @@ export function getFieldsLookup(
       label: 'Client',
       hidden: true,
       queryKey: 'buyerSubId',
-      format: 'select',
+      type: 'select',
       getValue: (art) => art.buyer?.name,
       cellWidth: 50,
       selectOption: selectOptionUser(trocId),
@@ -145,33 +145,33 @@ export function getFieldsLookup(
 }
 
 const stateEnumOptions: FieldInteface<Article>['enumOptions'] = [
-  { key: null, label: 'Tous' },
+  { value: null, label: 'Tous' },
   {
-    key: 'proposed',
+    value: 'proposed',
     label: 'Proposé',
     icon: faDotCircle,
     iconStyle: 'color: rgb(158 158 158);',
   },
   {
-    key: 'valided',
+    value: 'valided',
     label: 'Validé',
     icon: faDotCircle,
     iconStyle: 'color: rgb(33 150 243);',
   },
   {
-    key: 'refused',
+    value: 'refused',
     label: 'Refusé',
     icon: faDotCircle,
     iconStyle: 'color: rgb(244 67 54);',
   },
   {
-    key: 'sold',
+    value: 'sold',
     label: 'Vendu',
     icon: faDotCircle,
     iconStyle: 'color: rgb(76 175 80);',
   },
   {
-    key: 'recover',
+    value: 'recover',
     label: 'Récupéré',
     icon: faDotCircle,
     iconStyle: 'color: rgb(255 152 0);',
