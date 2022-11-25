@@ -44,6 +44,7 @@ export interface FieldInteface<Type = any> {
   type?:
     | 'string'
     | 'number'
+    | 'boolean'
     | 'user'
     | 'select'
     | 'selectAsync'

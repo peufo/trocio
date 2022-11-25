@@ -5,8 +5,8 @@
 
   import type { FieldInteface } from 'types'
   import MagicTableHeaderDefault from '$lib/util/MagicTableHeaderDefault.svelte'
-  import MagicTableHeaderEnum from '$lib/util/MagicTableHeaderEnum.svelte'
   import MagicTableHeaderSelect from '$lib/util/MagicTableHeaderSelect.svelte'
+  import MagicTableHeaderSelectAsync from '$lib/util/MagicTableHeaderSelectAsync.svelte'
   import MagicTableHeaderNumber from '$lib/util/MagicTableHeaderNumber.svelte'
 
   export let fields: FieldInteface[]
@@ -22,9 +22,10 @@
 
   const components: Partial<Record<string & FieldInteface['type'], any>> = {
     string: MagicTableHeaderDefault,
-    select: MagicTableHeaderEnum,
-    selectAsync: MagicTableHeaderSelect,
     number: MagicTableHeaderNumber,
+    boolean: MagicTableHeaderSelect,
+    select: MagicTableHeaderSelect,
+    selectAsync: MagicTableHeaderSelectAsync,
     currency: MagicTableHeaderNumber,
     date: MagicTableHeaderNumber,
   }

@@ -29,20 +29,9 @@ export function getFields(troc: TrocLookup): FieldInteface[] {
     {
       label: `Validé par l'utilisateur`,
       hidden: true,
-
       key: 'validedByUser',
-      type: 'select',
+      type: 'boolean',
       cellWidth: 50,
-      options: [
-        { value: null, label: 'Tous' },
-        {
-          value: true,
-          label: 'Oui',
-          icon: faCheck,
-          iconStyle: 'color: green;',
-        },
-        { value: false, label: 'Non', icon: faTimes, iconStyle: 'color: red;' },
-      ],
     },
     {
       label: 'Tarif',
@@ -54,7 +43,7 @@ export function getFields(troc: TrocLookup): FieldInteface[] {
         { value: null, label: 'Tous' },
         ...troc?.tarif.map((tarif) => ({
           label: tarif.name,
-          key: tarif._id!,
+          value: tarif._id!,
         })),
       ],
     },

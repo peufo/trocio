@@ -48,10 +48,12 @@
     {
       label: 'Mail validé',
       key: 'mailvalided',
+      type: 'boolean',
     },
     {
       label: 'Condition accepté',
       key: 'acceptTerms',
+      type: 'boolean',
     },
     {
       label: 'Tentative de connection',

@@ -1,84 +1,105 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { Chip, Icon, Menu } from '$material'
-  import { goto, params, url } from '@roxi/routify'
-
-  import MagicSelect from '$lib/util/MagicSelect.svelte'
-  import type { FieldInteface } from 'types'
+  import { params, goto, url } from '@roxi/routify'
+  import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
   import { mdiClose } from '@mdi/js'
+
+  import { List, ListItem, Menu, Chip, Icon } from '$material'
+  import IconLink from '$lib/util/IconLink.svelte'
+  import type { FieldInteface, Option } from 'types'
 
   export let field: Partial<FieldInteface>
   export let queryParam: { [key: string]: any } = {}
 
-  let key = `exact_${field.key}`
-  let inputElement: HTMLInputElement
-  let active = false
-  let filterLabel = ''
+  const key = `exact_${field.key}`
+  let queryLabel = ''
 
   onMount(() => {
-    // Très chiant des récupérer un label à partir d'un id ...
-    const queryValue = $params[key]
+    // Charge le queryLabel
+    let queryValue = $params[key]
     if (queryValue) {
-      filterLabel = 'Filtre actif'
+      if (queryValue === 'true') queryValue = true
+      if (queryValue === 'false') queryValue = false
       queryParam[key] = queryValue
+      queryLabel =
+        field.options?.find((opt) => opt.value === queryValue)?.label || ''
     }
   })
 
-  function handleOpen() {
-    // Place directement le curseur dans la recherche
-    setTimeout(() => {
-      inputElement.focus()
-    }, 200)
-  }
+  function handleClick(option: Option) {
+    if (!field.key) return
 
-  function handleSelect(item: any) {
-    queryParam[key] = field.selectAsync?.getKey
-      ? field.selectAsync?.getKey(item)
-      : undefined
-    filterLabel = field.selectAsync?.getValue
-      ? field.selectAsync?.getValue(item)
-      : item['name']
-    active = false
-  }
-
-  function handleClear(event: CustomEvent<PointerEvent>) {
-    event.detail.stopPropagation()
     const query = $params
-    delete query[key]
+    query[key] = option.value
+    if (option.value === null) {
+      delete query[key]
+      queryLabel = ''
+      queryParam = {}
+    } else {
+      queryLabel = option.label
+      queryParam[key] = option.value
+    }
     $goto($url(), query)
-    queryParam = {}
-    filterLabel = ''
-    active = false
   }
+
+  function clearSelection(event: CustomEvent<PointerEvent>) {
+    event.detail.stopPropagation()
+    handleClick({
+      value: null,
+      label: '',
+    })
+  }
+
+  const booleanOptions = [
+    { value: null, label: 'Tous' },
+    {
+      value: true,
+      label: 'Oui',
+      icon: faCheck,
+      iconStyle: 'color: green;',
+    },
+    { value: false, label: 'Non', icon: faTimes, iconStyle: 'color: red;' },
+  ]
+
+  $: options = field.type === 'boolean' ? booleanOptions : field.options
 </script>
 
 <th>
-  <Menu closeOnClick={false} on:open={handleOpen} bind:active>
+  <Menu>
     <span slot="activator" class="clickable">
       {field.label}
-
       <Chip
-        active={!!filterLabel}
+        active={!!queryLabel}
         size="x-small"
         class="clickable"
         close
-        on:close={handleClear}
+        on:close={clearSelection}
       >
-        <span>{filterLabel}</span>
+        {queryLabel}
         <span slot="close-icon">
           <Icon path={mdiClose} size="0.7em" />
         </span>
       </Chip>
+      <span class="text-caption" style="white-space: pre;" />
     </span>
-
-    {#if field.selectAsync}
-      <MagicSelect
-        flatMode
-        bind:inputElement
-        on:select={({ detail }) => handleSelect(detail)}
-        selectKey={key}
-        {...field.selectAsync}
-      />
-    {/if}
+    <List dense>
+      {#each options || [] as option}
+        <ListItem on:click={() => handleClick(option)}>
+          <div slot="prepend">
+            {#if option.icon}
+              <IconLink
+                icon={option.icon}
+                style={option.iconStyle}
+                size="1.1em"
+                class="mr-2"
+              />
+            {/if}
+          </div>
+          {option.label}
+        </ListItem>
+      {:else}
+        <ListItem>No option</ListItem>
+      {/each}
+    </List>
   </Menu>
 </th>
