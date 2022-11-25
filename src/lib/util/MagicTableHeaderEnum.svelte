@@ -5,7 +5,7 @@
 
   import IconLink from '$lib/util/IconLink.svelte'
 
-  import type { FieldInteface, EnumOption } from 'types'
+  import type { FieldInteface, Option } from 'types'
   import { mdiClose } from '@mdi/js'
 
   export let field: Partial<FieldInteface>
@@ -22,12 +22,13 @@
       if (queryValue === 'false') queryValue = false
       queryParam[key] = queryValue
       queryLabel =
-        field.enumOptions?.find((opt) => opt.value === queryValue)?.label || ''
+        field.options?.find((opt) => opt.value === queryValue)?.label || ''
     }
   })
 
-  function handleClick(option: EnumOption) {
+  function handleClick(option: Option) {
     if (!field.key) return
+
     const query = $params
     query[key] = option.value
     if (option.value === null) {
@@ -69,8 +70,8 @@
       <span class="text-caption" style="white-space: pre;" />
     </span>
     <List dense>
-      {#if field.enumOptions}
-        {#each field.enumOptions || [] as option}
+      {#if field.options}
+        {#each field.options || [] as option}
           <ListItem on:click={() => handleClick(option)}>
             <div slot="prepend">
               {#if option.icon}

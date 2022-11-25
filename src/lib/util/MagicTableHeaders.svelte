@@ -22,8 +22,8 @@
 
   const components: Partial<Record<string & FieldInteface['type'], any>> = {
     string: MagicTableHeaderDefault,
-    enum: MagicTableHeaderEnum,
-    select: MagicTableHeaderSelect,
+    select: MagicTableHeaderEnum,
+    selectAsync: MagicTableHeaderSelect,
     number: MagicTableHeaderNumber,
     currency: MagicTableHeaderNumber,
     date: MagicTableHeaderNumber,

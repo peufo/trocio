@@ -21,19 +21,19 @@ export function getFields(troc: TrocLookup): FieldInteface[] {
     {
       label: 'Rôle',
       key: 'role',
-      type: 'enum',
+      type: 'select',
       getValue: (sub) =>
         sub.userId ? ROLES.find((r) => r.value === sub.role)?.label : '',
-      enumOptions: [{ value: null, label: 'Tous' }, ...ROLES],
+      options: [{ value: null, label: 'Tous' }, ...ROLES],
     },
     {
       label: `Validé par l'utilisateur`,
       hidden: true,
 
       key: 'validedByUser',
-      type: 'enum',
+      type: 'select',
       cellWidth: 50,
-      enumOptions: [
+      options: [
         { value: null, label: 'Tous' },
         {
           value: true,
@@ -47,10 +47,10 @@ export function getFields(troc: TrocLookup): FieldInteface[] {
     {
       label: 'Tarif',
       key: 'tarifId',
-      type: 'enum',
+      type: 'select',
       getValue: (sub) =>
         troc?.tarif.find((tarif) => tarif._id === sub.tarifId)?.name,
-      enumOptions: [
+      options: [
         { value: null, label: 'Tous' },
         ...troc?.tarif.map((tarif) => ({
           label: tarif.name,

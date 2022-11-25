@@ -4,7 +4,7 @@ import type {
   ArticleWithState,
   ArticleLookup,
   FieldInteface,
-  SelectOption,
+  SelectAsync,
   SubscribeLookup,
 } from 'types'
 import { getStateLabel } from '$lib/utils'
@@ -26,11 +26,11 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
     {
       label: 'Statut',
 
-      type: 'enum',
+      type: 'select',
       key: 'state',
       getValue: getStateLabel,
       cellWidth: 90,
-      enumOptions: stateEnumOptions,
+      options: stateEnumOptions,
     },
     {
       label: 'Création',
@@ -86,7 +86,7 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
   ]
 }
 
-function selectOptionUser(trocId: string): SelectOption {
+function selectAsyncUser(trocId: string): SelectAsync {
   return {
     path: 'subscribes',
     searchKey: 'q',
@@ -111,40 +111,40 @@ export function getFieldsLookup(
       key: 'providerSubId',
       getValue: (art) => art?.provider?.name || art?.providerSub?.name,
       cellWidth: 70,
-      type: 'select',
-      selectOption: selectOptionUser(trocId),
+      type: 'selectAsync',
+      selectAsync: selectAsyncUser(trocId),
     },
     {
       label: 'Validateur',
       hidden: true,
       key: 'validatorSubId',
-      type: 'select',
+      type: 'selectAsync',
       getValue: (art) => art?.validator?.name,
       cellWidth: 50,
-      selectOption: selectOptionUser(trocId),
+      selectAsync: selectAsyncUser(trocId),
     },
     {
       label: 'Caissier',
       hidden: true,
       key: 'sellerSubId',
-      type: 'select',
+      type: 'selectAsync',
       getValue: (art) => art?.seller?.name,
       cellWidth: 50,
-      selectOption: selectOptionUser(trocId),
+      selectAsync: selectAsyncUser(trocId),
     },
     {
       label: 'Client',
       hidden: true,
       key: 'buyerSubId',
-      type: 'select',
+      type: 'selectAsync',
       getValue: (art) => art.buyer?.name,
       cellWidth: 50,
-      selectOption: selectOptionUser(trocId),
+      selectAsync: selectAsyncUser(trocId),
     },
   ]
 }
 
-const stateEnumOptions: FieldInteface<Article>['enumOptions'] = [
+const stateEnumOptions: FieldInteface<Article>['options'] = [
   { value: null, label: 'Tous' },
   {
     value: 'proposed',

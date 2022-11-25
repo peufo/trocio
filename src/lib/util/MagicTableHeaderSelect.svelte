@@ -32,11 +32,11 @@
   }
 
   function handleSelect(item: any) {
-    queryParam[key] = field.selectOption?.getKey
-      ? field.selectOption?.getKey(item)
+    queryParam[key] = field.selectAsync?.getKey
+      ? field.selectAsync?.getKey(item)
       : undefined
-    filterLabel = field.selectOption?.getValue
-      ? field.selectOption?.getValue(item)
+    filterLabel = field.selectAsync?.getValue
+      ? field.selectAsync?.getValue(item)
       : item['name']
     active = false
   }
@@ -71,13 +71,13 @@
       </Chip>
     </span>
 
-    {#if field.selectOption}
+    {#if field.selectAsync}
       <MagicSelect
         flatMode
         bind:inputElement
         on:select={({ detail }) => handleSelect(detail)}
         selectKey={key}
-        {...field.selectOption}
+        {...field.selectAsync}
       />
     {/if}
   </Menu>

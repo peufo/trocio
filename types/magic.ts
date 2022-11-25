@@ -3,7 +3,7 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 // import type { DynamicQuery } from 'params'
 
 /** Option of menu */
-export interface EnumOption<TValue = string | number | boolean | null> {
+export interface Option<TValue = string | number | boolean | null> {
   /** Valeur envoyé par la requête */
   value: TValue
   /** Label visible de l'élément */
@@ -14,7 +14,7 @@ export interface EnumOption<TValue = string | number | boolean | null> {
   iconStyle?: string
 }
 
-export interface SelectOption {
+export interface SelectAsync {
   /** Url de recherche */
   path: string
   /** Parametre de recherche (query) */
@@ -41,7 +41,14 @@ export interface FieldInteface<Type = any> {
    * Formate la valeur afficher. 'string' par défaut
    * Adapte le menu de l'entête
    */
-  type?: 'string' | 'number' | 'user' | 'enum' | 'select' | 'currency' | 'date'
+  type?:
+    | 'string'
+    | 'number'
+    | 'user'
+    | 'select'
+    | 'selectAsync'
+    | 'currency'
+    | 'date'
   /** Champs cacher */
   hidden?: boolean
   /** Clé ou fonction retournant la valeur à afficher */
@@ -51,9 +58,9 @@ export interface FieldInteface<Type = any> {
   /** Possibilité de caché le champs désactivé */
   disabled?: boolean
 
-  /** Options pour le format "enum" */
-  enumOptions?: EnumOption[]
+  /** Options pour le format "select" */
+  options?: Option[]
 
   /** Options pour la recherche et la selection d'item */
-  selectOption?: SelectOption
+  selectAsync?: SelectAsync
 }
