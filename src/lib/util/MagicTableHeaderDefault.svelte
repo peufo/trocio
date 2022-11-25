@@ -11,7 +11,7 @@
   export let field: Partial<FieldInteface>
   let search = ''
   let queryKey =
-    field.format === 'string'
+    !field.format || field.format === 'string'
       ? `or_search_${field.queryKey}`
       : `user_search_${field.queryKey}`
 

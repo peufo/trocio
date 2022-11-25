@@ -13,17 +13,13 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
   return [
     {
       label: '#',
-
       queryKey: 'ref',
-      format: 'string',
       cellWidth: 50,
       disabled: true,
     },
     {
       label: 'Désignation',
-
       queryKey: 'name',
-      format: 'string',
       cellWidth: 300,
       disabled: true,
     },

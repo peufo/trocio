@@ -41,7 +41,14 @@ export interface FieldInteface<Type = any> {
    * Formate la valeur afficher. 'string' par défaut
    * Adapte le menu de l'entête
    */
-  format: 'string' | 'number' | 'user' | 'enum' | 'select' | 'currency' | 'date'
+  format?:
+    | 'string'
+    | 'number'
+    | 'user'
+    | 'enum'
+    | 'select'
+    | 'currency'
+    | 'date'
   /** Champs cacher */
   hidden?: boolean
   /** Clé ou fonction retournant la valeur à afficher */
