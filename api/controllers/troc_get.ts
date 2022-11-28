@@ -101,6 +101,8 @@ export const search: RequestHandler = async (req, res, next) => {
       matchQuery.$and?.push({ 'location.lng': { $gt: +west } })
   }
 
+  if (!matchQuery.$or?.length) delete matchQuery.$or
+
   const aggregate = TrocModel.aggregate()
     .match(matchQuery)
     .skip(Number(skip))
