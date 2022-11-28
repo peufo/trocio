@@ -54,10 +54,10 @@ export const getResum: RequestHandler = async (req, res, next) => {
       throw 'Query "subscribeId" or "userId" and "trocId" are required'
 
     const match = subscribeId
-      ? { _id: new ObjectId(subscribeId) }
+      ? { _id: new ObjectId(subscribeId as string) }
       : {
-          userId: new ObjectId(userId),
-          trocId: new ObjectId(trocId),
+          userId: new ObjectId(userId as string),
+          trocId: new ObjectId(trocId as string),
         }
 
     const aggregate = Subscribe.aggregate()

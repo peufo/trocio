@@ -11,12 +11,15 @@ const LOCK_TIME = 2 * 60 * 60 * 1000 // 2h
 
 export interface UserDocument extends UserWithoutId, Document {
   isLocked: boolean
+  /** Methods */
   comparePassword(candidatePassword: string): Promise<boolean>
-  getAuthenticated(mail: string, password: string): Promise<UserDocument>
   incLoginAttempts(): Promise<UserDocument>
 }
 
-export interface UserModel extends Model<UserDocument> {}
+export interface UserModel extends Model<UserDocument> {
+  /** Statics */
+  getAuthenticated(mail: string, password: string): Promise<UserDocument>
+}
 
 const userSchema = new Schema<UserDocument, UserModel>({
   name: { type: String, required: true },

@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express'
+import type { RequestHandler } from 'express'
 import Troc from '../models/troc'
 import User from '../models/user'
 import Subscribe from '../models/subscribe'

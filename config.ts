@@ -5,6 +5,7 @@ const dev = process.env.NODE_ENV === 'development'
 const TROCIO_PORT = process.env.TROCIO_PORT || 3000
 
 const defaultConfig = {
+  TROCIO_URL: 'https://troc.io',
   TROCIO_OCD_API_KEY: '', // API key provide by https://opencagedata.com/
   TROCIO_ADMIN: '', // Root user mail address
   TROCIO_SECRET_STRING_COOKIE: '', // A secret string for secure cookies

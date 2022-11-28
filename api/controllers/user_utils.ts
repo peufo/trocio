@@ -62,7 +62,7 @@ export async function loginWithGoogle(req, res, next) {
           params: { access_token },
         })
         .then(async function (response) {
-          const { email, picture, email_verified, name } = response.data
+          const { email, email_verified, name } = response.data
 
           try {
             //Trouve l'utilisateur

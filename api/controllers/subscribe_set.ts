@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express'
+import type { RequestHandler } from 'express'
 import randomize from 'randomatic'
 
 import type { ISubscribe } from '../../types'

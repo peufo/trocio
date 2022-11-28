@@ -6,6 +6,7 @@ import type { User } from '../../types'
 import config from '../../config'
 
 const {
+  TROCIO_URL,
   TROCIO_SMTP_HOST,
   TROCIO_SMTP_PORT,
   TROCIO_SMTP_PASS,
@@ -33,7 +34,7 @@ const mailOptions: SendMailOptions = {
   from: 'TROCIO <postmaster@trocio.ch>',
 }
 
-export async function createUser(user: User, origin: string) {
+export async function createUser(user: User, origin?: string) {
   const validator = await getUrlValidMail(user._id)
   mailOptions.to = user.mail
   mailOptions.subject = 'Création de votre compte - TROCIO'
@@ -43,7 +44,9 @@ export async function createUser(user: User, origin: string) {
         <b>${user.name}</b>, votre inscription s'est correctement déroulée. 
     </p>
     <p>
-        <a href="${origin}/mail-validation?user=${user._id}&validator=${validator.url}">
+        <a href="${origin || TROCIO_URL}/mail-validation?user=${
+    user._id
+  }&validator=${validator.url}">
             Cliquer ici pour valider votre adresse mail.
         </a>
     </p>
@@ -51,14 +54,16 @@ export async function createUser(user: User, origin: string) {
   return await transporter.sendMail(mailOptions)
 }
 
-export async function sendValidMail(user: User, origin: string) {
+export async function sendValidMail(user: User, origin?: string) {
   const validator = await getUrlValidMail(user._id)
   mailOptions.to = user.mail
   mailOptions.subject = 'Validation de votre mail - TROCIO'
   mailOptions.html = `
       <h2>Validation de votre adresse mail</h2>
       <p>
-          <a href="${origin}/mail-validation?user=${user._id}&validator=${validator.url}">
+          <a href="${origin || TROCIO_URL}/mail-validation?user=${
+    user._id
+  }&validator=${validator.url}">
               Cliquer ici pour valider votre adresse mail.
           </a>
       </p>

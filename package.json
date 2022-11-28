@@ -9,7 +9,7 @@
     "build": "run-s build:*",
     "build:routify": "routify --single-build",
     "build:vite": "vite build",
-    "build:server": "tsc --project tsconfig.node.json || exit 0",
+    "build:server": "tsc --project tsconfig.node.json",
     "serve": "pm2 startOrReload ecosystem.config.js --update-env"
   },
   "nodemonConfig": {

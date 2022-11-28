@@ -1,7 +1,7 @@
-import { RequestHandler } from 'express'
-import mongoose, { FilterQuery, Mongoose } from 'mongoose'
+import type { RequestHandler } from 'express'
+import mongoose, { FilterQuery } from 'mongoose'
 
-import type { Troc, Article as IArticle } from '../../types'
+import type { Troc } from '../../types'
 import TrocModel from '../models/troc'
 import Article from '../models/article'
 import Payment from '../models/payment'
@@ -70,30 +70,35 @@ export const search: RequestHandler = async (req, res, next) => {
     west,
   } = req.query
 
-  let matchQuery: FilterQuery<Troc & Document> = {}
+  let matchQuery: FilterQuery<Troc & Document> = {
+    $and: [],
+    $or: [],
+  }
 
-  if (_id) matchQuery = { _id }
+  if (_id) matchQuery.$and?.push({ _id })
   else {
-    matchQuery = { is_try: false }
+    matchQuery.$and?.push({ is_try: false })
 
-    if (search && search.length) {
+    if (typeof search === 'string' && search.length) {
       let regexp = new RegExp(search, 'i')
-      matchQuery.$or = []
-      matchQuery.$or.push({ name: regexp })
-      matchQuery.$or.push({ description: regexp })
-      matchQuery.$or.push({ address: regexp })
-      matchQuery.$or.push({ society: regexp })
+      matchQuery.$or?.push({ name: regexp })
+      matchQuery.$or?.push({ description: regexp })
+      matchQuery.$or?.push({ address: regexp })
+      matchQuery.$or?.push({ society: regexp })
     }
 
-    if (start || end || north || east || sud || west) matchQuery.$and = []
-
-    if (start)
-      matchQuery.$and.push({ 'schedule.close': { $gte: new Date(start) } })
-    if (end) matchQuery.$and.push({ 'schedule.open': { $lte: new Date(end) } })
-    if (!isNaN(north)) matchQuery.$and.push({ 'location.lat': { $lt: +north } })
-    if (!isNaN(east)) matchQuery.$and.push({ 'location.lng': { $lt: +east } })
-    if (!isNaN(sud)) matchQuery.$and.push({ 'location.lat': { $gt: +sud } })
-    if (!isNaN(west)) matchQuery.$and.push({ 'location.lng': { $gt: +west } })
+    if (typeof start === 'string')
+      matchQuery.$and?.push({ 'schedule.close': { $gte: new Date(start) } })
+    if (typeof end === 'string')
+      matchQuery.$and?.push({ 'schedule.open': { $lte: new Date(end) } })
+    if (north !== undefined && !isNaN(+north))
+      matchQuery.$and?.push({ 'location.lat': { $lt: +north } })
+    if (east !== undefined && !isNaN(+east))
+      matchQuery.$and?.push({ 'location.lng': { $lt: +east } })
+    if (sud !== undefined && !isNaN(+sud))
+      matchQuery.$and?.push({ 'location.lat': { $gt: +sud } })
+    if (west !== undefined && !isNaN(+west))
+      matchQuery.$and?.push({ 'location.lng': { $gt: +west } })
   }
 
   const aggregate = TrocModel.aggregate()
@@ -112,7 +117,7 @@ export const search: RequestHandler = async (req, res, next) => {
 export const getTroc: RequestHandler = async (req, res, next) => {
   try {
     const { trocId } = req.query
-    if (!trocId) throw 'query "trocId" is required'
+    if (typeof trocId !== 'string') throw 'query "trocId" is required'
     const aggregate = TrocModel.aggregate().match({ _id: new ObjectId(trocId) })
     if (req.session.user) lookupSubscribe(aggregate, req.session.user._id)
     addComputedFields(aggregate)

@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express'
+import type { RequestHandler } from 'express'
 
 import User from '../models/user'
 import Mailvalidator from '../models/mailvalidator'
@@ -6,17 +6,6 @@ import mail from './mail'
 import randomize from 'randomatic'
 
 export const createUser: RequestHandler = async (req, res, next) => {
-  // Dans le cas ou l'utilisateur est déjà connecté
-  // Il sagit d'un cassier qui créer un compte pour un client
-  // Un mot de passe est générer et returné
-  /*
-  let genPwd = ''
-  if (req.session.user) {
-    genPwd = randomize('0', 6)
-    req.body.password = genPwd
-  }
-  */
-
   try {
     const { origin } = req.query
     if (typeof origin !== 'string') throw 'origin query is required'
@@ -89,7 +78,7 @@ export const sendValidMail: RequestHandler = async (req, res, next) => {
   try {
     const { origin } = req.query
     if (!req.session.user) throw 'Login required'
-    if (!origin) throw 'origin query is required'
+    if (typeof origin !== 'string') throw 'origin query is required'
 
     await mail.sendValidMail(req.session.user, origin)
 
