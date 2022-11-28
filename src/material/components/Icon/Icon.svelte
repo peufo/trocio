@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Style from '../../internal/Style'
 
   let klass = ''
@@ -6,8 +6,8 @@
   export let size = '24px'
   export let width = size
   export let height = size
-  export let viewWidth = '24'
-  export let viewHeight = '24'
+  export let viewWidth: string | number = '24'
+  export let viewHeight: string | number = '24'
   export let rotate = 0
   export let spin = false
   export let disabled = false
