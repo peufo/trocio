@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import type { Aggregate } from 'mongoose'
 
 /**
  * Generic function for lookup an user field
@@ -22,7 +22,7 @@ export const populateUser = (key: string, $project = { name: 1 }) => ({
 })
 
 export function lookupUser(
-  aggregate: mongoose.Aggregate<unknown>,
+  aggregate: Aggregate<unknown>,
   key: string = 'user',
   $project: { [key: string]: 0 | 1 } = {}
 ): void {

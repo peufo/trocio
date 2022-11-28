@@ -1,9 +1,9 @@
-import Article from '../models/article'
 import mongoose from 'mongoose'
+import type { RequestHandler } from 'express'
 
+import Article from '../models/article'
 import { populateUser } from './lookup'
 import { dynamicQuery } from './utils'
-import { RequestHandler } from 'express'
 import type { Article as IArticle } from '../../types'
 import { getMatchesByState, sumOfArticles } from './article_utils'
 

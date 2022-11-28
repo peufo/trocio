@@ -1,6 +1,10 @@
 import { model, Schema, Document } from 'mongoose'
-const { ObjectId } = Schema.Types
-import type { Option } from '../../types'
+
+interface Option {
+  name: string
+  value: string
+  description?: string
+}
 
 const optionModel = new Schema({
   name: { type: String, unique: true, required: true },

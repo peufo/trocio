@@ -1,6 +1,8 @@
-import { RequestHandler } from 'express'
+import type { RequestHandler } from 'express'
+
 import Option from '../models/option'
 import type { OptionNameEnum } from '../../types'
+import { devNull } from 'os'
 
 /**
  * Permet de maintenir les options en cache pour éviter d'appeler la DB
@@ -55,6 +57,7 @@ export const setOption: RequestHandler = async (req, res, next) => {
     if (!_id && !name) throw '_id or name are required in body'
     const query = _id ? { _id } : { name }
     const option = await Option.findOneAndUpdate(query, { value })
+    if (!option) throw new Error('option not found')
     option.value = value
     OPTIONS[option.name].value = value
     res.json(option)

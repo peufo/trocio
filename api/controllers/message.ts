@@ -1,7 +1,7 @@
-import { RequestHandler } from 'express'
+import type { RequestHandler } from 'express'
+
 import Message from '../models/message'
-import User from '../models/user'
-import mail, { transporter } from './mail'
+import { transporter } from './mail'
 
 export const createContact: RequestHandler = async (req, res, next) => {
   try {

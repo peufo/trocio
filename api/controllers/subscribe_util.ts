@@ -1,7 +1,11 @@
 import type { RequestHandler, Request, Response } from 'express'
 import Subscribe from '../models/subscribe'
 
-export async function getRole(trocId: string, userId: string) {
+export async function getRole(
+  trocId: string | undefined,
+  userId?: string | undefined
+) {
+  if (!trocId || !userId) return null
   const subscribe = await Subscribe.findOne({
     trocId,
     userId,

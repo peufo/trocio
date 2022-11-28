@@ -9,7 +9,6 @@ import MongoStore from 'connect-mongo'
 import compression from 'compression'
 import createError from 'http-errors'
 
-import type { User } from '../types'
 import { initOptions } from './controllers/option'
 
 import routesArticle from './routes/article'
@@ -20,12 +19,6 @@ import routesSubscribe from './routes/subscribe'
 import routesTroc from './routes/troc'
 import routesUser from './routes/user'
 import routesMessage from './routes/message'
-
-declare module 'express-session' {
-  interface SessionData {
-    user: User
-  }
-}
 
 // Connection database
 try {

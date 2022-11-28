@@ -1,10 +1,14 @@
-import Article from '../models/article'
-import Troc from '../models/troc'
+import type { RequestHandler, Request } from 'express'
 
+import Troc from '../models/troc'
+import Article from '../models/article'
 import { getTarif, getFee, getMargin } from './article_utils'
-import { RequestHandler, Request } from 'express'
+import type {
+  Article as IArticle,
+  ArticleState,
+  ArticleCorrection,
+} from '../../types'
 import { getRole } from './subscribe_util'
-import type { Article as IArticle, ArticleState } from '../../types'
 import Subscribe from '../models/subscribe'
 
 function ensureArray<T extends any | any[]>(value: T | T[]): T[] {
@@ -35,6 +39,8 @@ export const createArticle: RequestHandler<
     const sub = providerSubId
       ? await Subscribe.findById(providerSubId)
       : await Subscribe.findOne({ trocId, userId: req.session.user._id })
+    if (!sub) throw new Error('sub not found')
+
     const accessor = providerSubId
       ? await Subscribe.findOne({
           trocId: sub.trocId,
@@ -142,14 +148,18 @@ export const editName: RequestHandler<
 > = async (req, res, next) => {
   let { articleId, newName } = req.body
   try {
+    if (!req.session.user) throw 'login required'
     if (!articleId) throw 'articleId string is required in body'
     if (!newName) throw 'newName number is required in body'
 
     const article = await Article.findById(articleId).exec()
+    if (!article) throw 'Article not found'
+
     const accessor = await Subscribe.findOne({
       trocId: article.trocId,
-      userId: req.session.user._id,
+      userId: req.session.user?._id,
     })
+    if (!accessor) throw 'Accessor subscribe not found'
 
     // Test le role de l'utilisateur
     if (accessor.role !== 'admin' && accessor.role !== 'cashier') {
@@ -188,16 +198,19 @@ export const editPrice: RequestHandler<
 > = async (req, res, next) => {
   let { articleId, newPrice } = req.body
   try {
+    if (!req.session.user) throw 'login required'
     if (!articleId) throw 'articleId string is required in body'
     if (!newPrice) throw 'newPrice number is required in body'
 
     const article = await Article.findById(articleId).exec()
+    if (!article) throw 'Article not found'
     if (article.sold) throw `Solded article's price can't be edited`
 
     const accessor = await Subscribe.findOne({
       trocId: article.trocId,
       userId: req.session.user._id,
     })
+    if (!accessor) throw 'Accessor subscribe not found'
 
     // Test le role de l'utilisateur
     if (accessor.role !== 'admin' && accessor.role !== 'cashier') {
@@ -246,7 +259,7 @@ export const validArticles: RequestHandler = async (req, res, next) => {
         } else {
           article.refused = now
         }
-        article.validatorId = req.session.user._id
+        article.validatorId = subscribe.userId
         article.validatorSubId = subscribe._id
         return article.save()
       })
@@ -260,7 +273,10 @@ export const validArticles: RequestHandler = async (req, res, next) => {
 
 export const soldArticles: RequestHandler = async (req, res, next) => {
   try {
-    let { articles, subscribe, isArray } = await ensureCanEdit(req, false)
+    let { articles, subscribe, isArray, userId } = await ensureCanEdit(
+      req,
+      false
+    )
     /** Si buyerSubId est fourni il s'agit d'une vente. Sinon, il s'agit d'une récupération */
     const { buyerSubId } = req.body
 
@@ -274,11 +290,12 @@ export const soldArticles: RequestHandler = async (req, res, next) => {
     const buyerSub = buyerSubId
       ? await Subscribe.findById(buyerSubId)
       : undefined
-    if (buyerSubId && !buyerSub) throw 'buyerSub not found'
+    if (buyerSubId && !buyerSub?.userId)
+      throw 'buyerSub not found or is user is not defined'
 
     articles = await Promise.all(
       articles.map(async (article) => {
-        if (buyerSubId) {
+        if (buyerSubId && buyerSub?.userId) {
           article.sold = now
           article.buyerId = buyerSub.userId
           article.buyerSubId = buyerSubId
@@ -286,7 +303,7 @@ export const soldArticles: RequestHandler = async (req, res, next) => {
         } else {
           article.recover = now
         }
-        article.sellerId = req.session.user._id
+        article.sellerId = userId
         article.sellerSubId = subscribe._id
         return article.save()
       })
@@ -304,13 +321,11 @@ export const cancelEvent: RequestHandler<
   { eventName: ArticleState }
 > = async (req, res, next) => {
   try {
-    let { articles, isArray, subscribe } = await ensureCanEdit(req)
+    let { articles, isArray, subscribe, userId } = await ensureCanEdit(req)
     const { eventName } = req.body
 
-    if (!subscribe) throw new Error('Subscribe not found')
-
-    const correctionBase = {
-      authorId: req.session.user._id,
+    const correctionBase: Omit<ArticleCorrection, 'event'> = {
+      authorId: userId,
       authorSubId: subscribe._id,
       timestamp: new Date(),
     }
@@ -330,7 +345,7 @@ export const cancelEvent: RequestHandler<
             article.valided = undefined
             article.validatorId = undefined
             article.validatorSubId = undefined
-            article.fee = undefined
+            article.fee = 0
             article.corrections.push({
               ...correctionBase,
               event:
@@ -345,7 +360,7 @@ export const cancelEvent: RequestHandler<
             article.sellerSubId = undefined
             article.buyerId = undefined
             article.buyerSubId = undefined
-            article.margin = undefined
+            article.margin = 0
             article.corrections.push({
               ...correctionBase,
               event: eventName === 'sold' ? 'cancel-sold' : 'cancel-recover',
@@ -390,7 +405,7 @@ async function ensureCanEdit(req: Request, needFromSameProvider = true) {
 
     if (isArray) {
       // Assure que tout les articles viennent du même troc
-      if (articles.map((a) => a.trocId.valueOf()).filter(beUnique).length > 1)
+      if (articles.map((a) => a.trocId?.valueOf()).filter(beUnique).length > 1)
         throw 'All article need to come from the same troc'
 
       // Assure que tout les articles viennent du même subscribe de fournisseur
@@ -407,10 +422,12 @@ async function ensureCanEdit(req: Request, needFromSameProvider = true) {
       trocId: articles[0].trocId,
       userId: req.session.user._id,
     }).exec()
+    if (!subscribe) throw 'Subscribe not found'
+
     if (subscribe.role !== 'admin' && subscribe.role !== 'cashier')
       throw 'Not allowed'
 
-    return { articles, subscribe, isArray }
+    return { articles, subscribe, isArray, userId: req.session.user._id }
   } catch (error) {
     throw error
   }

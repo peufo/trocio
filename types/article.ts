@@ -51,9 +51,9 @@ export interface Article extends ArticleCreate {
   corrections: ArticleCorrection[]
 
   /** Raccourci vers les utilisateurs pour ne pas passé par les subscribes */
-  buyerId: string
+  buyerId?: string
   validatorId?: string
-  sellerId: string
+  sellerId?: string
 }
 
 export interface ArticleWithState extends Article {
