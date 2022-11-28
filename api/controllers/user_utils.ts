@@ -101,6 +101,7 @@ export async function loginWithGoogle(req, res, next) {
 
 export function logout(req, res, next) {
   if (!req.session.user) return next(Error('No connected'))
+
   req.session.user = undefined
   res.json({ success: true, message: 'user logged out' })
 }

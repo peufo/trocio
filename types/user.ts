@@ -1,4 +1,5 @@
-export interface UserWithoutId {
+export interface User {
+  _id: string
   name: string
   ref?: number
   birth?: Date
@@ -10,8 +11,12 @@ export interface UserWithoutId {
   lockUntil: number
   creditTroc: number
   acceptTerms: boolean
+  lastLogin: Date
 }
 
-export interface User extends UserWithoutId {
-  _id: string
+export interface UserWithoutId extends Omit<User, '_id'> {}
+
+export interface UserWithRootInfo extends User {
+  trocsCount: number
+  trocsTryCount: number
 }

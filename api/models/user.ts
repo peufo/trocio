@@ -38,6 +38,7 @@ const userSchema = new Schema<UserDocument, UserModel>({
   lockUntil: Number,
   creditTroc: { type: Number, default: 0 },
   acceptTerms: { type: Boolean, default: false },
+  lastLogin: Date,
 })
 
 userSchema.set('timestamps', true)
@@ -100,7 +101,7 @@ userSchema.statics.getAuthenticated = async function (
 
   await user
     .updateOne({
-      $set: { loginAttempts: 0 },
+      $set: { loginAttempts: 0, lastLogin: new Date() },
       $unset: { lockUntil: 1 },
     })
     .exec()
