@@ -8,7 +8,7 @@ import Article from '../models/article'
 import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
 import { getOptions, setOption } from '../controllers/option'
-import { migration, cleanUpArticlesMargin } from '../controllers/root'
+import { cleanUpArticlesMargin } from '../controllers/root'
 import { dynamicQuery } from '../controllers/utils'
 
 const router = Router()
@@ -125,14 +125,7 @@ router
       next(error)
     }
   })
-  .post('/migration', async (req, res, next) => {
-    try {
-      await migration()
-      res.json({ success: true, message: 'The migration is done successfully' })
-    } catch (error) {
-      next(error)
-    }
-  })
+
   .post('/cleanUpArticlesMargin', async (req, res, next) => {
     try {
       await cleanUpArticlesMargin()
