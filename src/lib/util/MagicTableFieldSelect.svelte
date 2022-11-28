@@ -8,6 +8,7 @@
 
   export let fields: Partial<FieldInteface>[]
   export let style = ''
+  export let searchColSpan = 0
 
   onMount(() => {
     // show fields if query exist in url
@@ -45,7 +46,7 @@
         <span slot="prepend">
           <Checkbox
             style="margin-right: 0px;"
-            disabled={field.disabled}
+            disabled={field.disabled || index < searchColSpan}
             checked={!field.hidden}
           />
         </span>

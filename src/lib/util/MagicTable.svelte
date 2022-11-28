@@ -29,7 +29,7 @@
   <div class="d-flex align-center mb-2">
     <slot name="title" />
     <div class="flex-grow-1" />
-    <MagicTableFieldSelect bind:fields />
+    <MagicTableFieldSelect bind:fields {searchColSpan} />
   </div>
 
   <MagicTableWrapper
