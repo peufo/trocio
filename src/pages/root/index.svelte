@@ -1,22 +1,3 @@
-<script lang="ts">
-  // import { Button } from '$material'
-  import { Button } from '$material'
-
-  import { api } from '$lib/api'
-  import notify from '$lib/notify'
-</script>
+<script lang="ts"></script>
 
 <h3>TODO: MONITORING 😎</h3>
-
-<Button
-  class="primary-color"
-  on:click={() => {
-    api('/api/root/migration', {
-      method: 'post',
-    }).then((res) => {
-      notify.success(res.message)
-    })
-  }}
->
-  Migration
-</Button>
