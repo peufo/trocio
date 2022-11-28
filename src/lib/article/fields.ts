@@ -3,10 +3,9 @@ import type {
   Article,
   ArticleWithState,
   ArticleLookup,
-  FieldInteface,
-  SelectAsync,
   SubscribeLookup,
 } from 'types'
+import type { FieldInteface, SelectAsync } from 'types/magic'
 import { getStateLabel } from '$lib/utils'
 
 export function getFields(): FieldInteface<ArticleWithState>[] {

@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte'
   import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
 
-  import type { FieldInteface } from 'types'
+  import type { FieldInteface } from 'types/magic'
   import MagicTableCell from './MagicTableCell.svelte'
 
   export let fields: FieldInteface[]

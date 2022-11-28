@@ -4,7 +4,7 @@
   import { goto, params, url } from '@roxi/routify'
 
   import MagicSelect from '$lib/util/MagicSelect.svelte'
-  import type { FieldInteface } from 'types'
+  import type { FieldInteface } from 'types/magic'
   import { mdiClose } from '@mdi/js'
 
   export let field: Partial<FieldInteface>

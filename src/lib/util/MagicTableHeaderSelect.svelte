@@ -6,7 +6,7 @@
 
   import { List, ListItem, Menu, Chip, Icon } from '$material'
   import IconLink from '$lib/util/IconLink.svelte'
-  import type { FieldInteface, Option } from 'types'
+  import type { FieldInteface, Option } from 'types/magic'
 
   export let field: Partial<FieldInteface>
   export let queryParam: { [key: string]: any } = {}

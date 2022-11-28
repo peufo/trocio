@@ -19,7 +19,7 @@
     faTimes,
   } from '@fortawesome/free-solid-svg-icons'
 
-  import type { FieldInteface, EnumOption } from 'types'
+  import type { FieldInteface, Option } from 'types/magic'
   import IconLink from '$lib/util/IconLink.svelte'
   import { mdiClose } from '@mdi/js'
 
@@ -39,7 +39,7 @@
   let keyMin = `min_${field.key}`
   let keyMax = `max_${field.key}`
 
-  const sortOptions: EnumOption[] = [
+  const sortOptions: Option[] = [
     {
       icon: faBars,
       label: 'Non trié',
@@ -71,7 +71,7 @@
     else filterLabel = `${min} - ${max}`
   })
 
-  function handleClickSort(option: EnumOption) {
+  function handleClickSort(option: Option) {
     active = false
     if (!field.key) return
     const query = $params

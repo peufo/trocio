@@ -1,6 +1,6 @@
-import type { FieldInteface, TrocLookup } from 'types'
+import type { TrocLookup } from 'types'
+import type { FieldInteface } from 'types/magic'
 import { ROLES } from '$lib/user/roles'
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 
 export function getFields(troc: TrocLookup): FieldInteface[] {
   return [

@@ -4,7 +4,7 @@
   import { params, goto, url } from '@roxi/routify'
   import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons'
 
-  import type { FieldInteface } from 'types'
+  import type { FieldInteface } from 'types/magic'
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
 

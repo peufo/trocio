@@ -1,6 +1,5 @@
 {
   "extends": "ts-node/node14/tsconfig.json",
-
   "ts-node": {
     "transpileOnly": true
   },

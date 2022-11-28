@@ -19,6 +19,13 @@ import routesSubscribe from './routes/subscribe'
 import routesTroc from './routes/troc'
 import routesUser from './routes/user'
 import routesMessage from './routes/message'
+import type { User } from '../types'
+
+declare module 'express-session' {
+  interface SessionData {
+    user: User
+  }
+}
 
 // Connection database
 try {

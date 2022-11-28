@@ -6,7 +6,7 @@
   import MagicTableWrapper from '$lib/util/MagicTableWrapper.svelte'
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
-  import type { FieldInteface } from 'types'
+  import type { FieldInteface } from 'types/magic'
 
   interface $$Slots {
     title: {}

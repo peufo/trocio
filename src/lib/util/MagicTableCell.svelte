@@ -1,7 +1,7 @@
 <script lang="ts">
   import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 
-  import type { FieldInteface } from 'types'
+  import type { FieldInteface } from 'types/magic'
   import { renderAmount } from '$lib/utils'
   import IconLink from './IconLink.svelte'
 

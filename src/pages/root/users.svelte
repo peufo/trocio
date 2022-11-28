@@ -3,7 +3,8 @@
   import { useInfinitApi } from '$lib/api'
   import MagicTable from '$lib/util/MagicTable.svelte'
   import { layout } from '$lib/store/layout'
-  import type { DynamicQuery, User, FieldInteface } from 'types'
+  import type { DynamicQuery, User } from 'types'
+  import type { FieldInteface } from 'types/magic'
 
   let searchValue = ''
   let queryParams = {}

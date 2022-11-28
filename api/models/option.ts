@@ -1,10 +1,6 @@
 import { model, Schema, Document } from 'mongoose'
 
-interface Option {
-  name: string
-  value: string
-  description?: string
-}
+import type { Option } from '../../types'
 
 const optionModel = new Schema({
   name: { type: String, unique: true, required: true },

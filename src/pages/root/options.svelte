@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { Table } from '$material'
   import EditOption from '$lib/util/EditOption.svelte'
   import type { Option } from 'types'
 

@@ -2,7 +2,6 @@ import type { RequestHandler } from 'express'
 
 import Option from '../models/option'
 import type { OptionNameEnum } from '../../types'
-import { devNull } from 'os'
 
 /**
  * Permet de maintenir les options en cache pour éviter d'appeler la DB

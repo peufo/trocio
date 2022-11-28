@@ -3,7 +3,7 @@
    * Automatique params and table headers sync
    */
 
-  import type { FieldInteface } from 'types'
+  import type { FieldInteface } from 'types/magic'
   import MagicTableHeaderDefault from '$lib/util/MagicTableHeaderDefault.svelte'
   import MagicTableHeaderSelect from '$lib/util/MagicTableHeaderSelect.svelte'
   import MagicTableHeaderSelectAsync from '$lib/util/MagicTableHeaderSelectAsync.svelte'

@@ -4,7 +4,7 @@
   import { onMount } from 'svelte'
   import { isMobile } from '$lib/store/layout'
   import { Button, Menu, List, ListItem, Checkbox } from '$material'
-  import type { FieldInteface } from 'types'
+  import type { FieldInteface } from 'types/magic'
 
   export let fields: Partial<FieldInteface>[]
   export let style = ''

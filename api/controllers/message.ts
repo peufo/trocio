@@ -23,7 +23,7 @@ export const createContact: RequestHandler = async (req, res, next) => {
     }
 
     // Renvoi une confirmation à l'auteur
-    const mailInfo = await transporter.sendMail({
+    await transporter.sendMail({
       from: 'TROCIO <postmaster@trocio.ch>',
       to: req.session.user?.mail || authorMail,
       subject: 'Merci pour votre message',
