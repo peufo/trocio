@@ -1,7 +1,6 @@
-import mongoose, { model, Schema, Document, Model, VirtualType } from 'mongoose'
+import { model, Schema, Document, Model } from 'mongoose'
 import bcrypt from 'bcrypt'
 
-import mail from '../controllers/mail'
 import type { UserWithoutId } from '../../types'
 import { EMAIL_REGEX } from './utils'
 

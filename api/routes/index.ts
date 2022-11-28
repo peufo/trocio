@@ -1,7 +1,9 @@
-import config from '../../config'
 import express from 'express'
-const router = express.Router()
 import got from 'got'
+
+import type { OpenCageResult } from '../../types'
+import config from '../../config'
+const router = express.Router()
 
 router.get('/geocode/:query', (req, res, next) => {
   if (!config.TROCIO_OCD_API_KEY)
@@ -11,7 +13,7 @@ router.get('/geocode/:query', (req, res, next) => {
       )
     )
   const url = `https://api.opencagedata.com/geocode/v1/json?q=${req.params.query}&language=fr&key=${config.TROCIO_OCD_API_KEY}`
-  got(url, { responseType: 'json' })
+  got<OpenCageResult>(url, { responseType: 'json' })
     .then((response) => {
       if (!response.body.results) return next(Error('No result'))
       const formatted = response.body.results.map((r) => {

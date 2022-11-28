@@ -1,11 +1,6 @@
 import express from 'express'
 const router = express.Router()
-import {
-  login,
-  logout,
-  loginWithGoogle,
-  checkSuperAdmin,
-} from '../controllers/user_utils'
+import { login, logout, loginWithGoogle } from '../controllers/user_utils'
 import {
   createUser,
   patchMe,
@@ -14,7 +9,7 @@ import {
   sendValidMail,
   validMail,
 } from '../controllers/user_set'
-import { getMe, searchUser, getUserName } from '../controllers/user_get'
+import { getMe, getUserName } from '../controllers/user_get'
 
 router
   .post('/', createUser, login, getMe)
@@ -28,7 +23,5 @@ router
   .post('/me/validmail', sendValidMail)
   .get('/me/validmail/:validator', validMail)
   .get('/name', getUserName)
-// .get('/search', searchUser)
-// .get('/:id',  getUser)
 
 export default router

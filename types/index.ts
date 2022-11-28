@@ -7,6 +7,8 @@ export * from './payment'
 export * from './params'
 export * from './message'
 export * from './option'
+export * from './payment'
+export * from './opencagedata'
 
 // Utils
 export type ArrayElement<ArrayType extends readonly unknown[]> =

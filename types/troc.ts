@@ -58,7 +58,7 @@ export interface Troc extends TrocBase {
   _id: string
   tag: TagInterface
   articlelastref: number
-  creator: string
+  creator: string | User
   tarif: Tarif[]
   createdAt: string
   updatedAt: string
@@ -97,6 +97,6 @@ interface ITrocsFilterQuery {
   end?: string
 }
 
-interface SearchTrocsQuery extends ITrocsMapQuery, ITrocsFilterQuery {
+export interface SearchTrocsQuery extends ITrocsMapQuery, ITrocsFilterQuery {
   _id?: string
 }

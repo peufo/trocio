@@ -1,4 +1,4 @@
-import { model, Schema, Model, Document } from 'mongoose'
+import { model, Schema, Document } from 'mongoose'
 import type { IMessage } from '../../types'
 
 const { ObjectId } = Schema.Types

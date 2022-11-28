@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
-import type { PaymentInterface } from '../../types'
+import type { IPayment } from '../../types'
 const { ObjectId } = Schema.Types
 
 var paymentModel = new Schema({
@@ -24,7 +24,4 @@ var paymentModel = new Schema({
 
 paymentModel.set('timestamps', true)
 
-export default mongoose.model<PaymentInterface & Document>(
-  'payment',
-  paymentModel
-)
+export default mongoose.model<IPayment & Document>('payment', paymentModel)
