@@ -19,19 +19,19 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Download artifact server
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: server
           path: trocio
 
       - name: Download artifact client
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: client
           path: trocio/dist
 
       - name: Download artifact package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: package
           path: trocio
