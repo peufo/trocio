@@ -15,7 +15,7 @@
     "noUnusedLocals": true,
     "moduleResolution": "node",
     "target": "ES2022",
-    "module": "CommonJS",
+    "module": "ES2022",
     /**
      * svelte-preprocess cannot figure out whether you have
      * a value or a type, so tell TypeScript to enforce using

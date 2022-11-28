@@ -1,0 +1,33 @@
+{
+  "files": ["server.ts"],
+  "ts-node": {
+    "transpileOnly": true
+  },
+
+  "compilerOptions": {
+    "outDir": "server",
+    "moduleResolution": "node",
+    "target": "ES2022",
+    "module": "CommonJS",
+
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "allowJs": true,
+    "checkJs": false
+  },
+  /**
+   * Use global.d.ts instead of compilerOptions.types
+   * to avoid limiting type declarations.
+   */
+  "include": ["api/**/*"],
+  "exclude": ["node_modules"]
+}
