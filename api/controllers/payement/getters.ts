@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express'
+import type { RequestHandler } from 'express'
 import mongoose from 'mongoose'
 
 import Payment from '../../models/payment'

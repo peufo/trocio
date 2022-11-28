@@ -1,5 +1,5 @@
-import { RequestHandler } from 'express'
-import { IPaymentCreate } from '../../../types'
+import type { RequestHandler } from 'express'
+import type { IPaymentCreate } from '../../../types'
 import Payment from '../../models/payment'
 import Subscribe from '../../models/subscribe'
 
