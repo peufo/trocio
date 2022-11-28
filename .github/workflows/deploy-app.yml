@@ -16,7 +16,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Download artifact server
         uses: actions/download-artifact@v2
@@ -52,16 +52,6 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           source: 'trocio'
           target: './'
-
-      - name: Test package.json
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            cd trocio
-            cat package.json
 
       - name: Install npm dependencies
         uses: appleboy/ssh-action@master
