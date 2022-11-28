@@ -21,10 +21,9 @@ const OPTIONS: {
 export async function initOptions() {
   try {
     const options = await Option.find({}).exec()
-    const optionsNames = options.map((o) => o.name)
+    const optionsNames = options.map((o) => o.name as string)
 
     for (const name in OPTIONS) {
-      // @ts-ignore
       if (optionsNames.includes(name)) {
         OPTIONS[name] = options.find((o) => o.name === name)
       } else {

@@ -1,65 +1,67 @@
-<script>
-  import Input from '../Input';
-  import Icon from '../Icon';
-  import uid from '../../internal/uid';
-  import clearIcon from '../../internal/Icons/close';
+<script lang="ts">
+  import Input from '../Input'
+  import Icon from '../Icon'
+  import uid from '../../internal/uid'
+  import clearIcon from '../../internal/Icons/close'
 
-  export let value = '';
-  export let color = 'primary';
-  export let filled = false;
-  export let solo = false;
-  export let outlined = false;
-  export let flat = false;
-  export let rounded = false;
-  export let clearable = false;
-  export let readonly = false;
-  export let rows = 5;
-  export let autogrow = false;
-  export let noResize = false;
-  export let disabled = false;
-  export let placeholder = null;
-  export let hint = '';
-  export let counter = false;
-  export let rules = [];
-  export let errorCount = 1;
-  export let messages = [];
-  export let validateOnBlur = false;
-  export let error = false;
-  export let success = false;
-  export let id = `s-input-${uid(5)}`;
-  export let style = null;
-  export let textarea = null;
+  export let value = ''
+  export let color = 'primary'
+  export let filled = false
+  export let solo = false
+  export let outlined = false
+  export let flat = false
+  export let rounded = false
+  export let clearable = false
+  export let readonly = false
+  export let rows = 5
+  export let autogrow = false
+  export let noResize = false
+  export let disabled = false
+  export let placeholder = ''
+  export let hint = ''
+  export let counter = false
+  export let rules: ((value: string) => string | true)[] = []
+  export let errorCount = 1
+  export let messages: string[] = []
+  export let validateOnBlur = false
+  export let error = false
+  export let success = false
+  export let id = `s-input-${uid(5)}`
+  export let style = ''
+  export let textarea: HTMLTextAreaElement
 
-  let labelActive = !!placeholder || value;
-  let errorMessages = [];
+  let labelActive: boolean = !!placeholder || !!value
+  let errorMessages: string[] = []
 
   function checkRules() {
-    errorMessages = rules.map((r) => r(value)).filter((r) => typeof r === 'string');
-    if (errorMessages.length) error = true;
+    errorMessages = rules
+      .map((r) => r(value))
+      .filter((r) => typeof r === 'string') as string[]
+    if (errorMessages.length) error = true
     else {
-      error = false;
+      error = false
     }
   }
 
   function onFocus() {
-    labelActive = true;
+    labelActive = true
   }
 
   function onBlur() {
-    if (!value && !placeholder) labelActive = false;
-    if (validateOnBlur) checkRules();
+    if (!value && !placeholder) labelActive = false
+    if (validateOnBlur) checkRules()
   }
 
   function clear() {
-    value = '';
-    if (!placeholder) labelActive = false;
+    value = ''
+    if (!placeholder) labelActive = false
   }
 
   function onInput() {
-    if (!validateOnBlur) checkRules();
+    if (!validateOnBlur) checkRules()
     if (autogrow) {
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
+      textarea.style.height = 'auto'
+      textarea.style.height = `${textarea.scrollHeight}px`
     }
   }
 </script>
@@ -71,7 +73,8 @@
   {disabled}
   {error}
   {success}
-  {style}>
+  {style}
+>
   <!-- Slot for prepend outside the input. -->
   <slot slot="prepend-outer" name="prepend-outer" />
   <div
@@ -82,7 +85,8 @@
     class:flat
     class:rounded
     class:autogrow
-    class:no-resize={noResize || autogrow}>
+    class:no-resize={noResize || autogrow}
+  >
     <!-- Slot for prepend inside the input. -->
     <slot name="prepend" />
 
@@ -106,7 +110,8 @@
         on:blur
         on:input
         on:change
-        {...$$restProps} />
+        {...$$restProps}
+      />
     </div>
 
     {#if clearable && value !== ''}
@@ -126,7 +131,8 @@
     <div>
       <span>{hint}</span>
       {#each messages as message}<span>{message}</span>{/each}
-      {#each errorMessages.slice(0, errorCount) as message}<span>{message}</span>{/each}
+      {#each errorMessages.slice(0, errorCount) as message}<span>{message}</span
+        >{/each}
     </div>
     {#if counter}<span>{value.length} / {counter}</span>{/if}
   </div>

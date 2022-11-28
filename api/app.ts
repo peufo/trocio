@@ -47,7 +47,6 @@ app.use(
   session({
     secret: config.TROCIO_SECRET_STRING_COOKIE,
     cookie: { maxAge: 72 * 60 * 60 * 1000 },
-    // @ts-ignore
     store: MongoStore.create({ mongoUrl: config.TROCIO_DB }),
     resave: false,
     saveUninitialized: true,

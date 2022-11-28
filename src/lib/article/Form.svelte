@@ -17,7 +17,7 @@
 
   let newName = ''
   let newPrice = ''
-  let textarea: HTMLTextAreaElement | undefined
+  let textarea: HTMLTextAreaElement
   const dispatch = createEventDispatcher<{ done: Article }>()
 
   onMount(() => {
@@ -47,9 +47,11 @@
     const articleId = article._id
     const requests: Promise<any>[] = []
     if (isNameEdited)
-      requests.push($queryEditName.mutateAsync({ articleId, newName }))
+      requests.push($queryEditName.mutateAsync({ articleId, name: newName }))
     if (isPriceEdited)
-      requests.push($queryEditPrice.mutateAsync({ articleId, newPrice }))
+      requests.push(
+        $queryEditPrice.mutateAsync({ articleId, price: +newPrice })
+      )
     await Promise.all(requests)
     done({ ...article, name: newName, price: +newPrice })
   }
@@ -79,7 +81,7 @@
   )
 
   const queryEditName = useMutation(
-    (data: { articleId: string; newName: string }) =>
+    (data: { articleId: string; name: string }) =>
       api('/api/articles/edit-name', {
         method: 'post',
         data,
@@ -87,14 +89,14 @@
       }),
     {
       onSuccess: (newArticle) => {
-        // @ts-ignore
+        if (!article) return
         article.name = newArticle.name
       },
     }
   )
 
   const queryEditPrice = useMutation(
-    (data: { articleId: string; newPrice: string }) =>
+    (data: { articleId: string; price: number }) =>
       api('/api/articles/edit-price', {
         method: 'post',
         data,
@@ -102,7 +104,7 @@
       }),
     {
       onSuccess: (newArticle) => {
-        // @ts-ignore
+        if (!article) return
         article.price = newArticle.price
       },
     }

@@ -28,7 +28,6 @@
   $: if (!tag.padding) tag.padding = 0
 
   $: isModified = JSON.stringify(tag) !== JSON.stringify($troc.tag)
-  // @ts-ignore
 </script>
 
 <div class="wrapper">

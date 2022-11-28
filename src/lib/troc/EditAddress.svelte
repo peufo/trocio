@@ -40,7 +40,7 @@
 
   let results: ResultLocation[] = []
   let selectedResult = -1
-  let fetchPromise: Promise<ResultLocation[]>
+  let fetchPromise: Promise<void>
 
   function setLocation(loc: ResultLocation) {
     location = loc.location
@@ -86,7 +86,6 @@
 
       map.on(
         'dblclick',
-        // @ts-ignore
         ({ latlng }) => (fetchPromise = selectLocation(latlng))
       )
     }, mapDelay)
@@ -166,8 +165,7 @@
         setLocation(results[selectedResult])
         break
       default:
-        // @ts-ignore
-        searchLocationDebounce(e.target.value)
+        searchLocationDebounce(locationString)
     }
   }
 </script>

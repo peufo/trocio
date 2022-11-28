@@ -264,7 +264,7 @@ export const createTarif: RequestHandler = async (req, res, next) => {
     const { trocId = '', ...newTarif } = req.body
     console.log({ newTarif })
     const troc = await Troc.findById(trocId)
-    // @ts-ignore
+    if (!troc) throw 'Troc not found'
     troc.tarif.push(newTarif)
     await troc.save()
     res.json(troc)

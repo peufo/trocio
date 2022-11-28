@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Input from '../Input'
   import Icon from '../Icon'
   import uid from '../../internal/uid'
@@ -6,7 +6,7 @@
 
   let klass = ''
   export { klass as class }
-  export let value = ''
+  export let value: string | number = ''
   export let color = 'primary'
   export let filled = false
   export let solo = false
@@ -20,8 +20,8 @@
   export let placeholder = ''
   export let hint = ''
   export let counter = false
-  export let messages = []
-  export let rules = []
+  export let messages: string[] = []
+  export let rules: ((value: string | number) => string | true)[] = []
   export let errorCount = 1
   export let validateOnBlur = false
   export let error = false
@@ -32,12 +32,12 @@
 
   let focused = false
   $: labelActive = !!placeholder || value || focused
-  let errorMessages = []
+  let errorMessages: string[] = []
 
   export function validate() {
     errorMessages = rules
       .map((r) => r(value))
-      .filter((r) => typeof r === 'string')
+      .filter((r) => typeof r === 'string') as string[]
     if (errorMessages.length) error = true
     else {
       error = false
@@ -134,7 +134,7 @@
       {#each errorMessages.slice(0, errorCount) as message}<span>{message}</span
         >{/each}
     </div>
-    {#if counter}<span>{value.length} / {counter}</span>{/if}
+    {#if counter}<span>{String(value).length} / {counter}</span>{/if}
   </div>
 
   <!-- Slot for append outside the input. -->

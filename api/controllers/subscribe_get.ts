@@ -267,7 +267,6 @@ export const getSubscribersCount: RequestHandler = async (req, res, next) => {
     let { match } = dynamicQuery(req.query)
     // remove match if is empty
     if (!match.$or?.length) delete match.$or
-    // @ts-ignore
     const count = await Subscribe.countDocuments(match)
     res.json(count)
   } catch (error) {

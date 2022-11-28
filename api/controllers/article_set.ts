@@ -4,7 +4,7 @@ import Troc from '../models/troc'
 import Article from '../models/article'
 import { getTarif, getFee, getMargin } from './article_utils'
 import type {
-  Article as IArticle,
+  ArticleCreate,
   ArticleState,
   ArticleCorrection,
 } from '../../types'
@@ -24,7 +24,7 @@ function ensureArray<T extends any | any[]>(value: T | T[]): T[] {
 export const createArticle: RequestHandler<
   void,
   any,
-  IArticle | IArticle[]
+  ArticleCreate | ArticleCreate[]
 > = async (req, res, next) => {
   try {
     if (!req.session.user) throw 'Login is required'
@@ -81,9 +81,6 @@ export const createArticle: RequestHandler<
     let nbAttributedRef = 0
     const articlesCreated = await Promise.all(
       articles.map((art) => {
-        // @ts-ignore
-        delete art._id
-
         /** Shortcuts */
         art.providerSubId = sub._id
         art.providerId = sub.userId
