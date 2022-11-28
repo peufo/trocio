@@ -91,16 +91,20 @@ export const getResumCounts: RequestHandler = async (req, res, next) => {
     aggregate.group({
       _id: null,
       positiveCount: {
-        $sum: { $cond: [{ $gt: ['$resum.balance', 0] }, 1, 0] },
+        $sum: { $cond: [{ $gt: ['$resum.balance', 0.01] }, 1, 0] },
       },
       positiveSum: {
-        $sum: { $cond: [{ $gt: ['$resum.balance', 0] }, '$resum.balance', 0] },
+        $sum: {
+          $cond: [{ $gt: ['$resum.balance', 0.01] }, '$resum.balance', 0],
+        },
       },
       negativeCount: {
-        $sum: { $cond: [{ $lt: ['$resum.balance', 0] }, 1, 0] },
+        $sum: { $cond: [{ $lt: ['$resum.balance', -0.01] }, 1, 0] },
       },
       negativeSum: {
-        $sum: { $cond: [{ $lt: ['$resum.balance', 0] }, '$resum.balance', 0] },
+        $sum: {
+          $cond: [{ $lt: ['$resum.balance', -0.01] }, '$resum.balance', 0],
+        },
       },
       benefit: { $sum: { $add: ['$resum.feeSum', '$resum.marginSum'] } },
       benefitFee: { $sum: '$resum.feeSum' },

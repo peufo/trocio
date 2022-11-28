@@ -21,7 +21,7 @@
         api<DynamicQuery<ISubscribe>, number>('/api/subscribes/count', {
           params: {
             exact_trocId: trocId,
-            exact_role: role.key,
+            exact_role: role.value,
           },
         })
       )
@@ -57,13 +57,13 @@
   </CardTitle>
 
   <div class="pa-4 d-flex flex-column" style="gap: 0.5em;">
-    {#each ROLES as role, index (role.key)}
+    {#each ROLES as role, index (role.value)}
       <Button
         depressed
         style="width: 100%;"
         href={$url('/admin/management_users', {
           trocId,
-          exact_role: role.key,
+          exact_role: role.value,
         })}
       >
         {#if role.icon}
