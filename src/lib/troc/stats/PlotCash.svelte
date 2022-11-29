@@ -47,7 +47,7 @@
       margin: { t: 30, l: 60, r: 30 },
       height: 650,
       yaxis: { title: 'Montant', domain: [0, 0.7] },
-      yaxis2: { title: 'Opé. par heure', domain: [0.75, 1] },
+      yaxis2: { title: 'Opé. par 20 min', domain: [0.75, 1] },
       legend: {
         orientation: 'h',
         xanchor: 'center',
@@ -134,7 +134,7 @@
     let cursorSolde = 0
     let cursorPay = 0
 
-    const frequenceTime = 1000 * 60 * 60 // one houre
+    const frequenceTime = 1000 * 60 * 20 // 20 minutes
     const eventsValided = stats.events.filter(
       ({ event }) => event === 'valided'
     )
@@ -182,6 +182,8 @@
               ? `Paiement de ${event.pay.amount}<br>${event.pay.message}`
               : `Remboursement de ${event.pay.amount}<br>${event.pay.message}`
           )
+          pay.y.push(cursorPay)
+          pay.x.push(event.date)
 
           paymentFrequency.y[currentTimeIndex]++
         }
@@ -191,44 +193,28 @@
             case 'valided':
               cursorSolde += event.art.fee
               solde.text.push(`Mise en vente de ${event.art.name}`)
-              pay.text.push(``)
-
               validedFrequency.y[currentTimeIndex]++
-
               break
 
             case 'sold':
-              cursorSolde -= event.art.price
+              // cursorSolde -= event.art.price
               cursorSolde += event.art.margin
               solde.text.push(`Vente de ${event.art.name}`)
-              pay.text.push(``)
-
               break
 
             case 'buyed':
-              cursorSolde += event.art.price
-              solde.text.push(`Achat de ${event.art.name}`)
-              pay.text.push(``)
-
+              // cursorSolde += event.art.price
+              // solde.text.push(`Achat de ${event.art.name}`)
               buyFrequency.y[currentTimeIndex]++
-
               break
 
             case 'recover':
               recoverFrequency.y[currentTimeIndex]++
-
-              break
-
-            case 'payment':
               break
           }
+          solde.y.push(cursorSolde)
+          solde.x.push(event.date)
         }
-
-        solde.y.push(cursorSolde)
-        solde.x.push(event.date)
-
-        pay.y.push(cursorPay)
-        pay.x.push(event.date)
       })
 
     return [
