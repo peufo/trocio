@@ -28,6 +28,8 @@
       ...queryParams,
     },
   ])
+
+  const searchColSpan = 2
 </script>
 
 <ArticleMenu bind:this={articleMenu} {modeAdmin} />
@@ -40,7 +42,7 @@
 >
   <thead>
     <tr>
-      <th colspan="2" style="padding-left: 0px;">
+      <th colspan={searchColSpan} style="padding-left: 0px;">
         <SearchTextField
           bind:search={searchValue}
           placeholder="Chercher un article"
@@ -50,7 +52,7 @@
         />
       </th>
 
-      <MagicTableHeaders {fields} bind:queryParams />
+      <MagicTableHeaders {fields} bind:queryParams {searchColSpan} />
     </tr>
   </thead>
   <MagicTableBody
