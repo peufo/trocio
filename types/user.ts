@@ -17,6 +17,8 @@ export interface User {
 export interface UserWithoutId extends Omit<User, '_id'> {}
 
 export interface UserWithRootInfo extends User {
-  trocsCount: number
-  trocsTryCount: number
+  trocs?: {
+    count: number
+    countTry: number
+  }
 }

@@ -52,7 +52,35 @@ router
       let { match, sort } = dynamicQuery(req.query)
       if (match.$and && match.$and.length === 0) delete match.$and
       if (match.$or && match.$or.length === 0) delete match.$or
-      const aggregate = User.aggregate().match(match)
+      const aggregate = User.aggregate()
+        .lookup({
+          from: 'trocs',
+          let: { userId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$$userId', '$creator'] },
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                count: {
+                  $sum: { $cond: [{ $eq: ['$is_try', false] }, 1, 0] },
+                },
+                countTry: {
+                  $sum: { $cond: [{ $eq: ['$is_try', true] }, 1, 0] },
+                },
+              },
+            },
+          ],
+          as: 'trocs',
+        })
+        .addFields({
+          trocs: { $arrayElemAt: ['$trocs', 0] },
+        })
+        .match(match)
+
       if (Object.keys(sort).length) aggregate.sort(sort)
       aggregate.skip(+skip).limit(+limit)
       const users = await aggregate.exec()
