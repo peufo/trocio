@@ -41,6 +41,7 @@ export const ensureIsRootUser: RequestHandler = (req, res, next) => {
 
 export const ensureUserIsAdmin: RequestHandler = async (req, res, next) => {
   try {
+    if (isRootUser(req)) return next()
     const { accessor } = await getAccessedAndAssecor(req, res)
     if (accessor.role !== 'admin') throw `User is not admin of troc`
     return next()
@@ -51,6 +52,7 @@ export const ensureUserIsAdmin: RequestHandler = async (req, res, next) => {
 
 export const ensureUserIsCashier: RequestHandler = async (req, res, next) => {
   try {
+    if (isRootUser(req)) return next()
     const { accessor } = await getAccessedAndAssecor(req, res)
     if (accessor.role !== 'admin' && accessor.role !== 'cashier')
       throw `User is not admin or cashier of troc`
@@ -67,6 +69,7 @@ export const ensureUserCanAccessResum: RequestHandler = async (
   next
 ) => {
   try {
+    if (isRootUser(req)) return next()
     const { accessed, accessor } = await getAccessedAndAssecor(req, res)
     if (
       accessed._id !== accessor._id &&
