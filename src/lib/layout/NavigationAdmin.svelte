@@ -3,7 +3,6 @@
   import { createEventDispatcher } from 'svelte'
   import {
     faHouseChimney,
-    faInfoCircle,
     faUsers,
     faCubes,
     faCoins,
@@ -12,6 +11,7 @@
     faCashRegister,
     faAngleDoubleLeft,
     faAngleDoubleRight,
+    faEdit,
   } from '@fortawesome/free-solid-svg-icons'
   import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
   import {
@@ -39,7 +39,7 @@
 
   const tabs = [
     { ref: 'home', label: $troc.name, icon: faHouseChimney, isIndex: true },
-    { ref: 'edit', label: 'Définition', icon: faInfoCircle },
+    { ref: 'edit', label: 'Édition', icon: faEdit },
     { ref: 'tarif', label: 'Tarifications', icon: faCoins },
     { ref: 'tag', label: 'Étiquetage', icon: faTag },
     { ref: 'statistic', label: 'Statistiques', icon: faChartPie },
