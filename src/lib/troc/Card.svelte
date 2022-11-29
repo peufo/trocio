@@ -174,58 +174,52 @@
           </div>
         {/if}
 
-        {#if troc.society || troc.societyweb || troc.societyMail || troc.societyPhone}
-          <div class="d-flex align-start">
-            <IconLink icon={faUserTie} opacity />
-            <div class="pl-4 d-flex flex-column" style="gap: 4px;">
-              {#if !!troc.society}
-                <b>{troc.society}</b>
-              {/if}
+        <div class="d-flex align-start">
+          <IconLink icon={faUserTie} opacity />
+          <div class="pl-4 d-flex flex-column" style="gap: 4px;">
+            <b>{troc.society}</b>
 
-              {#if !!troc.societyweb}
-                <div>
-                  <a
-                    href="https://{troc.societyweb.replace(/^https?:\/\//, '')}"
-                    rel="noreferrer"
-                    target="_blank"
-                    title="Ouvrir le site internet de l'organisateur"
-                  >
-                    <Icon path={mdiWeb} size="1.1em" class="mr-1" />
-                    {troc.societyweb.replace(/^https?:\/\//, '')}
-                  </a>
-                </div>
-              {/if}
+            {#if !!troc.societyweb}
+              <div>
+                <a
+                  href="https://{troc.societyweb.replace(/^https?:\/\//, '')}"
+                  rel="noreferrer"
+                  target="_blank"
+                  title="Ouvrir le site internet de l'organisateur"
+                >
+                  <Icon path={mdiWeb} size="1.1em" class="mr-1" />
+                  {troc.societyweb.replace(/^https?:\/\//, '')}
+                </a>
+              </div>
+            {/if}
 
-              {#if !!troc.societyMail}
-                <div>
-                  <a
-                    href="mailto:{troc.societyMail}?subject={troc.name}"
-                    rel="noreferrer"
-                    target="_blank"
-                    title="Contacter l'organisateur par email"
-                  >
-                    <IconLink icon={faEnvelope} size="1.1em" class="mr-1" />
-                    {troc.societyMail}
-                  </a>
-                </div>
-              {/if}
-
-              {#if !!troc.societyPhone}
-                <div>
-                  <a
-                    href="tel:{troc.societyPhone}"
-                    rel="noreferrer"
-                    target="_blank"
-                    title="Contacter l'organisateur par téléphone"
-                  >
-                    <Icon path={mdiPhone} size="1.1em" class="mr-1" />
-                    {troc.societyPhone}
-                  </a>
-                </div>
-              {/if}
+            <div>
+              <a
+                href="mailto:{troc.societyMail}?subject={troc.name}"
+                rel="noreferrer"
+                target="_blank"
+                title="Contacter l'organisateur par email"
+              >
+                <IconLink icon={faEnvelope} size="1.1em" class="mr-1" />
+                {troc.societyMail}
+              </a>
             </div>
+
+            {#if !!troc.societyPhone}
+              <div>
+                <a
+                  href="tel:{troc.societyPhone}"
+                  rel="noreferrer"
+                  target="_blank"
+                  title="Contacter l'organisateur par téléphone"
+                >
+                  <Icon path={mdiPhone} size="1.1em" class="mr-1" />
+                  {troc.societyPhone}
+                </a>
+              </div>
+            {/if}
           </div>
-        {/if}
+        </div>
       </div>
     </div>
   </CardText>
