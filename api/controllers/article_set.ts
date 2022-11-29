@@ -8,7 +8,7 @@ import type {
   ArticleState,
   ArticleCorrection,
 } from '../../types'
-import { getRole } from './subscribe_util'
+import { getRole } from './access'
 import Subscribe from '../models/subscribe'
 
 function ensureArray<T extends any | any[]>(value: T | T[]): T[] {
@@ -117,7 +117,6 @@ export const deleteArticle: RequestHandler = async (req, res, next) => {
     if (article.valided) throw `Valided article can't be delete`
 
     // Test le role de l'utilisateur si celui ci n'est pas le fournisseur
-
     if (String(article.providerId) !== req.session.user._id) {
       const role = await getRole(article.trocId, req.session.user._id)
       if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'

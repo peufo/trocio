@@ -1,24 +1,12 @@
 import UserModel from '../models/user'
-import createError from 'http-errors'
+
 import config from '../../config'
 import axios from 'axios'
 import qs from 'qs'
 import mail from './mail'
 import randomize from 'randomatic'
 
-const {
-  TROCIO_ADMIN,
-  VITE_TROCIO_GOOGLE_CLIENT_ID,
-  TROCIO_GOOGLE_CLIENT_SECRET,
-} = config
-
-export function checkSuperAdmin(req, res, next) {
-  if (!req.session.user) return next(createError(401))
-  if (!TROCIO_ADMIN)
-    return next(Error('The environment variable TROCIO_ADMIN is undefined'))
-  if (TROCIO_ADMIN != req.session.user.mail) return next(Error('Access denied'))
-  next()
-}
+const { VITE_TROCIO_GOOGLE_CLIENT_ID, TROCIO_GOOGLE_CLIENT_SECRET } = config
 
 export async function login(req, res, next) {
   const { mail, password } = req.body
@@ -107,7 +95,6 @@ export function logout(req, res, next) {
 }
 
 export default {
-  checkSuperAdmin,
   login,
   logout,
   loginWithGoogle,

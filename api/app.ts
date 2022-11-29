@@ -2,7 +2,7 @@ import express, { ErrorRequestHandler, RequestHandler } from 'express'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import config from '../config'
-import { checkSuperAdmin } from './controllers/user_utils'
+import { ensureIsRootUser } from './controllers/access'
 import session from 'express-session'
 import mongoose from 'mongoose'
 import MongoStore from 'connect-mongo'
@@ -61,7 +61,7 @@ app.use('/trocs', routesTroc)
 app.use('/payments', routesPayment)
 app.use('/subscribes', routesSubscribe)
 app.use('/messages', routesMessage)
-app.use('/root', checkSuperAdmin, routesRoot)
+app.use('/root', ensureIsRootUser, routesRoot)
 
 const catchError404: RequestHandler = (req, res, next) => {
   res.status(404)

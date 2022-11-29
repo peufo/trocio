@@ -19,7 +19,7 @@ import {
   ensureUserIsCashier,
   ensureUserIsAdmin,
   ensureUserCanAccessResum,
-} from '../controllers/subscribe_util'
+} from '../controllers/access'
 
 router
   .post('/', createSubscribe)

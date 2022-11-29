@@ -1,5 +1,10 @@
 import type { RequestHandler, Request, Response } from 'express'
+import createError from 'http-errors'
+
+import config from '../../config'
 import Subscribe from '../models/subscribe'
+
+const { TROCIO_ROOT_USER } = config
 
 export async function getRole(
   trocId: string | undefined,
@@ -17,6 +22,21 @@ interface SubscribeQuery {
   subscribeId: string
   trocId: string
   userId: string
+}
+
+export function isRootUser(req: Request): boolean {
+  if (!req.session.user) return false
+  if (!TROCIO_ROOT_USER) return false
+  return TROCIO_ROOT_USER === req.session.user.mail
+}
+
+export const ensureIsRootUser: RequestHandler = (req, res, next) => {
+  if (!req.session.user) return next(createError(401))
+  if (!TROCIO_ROOT_USER)
+    return next(Error('The environment variable TROCIO_ROOT_USER is undefined'))
+  if (TROCIO_ROOT_USER !== req.session.user.mail)
+    return next(Error('Access denied'))
+  next()
 }
 
 export const ensureUserIsAdmin: RequestHandler = async (req, res, next) => {
@@ -77,7 +97,8 @@ async function getAccessedAndAssecor(req: Request, res: Response) {
     const accessed = subscribeId
       ? await Subscribe.findById(subscribeId)
       : await Subscribe.findOne({ trocId, userId: req.session.user._id })
-    if (!accessed) throw 'Subscriber to edit not found'
+    if (!accessed) throw 'Subscriber accesed not found'
+
     // accessor can eventualy be the accessed
     const accessor =
       String(accessed.userId) === String(req.session.user._id)

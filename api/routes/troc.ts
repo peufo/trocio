@@ -14,7 +14,7 @@ import {
   deleteTarif,
   editTarif,
 } from '../controllers/troc_set'
-import { ensureUserIsAdmin } from '../controllers/subscribe_util'
+import { ensureUserIsAdmin } from '../controllers/access'
 
 router
   .get('/', search)
