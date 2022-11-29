@@ -44,12 +44,6 @@ export function formatStats(statsBrut: TrocStats): TrocStatsFormatted {
   const articlesProvided = articlesProposed.filter((art) => art.valided)
   const articlesSolded = articlesProvided.filter((art) => art.sold)
   const articlesRecovered = articlesProvided.filter((art) => art.recover)
-  const sellers = articlesSolded
-    .map(({ provider }) => provider)
-    .filter(
-      // Be unique
-      (provider, index: number, self: any[]) => self.indexOf(provider) === index
-    )
 
   const numbers: StatsPropertiesNumber = {
     proposed: articlesProposed.filter((art) => !art.valided).length,
@@ -140,11 +134,12 @@ function getEvents({
       ...articlesProposed
         .filter((art) => art[capturedEvent])
         .map((art) => {
+          const date = new Date(art[capturedEvent] as Date)
           return {
             art,
             event: capturedEvent,
-            date: art[capturedEvent],
-            time: new Date(art[capturedEvent]).getTime(),
+            date,
+            time: date.getTime(),
           }
         }),
     ]
@@ -152,11 +147,12 @@ function getEvents({
 
   // Buyer events
   const articlesBuyedEvents: TrocEvent[] = articlesBuyed.map((art) => {
+    const date = new Date(art.sold!)
     return {
       art,
       event: 'buyed',
-      date: art.sold,
-      time: new Date(art.sold).getTime(),
+      date,
+      time: date.getTime(),
     }
   })
 

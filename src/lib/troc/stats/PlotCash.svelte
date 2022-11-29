@@ -70,13 +70,13 @@
       layout.annotations?.push({
         text: 'Ouverture',
         arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
-        x: $troc.schedule[0].open,
+        x: new Date($troc.schedule[0].open),
         y: 0,
       })
       layout.annotations?.push({
         text: 'Fermeture',
         arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
-        x: $troc.schedule[$troc.schedule.length - 1].close,
+        x: new Date($troc.schedule[$troc.schedule.length - 1].close),
         y: 0,
       })
     }

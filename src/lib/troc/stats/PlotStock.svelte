@@ -276,12 +276,12 @@
         {
           text: 'Ouverture',
           arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
-          x: $troc.schedule[0].open,
+          x: new Date($troc.schedule[0].open),
         },
         {
           text: 'Fermeture',
           arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
-          x: $troc.schedule.at(-1)?.close,
+          x: new Date($troc.schedule.at(-1)?.close || ''),
         },
       ]
 
