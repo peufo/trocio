@@ -47,9 +47,9 @@ export declare interface TrocBase {
     lng: number
   }
   schedule?: Period[]
-  society?: string
+  society: string
+  societyMail: string
   societyweb?: string
-  societyMail?: string
   societyPhone?: string
 }
 

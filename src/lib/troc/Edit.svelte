@@ -254,8 +254,11 @@
           name="society"
           on:input={handleInput}
           value={newTroc.society}
-          outlined>Nom</TextField
+          outlined
+          placeholder={$user.name}
         >
+          Nom
+        </TextField>
 
         <TextField
           name="societyweb"
@@ -273,6 +276,7 @@
           on:input={handleInput}
           value={newTroc.societyMail}
           outlined
+          placeholder={$user.mail}
         >
           Email de contact
         </TextField>

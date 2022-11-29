@@ -10,13 +10,14 @@ const trocModel = new Schema(
   {
     name: { type: String, required: true },
     is_try: { type: Boolean, default: false },
-    society: String,
+    society: { type: String, required: true },
     societyweb: String,
     societyPhone: String,
     societyMail: {
       type: String,
       lowercase: true,
       validate: EMAIL_REGEX,
+      required: true,
     },
     currency: { type: String, enum: cc.codes() },
     address: {

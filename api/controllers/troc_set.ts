@@ -30,6 +30,10 @@ export const createTroc: RequestHandler = async (req, res, next) => {
       user.creditTroc--
     }
 
+    /** Set default socitey value from user creator */
+    if (!troc.society) troc.society = user.name
+    if (!troc.societyMail) troc.societyMail = user.mail
+
     /** Save user an new troc */
     await Promise.all([troc.save(), user.save()])
 
