@@ -22,6 +22,6 @@
   >
     {label}{count > 1 ? 's' : ''}
     <div class="flex-grow-1" />
-    {count}
+    <span class="pl-1">{count}</span>
   </Button>
 </div>
