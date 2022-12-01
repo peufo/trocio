@@ -23,8 +23,8 @@
       {#each fields.filter((f) => !f.hidden) as field}
         <td
           on:click={(clickEvent) => dispatch('click', { clickEvent, item })}
-          class:currency={field.format === 'currency'}
-          class:number={field.format === 'number'}
+          class:currency={field.type === 'currency'}
+          class:number={field.type === 'number'}
         >
           <MagicTableCell {item} {field} {currency} />
         </td>

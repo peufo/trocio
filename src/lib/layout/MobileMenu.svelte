@@ -2,7 +2,7 @@
   import { Button, Icon } from '$material'
   import { faUser } from '@fortawesome/free-regular-svg-icons'
   import { mdiWeatherNight, mdiWhiteBalanceSunny } from '@mdi/js'
-  import { page, url, afterPageLoad } from '@roxi/routify'
+  import { afterPageLoad } from '@roxi/routify'
 
   import { user } from '$lib/user/store'
   import logo from '$assets/logo'

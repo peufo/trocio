@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
+  import { createEventDispatcher } from 'svelte'
 
   import SearchTextField from '$lib/util/SearchTextField.svelte'
   import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
@@ -7,9 +8,17 @@
   import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
   import MagicTableBody from '$lib/util/MagicTableBody.svelte'
   import type { FieldInteface } from 'types/magic'
+  import MagicMenu from '$lib/util/MagicMenu.svelte'
 
   interface $$Slots {
     title: {}
+    menu: { item: any }
+  }
+
+  type RowEvent = { clickEvent: MouseEvent; item: any }
+
+  interface EventMap {
+    click: RowEvent
   }
 
   export let query: UseInfiniteQueryStoreResult<any, any, any, any>
@@ -23,7 +32,23 @@
   export let currency = ''
   export let searchColSpan = 2
   export let searchValue = ''
+
+  const dispatch = createEventDispatcher<EventMap>()
+  let menu: MagicMenu
+  let item: any
+
+  function handleClickRow(event: CustomEvent<RowEvent>) {
+    dispatch('click', event.detail)
+    item = event.detail.item
+    menu.open(event.detail.clickEvent)
+  }
 </script>
+
+{#if $$slots.menu}
+  <MagicMenu bind:this={menu}>
+    <slot name="menu" {item} />
+  </MagicMenu>
+{/if}
 
 <div {style} class={klass}>
   <div class="d-flex align-center mb-2">
@@ -47,6 +72,6 @@
       </tr>
     </thead>
 
-    <MagicTableBody {fields} {query} {currency} on:click />
+    <MagicTableBody {fields} {query} {currency} on:click={handleClickRow} />
   </MagicTableWrapper>
 </div>
