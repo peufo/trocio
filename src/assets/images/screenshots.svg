@@ -1,5 +1,5 @@
+<meta http-equiv="Content-Security-Policy" content="default-src *; img-src 'self' data">
 <svg width="610" height="410" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  
   <!-- Clavier -->
   <rect x="30" y="297" width="480" height="18" fill="#242c37" rx="6" ry="6" />
   <!-- Axe -->
