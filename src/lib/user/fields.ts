@@ -9,6 +9,7 @@ export function getFields(troc: TrocLookup): FieldInteface<SubscribeResum>[] {
       disabled: true,
       key: 'user.name',
       cellWidth: 50,
+      getValue: (item) => item.user?.name || item.name,
     },
     {
       label: 'Mail',
