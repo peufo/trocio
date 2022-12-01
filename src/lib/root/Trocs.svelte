@@ -8,6 +8,7 @@
   import { fieldsTroc } from '$lib/root/fieldsTroc'
   import notify from '$lib/notify'
   import MagicTable from '$lib/util/MagicTable.svelte'
+  import logo from '$assets/logo'
 
   let searchValue = ''
   let queryParams = {}
@@ -55,6 +56,10 @@
 
     <div slot="menu" let:item let:menu>
       <List dense>
+        <ListItem href="/admin?trocId={item._id}">
+          <Icon {...logo} class="mr-2" />
+          vers le troc
+        </ListItem>
         <ListItem target="_blank" href="mailto:{item.societyMail}">
           <Icon path={mdiMail} class="mr-2" />
           Contacter la société
