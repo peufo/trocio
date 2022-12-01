@@ -38,7 +38,7 @@
       <b>Code source</b>
     </div>
     <div>
-      <a href="https://github.com/PeufOne/trocio">Github</a>
+      <a href="https://github.com/PeufOne/trocio">GitHub</a>
     </div>
   </section>
 

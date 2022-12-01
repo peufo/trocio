@@ -1,5 +1,7 @@
 <script>
+  import { Button, Icon } from '$material'
   import { isDarkTheme } from '$lib/store/layout'
+  import { mdiGithub } from '@mdi/js'
 
   export let offsetHeight
 </script>
@@ -21,6 +23,11 @@
       <div class="underline-div">
         <a class="underline-span" href="/legal-notice"> Mentions légales </a>
       </div>
+
+      <Button href="https://github.com/PeufOne/trocio">
+        <Icon path={mdiGithub} class="mr-2" />
+        code source
+      </Button>
     </div>
 
     <span>
@@ -40,7 +47,8 @@
 
   .links {
     display: flex;
-    gap: 15px;
+    align-items: center;
+    gap: 2em;
     padding-bottom: 0.5em;
   }
 </style>
