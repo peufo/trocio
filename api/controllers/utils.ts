@@ -1,14 +1,20 @@
 import mongoose, { FilterQuery, PipelineStage } from 'mongoose'
 const { ObjectId } = mongoose.Types
 
+type DynamicQueryOption = {
+  /** Keys that will be ignored */
+  ignore?: string | string[]
+  /** Return match query without empty $or and $and, default: ```true``` */
+  cleanupMatch?: boolean
+}
 /**
  * Traite les paramètre dynamiquement suivant des règles prédéfini
  */
 export function dynamicQuery(
   requestQuery: object,
-  ignore?: string | string[]
+  { ignore, cleanupMatch = true }: DynamicQueryOption = {}
 ): { match: FilterQuery<any>; sort: PipelineStage.Sort['$sort'] } {
-  const match: { $or: FilterQuery<any>[]; $and: FilterQuery<any>[] } = {
+  const match: { $or?: FilterQuery<any>[]; $and?: FilterQuery<any>[] } = {
     $or: [],
     $and: [],
   }
@@ -36,36 +42,36 @@ export function dynamicQuery(
 
     // add matchSearch
     if (key.startsWith(QUERY_SEARCH)) {
-      match.$and.push({
+      match.$and!.push({
         [key.replace(QUERY_SEARCH, '')]: new RegExp(value, 'i'),
       })
 
       // add matchOrSearch
     } else if (key.startsWith(QUERY_OR_SEARCH)) {
-      match.$or.push({
+      match.$or!.push({
         [key.replace(QUERY_OR_SEARCH, '')]: new RegExp(value, 'i'),
       })
 
       // add match exact (work with ObjectId)
     } else if (key.startsWith(QUERY_EXACT)) {
       if (mongoose.isValidObjectId(value)) {
-        match.$and.push({
+        match.$and!.push({
           [key.replace(QUERY_EXACT, '')]: new ObjectId(value),
         })
       } else {
-        match.$and.push({ [key.replace(QUERY_EXACT, '')]: value })
+        match.$and!.push({ [key.replace(QUERY_EXACT, '')]: value })
       }
 
       // add not match exact (work with ObjectId)
     } else if (key.startsWith(QUERY_NE_EXACT)) {
       if (mongoose.isValidObjectId(value))
-        match.$and.push({
+        match.$and!.push({
           [key.replace(QUERY_NE_EXACT, '')]: {
             $ne: new ObjectId(value),
           },
         })
       else
-        match.$and.push({
+        match.$and!.push({
           [key.replace(QUERY_NE_EXACT, '')]: { $ne: value },
         })
 
@@ -77,17 +83,22 @@ export function dynamicQuery(
 
         // add filter min
       } else if (key.startsWith(QUERY_FILTER_MIN)) {
-        match.$and.push({
+        match.$and!.push({
           [key.replace(QUERY_FILTER_MIN, '')]: { $gte: +value },
         })
 
         // add filter max
       } else if (key.startsWith(QUERY_FILTER_MAX)) {
-        match.$and.push({
+        match.$and!.push({
           [key.replace(QUERY_FILTER_MAX, '')]: { $lte: +value },
         })
       }
     }
+  }
+
+  if (cleanupMatch) {
+    if (match.$and && match.$and.length === 0) delete match.$and
+    if (match.$or && match.$or.length === 0) delete match.$or
   }
 
   return { match, sort }

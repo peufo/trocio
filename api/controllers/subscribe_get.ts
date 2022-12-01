@@ -213,10 +213,8 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
 
     if (includTarif) lookupTarif(aggregate)
 
-    // Ca fait mal au serveur 😁
     let { match, sort } = dynamicQuery(req.query)
-    if (!match.$or?.length) delete match.$or
-    if (!match.$and?.length) delete match.$and
+
     aggregate.match(match)
     if (Object.keys(sort).length) aggregate.sort(sort)
 
@@ -265,8 +263,7 @@ function hideMail(subscribes: SubscribeLookup[]): SubscribeLookup[] {
 export const getSubscribersCount: RequestHandler = async (req, res, next) => {
   try {
     let { match } = dynamicQuery(req.query)
-    // remove match if is empty
-    if (!match.$or?.length) delete match.$or
+
     const count = await Subscribe.countDocuments(match)
     res.json(count)
   } catch (error) {

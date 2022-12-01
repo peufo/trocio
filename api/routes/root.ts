@@ -50,8 +50,7 @@ router
     try {
       const { limit = 20, skip = 0 } = req.query
       let { match, sort } = dynamicQuery(req.query)
-      if (match.$and && match.$and.length === 0) delete match.$and
-      if (match.$or && match.$or.length === 0) delete match.$or
+
       const aggregate = User.aggregate()
         .lookup({
           from: 'trocs',
@@ -89,11 +88,9 @@ router
       next(error)
     }
   })
-  .get('/trocs', (req, res, next) => {
-    Troc.find(req.query, (err, trocs) => {
-      if (err) return next(err)
-      res.json(trocs)
-    })
+  .get('/trocs', async (req, res, next) => {
+    const trocs = await Troc.find(req.query).populate('creator')
+    res.json(trocs)
   })
   .get('/articles', (req, res, next) => {
     Article.find(req.query, (err, articles) => {

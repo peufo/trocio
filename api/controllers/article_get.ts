@@ -19,7 +19,10 @@ export const getArticles: RequestHandler = async (req, res, next) => {
       skip = 0,
     } = req.query
 
-    let { match, sort } = dynamicQuery(req.query, ['exact_state'])
+    let { match, sort } = dynamicQuery(req.query, {
+      ignore: 'exact_state',
+      cleanupMatch: false,
+    })
     if (!match.$and || !match.$or) throw Error('never')
 
     // add specific match
