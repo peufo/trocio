@@ -3,7 +3,7 @@
   import { faList, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
   import { faEdit } from '@fortawesome/free-regular-svg-icons'
   import { mdiPlus } from '@mdi/js'
-  import { Dialog, Button, Checkbox, Icon, ListItem } from '$material'
+  import { Dialog, Button, Checkbox, Icon } from '$material'
 
   import type { Article } from 'types'
   import { isMobile } from '$lib/store/layout'

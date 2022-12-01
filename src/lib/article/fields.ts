@@ -1,10 +1,5 @@
 import { faDotCircle } from '@fortawesome/free-solid-svg-icons'
-import type {
-  Article,
-  ArticleWithState,
-  ArticleLookup,
-  SubscribeLookup,
-} from 'types'
+import type { Article, ArticleWithState, SubscribeLookup } from 'types'
 import type { FieldInteface, SelectAsync } from 'types/magic'
 import { getStateLabel } from '$lib/utils'
 
