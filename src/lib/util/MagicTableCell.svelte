@@ -1,5 +1,6 @@
 <script lang="ts">
   import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
+  import objectPath from 'object-path'
 
   import type { FieldInteface } from 'types/magic'
   import { renderAmount } from '$lib/utils'
@@ -13,9 +14,8 @@
   $: value = getValue(item, field)
 
   function getValue(item: any, field: FieldInteface) {
-    return typeof field.getValue === 'function'
-      ? field.getValue(item)
-      : item[field.key]
+    if (typeof field.getValue === 'function') return field.getValue(item)
+    return objectPath.get(item, field.key)
   }
 </script>
 

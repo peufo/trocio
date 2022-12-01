@@ -29,7 +29,7 @@ export interface SelectAsync {
   getKey?: (item: any) => string
 }
 
-export interface FieldInteface<Type = any> {
+export interface FieldInteface<Type = unknown> {
   /** Text visible dans l'entête */
   label: string
   /**

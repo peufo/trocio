@@ -24,7 +24,6 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
     },
     {
       label: 'Statut',
-
       type: 'select',
       key: 'state',
       getValue: getStateLabel,
@@ -38,7 +37,6 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
       type: 'date',
       cellWidth: 170,
     },
-
     {
       label: 'Validation',
       hidden: true,
@@ -46,7 +44,6 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
       type: 'date',
       cellWidth: 170,
     },
-
     {
       label: 'Vente',
       hidden: true,
@@ -63,21 +60,18 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
     },
     {
       label: 'Frais',
-
       key: 'fee',
       type: 'currency',
       cellWidth: 50,
     },
     {
       label: 'Marge',
-
       key: 'margin',
       type: 'currency',
       cellWidth: 50,
     },
     {
       label: 'Prix',
-
       key: 'price',
       type: 'currency',
       cellWidth: 50,
