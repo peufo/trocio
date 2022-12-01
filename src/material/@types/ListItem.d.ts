@@ -24,6 +24,8 @@ interface ListItemProps {
   style?: string
   /** href link */
   href?: string
+  /** target prop passed to link */
+  tagret?: string
 }
 
 declare class ListItem extends SvelteComponentTyped<ListItemProps> {}

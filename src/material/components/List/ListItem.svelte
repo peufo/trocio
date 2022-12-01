@@ -26,6 +26,7 @@
   export let ripple = getContext('S_ListItemRipple') || role || false
   export let style = ''
   export let href = ''
+  export let target = ''
 
   ITEM.register((values) => {
     active = values.includes(value)
@@ -37,7 +38,7 @@
 </script>
 
 {#if href}
-  <a {href}>
+  <a {href} {target}>
     <div
       class="s-list-item {klass}"
       use:Class={[active && activeClass]}

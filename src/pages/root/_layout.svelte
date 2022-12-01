@@ -24,12 +24,12 @@
 {:else}
   <NavigationDrawer
     bind:width={navigationWidth}
-    class="flex-shrink-0"
     style="
         position: fixed;
         top: 0px;
         height: {$storeLayout.innerHeight}px;
         padding-top: {$storeLayout.headerHeight}px;
+        flex-shrink: 0;
     "
   >
     <List nav>

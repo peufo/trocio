@@ -11,11 +11,6 @@ export const fieldsUser: FieldInteface<UserWithRootInfo>[] = [
     key: 'mail',
   },
   {
-    label: 'Crédit',
-    key: 'creditTroc',
-    type: 'number',
-  },
-  {
     label: 'Mail validé',
     key: 'mailvalided',
     type: 'boolean',
@@ -35,12 +30,15 @@ export const fieldsUser: FieldInteface<UserWithRootInfo>[] = [
     label: 'Nombre de troc',
     key: 'trocs.count',
     type: 'number',
-    getValue: (user) => user.trocs?.count,
   },
   {
     label: "Nombre de troc d'éssai",
     key: 'trocs.countTry',
     type: 'number',
-    getValue: (user) => user.trocs?.countTry,
+  },
+  {
+    label: 'Crédit',
+    key: 'creditTroc',
+    type: 'number',
   },
 ]

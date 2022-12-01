@@ -1,5 +1,6 @@
 <script lang="ts">
   import { useQueryClient } from '@sveltestack/svelte-query'
+  import { mdiMail, mdiPlus } from '@mdi/js'
 
   import notify from '$lib/notify'
   import { useInfinitApi } from '$lib/api'
@@ -7,7 +8,8 @@
   import { layout } from '$lib/store/layout'
   import type { DynamicQuery, User, UserWithRootInfo } from 'types'
   import { fieldsUser } from '$lib/root/fieldsUser'
-  import { List, ListItem } from '$material'
+  import { Icon, List, ListItem } from '$material'
+  import logo from '$assets/logo'
 
   let searchValue = ''
   let queryParams = {}
@@ -24,6 +26,7 @@
 
   async function addCredit(user: UserWithRootInfo) {
     try {
+      if (!confirm(`Etes-vous sur d'accorder un crédit à ${user.name}`)) return
       const res = await fetch(`/api/root/addcredit`, {
         method: 'post',
         headers: {
@@ -52,13 +55,22 @@
     <h6 slot="title">Users</h6>
 
     <div slot="menu" let:item let:menu>
-      <List>
+      <List dense>
+        <ListItem href="/root/trocs?exact_creator={item._id}">
+          <Icon {...logo} class="mr-2" />
+          Vers les trocs
+        </ListItem>
+        <ListItem href="mailto:{item.mail}">
+          <Icon path={mdiMail} class="mr-2" />
+          Contacter
+        </ListItem>
         <ListItem
           on:click={() => {
             addCredit(item)
             menu.close()
           }}
         >
+          <Icon path={mdiPlus} class="mr-2" />
           Ajouter un crédit
         </ListItem>
       </List>

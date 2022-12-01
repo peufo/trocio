@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { mdiTrashCanOutline } from '@mdi/js'
+  import { mdiMail, mdiTrashCanOutline } from '@mdi/js'
 
   import type { DynamicQuery, Troc, TrocLookup } from 'types'
   import { List, ListItem, Icon } from '$material'
@@ -55,6 +55,15 @@
 
     <div slot="menu" let:item let:menu>
       <List dense>
+        <ListItem target="_blank" href="mailto:{item.societyMail}">
+          <Icon path={mdiMail} class="mr-2" />
+          Contacter la société
+        </ListItem>
+        <ListItem target="_blank" href="mailto:{item.creator.mail}">
+          <Icon path={mdiMail} class="mr-2" />
+          Contacter le créateur
+        </ListItem>
+
         <ListItem
           class="red-text"
           on:click={() => {
@@ -62,10 +71,8 @@
             deleteTroc(item)
           }}
         >
-          <div slot="prepend">
-            <Icon path={mdiTrashCanOutline} />
-          </div>
-          Supprimer
+          <Icon path={mdiTrashCanOutline} class="mr-2" />
+          Supprimer le troc
         </ListItem>
       </List>
     </div>
