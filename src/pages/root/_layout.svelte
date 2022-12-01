@@ -2,9 +2,10 @@
   import { onMount } from 'svelte'
   import { layout, isActive } from '@roxi/routify'
   import { NavigationDrawer, List, ListItem } from '$material'
-  import { layout as lay } from '$lib/store/layout'
+  import { layout as storeLayout } from '$lib/store/layout'
 
   let isRootUser = false
+  let navigationWidth: string | undefined = undefined
 
   onMount(() => {
     fetch('/api/root')
@@ -21,29 +22,33 @@
 {#if !isRootUser}
   <h1 style="color: red;">Access denied</h1>
 {:else}
-  <div class="d-flex">
-    <NavigationDrawer style="height: {$lay.mainHeight}px;">
-      <List nav>
-        <a href={$layout.path}>
-          <ListItem>
-            {$layout.title}
+  <NavigationDrawer
+    bind:width={navigationWidth}
+    class="flex-shrink-0"
+    style="
+        position: fixed;
+        top: 0px;
+        height: {$storeLayout.innerHeight}px;
+        padding-top: {$storeLayout.headerHeight}px;
+    "
+  >
+    <List nav>
+      <a href={$layout.path}>
+        <ListItem>
+          {$layout.title}
+        </ListItem>
+      </a>
+      {#each $layout.children as node}
+        <a href={node.path}>
+          <ListItem active={$isActive(node.path)} activeClass="secondary-color">
+            {node.title}
           </ListItem>
         </a>
-        {#each $layout.children as node}
-          <a href={node.path}>
-            <ListItem
-              active={$isActive(node.path)}
-              activeClass="secondary-color"
-            >
-              {node.title}
-            </ListItem>
-          </a>
-        {/each}
-      </List>
-    </NavigationDrawer>
+      {/each}
+    </List>
+  </NavigationDrawer>
 
-    <div style="width: 100%;">
-      <slot />
-    </div>
+  <div style="padding-left: {navigationWidth};">
+    <slot />
   </div>
 {/if}

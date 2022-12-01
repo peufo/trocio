@@ -6,8 +6,30 @@ export const fieldsTroc: FieldInteface<TrocLookup>[] = [
     label: 'Nom',
     key: 'name',
   },
+  { label: 'Éssai', key: 'is_try', type: 'boolean' },
   {
-    label: 'creator',
+    label: 'Création',
+    key: 'createdAt',
+    type: 'date',
+  },
+  {
+    label: 'Société',
+    key: 'society',
+  },
+  {
+    label: 'Société mail',
+    key: 'societyMail',
+  },
+  {
+    label: 'Société Tel.',
+    key: 'societyPhone',
+  },
+  {
+    label: 'Société site',
+    key: 'societyweb',
+  },
+  {
+    label: 'Créateur',
     key: 'creator',
     type: 'selectAsync',
     getValue: (item) => `${item.creator.name} - ${item.creator.mail}`,
