@@ -1,0 +1,18 @@
+<svg width="610" height="410" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  
+  <!-- Clavier -->
+  <rect x="30" y="297" width="480" height="18" fill="#242c37" rx="6" ry="6" />
+  <!-- Axe -->
+  <rect x="100" y="290" width="340" height="18" fill="#242c37"/>
+  <!-- Ecran -->
+  <rect x="60" y="20" width="420" height="275" fill="#242c37" rx="6" ry="6" />
+  <image x="70" y="30" width="400" xlink:href="screenshot.png"/>
+
+  <!-- Mobile -->
+  <rect x="420" y="80" width="160" height="305" fill="#14181e" rx="16" ry="16" />
+  <image x="426" y="100" width="150" xlink:href="screenshot-mobile.png"/>
+  <!-- Hauts parleurs -->
+  <rect x="460" y="88" width="80" height="4" fill="#5e5f63" rx="2" ry="2" />
+  <rect x="460" y="372" width="80" height="4" fill="#5e5f63" rx="2" ry="2" />
+
+</svg>
