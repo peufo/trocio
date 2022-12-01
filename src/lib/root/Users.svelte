@@ -51,9 +51,16 @@
   >
     <h6 slot="title">Users</h6>
 
-    <div slot="menu" let:item>
+    <div slot="menu" let:item let:menu>
       <List>
-        <ListItem on:click={() => addCredit(item)}>Ajouter un crédit</ListItem>
+        <ListItem
+          on:click={() => {
+            addCredit(item)
+            menu.close()
+          }}
+        >
+          Ajouter un crédit
+        </ListItem>
       </List>
     </div>
   </MagicTable>

@@ -12,7 +12,7 @@
 
   interface $$Slots {
     title: {}
-    menu: { item: any }
+    menu: { item: any; menu: MagicMenu }
   }
 
   type RowEvent = { clickEvent: MouseEvent; item: any }
@@ -40,13 +40,13 @@
   function handleClickRow(event: CustomEvent<RowEvent>) {
     dispatch('click', event.detail)
     item = event.detail.item
-    menu.open(event.detail.clickEvent)
+    menu?.open(event.detail.clickEvent)
   }
 </script>
 
 {#if $$slots.menu}
   <MagicMenu bind:this={menu}>
-    <slot name="menu" {item} />
+    <slot name="menu" {item} {menu} />
   </MagicMenu>
 {/if}
 
