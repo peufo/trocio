@@ -41,5 +41,6 @@
   .links {
     display: flex;
     gap: 15px;
+    padding-bottom: 0.5em;
   }
 </style>

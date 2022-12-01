@@ -1,41 +1,30 @@
 <!-- routify:options isFooterDisplay=true -->
 
-<main>
-  <br />
-  <br />
-  <h4 class="text-center">Mentions légales</h4>
-  <br />
-  <br />
+<main class="pt-8">
+  <h4 class="text-center pb-8">Mentions légales</h4>
 
-  <section>
+  <section class="mb-6">
     <div class="text-right">
       <b>Exploitation</b>
     </div>
     <div>
       <span>Jonas Voisard</span><br />
-      <span>Rue Pierre-péquignat 15</span><br />
-      <span>2900 Porrentruy</span><br />
+      <span>La Chaive 74</span><br />
+      <span>2905 Courtedoux</span><br />
       <span>Suisse</span><br />
     </div>
   </section>
 
-  <br />
-
-  <section>
+  <section class="mb-6">
     <div class="text-right">
       <b>Domaines</b>
     </div>
     <div>
-      <span>troc.io</span><br />
-      <span>trocio.ch</span><br />
-      <span class="opacity">trocio.fr</span><br />
-      <span class="opacity">trocio.org</span>
+      <span>troc.io</span>
     </div>
   </section>
 
-  <br />
-
-  <section>
+  <section class="mb-6">
     <div class="text-right">
       <b>Hébergement</b>
     </div>
@@ -44,9 +33,16 @@
     </div>
   </section>
 
-  <br />
+  <section class="mb-6">
+    <div class="text-right">
+      <b>Code source</b>
+    </div>
+    <div>
+      <a href="https://github.com/PeufOne/trocio">Github</a>
+    </div>
+  </section>
 
-  <section>
+  <section class="mb-6">
     <div class="text-right">
       <b>Licence</b>
     </div>
@@ -67,9 +63,5 @@
     display: grid;
     grid-template-columns: 50% 50%;
     column-gap: 2em;
-  }
-
-  .opacity {
-    opacity: 0.6;
   }
 </style>
