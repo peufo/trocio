@@ -89,7 +89,24 @@ router
     }
   })
   .get('/trocs', async (req, res, next) => {
-    const trocs = await Troc.find(req.query).populate('creator')
+    const { limit = 20, skip = 0 } = req.query
+    let { match, sort } = dynamicQuery(req.query)
+    const aggregate = Troc.aggregate()
+      .match(match)
+      .lookup({
+        from: 'users',
+        localField: 'creator',
+        foreignField: '_id',
+        as: 'creator',
+      })
+      .addFields({
+        creator: { $arrayElemAt: ['$creator', 0] },
+      })
+
+    if (Object.keys(sort).length) aggregate.sort(sort)
+    aggregate.skip(+skip).limit(+limit)
+
+    const trocs = await aggregate.exec()
     res.json(trocs)
   })
   .get('/articles', (req, res, next) => {
