@@ -2,18 +2,18 @@ import type { User, Troc, Tarif, Article, IPaymentLookup } from 'types'
 
 export type RoleEnum = 'basic' | 'trader' | 'cashier' | 'admin'
 
-export interface SubscribeBase {
+export type SubscribeBase = {
   trocId: string
   /** Logged user user can provide userId */
   userId?: string
 }
 
 /** Réponse lors de recherche de subscribe non participant au troc */
-export interface SubscribeBaseWithUser extends SubscribeBase {
+export type SubscribeBaseWithUser = SubscribeBase & {
   user: User
 }
 
-export interface ISubscribe extends SubscribeBase {
+export type ISubscribe = SubscribeBase & {
   _id: string
   createdAt: Date
   updatedAt: Date
@@ -38,13 +38,13 @@ export interface ISubscribe extends SubscribeBase {
   prefix?: string
 }
 
-export interface SubscribeLookup extends ISubscribe {
+export type SubscribeLookup = ISubscribe & {
   troc: Troc
   user?: User
 }
 
 /** Résumé des interactions d'un utilisateur avec un troc */
-export interface SubscribeResum extends SubscribeLookup {
+export type SubscribeResum = SubscribeLookup & {
   resum: {
     balance: number
     articleCount?: number

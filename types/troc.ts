@@ -4,7 +4,7 @@ import type { IPayment } from './payment'
 import type { ISubscribe } from './subscribe'
 
 /** Période dont est composé l'horaire */
-export declare interface Period {
+export type Period = {
   _id?: string
   name?: 'open' | 'deposit' | 'recovery' | 'sale' | 'delete'
   open: string
@@ -12,7 +12,7 @@ export declare interface Period {
 }
 
 /** Tarif */
-export declare interface Tarif {
+export type Tarif = {
   _id?: string
   name: string
   bydefault: boolean
@@ -25,7 +25,7 @@ export declare interface Tarif {
 }
 
 /** Tag (config étiquettes) */
-export declare interface TagInterface {
+export type TagInterface = {
   width: number
   height: number
   padding: number
@@ -36,7 +36,7 @@ export declare interface TagInterface {
 }
 
 /** Information minimal pour la création d'un troc */
-export declare interface TrocBase {
+export type TrocBase = {
   name: string
   description: string
   is_try: boolean
@@ -54,7 +54,7 @@ export declare interface TrocBase {
 }
 
 /** Information complette d'un troc */
-export interface Troc extends TrocBase {
+export type Troc = TrocBase & {
   _id: string
   tag: TagInterface
   articlelastref: number
@@ -73,30 +73,31 @@ export interface Troc extends TrocBase {
 }
 
 /** Information complette avec les informations collaborateurs */
-export interface TrocLookup extends Troc {
+export type TrocLookup = Troc & {
   creator: User
   subscribe: ISubscribe
 }
 
 /** Statistique d'un troc */
-export declare interface TrocStats {
+export type TrocStats = {
   articlesProposed: Article[]
   articlesBuyed: Article[]
   payments: IPayment[]
 }
 
-interface ITrocsMapQuery {
+type ITrocsMapQuery = {
   north?: number
   east?: number
   sud?: number
   west?: number
 }
-interface ITrocsFilterQuery {
+type ITrocsFilterQuery = {
   search?: string
   start?: string
   end?: string
 }
 
-export interface SearchTrocsQuery extends ITrocsMapQuery, ITrocsFilterQuery {
-  _id?: string
-}
+export type SearchTrocsQuery = ITrocsMapQuery &
+  ITrocsFilterQuery & {
+    _id?: string
+  }

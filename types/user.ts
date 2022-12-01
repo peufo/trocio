@@ -1,4 +1,4 @@
-export interface User {
+export type User = {
   _id: string
   name: string
   ref?: number
@@ -14,9 +14,9 @@ export interface User {
   lastLogin: Date
 }
 
-export interface UserWithoutId extends Omit<User, '_id'> {}
+export type UserWithoutId = Omit<User, '_id'>
 
-export interface UserWithRootInfo extends User {
+export type UserWithRootInfo = User & {
   trocs?: {
     count: number
     countTry: number

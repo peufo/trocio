@@ -95,12 +95,11 @@ function selectAsyncUser(trocId: string): SelectAsync {
  */
 export function getFieldsLookup(
   trocId: string
-): FieldInteface<ArticleWithState & ArticleLookup>[] {
+): FieldInteface<ArticleWithState>[] {
   return [
     ...getFields(),
     {
       label: 'Fournisseur',
-
       key: 'providerSubId',
       getValue: (art) => art?.provider?.name || art?.providerSub?.name,
       cellWidth: 70,

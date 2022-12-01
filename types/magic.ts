@@ -1,6 +1,6 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 
-// import type { DynamicQuery } from 'params'
+import type { GenericObject, NestedPaths } from './nestedpath'
 
 /** Option of menu */
 export interface Option<TValue = string | number | boolean | null> {
@@ -29,14 +29,14 @@ export interface SelectAsync {
   getKey?: (item: any) => string
 }
 
-export interface FieldInteface<Type = unknown> {
+export interface FieldInteface<Type extends GenericObject> {
   /** Text visible dans l'entête */
   label: string
   /**
    * Clé utilisé pour le query de l'url.
    * Est utilisé pour obtenir la valeur si getValue n'est pas défini
    */
-  key: string & keyof Type
+  key: NestedPaths<Type>
   /**
    * Formate la valeur afficher. 'string' par défaut
    * Adapte le menu de l'entête

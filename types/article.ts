@@ -1,7 +1,7 @@
 import type { ISubscribe } from './subscribe'
 import type { User } from './user'
 
-export interface ArticleCreate {
+export type ArticleCreate = {
   /** ID du subscribe de l'utilisateur qui propose l'article */
   providerSubId: string
   /** Shortcuts */
@@ -15,7 +15,7 @@ export interface ArticleCreate {
   price: number
 }
 
-export interface Article extends ArticleCreate {
+export type Article = ArticleCreate & {
   /** ID de l'article */
   _id: string
   createdAt: Date
@@ -56,11 +56,7 @@ export interface Article extends ArticleCreate {
   sellerId?: string
 }
 
-export interface ArticleWithState extends Article {
-  state: ArticleState
-}
-
-export interface ArticleLookup extends Article {
+export type ArticleLookup = Article & {
   provider?: User
   providerSub?: ISubscribe
   buyer?: User
@@ -69,7 +65,11 @@ export interface ArticleLookup extends Article {
   seller?: User
 }
 
-export interface ArticleCorrection {
+export type ArticleWithState = ArticleLookup & {
+  state: ArticleState
+}
+
+export type ArticleCorrection = {
   timestamp: Date
   authorId: string
   authorSubId: string
@@ -85,11 +85,11 @@ export interface ArticleCorrection {
   newValue?: any
 }
 
-export interface ArticleCorrectionLookup extends ArticleCorrection {
+export type ArticleCorrectionLookup = ArticleCorrection & {
   author: { _id: string; name: string }
 }
 
-export interface ArticleCorrectionsLookup {
+export type ArticleCorrectionsLookup = {
   _id: string
   corrections: ArticleCorrectionLookup[]
 }
