@@ -7,3 +7,7 @@ declare interface LayoutScoped {
   footerHeight: number
   mainHeight: number
 }
+
+declare module 'plotly.js-dist' {
+  export * from '@types/plotly.js'
+}

@@ -1,11 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { faChartBar, faChartArea } from '@fortawesome/free-solid-svg-icons'
+  import { faChartBar } from '@fortawesome/free-solid-svg-icons'
   import { grey } from '$material/utils/colors'
-  import Plotly from 'plotly.js-dist'
 
-  // For use typescript
-  // import * as Plotly from 'plotly.js'
+  import Plotly from 'plotly.js-dist'
 
   import IconLink from '$lib/util/IconLink.svelte'
   import { isDarkTheme } from '$lib/store/layout'

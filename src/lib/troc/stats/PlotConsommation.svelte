@@ -4,9 +4,6 @@
   import { grey } from '$material/utils/colors'
   import Plotly from 'plotly.js-dist'
 
-  // To use typescript
-  // import * as Plotly from 'plotly.js'
-
   import IconLink from '$lib/util/IconLink.svelte'
   import { isDarkTheme } from '$lib/store/layout'
   import { troc } from '$lib/troc/store'

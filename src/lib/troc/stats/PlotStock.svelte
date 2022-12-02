@@ -5,9 +5,6 @@
   import dayjs from 'dayjs'
   import Plotly from 'plotly.js-dist'
 
-  // For use typescript
-  // import * as Plotly from 'plotly.js'
-
   import IconLink from '$lib/util/IconLink.svelte'
   import { isDarkTheme, isMobile } from '$lib/store/layout'
   import { troc } from '$lib/troc/store'
@@ -96,7 +93,7 @@
       x: [] as Date[],
       y: [] as number[],
       text: [] as string[],
-      domain: { columns: 0 },
+      domain: { column: 0 },
     })
 
     const proposed = {
@@ -258,7 +255,7 @@
         title: 'Nombre',
         ...($isMobile && { domain: [0, 0.5] }),
       },
-      xaxis: $isMobile ? {} : { domain: [0, 0.7] },
+      !: $isMobile ? {} : { domain: [0, 0.7] },
       height: $isMobile || mode === 'sums' ? 600 : 400,
       legend: {
         orientation: 'h',
@@ -358,7 +355,7 @@
         yanchor: 'bottom',
         y: 1.03,
       },
-      xaxis: {
+      !: {
         title: 'Valeur',
         range: [0, averageProvided * 3 || 50],
       },
@@ -367,7 +364,7 @@
       annotations: [],
     }
 
-    const baseAnnotation = {
+    const baseAnnotation: Partial<Plotly.Annotations> = {
       y: 0,
       arrowhead: 0,
       arrowcolor: grey[$isDarkTheme ? 'lighten-2' : 'darken-4'],
@@ -378,7 +375,7 @@
     }
 
     if (averageProvided)
-      layout.annotations.push({
+      layout.annotations?.push({
         ...baseAnnotation,
         x: averageProvided,
         text: ` Moy. mis en vente: <b>
@@ -386,7 +383,7 @@
         </b>`,
       })
     if (averageSolded)
-      layout.annotations.push({
+      layout.annotations?.push({
         ...baseAnnotation,
         x: averageSolded,
         text: ` Moy. vendu: <b>
@@ -394,7 +391,7 @@
         </b>`,
       })
     if (averageRecovered)
-      layout.annotations.push({
+      layout.annotations?.push({
         ...baseAnnotation,
         x: averageRecovered,
         text: ` Moy. récupéré: <b>

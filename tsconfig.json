@@ -9,6 +9,7 @@
     "paths": {
       "$lib/*": ["./src/lib/*"],
       "$assets/*": ["./src/assets/*"],
+      "$material/*": ["./src/material/*"],
       "$material": ["./src/material"]
     },
     "noUnusedLocals": true,

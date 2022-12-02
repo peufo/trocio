@@ -3,11 +3,7 @@ services:
   mongo:
     image: mongo
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    ports:
-      - 27017:27017
+
   trocio:
     container_name: trocio
     image: node:18-alpine
@@ -15,7 +11,7 @@ services:
       - mongo
     command: sh -c "npm i && npm run dev"
     ports:
-      - 5000:5000
+      - 5001:5000
     working_dir: /app
     volumes:
       - ./:/app
