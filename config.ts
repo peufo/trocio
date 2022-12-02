@@ -1,7 +1,6 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-const dev = process.env.NODE_ENV === 'development'
 const TROCIO_PORT = process.env.TROCIO_PORT || 3000
 
 const defaultConfig = {
@@ -17,7 +16,6 @@ const defaultConfig = {
   TROCIO_API_PORT: 5001,
   TROCIO_DB: 'mongodb://localhost:27017/trocio',
   TROCIO_BACKUP: '../dump',
-  TROCIO_DEV: dev,
   VITE_TROCIO_GOOGLE_CLIENT_ID: '',
   TROCIO_GOOGLE_CLIENT_SECRET: '',
 }
