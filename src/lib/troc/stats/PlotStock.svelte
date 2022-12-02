@@ -255,7 +255,7 @@
         title: 'Nombre',
         ...($isMobile && { domain: [0, 0.5] }),
       },
-      !: $isMobile ? {} : { domain: [0, 0.7] },
+      xaxis: $isMobile ? {} : { domain: [0, 0.7] },
       height: $isMobile || mode === 'sums' ? 600 : 400,
       legend: {
         orientation: 'h',
@@ -285,7 +285,7 @@
       const timeOpen = +dayjs($troc.schedule[0].open).add(-1, 'week')
       const timeNow = +dayjs().add(-1, 'week')
       const timeClose = +dayjs($troc.schedule.at(-1)?.close).add(6, 'hour')
-      layout.xaxis.range = [timeOpen < timeNow ? timeOpen : timeNow, timeClose]
+      layout.xaxis!.range = [timeOpen < timeNow ? timeOpen : timeNow, timeClose]
     }
     if (mode === 'sums') {
       layout.yaxis = {
@@ -355,7 +355,7 @@
         yanchor: 'bottom',
         y: 1.03,
       },
-      !: {
+      xaxis: {
         title: 'Valeur',
         range: [0, averageProvided * 3 || 50],
       },
