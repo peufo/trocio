@@ -2,8 +2,9 @@
 
 Plateforme pour l'organisation et la gestion de commerces éphémères.
 
-👉 [Accéder à Troc.io](https://troc.io)
-👉 [Voir le projet](https://github.com/users/PeufOne/projects/5)
+> 👉 [Accéder à troc.io](https://troc.io)
+
+> 👉 [Voir la roadmap](https://github.com/users/PeufOne/projects/5)
 
 ![Screenshots de trocio](./src/assets/images/screenshots.png)
 
