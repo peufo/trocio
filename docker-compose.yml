@@ -9,9 +9,9 @@ services:
     image: node:18-alpine
     depends_on:
       - mongo
-    command: sh -c "npm i && npm run dev"
+    command: sh -c "apk add g++ make py3-pip && npm i && npm run dev"
     ports:
-      - 5001:5000
+      - 5173:5173
     working_dir: /app
     volumes:
       - ./:/app
