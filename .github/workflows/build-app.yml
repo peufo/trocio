@@ -49,5 +49,5 @@ jobs:
           name: package
           path: |
             package.json
-            package-lock.json
+            pnpm-lock.yaml
             ecosystem.config.js
