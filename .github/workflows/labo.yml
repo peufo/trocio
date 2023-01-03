@@ -62,7 +62,7 @@ jobs:
           script: |
             cd trocio
             cat package.json
-      - name: Install npm dependencies
+      - name: Install pnpm dependencies
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -71,7 +71,7 @@ jobs:
           script: |
             . .profile
             cd trocio
-            npm ci --production
+            pnpm ci --production
       - name: Restart server
         uses: appleboy/ssh-action@master
         with:
@@ -81,4 +81,4 @@ jobs:
           script: |
             . .profile
             cd trocio
-            npm run serve
+            pnpm run serve

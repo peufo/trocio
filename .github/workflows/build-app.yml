@@ -12,10 +12,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build:routify
-      - run: npm run build:vite
+          cache: 'pnpm'
+      - run: pnpm ci
+      - run: pnpm run build:routify
+      - run: pnpm run build:vite
       - name: Upload client artifact
         uses: actions/upload-artifact@v3
         with:
@@ -29,9 +29,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build:server
+          cache: 'pnpm'
+      - run: pnpm ci
+      - run: pnpm run build:server
       - name: Upload server artifact
         uses: actions/upload-artifact@v3
         with:
