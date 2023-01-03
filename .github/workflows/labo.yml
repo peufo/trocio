@@ -71,7 +71,7 @@ jobs:
           script: |
             . .profile
             cd trocio
-            pnpm ci --production
+            pnpm install --frozen-lockfile
       - name: Restart server
         uses: appleboy/ssh-action@master
         with:
