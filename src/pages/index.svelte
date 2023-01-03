@@ -30,13 +30,13 @@
       <div style="max-width: 630px; margin: auto;">
         <Card class="pa-4 simple-card">
           <CardText>
-            <p>Trocio facilite l'organisation de commerces éphémère.</p>
+            <p>Trocio facilite l'organisation de commerces éphémères.</p>
             <p>
-              <b>Pour les organisateurs,</b><br /> c'est une gestion complette des
+              <b>Pour les organisateurs,</b><br /> c'est une gestion complète des
               flux d'articles, des utilisateurs et des paiements.
             </p>
             <p>
-              <b>Pour les participants,</b><br /> c'est des passages en caisse fluidifier
+              <b>Pour les participants,</b><br /> c'est des passages en caisse fluidifiés
               et un retour sur ses ventes en temps réel.
             </p>
           </CardText>
@@ -133,7 +133,7 @@
       <div class="feature">
         <div class="feature-title">
           <i class="fas fa-coins" />
-          <span>Tarifications</span>
+          <span>Tarification</span>
         </div>
         <div class="feature-content">
           <p>

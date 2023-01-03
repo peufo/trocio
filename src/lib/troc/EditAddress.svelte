@@ -260,7 +260,7 @@
     bind:textarea={addressTextarea}
     bind:value={address}
   >
-    Address, Ville, Pays
+    Adresse, Ville, Pays
   </Textarea>
 </div>
 

@@ -170,7 +170,7 @@
         </div>
 
         <div class="pb-5">
-          Les trocs d'entrainement ne sont pas visible publiquement. <br />
+          Les trocs d'entrainement ne sont pas visibles publiquement. <br />
           Ils permettent de tester l'interface et de préparer une équipe.
         </div>
       </div>
@@ -225,7 +225,7 @@
       <div class="icon-container">
         <br />
         <span style="opacity: .5;">
-          Les trocs d'entrainements n'ont pas d'horaire
+          Les trocs d'entrainement n'ont pas d'horaire
         </span>
         <i class="far fa-calendar-alt" />
       </div>
@@ -238,7 +238,7 @@
       />
       <br />
       <span class="text-caption">
-        L'horaire n'est plus modifiable une fois que l'évenement a débuté.
+        L'horaire n'est plus modifiable une fois que l'évènement a débuté.
       </span>
     {/if}
   </div>
