@@ -38,10 +38,12 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
+    /*
     https: {
       key: readIfExists('localhost-key.pem'),
       cert: readIfExists('localhost.pem'),
     },
+    */
   },
 })
 

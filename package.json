@@ -1,6 +1,13 @@
 {
   "name": "trocio",
+  "author": {
+    "name": "Jonas Voisard",
+    "email": "jonas.voisard@gmail.com"
+  },
   "version": "2.0.0",
+  "engines": {
+    "node": "18.14.2"
+  },
   "scripts": {
     "dev": "run-p dev:*",
     "dev:api": "nodemon ./api/server.ts --watch ./api",
