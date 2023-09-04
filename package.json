@@ -17,7 +17,7 @@
     "build:routify": "routify --single-build",
     "build:vite": "vite build",
     "build:server": "tsc --project tsconfig.node.json",
-    "serve": "pm2 startOrReload ecosystem.config.js --update-env"
+    "serve": "node server.js"
   },
   "nodemonConfig": {
     "execMap": {
