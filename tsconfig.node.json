@@ -5,15 +5,13 @@
   },
 
   "compilerOptions": {
-    "outDir": "server",
-    "moduleResolution": "node",
-    "target": "ES2022",
-    "module": "CommonJS",
+    "outDir": "dist/server",
+    "target": "ES6",
+    "module": "NodeNext",
 
     "noImplicitAny": false,
     "noUnusedLocals": true,
 
-    "importsNotUsedAsValues": "error",
     "isolatedModules": true,
     "resolveJsonModule": true,
     "sourceMap": true,

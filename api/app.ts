@@ -1,4 +1,4 @@
-import express, { ErrorRequestHandler, RequestHandler } from 'express'
+import express, { type ErrorRequestHandler, type RequestHandler } from 'express'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import config from '../config'

@@ -17,7 +17,7 @@
     "build:routify": "routify --single-build",
     "build:vite": "vite build",
     "build:server": "tsc --project tsconfig.node.json",
-    "serve": "node server.js"
+    "serve": "node dist/server/server.js"
   },
   "nodemonConfig": {
     "execMap": {
@@ -50,9 +50,9 @@
     "npm-run-all": "^4.1.5",
     "sass": "^1.32.13",
     "svelte": "^3.50.1",
-    "svelte-preprocess": "^4.10.7",
+    "svelte-preprocess": "^5.0.4",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.3",
+    "typescript": "^5.2.2",
     "vite": "^3.1.4"
   },
   "dependencies": {
@@ -75,6 +75,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "got": "^11.8.1",
+    "http-errors": "^2.0.0",
     "http2-proxy": "^5.0.53",
     "json-2-csv": "^3.14.4",
     "leaflet": "^1.7.1",

@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import mongoose, { FilterQuery } from 'mongoose'
+import mongoose, { type FilterQuery } from 'mongoose'
 
 import type { Troc } from '../../types'
 import TrocModel from '../models/troc'

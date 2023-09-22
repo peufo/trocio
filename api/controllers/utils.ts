@@ -1,4 +1,4 @@
-import mongoose, { FilterQuery, PipelineStage } from 'mongoose'
+import mongoose, { type FilterQuery, type PipelineStage } from 'mongoose'
 const { ObjectId } = mongoose.Types
 
 type DynamicQueryOption = {

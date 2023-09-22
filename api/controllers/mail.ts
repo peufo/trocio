@@ -1,7 +1,7 @@
-import nodemailer, { SendMailOptions } from 'nodemailer'
+import nodemailer, { type SendMailOptions } from 'nodemailer'
 import randomize from 'randomatic'
 
-import MailValidatorModel, { MailValidator } from '../models/mailvalidator'
+import MailValidatorModel, { type MailValidator } from '../models/mailvalidator'
 import type { User } from '../../types'
 import config from '../../config'
 

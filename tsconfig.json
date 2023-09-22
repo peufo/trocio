@@ -1,9 +1,7 @@
 {
-  "extends": "ts-node/node14/tsconfig.json",
   "ts-node": {
     "transpileOnly": true
   },
-
   "compilerOptions": {
     "outDir": "dist",
     "paths": {
@@ -13,17 +11,15 @@
       "$material": ["./src/material"]
     },
     "noUnusedLocals": true,
-    "moduleResolution": "node",
-    "target": "ES2022",
-    "module": "ES2022",
+    "target": "ES6",
+    "module": "ES6",
     /**
      * svelte-preprocess cannot figure out whether you have
      * a value or a type, so tell TypeScript to enforce using
      * `import type` instead of `import` for Types.
      */
-    "importsNotUsedAsValues": "error",
-    "isolatedModules": true,
-    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": false,
     /**
      * To have warnings / errors of the Svelte compiler at the
      * correct position, enable source maps by default.
@@ -46,6 +42,6 @@
    * Use global.d.ts instead of compilerOptions.types
    * to avoid limiting type declarations.
    */
-  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]
+  //"exclude": ["node_modules"]
 }
