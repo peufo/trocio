@@ -18,7 +18,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           source: '.'
-          target: './trocio-tmp'
+          target: '~/tmp/app'
 
       - name: Deploy /trocio
         uses: appleboy/ssh-action@master
@@ -29,11 +29,11 @@ jobs:
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd trocio-tmp
+            cd ~/tmp/app
             pnpm install --frozen-lockfile
             pnpm build
-            cd ..
-            rm -rf trocio
-            mv trocio-tmp trocio
-            cd trocio
+            rm -rf ~/app
+            mv ~/tmp/app ~/app
+            cd ~/app
+            cp ~/.env ~/app/.env
             pnpm serve
