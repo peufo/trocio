@@ -27,7 +27,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            . .profile
             cd trocio-tmp
             pnpm install --frozen-lockfile
             pnpm build
