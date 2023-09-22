@@ -11,7 +11,7 @@ const defaultConfig = {
   TROCIO_SMTP_PASS: '', // password of your SMTP server
   TROCIO_SMTP_USER: 'postmaster@trocio.ch',
   TROCIO_SMTP_HOST: 'mail.infomaniak.com',
-  TROCIO_SMTP_PORT: 587,
+  TROCIO_SMTP_PORT: 465,
   TROCIO_PORT,
   TROCIO_API_PORT: 5001,
   TROCIO_DB: 'mongodb://localhost:27017/trocio',
