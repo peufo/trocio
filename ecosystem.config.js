@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'trocio',
-      script: 'server.js',
+      script: 'dist/server/server.js',
     },
   ],
 }
