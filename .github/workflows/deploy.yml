@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    environment: Nestor - Labo
+    environment: ${{ github.ref_name == 'master' && 'Nestor' || 'Nestor - Labo'}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
