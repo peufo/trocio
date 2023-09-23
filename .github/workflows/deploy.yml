@@ -29,11 +29,11 @@ jobs:
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            cp ~/.env ~/tmp/app/.env
             cd ~/tmp/app
             pnpm install --frozen-lockfile
             pnpm build
             rm -rf ~/app
             mv ~/tmp/app ~/app
             cd ~/app
-            cp ~/.env ~/app/.env
             pnpm serve
