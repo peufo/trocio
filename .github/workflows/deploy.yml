@@ -3,7 +3,14 @@ name: Trocio CI
 on:
   push:
     branches: [master, dev]
-
+  workflow_call:
+    secrets:
+      SSH_HOST:
+        required: true
+      SSH_USERNAME:
+        required: true
+      SSH_PASSWORD:
+        required: true
 jobs:
   deploy:
     environment: ${{ github.ref_name == 'master' && 'Nestor - Trocio' || 'Nestor - Labo'}}
