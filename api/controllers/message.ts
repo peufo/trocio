@@ -2,6 +2,7 @@ import type { RequestHandler } from 'express'
 
 import Message from '../models/message'
 import { transporter } from './mail'
+import config from '../../config'
 
 export const createContact: RequestHandler = async (req, res, next) => {
   try {
@@ -24,7 +25,7 @@ export const createContact: RequestHandler = async (req, res, next) => {
 
     // Renvoi une confirmation à l'auteur
     await transporter.sendMail({
-      from: 'TROCIO <postmaster@trocio.ch>',
+      from: `Troc.io <${config.TROCIO_SMTP_USER}>`,
       to: req.session.user?.mail || authorMail,
       subject: 'Merci pour votre message',
       html: `
@@ -39,7 +40,7 @@ export const createContact: RequestHandler = async (req, res, next) => {
 
     // Envoie le message sur la boite info@trocio.ch
     await transporter.sendMail({
-      from: `TROCIO <postmaster@trocio.ch>`,
+      from: `Troc.io <${config.TROCIO_SMTP_USER}>`,
       to: 'info@trocio.ch',
       replyTo: req.session.user?.mail || authorMail,
       subject: `Nouveau message de [${req.session.user?.name || 'inconu'}]`,

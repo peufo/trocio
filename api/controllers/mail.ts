@@ -31,7 +31,7 @@ transporter.verify(function (err, success) {
 })
 
 const mailOptions: SendMailOptions = {
-  from: 'TROCIO <postmaster@trocio.ch>',
+  from: `Troc.io <${TROCIO_SMTP_USER}>`,
 }
 
 export async function createUser(user: User, origin?: string) {
