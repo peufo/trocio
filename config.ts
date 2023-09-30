@@ -9,8 +9,8 @@ const defaultConfig = {
   TROCIO_ROOT_USER: '', // Root user mail address
   TROCIO_SECRET_STRING_COOKIE: '', // A secret string for secure cookies
   TROCIO_SMTP_PASS: '', // password of your SMTP server
-  TROCIO_SMTP_USER: 'postmaster@trocio.ch',
-  TROCIO_SMTP_HOST: 'mail.infomaniak.com',
+  TROCIO_SMTP_USER: 'salut@troc.io',
+  TROCIO_SMTP_HOST: 'smtp.hostinger.com',
   TROCIO_SMTP_PORT: 465,
   TROCIO_PORT,
   TROCIO_API_PORT: 5001,

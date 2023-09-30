@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Copy codebase in trocio-tmp
+      - name: Copy codebase in tmp/app
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
