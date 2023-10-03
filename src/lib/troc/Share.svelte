@@ -50,7 +50,7 @@
   <div class="mr-2" in:fly|local={{ x: 20 }}>
     <IconLink
       icon={faEnvelope}
-      href="mailto://?subject={troc.name}&body={url}"
+      href="mailto:?subject={troc.name}&body={url}"
       opacity
     />
     <IconLink
