@@ -1,5 +1,6 @@
 import { api } from '$lib/api'
 import notify from '$lib/notify'
+import { getState } from '$lib/utils'
 
 export default {
   proposed,
@@ -15,6 +16,7 @@ export async function proposed(subscribeId: string) {
         limit: 10_000,
       },
     })
+    articles.forEach((art) => (art.status = getState(art)))
 
     downloadFile('Trocio-articles-proposed.txt', arrToCSV(articles))
     notify.success('Fichier téléchargé')
