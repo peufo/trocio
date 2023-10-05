@@ -140,16 +140,18 @@ export const deleteArticle: RequestHandler = async (req, res, next) => {
 export const editName: RequestHandler<
   void,
   any,
-  { articleId: string; newName: string }
+  { articleId: string; name: string }
 > = async (req, res, next) => {
-  let { articleId, newName } = req.body
+  let { articleId, name } = req.body
   try {
     if (!req.session.user) throw 'login required'
     if (!articleId) throw 'articleId string is required in body'
-    if (!newName) throw 'newName number is required in body'
+    if (!name) throw 'name string is required in body'
 
     const article = await Article.findById(articleId).exec()
     if (!article) throw 'Article not found'
+    if (article.sold || article.recover)
+      throw `Solded or recovered article's can't be edited`
 
     const accessor = await Subscribe.findOne({
       trocId: article.trocId,
@@ -170,11 +172,11 @@ export const editName: RequestHandler<
       authorSubId: accessor._id,
       event: 'edit-name',
       oldValue: article.name,
-      newValue: newName,
+      newValue: name,
       timestamp: new Date(),
     })
 
-    article.name = newName
+    article.name = name
     await article.save()
     res.json(article)
   } catch (error) {
@@ -190,17 +192,18 @@ export const editName: RequestHandler<
 export const editPrice: RequestHandler<
   void,
   any,
-  { articleId: string; newPrice: number }
+  { articleId: string; price: number }
 > = async (req, res, next) => {
-  let { articleId, newPrice } = req.body
+  let { articleId, price } = req.body
   try {
     if (!req.session.user) throw 'login required'
     if (!articleId) throw 'articleId string is required in body'
-    if (!newPrice) throw 'newPrice number is required in body'
+    if (!price) throw 'price number is required in body'
 
     const article = await Article.findById(articleId).exec()
     if (!article) throw 'Article not found'
-    if (article.sold) throw `Solded article's price can't be edited`
+    if (article.sold || article.recover)
+      throw `Solded or recovered article's can't be edited`
 
     const accessor = await Subscribe.findOne({
       trocId: article.trocId,
@@ -221,11 +224,11 @@ export const editPrice: RequestHandler<
       authorSubId: accessor._id,
       event: 'edit-price',
       oldValue: article.price,
-      newValue: newPrice,
+      newValue: price,
       timestamp: new Date(),
     })
 
-    article.price = newPrice
+    article.price = price
     await article.save()
     res.json(article)
   } catch (error) {
