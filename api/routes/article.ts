@@ -8,6 +8,7 @@ import {
   editPrice,
   validArticles,
   soldArticles,
+  recoverArticles,
   cancelEvent,
 } from '../controllers/article_set'
 import {
@@ -25,6 +26,7 @@ router
   .post('/edit-price', editPrice)
   .post('/valid', validArticles)
   .post('/sold', soldArticles)
+  .post('/recover', recoverArticles)
   .post('/cancel-event', cancelEvent)
   .get('/corrections', getArticleCorrection)
 

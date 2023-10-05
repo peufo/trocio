@@ -21,7 +21,7 @@
   const queryClient = useQueryClient()
   const queryRecover = useMutation(
     () =>
-      api<{ articlesId: string[] }, Article[]>('/api/articles/sold', {
+      api<{ articlesId: string[] }, Article[]>('/api/articles/recover', {
         method: 'post',
         data: { articlesId: pendingItems.map((art) => art._id) },
         success: `${pendingItems.length} articles récupérés`,

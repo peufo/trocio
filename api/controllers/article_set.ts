@@ -273,8 +273,8 @@ export const soldArticles: RequestHandler = async (req, res, next) => {
       req,
       false
     )
-    /** Si buyerSubId est fourni il s'agit d'une vente. Sinon, il s'agit d'une récupération */
     const { buyerSubId } = req.body
+    if (!buyerSubId) throw 'buyerSubId is required'
 
     if (
       articles.filter((art) => art.valided && !art.sold).length <
@@ -283,22 +283,45 @@ export const soldArticles: RequestHandler = async (req, res, next) => {
       throw 'Articles status no permit this operation'
 
     const now = new Date()
-    const buyerSub = buyerSubId
-      ? await Subscribe.findById(buyerSubId)
-      : undefined
-    if (buyerSubId && !buyerSub?.userId)
-      throw 'buyerSub not found or is user is not defined'
+
+    const buyerSub = await Subscribe.findById(buyerSubId)
+
+    if (!buyerSub) throw 'buyerSub not found'
 
     articles = await Promise.all(
       articles.map(async (article) => {
-        if (buyerSubId && buyerSub?.userId) {
-          article.sold = now
-          article.buyerId = buyerSub.userId
-          article.buyerSubId = buyerSubId
-          article.margin = await getMargin(article)
-        } else {
-          article.recover = now
-        }
+        article.sold = now
+        article.buyerId = buyerSub.userId
+        article.buyerSubId = buyerSubId
+        article.margin = await getMargin(article)
+        article.sellerId = userId
+        article.sellerSubId = subscribe._id
+        return article.save()
+      })
+    )
+
+    res.json(isArray ? articles : articles[0])
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const recoverArticles: RequestHandler = async (req, res, next) => {
+  try {
+    let { articles, subscribe, isArray, userId } = await ensureCanEdit(
+      req,
+      false
+    )
+
+    if (
+      articles.filter((art) => art.valided && !art.sold).length <
+      articles.length
+    )
+      throw 'Articles status no permit this operation'
+
+    articles = await Promise.all(
+      articles.map(async (article) => {
+        article.recover = new Date()
         article.sellerId = userId
         article.sellerSubId = subscribe._id
         return article.save()
