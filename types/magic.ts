@@ -29,7 +29,7 @@ export interface SelectAsync {
   getKey?: (item: any) => string
 }
 
-export interface FieldInteface<Type extends GenericObject> {
+export interface FieldInteface<Type extends GenericObject = {}> {
   /** Text visible dans l'entête */
   label: string
   /**

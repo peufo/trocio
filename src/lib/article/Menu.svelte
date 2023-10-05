@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { FadeParams, fly } from 'svelte/transition'
+  import { type FadeParams, fly } from 'svelte/transition'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import { url, params } from '@roxi/routify'
   import { mdiTagOutline, mdiTrashCanOutline, mdiUndo } from '@mdi/js'

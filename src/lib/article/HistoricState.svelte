@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { ArticleLookup } from 'types'
-  import { renderAmount } from '$lib/utils'
-  import TimeLine, { EventDescription } from '$lib/util/TimeLine.svelte'
+  import TimeLine, { type EventDescription } from '$lib/util/TimeLine.svelte'
 
   export let article: ArticleLookup
 

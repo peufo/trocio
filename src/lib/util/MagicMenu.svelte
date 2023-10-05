@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { fade, FadeParams } from 'svelte/transition'
+  import { fade, type FadeParams } from 'svelte/transition'
   import { debounce } from 'debounce'
 
   import { Dialog } from '$material'
