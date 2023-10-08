@@ -98,20 +98,23 @@
     </Button>
   </a>
 {:else if clickable}
-  <Button icon={!fab} {fab} depressed on:click class={buttonClass}>
-    <Icon
-      {path}
-      {viewWidth}
-      {viewHeight}
-      {size}
-      {rotate}
-      {spin}
-      {disabled}
-      {style}
-      class={klass}
-      {...$$restProps}
-    />
-  </Button>
+  <Tooltip bottom>
+    <span slot="tip" {title}>{tip}</span>
+    <Button icon={!fab} {fab} depressed on:click class={buttonClass}>
+      <Icon
+        {path}
+        {viewWidth}
+        {viewHeight}
+        {size}
+        {rotate}
+        {spin}
+        {disabled}
+        {style}
+        class={klass}
+        {...$$restProps}
+      />
+    </Button>
+  </Tooltip>
 {:else}
   <Icon
     {path}

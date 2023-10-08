@@ -119,6 +119,7 @@
         icon={faDownload}
         clickable
         size="18px"
+        tip="Télécharger la liste des participants"
         on:click={handleDownload}
         style={downloadPending ? 'scale: 0.7; opacity: 0.7;' : ''}
       />
