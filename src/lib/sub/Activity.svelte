@@ -2,8 +2,9 @@
   import { fade } from 'svelte/transition'
   import dayjs from 'dayjs'
   import relativeTime from 'dayjs/plugin/relativeTime'
-  import { mdiCloudDownload, mdiPrinter } from '@mdi/js'
   import 'dayjs/locale/fr'
+  import { mdiPrinter } from '@mdi/js'
+  import { faDownload } from '@fortawesome/free-solid-svg-icons'
 
   import { Button, Icon, Menu, List, ListItem } from '$material'
   import type { SubscribeResum } from 'types'
@@ -16,7 +17,8 @@
   import Loader from '$lib/util/Loader.svelte'
   import DetailCard from '$lib/util/DetailCard.svelte'
   import { useApi } from '$lib/api'
-  import downloadCSV from '$lib/sub/downloadCSV'
+  import downloadCSV from '$lib/downloadCSV'
+  import IconLink from '$lib/util/IconLink.svelte'
 
   export let subscribeId: string
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
@@ -65,7 +67,7 @@
       <Menu>
         <div slot="activator">
           <Button text size="small" style="opacity: .8;">
-            <Icon path={mdiCloudDownload} size="1.2em" class="mr-2" />
+            <IconLink icon={faDownload} size="1.1em" class="mr-2" />
             Télécharger
           </Button>
         </div>

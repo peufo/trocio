@@ -1,9 +1,10 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
+  import { faDownload, faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
   import { getFields } from '$lib/user/fields'
+  import { ProgressCircular } from '$material'
   import { api, useInfinitApi } from '$lib/api'
   import MagicTableWrapper from '$lib/util/MagicTableWrapper.svelte'
   import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
@@ -20,6 +21,8 @@
   import { troc } from '$lib/troc/store'
   import SubscribeMenu from '$lib/user/SubscribeMenu.svelte'
   import MagicSelect from '$lib/util/MagicSelect.svelte'
+  import IconLink from '$lib/util/IconLink.svelte'
+  import downloadCSV from '$lib/downloadCSV'
 
   let subscribeMenu: SubscribeMenu
 
@@ -75,6 +78,15 @@
   const getKey = (sub: SubscribeLookup) => sub._id || ''
 
   let magicSelectIsFocus = false
+
+  let downloadPending = false
+  async function handleDownload() {
+    if (downloadPending) return
+    downloadPending = true
+    downloadCSV.subscribes($troc).finally(() => {
+      downloadPending = false
+    })
+  }
 </script>
 
 <SubscribeMenu bind:this={subscribeMenu} />
@@ -102,6 +114,23 @@
     </div>
 
     <div class="flex-grow-1" />
+    <div style:position="relative">
+      <IconLink
+        icon={faDownload}
+        clickable
+        size="18px"
+        on:click={handleDownload}
+        style={downloadPending ? 'scale: 0.7; opacity: 0.7;' : ''}
+      />
+      {#if downloadPending}
+        <ProgressCircular
+          indeterminate
+          size={36}
+          style="position: absolute; left: 0; top: 0;"
+        />
+      {/if}
+    </div>
+
     {#if !$isMobile || !magicSelectIsFocus}
       <MagicTableFieldSelect bind:fields />
     {/if}

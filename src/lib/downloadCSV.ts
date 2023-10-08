@@ -1,11 +1,16 @@
 import { api } from '$lib/api'
 import notify from '$lib/notify'
 import { getState } from '$lib/utils'
+import { getFields } from '$lib/user/fields'
+import type { TrocLookup } from 'types'
+import objectPath from 'object-path'
+import type { FieldInteface } from 'types/magic'
 
 export default {
   proposed,
   purchases,
   payments,
+  subscribes,
 }
 
 export async function proposed(subscribeId: string) {
@@ -46,6 +51,30 @@ export async function payments(subscribeId: string) {
       params: { subscribeId, limit: 10_000 },
     })
     downloadFile('Trocio-payments.txt', arrToCSV(payments))
+    notify.success('Fichier téléchargé')
+  } catch (error) {
+    notify.error(error)
+  }
+}
+
+export async function subscribes(troc: TrocLookup) {
+  try {
+    const subscribes = await api('/api/subscribes', {
+      params: { trocId: troc._id, limit: 10_000, includResum: true },
+    })
+
+    const fields = getFields(troc)
+    function getValue(item: any, field: FieldInteface): string | number {
+      if (typeof field.getValue === 'function') return field.getValue(item)
+      const value = objectPath.get(item, field.key)
+      return typeof value === 'number' ? value.toLocaleString() : value
+    }
+    const headers = fields.map((field) => field.label).join('\t')
+    const rows = subscribes.map((sub) =>
+      fields.map((field) => getValue(sub, field)).join('\t')
+    )
+
+    downloadFile('Trocio-subscribes.txt', [headers, ...rows].join('\r\n'))
     notify.success('Fichier téléchargé')
   } catch (error) {
     notify.error(error)
