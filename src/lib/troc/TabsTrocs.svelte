@@ -1,7 +1,7 @@
 <script lang="ts">
   import { mdiEarth, mdiPlus } from '@mdi/js'
   import { isActive, redirect } from '@roxi/routify'
-  import { Tabs, Tab, Icon, Button } from '$material'
+  import { Tabs, Tab, Icon } from '$material'
 
   import logo from '$assets/logo'
 
@@ -10,7 +10,7 @@
     { icon: logo, label: 'Mes trocs', href: './my' },
     {
       icon: { path: mdiPlus },
-      label: 'Nouveau',
+      label: 'Organiser',
       href: './create',
     },
   ]
