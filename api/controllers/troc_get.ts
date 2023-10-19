@@ -105,6 +105,7 @@ export const search: RequestHandler = async (req, res, next) => {
 
   const aggregate = TrocModel.aggregate()
     .match(matchQuery)
+    .sort({ 'schedule.open': 1 })
     .skip(Number(skip))
     .limit(Number(limit))
 
