@@ -6,11 +6,14 @@
   import TrocCard from '$lib/troc/Card.svelte'
   import Subscribe from '$lib/sub/Subscribe.svelte'
   import ArticlesList from '$lib/article/List.svelte'
+  import EnsureSubscribe from '$lib/sub/EnsureSubscribe.svelte'
 </script>
 
 {#if $isMobile}
   <div class="pa-2">
     <TrocCard troc={$troc} />
+
+    <EnsureSubscribe troc={$troc} />
   </div>
 {:else}
   <div class="layout">

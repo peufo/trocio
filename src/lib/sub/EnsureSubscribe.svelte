@@ -27,7 +27,7 @@
   function handleClickActivity() {
     if (!$user) {
       $goto('/login', {
-        callback: `/trocs/${troc._id}`,
+        callback: `/trocs/${troc._id}/activity`,
       })
       return
     }
