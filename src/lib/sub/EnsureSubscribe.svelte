@@ -36,6 +36,7 @@
       {
         onSuccess: (subscribe) => {
           if (subscribe) troc.subscribe = subscribe
+          $goto(`/trocs/${troc._id}/activity`)
         },
       }
     )
