@@ -28,7 +28,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['detect-node'],
     exclude: ['@roxi/routify', '@sveltestack/svelte-query'],
   },
   server: {
