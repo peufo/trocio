@@ -2,7 +2,6 @@ import type { RequestHandler } from 'express'
 
 import User from '../models/user'
 import mail from './mail'
-import randomize from 'randomatic'
 import { validateToken } from './token'
 
 export const createUser: RequestHandler = async (req, res, next) => {
