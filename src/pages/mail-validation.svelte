@@ -3,25 +3,20 @@
   import { params } from '@roxi/routify'
   import { Button, Icon } from '$material'
   import Logo from '$lib/draw/Logo.svelte'
-  import { user, userQuery } from '$lib/user/store'
+  import { userQuery } from '$lib/user/store'
   export let scoped: LayoutScoped
 
   let error: string | undefined
 
   userQuery
-    .validMail($params.validator)
-    .then((data) => {
-      error = undefined
-      userQuery.set({ ...$user, ...data })
+    .validMail($params['token'])
+    .then(() => {
+      document.location.replace('/trocs')
     })
     .catch((e) => (error = e))
 </script>
 
 <div
-  on:click={() =>
-    userQuery.validMail($params.validator).then((data) => {
-      userQuery.set({ ...$user, ...data })
-    })}
   class="centered"
   style="height: {scoped.mainHeight}px; flex-direction: column;"
 >

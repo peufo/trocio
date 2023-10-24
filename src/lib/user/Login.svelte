@@ -76,7 +76,7 @@
         break
 
       case RECOVER:
-        userQuery.recover(mail).then(() => {
+        userQuery.sendResetPwd(mail).then(() => {
           state = LOGIN
         })
         break

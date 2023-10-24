@@ -11,6 +11,7 @@ const { VITE_TROCIO_GOOGLE_CLIENT_ID, TROCIO_GOOGLE_CLIENT_SECRET } = config
 export async function login(req, res, next) {
   const { mail, password } = req.body
   if (!mail || !password) return next(Error('mail and password required'))
+
   UserModel.getAuthenticated(mail, password)
     .then((user) => {
       console.log(`Nouvelle connexion de ${user.name}`)
@@ -70,7 +71,7 @@ export async function loginWithGoogle(req, res, next) {
               })
               await user.save()
               mail
-                .createUser(user)
+                .createUser(user, req.get('origin'))
                 .catch(() => console.log('Confirmation mail failed'))
               console.log(`Nouvelle utilisateur: ${user.name}`)
             }

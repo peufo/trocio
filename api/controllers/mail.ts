@@ -1,9 +1,8 @@
 import nodemailer, { type SendMailOptions } from 'nodemailer'
-import randomize from 'randomatic'
 
-import MailValidatorModel, { type MailValidator } from '../models/mailvalidator'
 import type { User } from '../../types'
 import config from '../../config'
+import { generateToken } from './token'
 
 const {
   TROCIO_URL,
@@ -24,9 +23,9 @@ export const transporter = nodemailer.createTransport({
 
 transporter.verify(function (err, success) {
   if (err) {
-    console.log('Mail configuration error')
+    console.log('Mail configuration ERROR')
   } else {
-    console.log('Server is ready to take our messages')
+    console.log('Mail configuration SUCCESS')
   }
 })
 
@@ -34,8 +33,15 @@ const mailOptions: SendMailOptions = {
   from: `Troc.io <${TROCIO_SMTP_USER}>`,
 }
 
-export async function createUser(user: User, origin?: string) {
-  const validator = await getUrlValidMail(user._id)
+export async function createUser(user: User, origin = TROCIO_URL) {
+  const emailVerificationToken = await generateToken(
+    'emailVerification',
+    user._id
+  )
+  const basePath = `${origin}/mail-validation`
+  const params = `user=${user._id}&token=${emailVerificationToken}`
+  const href = `${basePath}?${params}`
+
   mailOptions.to = user.mail
   mailOptions.subject = 'Création de votre compte - TROCIO'
   mailOptions.html = `
@@ -44,9 +50,7 @@ export async function createUser(user: User, origin?: string) {
         <b>${user.name}</b>, votre inscription s'est correctement déroulée. 
     </p>
     <p>
-        <a href="${origin || TROCIO_URL}/mail-validation?user=${
-    user._id
-  }&validator=${validator.url}">
+        <a href="${href}">
             Cliquer ici pour valider votre adresse mail.
         </a>
     </p>
@@ -54,16 +58,20 @@ export async function createUser(user: User, origin?: string) {
   return await transporter.sendMail(mailOptions)
 }
 
-export async function sendValidMail(user: User, origin?: string) {
-  const validator = await getUrlValidMail(user._id)
+export async function sendValidMail(user: User, origin = TROCIO_URL) {
+  const emailVerificationToken = await generateToken(
+    'emailVerification',
+    user._id
+  )
+  const basePath = `${origin}/mail-validation`
+  const params = `token=${emailVerificationToken}`
+  const href = `${basePath}?${params}`
   mailOptions.to = user.mail
   mailOptions.subject = 'Validation de votre mail - TROCIO'
   mailOptions.html = `
-      <h2>Validation de votre adresse mail</h2>
+      <h2>Validation de votre adresse email</h2>
       <p>
-          <a href="${origin || TROCIO_URL}/mail-validation?user=${
-    user._id
-  }&validator=${validator.url}">
+          <a href="${href}">
               Cliquer ici pour valider votre adresse mail.
           </a>
       </p>
@@ -71,33 +79,23 @@ export async function sendValidMail(user: User, origin?: string) {
   return await transporter.sendMail(mailOptions)
 }
 
-export async function resetpwd(user: User, unchiffredPwd: string) {
+export async function sendResetPwd(user: User, origin = TROCIO_URL) {
+  const resetPwdToken = await generateToken('passwordReset', user._id)
+
+  const href = `${origin}/password-reset?token=${resetPwdToken}`
+
   mailOptions.to = user.mail
-  mailOptions.subject = 'Réinitialisation de votre mot de passe - TROCIO'
+  mailOptions.subject = 'TROCIO - Mot de passe oublié'
   mailOptions.html = `
-        <h2>Votre mot de passe a été réinitialisé</h2>
-        <p>
-            ${user.name}, votre nouveau mot de passe est désormais : <b>${unchiffredPwd}</b>
-        </p>
-    `
+      <h2>Demande de changement de mot de passe</h2>
+      <p>
+          Bonjour ${user.name}, vous avez fait une demande de changement de mot de passe.
+      </p>
+      <p>
+        <a href="${href}">Cliquer ici pour le changer.</a>
+      </p>
+  `
   return await transporter.sendMail(mailOptions)
 }
 
-async function getUrlValidMail(userId: string): Promise<MailValidator> {
-  const validator = await MailValidatorModel.findOne({ user: userId }).exec()
-  if (validator) {
-    validator.validity = +new Date() + 10 * 60 * 60 * 1000
-    validator.url = randomize('a0', 256)
-    await validator.save()
-    return validator
-  } else {
-    const newValidator = new MailValidatorModel({
-      user: userId,
-      url: randomize('a0', 256),
-    })
-    await newValidator.save()
-    return newValidator
-  }
-}
-
-export default { createUser, sendValidMail, resetpwd }
+export default { createUser, sendValidMail, sendResetPwd }

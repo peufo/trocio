@@ -1,5 +1,5 @@
 import { api } from '$lib/api'
-import type { BaseResponse, User } from 'types'
+import type { User } from 'types'
 
 /**
  * Connexion de l'utilisateur
@@ -43,18 +43,6 @@ export function register(name: string, mail: string, password: string) {
 }
 
 /**
- * Réinitialisation du mot de passe
- */
-export function recover(mail: string) {
-  return api('/api/users/me/resetpwd', {
-    method: 'post',
-    data: { mail },
-    info: 'Votre nouveau mot de passe vous à été envoyé par mail',
-    format: () => null,
-  })
-}
-
-/**
  * Mise à jour des infos utilisateur
  */
 export function update(newValue: Partial<User>) {
@@ -69,7 +57,7 @@ export function update(newValue: Partial<User>) {
  * Evoyer un mail de vaildation
  */
 export function sendValidationMail() {
-  return api('/api/users/me/validmail', {
+  return api('/api/users/me/send-validmail', {
     method: 'post',
     params: { origin: location.origin },
     success: 'Un mail de validation vous à été envoyé',
@@ -79,8 +67,10 @@ export function sendValidationMail() {
 /**
  * Validation du mail
  */
-export function validMail(validator: string) {
-  return api(`/api/users/me/validmail/${validator}`, {
+export function validMail(token: string) {
+  return api(`/api/users/me/validmail`, {
+    method: 'post',
+    data: { token },
     success: 'Votre mail est vaildé',
     format: () => ({ mailvalided: true }),
   })
@@ -90,6 +80,30 @@ export function changePassword(oldPassword: string, newPassword: string) {
   return api('/api/users/me/changepwd', {
     method: 'post',
     data: { oldPassword, newPassword },
+    success: 'Changement du mot de passe réussi',
+    error: 'Le changement du mot de passe à échoué',
+  })
+}
+
+/**
+ * Demande de changement du mot de passe
+ */
+export function sendResetPassword(mail: string) {
+  return api('/api/users/me/send-resetpwd', {
+    method: 'post',
+    data: { mail },
+    info: 'Un lien vous à été envoyé par email',
+    format: () => null,
+  })
+}
+
+/**
+ * Changement du mot de passe
+ */
+export function resetPassword(data: { token: string; newPassword: string }) {
+  return api('/api/users/me/resetpwd', {
+    method: 'post',
+    data,
     success: 'Changement du mot de passe réussi',
     error: 'Le changement du mot de passe à échoué',
   })
@@ -113,7 +127,8 @@ export default {
   authenticate,
   logout,
   register,
-  recover,
+  sendResetPassword,
+  resetPassword,
   update,
   sendValidationMail,
   validMail,

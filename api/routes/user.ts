@@ -5,6 +5,7 @@ import {
   createUser,
   patchMe,
   changepwd,
+  sendResetPwd,
   resetpwd,
   sendValidMail,
   validMail,
@@ -19,9 +20,10 @@ router
   .get('/me', getMe)
   .patch('/me', patchMe, getMe)
   .post('/me/changepwd', changepwd)
+  .post('/me/send-resetpwd', sendResetPwd)
   .post('/me/resetpwd', resetpwd)
-  .post('/me/validmail', sendValidMail)
-  .get('/me/validmail/:validator', validMail)
+  .post('/me/send-validmail', sendValidMail)
+  .post('/me/validmail', validMail)
   .get('/name', getUserName)
 
 export default router

@@ -27,9 +27,7 @@ export const user = derived<typeof userQuery, User>(
 )
 
 function createUserQuery() {
-  const { subscribe, set, update } = writable<Promise<User>>(
-    apiUser.authenticate()
-  )
+  const { subscribe, set } = writable<Promise<User>>(apiUser.authenticate())
 
   const setAndReturnPromise = createSetAndReturnPromise(set)
 
@@ -46,14 +44,14 @@ function createUserQuery() {
 
     logout: () => setAndReturnPromise(apiUser.logout()),
 
-    recover: (mail: string) => setAndReturnPromise(apiUser.recover(mail)),
-
     update: (newValue: Partial<User>) =>
       setAndReturnPromise(apiUser.update(newValue)),
 
+    sendResetPwd: (mail: string) =>
+      setAndReturnPromise(apiUser.sendResetPassword(mail)),
+    resetPwd: apiUser.resetPassword,
     sendValidationMail: apiUser.sendValidationMail,
-
-    validMail: (validator: string) => apiUser.validMail(validator),
+    validMail: apiUser.validMail,
 
     changePassword: (oldPassword: string, newPassword: string) =>
       apiUser.changePassword(oldPassword, newPassword),

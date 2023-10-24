@@ -1,9 +1,9 @@
 import type { RequestHandler } from 'express'
 
 import User from '../models/user'
-import Mailvalidator from '../models/mailvalidator'
 import mail from './mail'
 import randomize from 'randomatic'
+import { validateToken } from './token'
 
 export const createUser: RequestHandler = async (req, res, next) => {
   try {
@@ -12,7 +12,7 @@ export const createUser: RequestHandler = async (req, res, next) => {
     const user = new User(req.body)
     await user.save()
     mail
-      .createUser(user, origin)
+      .createUser(user, req.get('origin'))
       .catch(() => console.log('Confirmation mail failed'))
     return next()
   } catch (error) {
@@ -53,18 +53,34 @@ export const changepwd: RequestHandler = async (req, res, next) => {
   }
 }
 
-export const resetpwd: RequestHandler = async (req, res, next) => {
+export const sendResetPwd: RequestHandler = async (req, res, next) => {
   try {
     const user = await User.findOne({ mail: req.body.mail }).exec()
     if (!user) return next('User not found')
-    let unchiffredPwd = [
-      randomize('0000'),
-      randomize('0000'),
-      randomize('0000'),
-    ].join('-')
-    user.password = unchiffredPwd
-    await user.save()
-    await mail.resetpwd(user, unchiffredPwd)
+
+    await mail.sendResetPwd(user, req.get('origin'))
+    res.json({
+      success: true,
+      message: 'Un lien vous à été envoyé. Vérifiez votre boîte mail !',
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const resetpwd: RequestHandler = async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body
+    if (typeof token !== 'string') throw Error('token (string) is required')
+    if (typeof newPassword !== 'string')
+      throw Error('newPassword (string) is required')
+
+    const userId = await validateToken('passwordReset', token)
+    const user = await User.findById(userId)
+    user!.password = newPassword
+    await user?.save()
+    req.session.user = user
+
     res.json({
       success: true,
       message: 'Password reseted, check your mail box !',
@@ -92,18 +108,18 @@ export const sendValidMail: RequestHandler = async (req, res, next) => {
 }
 
 export const validMail: RequestHandler = async (req, res, next) => {
-  if (!req.session.user) return next(Error('Login required'))
   try {
-    const validator = await Mailvalidator.findOne({
-      user: req.session.user._id,
-      url: req.params.validator,
+    const { token } = req.body
+    if (typeof token !== 'string') throw Error('token (string) is required')
+    const userId = await validateToken('emailVerification', token)
+
+    const user = await User.findByIdAndUpdate(userId, {
+      mailvalided: true,
     }).exec()
-    if (!validator) return next(Error(`MailValidator not exist`))
-    const user = await User.findOne({ _id: req.session.user._id }).exec()
     if (!user) return next(Error('User not found'))
-    user.mailvalided = true
-    await user.save()
-    await validator.remove()
+    // Auto-login
+    req.session.user = user
+
     res.json({ success: true, message: 'Email validé' })
   } catch (error) {
     next(error)
@@ -113,6 +129,7 @@ export const validMail: RequestHandler = async (req, res, next) => {
 export default {
   createUser,
   changepwd,
+  sendResetPwd,
   resetpwd,
   sendValidMail,
   validMail,
