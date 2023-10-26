@@ -159,7 +159,8 @@
   }
 
   .page-wrapper {
-    overflow-x: auto;
+    padding-top: 2mm;
+    overflow: auto;
   }
 
   .page {

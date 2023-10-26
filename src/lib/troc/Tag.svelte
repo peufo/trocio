@@ -23,7 +23,7 @@
   onMount(refresh)
 
   let qrcode = ''
-  const defaultUrl = `Made with ❤️ by Jonas`
+  const defaultUrl = `Made with ❤️ by Peufo`
 
   export async function refresh() {
     qrcode = await QrCode.toDataURL(article._id || defaultUrl, {
@@ -37,7 +37,6 @@
   class="tag"
   class:border={tag.border}
   class:useTagPrinter={tag.useTagPrinter}
-  class:mb-4={tag.useTagPrinter}
   style={`
     width: ${tag.width}mm;
     height: ${tag.height}mm;
@@ -47,7 +46,7 @@
   `}
 >
   {#if tag.useScanner}
-    <img class="flex-shrink-0" src={qrcode} alt="QrCode de l'article" />
+    <img class="flex-shrink-0" src={qrcode} alt="Code QR de l'article" />
   {/if}
 
   <div class="data">
@@ -67,6 +66,10 @@
 </div>
 
 <style lang="scss">
+  .useTagPrinter:first-child {
+    margin-top: -2mm;
+  }
+
   .tag {
     color: black;
     background: white;
