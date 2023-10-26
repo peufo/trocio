@@ -77,7 +77,7 @@
   }
 
   .tag.useTagPrinter {
-    page-break-before: always;
+    page-break-after: always;
     overflow: hidden;
   }
 
