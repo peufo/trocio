@@ -79,7 +79,8 @@ export const createArticle: RequestHandler<
     troc.save()
 
     let nbAttributedRef = 0
-    const articlesCreated = await Promise.all(
+
+    const articlesCreated = await Article.insertMany(
       articles.map((art, index) => {
         /** Shortcuts */
         art.providerSubId = sub._id
@@ -93,9 +94,11 @@ export const createArticle: RequestHandler<
         const article = new Article(art)
         if (!article.ref) article.ref = String(newRef + nbAttributedRef++)
         if (article.price === null) article.price = 0
-        return article.save()
+        return article
       })
     )
+
+    console.log(articlesCreated)
 
     if (isArray) return res.json(articlesCreated)
     res.json(articlesCreated[0])

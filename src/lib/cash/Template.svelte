@@ -38,6 +38,8 @@
   let isSelectionOpen = false
   let isIndicatorAnimated = false
 
+  let pendingItemsTake = 30
+
   onMount(() => {
     if (!$isMobile) magicSelect.focus()
     if ($params['select_article']) {
@@ -250,7 +252,7 @@
     <div class="basket-container simple-card">
       {#if pendingItems.length}
         <div in:fade|local class="basket-content">
-          {#each pendingItems as article, index (article._id)}
+          {#each pendingItems.slice(0, pendingItemsTake) as article, index (article._id)}
             <div
               in:scale|local
               animate:flip={{ duration: 200 }}
@@ -278,6 +280,18 @@
             </div>
           {/each}
         </div>
+        {#if pendingItems.length > pendingItemsTake}
+          <div
+            style:min-width="100%"
+            style:height="100px"
+            style:display="grid"
+            style:place-content="center"
+          >
+            <Button on:click={() => (pendingItemsTake += 20)}>
+              Afficher plus
+            </Button>
+          </div>
+        {/if}
       {:else}
         <div class="flex-grow-1 text-center pa-16 text-caption">
           {message}
