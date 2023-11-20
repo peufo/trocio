@@ -23,7 +23,7 @@
   export let actionName = 'Proposer'
 
   let textarea: HTMLTextAreaElement | undefined
-  let keepOpen = true
+  let keepOpen = false
 
   const dispatch = createEventDispatcher<{
     open: null
