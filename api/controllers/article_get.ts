@@ -43,6 +43,8 @@ export const getArticles: RequestHandler = async (req, res, next) => {
     const aggregate = Article.aggregate().match(match)
 
     if (Object.keys(sort).length) aggregate.sort(sort)
+    else aggregate.sort({ ref: 1 })
+
     aggregate
       .skip(+skip || 0)
       .limit((+limit || 20) > 10_000 ? 10_000 : +limit || 20)

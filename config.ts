@@ -6,7 +6,7 @@ const TROCIO_PORT = process.env.TROCIO_PORT || 3000
 const defaultConfig = {
   TROCIO_URL: 'https://troc.io',
   TROCIO_OCD_API_KEY: '', // API key provide by https://opencagedata.com/
-  TROCIO_ROOT_USER: '', // Root user mail address
+  TROCIO_ROOT_USER: '', // Root user email
   TROCIO_SECRET_STRING_COOKIE: '', // A secret string for secure cookies
   TROCIO_SMTP_PASS: '', // password of your SMTP server
   TROCIO_SMTP_USER: 'salut@troc.io',
