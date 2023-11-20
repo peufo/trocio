@@ -116,7 +116,7 @@
     document.body.appendChild(tooltip)
     updateTooltipPosition()
 
-    return () => document.body.removeChild(tooltip)
+    return () => tooltip && document.body.removeChild(tooltip)
   })
 </script>
 
