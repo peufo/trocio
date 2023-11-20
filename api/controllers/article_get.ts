@@ -43,7 +43,7 @@ export const getArticles: RequestHandler = async (req, res, next) => {
     const aggregate = Article.aggregate().match(match)
 
     if (Object.keys(sort).length) aggregate.sort(sort)
-    else aggregate.sort({ ref: 1 })
+    else aggregate.sort({ createdAt: 1, index: 1 })
 
     aggregate
       .skip(+skip || 0)

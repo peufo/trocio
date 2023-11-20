@@ -13,6 +13,8 @@ export type ArticleCreate = {
   name: string
   /** Prix de l'article */
   price: number
+  /** Index pour préserver l'ordre à la création */
+  index: number
 }
 
 export type Article = ArticleCreate & {

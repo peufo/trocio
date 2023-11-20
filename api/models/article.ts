@@ -17,6 +17,8 @@ let articleModel = new Schema({
   validatorId: { type: ObjectId, ref: 'user' },
   sellerId: { type: ObjectId, ref: 'user' },
 
+  // index de création pour préserver l'ordre des articles
+  index: { type: Number, default: 0 },
   ref: { type: String, required: true },
   name: { type: String, default: '' },
   price: { type: Number, default: 0, min: 0 },
