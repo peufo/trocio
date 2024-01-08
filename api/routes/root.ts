@@ -88,6 +88,10 @@ router
       next(error)
     }
   })
+  .get('/users/count', async (req, res, next) => {
+    const userCount = await User.count()
+    res.json(userCount)
+  })
   .get('/trocs', async (req, res, next) => {
     const { limit = 20, skip = 0 } = req.query
     let { match, sort } = dynamicQuery(req.query)

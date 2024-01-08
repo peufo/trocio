@@ -3,7 +3,8 @@
   import { mdiMail, mdiPlus } from '@mdi/js'
 
   import notify from '$lib/notify'
-  import { useInfinitApi } from '$lib/api'
+  import { useInfinitApi, api } from '$lib/api'
+  import { onMount } from 'svelte'
   import MagicTable from '$lib/util/MagicTable.svelte'
   import { layout } from '$lib/store/layout'
   import type { DynamicQuery, User, UserWithRootInfo } from 'types'
@@ -21,6 +22,11 @@
       ...queryParams,
     },
   ])
+
+  let userCount = 0
+  onMount(async () => {
+    userCount = await api<number>('/api/root/users/count')
+  })
 
   const queryClient = useQueryClient()
 
@@ -52,7 +58,7 @@
     bind:searchValue
     wrapperStyle="max-height: {$layout.mainHeight - 76}px;"
   >
-    <h6 slot="title">Users</h6>
+    <h6 slot="title">Users ({userCount})</h6>
 
     <div slot="menu" let:item let:menu>
       <List dense>
