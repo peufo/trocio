@@ -22,7 +22,7 @@
     }
   },
   "devDependencies": {
-    "@roxi/routify": "^2.12.3",
+    "@roxi/routify": "^2.18.12",
     "@sveltejs/vite-plugin-svelte": "^1.0.8",
     "@types/bcrypt": "^5.0.0",
     "@types/bwip-js": "^3.0.0",
