@@ -104,6 +104,7 @@
           clientSelector.setValue(user.name)
         })
       }
+      return true
     }
   }
 
@@ -144,6 +145,7 @@
     trocId: string
     userId?: string
     isGuest?: boolean
+    guestName?: string
   }
   /** Inscris un client qui à pu être identifé */
   const createSubscribe = useMutation(

@@ -16,8 +16,15 @@ const trocModel = new Schema(
     societyMail: {
       type: String,
       lowercase: true,
-      validate: EMAIL_REGEX,
-      required: true,
+      required: false,
+      validate: {
+        validator: (value: string) => {
+          if (!value) return true
+          if (typeof value !== 'string') return false
+          return !!value.match(EMAIL_REGEX)
+        },
+        message: 'Is not valid email',
+      },
     },
     currency: { type: String, enum: cc.codes() },
     address: {
