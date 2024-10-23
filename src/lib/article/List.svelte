@@ -33,15 +33,12 @@
     {:else}
       <div in:fade|local class="d-flex flex-wrap" style="gap: 8px;">
         {#each articles as article}
-          <div class="simple-card article d-flex flex-column">
+          <div class="simple-card article">
             <div class="text-subtitle-1">{article.name}</div>
-            <div class="flex-grow-1" />
-            <div class="d-flex">
-              <div class="flex-grow-1" />
-              <Chip label size="small">
-                {renderAmount(article.price, currency)}
-              </Chip>
-            </div>
+
+            <Chip label size="small">
+              {renderAmount(article.price, currency)}
+            </Chip>
           </div>
         {/each}
       </div>
@@ -73,7 +70,7 @@
     background: var(--theme-navigation-drawer);
     max-width: calc(50% - 4px);
     flex-grow: 1;
-    padding: 4px;
+    padding: 8px 12px;
     border-radius: 8px;
   }
 </style>
