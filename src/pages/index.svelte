@@ -227,8 +227,12 @@
     </div>
 
     <div class="text-center mt-16">
-      <Card class="pa-4" style="max-width: 500px; margin: auto;">
+      <Card class="pa-4 pt-8" style="max-width: 500px; margin: auto;">
         L'organisation d'un troc est <b class="green-text">gratuit</b>
+        <p>
+          Seul les bénéfices réalisés sont prélevés à hauteur de
+          <b class="warning-text">2%</b>.
+        </p>
       </Card>
 
       <br /><br />

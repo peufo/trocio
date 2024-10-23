@@ -18,7 +18,6 @@
      * a value or a type, so tell TypeScript to enforce using
      * `import type` instead of `import` for Types.
      */
-    "verbatimModuleSyntax": true,
     "isolatedModules": false,
     /**
      * To have warnings / errors of the Svelte compiler at the

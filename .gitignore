@@ -1,5 +1,6 @@
 .routify
 .env
+.env.prod
 build
 dist
 server
