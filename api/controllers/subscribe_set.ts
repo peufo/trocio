@@ -7,7 +7,7 @@ import Troc from '../models/troc'
 
 export const createSubscribe: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId, userId, isGuest, role, prefix } = req.body
+    const { trocId, userId, isGuest, guestName, role, prefix } = req.body
     if (!req.session.user) throw 'Login is required'
     if (!trocId) throw 'trocId string is required on body'
     const troc = await Troc.findById(trocId).exec()
@@ -50,11 +50,7 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
         newSubscribe.userId = userId
       } else {
         // Création d'un sub pour un client invité
-        const guestSubCount = await Subscribe.countDocuments({
-          trocId,
-          $exists: { userId: 0 },
-        })
-        newSubscribe.name = `Client n°${guestSubCount + 1}`
+        newSubscribe.name = await getGuestName(trocId, guestName)
         newSubscribe.recoverKey = [
           randomize('0000'),
           randomize('0000'),
@@ -75,7 +71,7 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
         // Création d'un sub sur son propre compte
         const newSubscribe: Partial<ISubscribe> = {
           trocId,
-          tarifId: troc.tarif.find((t) => t.bydefault)._id,
+          tarifId: troc.tarif.find((t) => t.bydefault)?._id,
         }
         newSubscribe.validedByUser = true
         newSubscribe.userId = req.session.user._id
@@ -89,6 +85,15 @@ export const createSubscribe: RequestHandler = async (req, res, next) => {
   }
 }
 
+async function getGuestName(trocId: string, guestName: any): Promise<string> {
+  if (typeof guestName == 'string' && guestName) return guestName
+  const guestSubCount = await Subscribe.countDocuments({
+    trocId,
+    $exists: { userId: 0 },
+  })
+  return `Client n°${guestSubCount + 1}`
+}
+
 export const assignRole: RequestHandler = async (req, res, next) => {
   try {
     const { subscribeId, role, prefix } = req.body
@@ -97,10 +102,11 @@ export const assignRole: RequestHandler = async (req, res, next) => {
     if (typeof role !== 'string') throw 'role string is required in body'
 
     const subscribe = await Subscribe.findById(subscribeId).exec()
-    if (!subscribe.userId) throw `Anonym subscribe can't have a role`
+    if (!subscribe?.userId) throw `Anonym subscribe can't have a role`
     if (subscribe.userId.valueOf() === req.session.user._id)
       throw `You can't change your role`
     const troc = await Troc.findById(subscribe.trocId, { creator: 1 })
+    if (!troc) throw 'Troc not found'
     if (subscribe.userId.valueOf() === troc.creator.valueOf())
       throw `The creator of the troc cannot change its role`
 

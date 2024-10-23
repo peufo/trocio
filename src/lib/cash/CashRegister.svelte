@@ -28,6 +28,7 @@
   import SubActivityMobile from '$lib/sub/ActivityMobile.svelte'
   import { renderAmount } from '$lib/utils'
   import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
+  import GuestDialog from '$lib/cash/GuestDialog.svelte'
   import notify from '$lib/notify'
   import PeerQR from '$lib/cash/PeerQR.svelte'
 
@@ -35,6 +36,7 @@
   const subscribeKey = 'client_subscribe_id'
   const tabIndexKey = 'cash_register_tab_index'
   let paymentDialog: PaymentDialog
+  let guestDialog: GuestDialog
   let subscribe: SubscribeLookup | undefined = undefined
   let mainContainer: HTMLDivElement
 
@@ -143,10 +145,9 @@
 
   interface CreateSubscribeBody {
     trocId: string
-    userId?: string
-    isGuest?: boolean
-    guestName?: string
+    userId: string
   }
+
   /** Inscris un client qui à pu être identifé */
   const createSubscribe = useMutation(
     (data: CreateSubscribeBody) =>
@@ -157,22 +158,6 @@
       }),
     {
       onSuccess: redirectSubscribe,
-    }
-  )
-
-  /** Créer un client invité */
-  const createSubscribeGuest = useMutation(
-    (data: CreateSubscribeBody) =>
-      api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
-        method: 'post',
-        data: { ...data, isGuest: true },
-        success: 'Nouveau participant invité',
-      }),
-    {
-      onSuccess: (newSubscribe) => {
-        redirectSubscribe(newSubscribe)
-        clientSelector.setValue(newSubscribe.name)
-      },
     }
   )
 
@@ -193,6 +178,13 @@
 </script>
 
 <PaymentDialog bind:this={paymentDialog} />
+<GuestDialog
+  bind:this={guestDialog}
+  on:success={({ detail: newSubscribe }) => {
+    redirectSubscribe(newSubscribe)
+    clientSelector.setValue(newSubscribe.name)
+  }}
+/>
 
 {#if $troc}
   <div
@@ -223,11 +215,9 @@
 
       <Button
         outlined
-        disabled={$createSubscribeGuest.isLoading}
         class="primary-text"
         style="height: 40px;"
-        on:click={() =>
-          $createSubscribeGuest.mutate({ trocId: $params.trocId })}
+        on:click={() => guestDialog.open()}
       >
         <IconLink
           icon={faUserPlus}
