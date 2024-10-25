@@ -4,7 +4,7 @@
   let events: string[] = []
 
   onMount(() => {
-    const subscription = new EventSource('/api/cash-sse/subscribe')
+    const subscription = new EventSource('/api/sse/subscribe')
 
     const handleEvent = ({ data }: MessageEvent<string>) => {
       console.log({ data })
@@ -25,7 +25,7 @@
   <form
     method="post"
     on:submit|preventDefault={() =>
-      fetch('/api/cash-sse/emit/prout', {
+      fetch('/api/sse/emit/prout', {
         method: 'post',
         headers: {
           'Content-type': 'application/json',

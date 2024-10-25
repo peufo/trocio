@@ -21,7 +21,7 @@ import routesSubscribe from './routes/subscribe'
 import routesTroc from './routes/troc'
 import routesUser from './routes/user'
 import routesMessage from './routes/message'
-import routesCashSSE from './routes/cash-sse'
+import routesSSE from './routes/sse'
 
 // Connection database
 try {
@@ -59,7 +59,7 @@ app.use('/trocs', routesTroc)
 app.use('/payments', routesPayment)
 app.use('/subscribes', routesSubscribe)
 app.use('/messages', routesMessage)
-app.use('/cash-sse', routesCashSSE)
+app.use('/sse', routesSSE)
 app.use('/root', ensureIsRootUser, routesRoot)
 
 const catchError404: RequestHandler = (req, res, next) => {
