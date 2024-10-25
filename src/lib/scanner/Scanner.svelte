@@ -51,7 +51,7 @@
     }
 
     qrScanner = new QrScanner(video, onDetect, {
-      maxScansPerSecond: 8,
+      maxScansPerSecond: 4,
       highlightScanRegion: true,
       overlay,
     })
@@ -97,9 +97,7 @@
     if ($isSoundOn)
       audio.play().catch((e) => console.log('Sound no playing', e.name))
     if ($isVibrateOn && 'vibrate' in navigator) navigator.vibrate([50])
-
     dispatch('detect', scanResult.data)
-
     const wait = 1400
     setTimeout(() => {
       isProcessing = false

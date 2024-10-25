@@ -23,7 +23,6 @@ export const getArticles: RequestHandler = async (req, res, next) => {
       ignore: 'exact_state',
       cleanupMatch: false,
     })
-    console.log(match)
     if (!match.$and || !match.$or) throw Error('never')
 
     // add specific match
