@@ -1,13 +1,17 @@
 <script lang="ts">
+  import { params, goto, url } from '@roxi/routify'
   import { mdiLanConnect } from '@mdi/js'
 
   import Scanner from '$lib/scanner/Scanner.svelte'
   import { Icon } from '$material'
   import { emit } from '$lib/sse'
+  import { user } from '$lib/user/store'
 
   function handleScan(event: { detail: string }) {
     emit('scan', { value: event.detail })
   }
+
+  if (!$user) $goto('/login', { callback: $url(undefined, $params) })
 </script>
 
 <div class="wrapper">

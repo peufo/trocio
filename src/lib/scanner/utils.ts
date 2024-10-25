@@ -3,11 +3,11 @@ import { getState, STATE_LABEL } from '$lib/utils'
 import type { Article, ArticleState } from 'types'
 
 export async function getMismatchRaison(
-  articleId: string,
+  articleTagId: string,
   queryParams: { [key: string]: string }
 ): Promise<string> {
   const [article] = await api<Article[]>('/api/articles', {
-    params: { exact__id: articleId },
+    params: { exact_tagId: articleTagId },
   })
   if (!article) return 'Ne correspond pas à un article Trocio'
 

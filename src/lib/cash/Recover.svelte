@@ -11,11 +11,8 @@
   import { mdiTagOutline } from '@mdi/js'
 
   export let subscribeId: string
-  let template: Template
+  export let template: Template | undefined = undefined
   let tagsPrint: TagsPrint
-
-  export const selectArticleId = (articleId: string) =>
-    template.selectArticleId(articleId)
 
   let pendingItems: Article[] = []
   const queryClient = useQueryClient()

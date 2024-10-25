@@ -43,7 +43,7 @@
   onMount(() => {
     if (!$isMobile) magicSelect.focus()
     if ($params['select_article']) {
-      selectArticleId($params['select_article'])
+      selectArticleTagId($params['select_article'])
       $redirect(undefined, removeParams($params, ['select_article']))
     }
   })
@@ -72,16 +72,16 @@
   }
 
   function handleDetectArticle(event: { detail: string }) {
-    selectArticleId(event.detail)
+    selectArticleTagId(event.detail)
   }
 
-  export async function selectArticleId(articleId: string) {
+  export async function selectArticleTagId(articleTagId: string) {
     try {
       const [article] = await api<Article[]>('/api/articles', {
-        params: { exact__id: articleId, ...queryParams },
+        params: { exact_tagId: articleTagId, ...queryParams },
       })
       if (!article) {
-        const raison = await getMismatchRaison(articleId, queryParams)
+        const raison = await getMismatchRaison(articleTagId, queryParams)
         notify.warning(raison)
         return
       }

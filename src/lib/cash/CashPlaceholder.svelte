@@ -27,10 +27,10 @@
 
   onDestroy(() => clearTimeout(timeoutMenu))
 
-  export async function openArticleMenu(articleId: string) {
+  export async function openArticleMenu(articleTagId: string) {
     try {
       const [article] = await api<ArticleLookup[]>('/api/articles', {
-        params: { exact__id: articleId, trocId: $params['trocId'] },
+        params: { exact_tagId: articleTagId, trocId: $params['trocId'] },
       })
       if (!article) throw new Error('Article introuvable !')
 
@@ -56,7 +56,7 @@
         <p class="text-caption text-center">
           <IconLink icon={mdiQrcodeScan} href="/scanner" fab />
           <br />
-          Se connecter à une caisse ?
+          Scanner pour un poste de travail ?
         </p>
       {:else}
         <div class="d-flex justify-center" style="gap: 2em;">

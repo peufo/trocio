@@ -5,7 +5,7 @@
   import { renderAmount } from '$lib/utils'
   import type { TagInterface, Article } from 'types'
 
-  type TagData = Pick<Article, '_id' | 'ref' | 'name' | 'price'>
+  type TagData = Pick<Article, '_id' | 'tagId' | 'ref' | 'name' | 'price'>
 
   export let article: Partial<TagData>
   export let currency: string = ''
@@ -26,7 +26,7 @@
   const defaultUrl = `Made with ❤️ by Peufo`
 
   export async function refresh() {
-    qrcode = await QrCode.toDataURL(article._id || defaultUrl, {
+    qrcode = await QrCode.toDataURL(article.tagId || defaultUrl, {
       type: 'image/webp',
       margin: 0,
     })

@@ -9,10 +9,7 @@
   import { troc } from '$lib/troc/store'
 
   export let subscribeId: string
-  let template: Template
-
-  export const selectArticleId = (articleId: string) =>
-    template.selectArticleId(articleId)
+  export let template: Template | undefined = undefined
 
   let pendingItems: Article[] = []
   const queryClient = useQueryClient()

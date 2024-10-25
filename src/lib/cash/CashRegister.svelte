@@ -30,6 +30,7 @@
   import notify from '$lib/notify'
   import CashPlaceholder from '$lib/cash/CashPlaceholder.svelte'
   import { subscribe as subscribeSSE } from '$lib/sse'
+  import Template from './Template.svelte'
 
   let clientSelector: MagicSelect
   const subscribeKey = 'client_subscribe_id'
@@ -39,7 +40,7 @@
   let subscribe: SubscribeLookup | undefined = undefined
   let mainContainer: HTMLDivElement
 
-  let templateComponent: Provide | Recover | Buy | undefined
+  let templateComponent: Template
   let cashPlaceholder: CashPlaceholder
 
   $: TABS = [
@@ -67,7 +68,7 @@
     const unsubscribeSSE = subscribeSSE({
       scan(data) {
         if (templateComponent) {
-          templateComponent.selectArticleId(data.value)
+          templateComponent.selectArticleTagId(data.value)
         } else {
           cashPlaceholder.openArticleMenu(data.value)
         }
@@ -272,11 +273,11 @@
               "
           >
             {#if tabIndex === '0'}
-              <Provide bind:this={templateComponent} {subscribeId} />
+              <Provide bind:template={templateComponent} {subscribeId} />
             {:else if tabIndex === '1'}
-              <Recover bind:this={templateComponent} {subscribeId} />
+              <Recover bind:template={templateComponent} {subscribeId} />
             {:else if tabIndex === '2'}
-              <Buy bind:this={templateComponent} {subscribeId} />
+              <Buy bind:template={templateComponent} {subscribeId} />
             {:else if $isMobile}
               <SubActivityMobile {subscribeId} modeAdmin />
             {:else}
