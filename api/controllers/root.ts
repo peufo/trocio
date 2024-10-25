@@ -73,7 +73,7 @@ export async function articlesAddTagId() {
     })
     await Promise.all(
       articles.map(async (art) => {
-        art.tagId = new ObjectId()
+        art.tagId = new ObjectId() as any
         return art.save()
       })
     )
