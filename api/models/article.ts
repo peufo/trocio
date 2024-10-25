@@ -1,9 +1,15 @@
-import { model, Schema, Document } from 'mongoose'
+import { Types, model, Schema, Document } from 'mongoose'
 import type { Article } from '../../types'
 const { ObjectId } = Schema.Types
 
 let articleModel = new Schema({
   trocId: { type: ObjectId, ref: 'troc', required: true, index: true },
+  tagId: {
+    type: ObjectId,
+    required: true,
+    index: true,
+    default: Types.ObjectId,
+  },
   providerSubId: {
     type: ObjectId,
     ref: 'subscribe',

@@ -10,12 +10,12 @@
 <Button
   class="deep-purple white-text"
   on:click={() => {
-    api('/api/root/cleanUpArticlesMargin', {
+    api('/api/root/articlesAddTagId', {
       method: 'post',
     }).then((res) => {
       notify.success(res.message)
     })
   }}
 >
-  Recalcule des marges
+  Ajout des tagId
 </Button>

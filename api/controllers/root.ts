@@ -1,9 +1,10 @@
 import { exec } from 'child_process'
 
 import config from '../../config'
-
+import mongoose from 'mongoose'
 import Article from '../models/article'
 import { getMargin } from './article_utils'
+const { ObjectId } = mongoose.Types
 
 const { TROCIO_DB, TROCIO_BACKUP } = config
 
@@ -55,6 +56,31 @@ export async function cleanUpArticlesMargin() {
     )
 
     console.log(`${soldArticles.length} article margin computed`)
+    return
+  } catch (error) {
+    handleError(error)
+  }
+}
+
+/**
+ * Ajoute un tagId a tout les articles
+ */
+export async function articlesAddTagId() {
+  try {
+    await backup()
+    const articles = await Article.find({
+      tagId: { $exists: false },
+    })
+    await Promise.all(
+      articles.map(async (art) => {
+        art.tagId = new ObjectId()
+        return art.save()
+      })
+    )
+    await Article.updateMany({
+      filter: { tagId: { $exists: false } },
+      update: { tagId: new ObjectId() },
+    })
     return
   } catch (error) {
     handleError(error)

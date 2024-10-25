@@ -23,6 +23,8 @@ export type Article = ArticleCreate & {
   createdAt: Date
   updatedAt: Date
 
+  tagId: string
+
   /**
    * Frais prise par l'organisation sur l'article lors de sa validation.
    * Elle est calculé sur le prix en fonction du tarif décidé pour le fournisseur.

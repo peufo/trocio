@@ -8,7 +8,7 @@ import Article from '../models/article'
 import Payment from '../models/payment'
 import Subscribe from '../models/subscribe'
 import { getOptions, setOption } from '../controllers/option'
-import { cleanUpArticlesMargin } from '../controllers/root'
+import { articlesAddTagId } from '../controllers/root'
 import { dynamicQuery } from '../controllers/utils'
 
 const router = Router()
@@ -171,11 +171,10 @@ router
       next(error)
     }
   })
-
-  .post('/cleanUpArticlesMargin', async (req, res, next) => {
+  .post('/articlesAddTagId', async (req, res, next) => {
     try {
-      await cleanUpArticlesMargin()
-      res.json({ success: true, message: 'Articles margin cleanup' })
+      await articlesAddTagId()
+      res.json({ success: true, message: 'Articles has tagId' })
     } catch (error) {
       next(error)
     }
