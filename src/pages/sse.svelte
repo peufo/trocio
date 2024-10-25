@@ -1,22 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { subscribe, emit } from '$lib/sse'
 
   let events: string[] = []
 
   onMount(() => {
-    const subscription = new EventSource('/api/sse/subscribe')
-
-    const handleEvent = ({ data }: MessageEvent<string>) => {
-      console.log({ data })
-      events = [...events, data]
-    }
-
-    subscription.addEventListener('prout', handleEvent)
-
-    return () => {
-      subscription.removeEventListener('prout', handleEvent)
-      subscription.close()
-    }
+    const unsubscribe = subscribe({
+      test(data) {
+        console.log({ data })
+        events = [...events, data.date]
+      },
+    })
+    return unsubscribe
   })
 </script>
 
@@ -24,14 +19,7 @@
   <h2>Emit</h2>
   <form
     method="post"
-    on:submit|preventDefault={() =>
-      fetch('/api/sse/emit/prout', {
-        method: 'post',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({ date: new Date().toJSON() }),
-      })}
+    on:submit|preventDefault={() => emit('test', { date: new Date().toJSON() })}
   >
     <button>Emit</button>
   </form>
