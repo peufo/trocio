@@ -3,7 +3,7 @@ import { EventEmitter } from 'node:events'
 import { createSSE } from '../controllers/sse'
 
 const router = express.Router()
-const bus = new EventEmitter<{ string: [{ event: string; data: any }] }>()
+const bus = new EventEmitter()
 
 router
   .get('/subscribe', async (req, res, next) => {
@@ -24,7 +24,6 @@ router
   })
   .post('/emit/:event', (req, res, next) => {
     if (!req.session.user) return next(Error('Login required'))
-    console.log('yooo', req.body)
     bus.emit(req.session.user._id, {
       event: req.params.event,
       data: req.body,
