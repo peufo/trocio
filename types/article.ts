@@ -14,7 +14,7 @@ export type ArticleCreate = {
   /** Prix de l'article */
   price: number
   /** Index pour préserver l'ordre à la création */
-  index: number
+  index?: number
 }
 
 export type Article = ArticleCreate & {

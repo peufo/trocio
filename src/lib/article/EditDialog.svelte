@@ -1,9 +1,21 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { faList, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
+  import {
+    faPlus,
+    faTimes,
+    faChevronDown,
+  } from '@fortawesome/free-solid-svg-icons'
   import { faEdit } from '@fortawesome/free-regular-svg-icons'
   import { mdiPlus } from '@mdi/js'
-  import { Dialog, Button, Checkbox, Icon } from '$material'
+  import {
+    Dialog,
+    Button,
+    Checkbox,
+    Icon,
+    Menu,
+    List,
+    ListItem,
+  } from '$material'
 
   import type { Article } from 'types'
   import { isMobile } from '$lib/store/layout'
@@ -11,18 +23,26 @@
   import { troc } from '$lib/troc/store'
   import ArticleForm from '$lib/article/Form.svelte'
   import ArticleFormList from '$lib/article/FormList.svelte'
+  import ArticleFormImport from '$lib/article/FormImport.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
 
   export let subscribeId: string = ''
   export let article: Article | undefined = undefined
   export let active = false
-  export let listMode = false
   export let disabled = false
   export let fullscreen = $isMobile
   export let buttonType: 'button' | 'icon' | 'none' = 'button'
   export let actionName = 'Proposer'
 
-  let textarea: HTMLTextAreaElement | undefined
+  type Mode = 'simple' | 'list' | 'import'
+  let mode: Mode = 'simple'
+  const modeLabel: Record<Mode, string> = {
+    simple: 'Simple',
+    list: 'Liste',
+    import: 'Importation',
+  }
+  const modeLabelEntries = Object.entries(modeLabel) as [Mode, string][]
+
   let keepOpen = false
 
   const dispatch = createEventDispatcher<{
@@ -81,48 +101,57 @@
   </Button>
 {/if}
 
-<Dialog
-  bind:active
-  class="pa-4"
-  on:introend={() => textarea?.focus()}
-  {fullscreen}
->
+<Dialog bind:active class="pa-4" {fullscreen}>
   <div class="d-flex justify-space-between mb-3">
     <div class="text-h6">
       {#if article}
         Éditer un article
-      {:else}
-        {actionName} {listMode ? `une liste d'` : 'un '}article
+      {:else if mode === 'simple'}
+        {actionName} un article
+      {:else if mode === 'list'}
+        {actionName} une liste d'articles
+      {:else if mode === 'import'}
+        Importer des articles invendus
       {/if}
     </div>
+    <div class="flex-grow-1" />
+    {#if !article}
+      <Menu right>
+        <div slot="activator">
+          <Button text size="small" style="opacity: .8;" class="d-flex">
+            {modeLabel[mode]}
+            <IconLink icon={faChevronDown} size="1em" class="ml-2" />
+          </Button>
+        </div>
+        <List dense>
+          {#each modeLabelEntries as [_mode, label]}
+            <ListItem
+              on:click={() => (mode = _mode)}
+              on:keypress={(e) => e.key === 'Enter' && (mode = _mode)}
+            >
+              {label}
+            </ListItem>
+          {/each}
+        </List>
+      </Menu>
+    {/if}
+
     {#if fullscreen}
-      <div class="flex-grow-1" />
       <IconLink icon={faTimes} on:click={close} clickable />
     {/if}
   </div>
 
-  {#if listMode}
-    <ArticleFormList {subscribeId} on:done={handleDoneList} {actionName} />
-  {:else}
+  {#if mode === 'simple'}
     <ArticleForm {subscribeId} on:done={handleDone} {article} {actionName} />
+  {:else if mode === 'list'}
+    <ArticleFormList {subscribeId} on:done={handleDoneList} {actionName} />
+  {:else if mode === 'import'}
+    <ArticleFormImport {subscribeId} on:done={handleDoneList} />
   {/if}
 
-  {#if !article}
-    <div class="d-flex mt-2">
-      <Checkbox bind:checked={keepOpen} color="secondary">
-        Garder la fenêtre ouverte
-      </Checkbox>
-      <div class="flex-grow-1" />
-
-      <Button depressed size="small" on:click={() => (listMode = !listMode)}>
-        <IconLink
-          icon={!listMode ? faList : faPlus}
-          opacity
-          size="1em"
-          class="mr-2"
-        />
-        {!listMode ? 'Charger une liste' : 'Un seul article'}
-      </Button>
-    </div>
+  {#if !article && mode === 'simple'}
+    <Checkbox bind:checked={keepOpen} color="secondary">
+      Garder la fenêtre ouverte
+    </Checkbox>
   {/if}
 </Dialog>

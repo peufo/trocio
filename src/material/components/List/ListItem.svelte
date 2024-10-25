@@ -84,6 +84,7 @@
     on:click={click}
     on:click
     on:dblclick
+    on:keypress
     {style}
   >
     <slot name="prepend" />
