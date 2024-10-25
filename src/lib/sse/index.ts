@@ -1,5 +1,6 @@
 type EventsSSE = {
   test: { date: string }
+  scan: { value: string }
 }
 
 type SubscribeHandlers = Partial<{

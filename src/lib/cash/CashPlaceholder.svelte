@@ -3,19 +3,16 @@
   import { fade } from 'svelte/transition'
   import QrCode from 'qrcode'
   import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
-  import { mdiCellphoneWireless, mdiQrcodeScan } from '@mdi/js'
+  import { mdiQrcodeScan } from '@mdi/js'
   import { params } from '@roxi/routify'
 
   import type { ArticleLookup } from 'types'
   import { isMobile } from '$lib/store/layout'
   import IconLink from '$lib/util/IconLink.svelte'
-  import { Icon } from '$material'
   import { api } from '$lib/api'
   import notify from '$lib/notify'
   import ArticleMenu from '$lib/article/Menu.svelte'
 
-  export let peerToken: string
-  export let peerConnections: number
   export let disabled: boolean
 
   let qrcode = ''
@@ -23,6 +20,10 @@
   let articleMenu: ArticleMenu
   let menuActive = false
   let timeoutMenu: NodeJS.Timer
+
+  QrCode.toDataURL(`https://${location.host}/scanner`).then(
+    (qr) => (qrcode = qr)
+  )
 
   onDestroy(() => clearTimeout(timeoutMenu))
 
@@ -42,11 +43,6 @@
       notify.error(error)
     }
   }
-
-  $: {
-    const scannerURL = `https://${location.host}/scanner?token=${peerToken}`
-    QrCode.toDataURL(scannerURL).then((qr) => (qrcode = qr))
-  }
 </script>
 
 {#if disabled}
@@ -65,29 +61,14 @@
       {:else}
         <div class="d-flex justify-center" style="gap: 2em;">
           <IconLink icon={faCashRegister} size="60" style="opacity: 0.3;" />
-          {#each Array(peerConnections) as p, i}
-            <div transition:fade|local>
-              <Icon
-                path={mdiCellphoneWireless}
-                class="secondary-text"
-                size="60"
-              />
-            </div>
-          {/each}
         </div>
         <br />
 
         <img src={qrcode} alt="Code QR de connexion mobile" />
 
-        {#if !!peerConnections}
-          <p in:fade|local class="text-caption text-center">
-            Connexion établie ({peerConnections})
-          </p>
-        {:else}
-          <p in:fade|local class="text-caption text-center">
-            Connecter un smartphone
-          </p>
-        {/if}
+        <p in:fade|local class="text-caption text-center">
+          Scanner avec un smartphone
+        </p>
       {/if}
     </div>
     <div class="menu-wrapper" class:active={menuActive}>

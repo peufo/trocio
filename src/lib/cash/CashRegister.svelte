@@ -4,8 +4,6 @@
   import { params, redirect, afterPageLoad } from '@roxi/routify'
   import { Button, Tabs, Tab } from '$material'
   import { useMutation } from '@sveltestack/svelte-query'
-  import { Peer } from 'peerjs'
-  import { v4 as uuidv4 } from 'uuid'
   import {
     faArrowRightArrowLeft,
     faArrowRightFromBracket,
@@ -30,7 +28,8 @@
   import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
   import GuestDialog from '$lib/cash/GuestDialog.svelte'
   import notify from '$lib/notify'
-  import PeerQR from '$lib/cash/PeerQR.svelte'
+  import CashPlaceholder from '$lib/cash/CashPlaceholder.svelte'
+  import { subscribe as subscribeSSE } from '$lib/sse'
 
   let clientSelector: MagicSelect
   const subscribeKey = 'client_subscribe_id'
@@ -40,10 +39,8 @@
   let subscribe: SubscribeLookup | undefined = undefined
   let mainContainer: HTMLDivElement
 
-  const peerToken = uuidv4()
-  let peerConnections = 0
   let templateComponent: Provide | Recover | Buy | undefined
-  let peerQR: PeerQR
+  let cashPlaceholder: CashPlaceholder
 
   $: TABS = [
     { label: 'Dépot', icon: faArrowRightToBracket },
@@ -67,32 +64,21 @@
   $afterPageLoad(createUserLoader())
 
   onMount(() => {
-    const peer = new Peer(peerToken)
-    peer.on('connection', (local) => {
-      peerConnections++
-      notify.success('Nouveau smartphone connecté')
-      local.on('close', () => peerConnections--)
-      local.on('error', () => peerConnections--)
-      local.on('iceStateChanged', (state) => {
-        console.log('peer state', state)
-        if (state === 'disconnected') peerConnections--
-      })
-      local.on('data', (data) => {
-        console.log('SCANNED DATA:', data)
-        if (typeof data !== 'string') return
+    const unsubscribeSSE = subscribeSSE({
+      scan(data) {
         if (templateComponent) {
-          templateComponent.selectArticleId(data)
+          templateComponent.selectArticleId(data.value)
         } else {
-          peerQR.openArticleMenu(data)
+          cashPlaceholder.openArticleMenu(data.value)
         }
-      })
+      },
     })
 
     // Ecoute les racourcis claviers
     document.addEventListener('keyup', handleShortcut)
     return () => {
       document.removeEventListener('keyup', handleShortcut)
-      peer.destroy()
+      unsubscribeSSE()
     }
   })
 
@@ -301,10 +287,8 @@
       </div>
     {:else}
       <div in:fade|local class="centered flex-grow-1">
-        <PeerQR
-          bind:this={peerQR}
-          {peerToken}
-          {peerConnections}
+        <CashPlaceholder
+          bind:this={cashPlaceholder}
           disabled={!$troc.tag.useScanner}
         />
       </div>
