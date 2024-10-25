@@ -74,9 +74,11 @@
       local.on('close', () => peerConnections--)
       local.on('error', () => peerConnections--)
       local.on('iceStateChanged', (state) => {
+        console.log('peer state', state)
         if (state === 'disconnected') peerConnections--
       })
       local.on('data', (data) => {
+        console.log('SCANNED DATA:', data)
         if (typeof data !== 'string') return
         if (templateComponent) {
           templateComponent.selectArticleId(data)

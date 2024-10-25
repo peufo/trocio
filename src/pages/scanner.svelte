@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { params, redirect, url } from '@roxi/routify'
   import { Peer, DataConnection } from 'peerjs'
+  import { v4 as uuidv4 } from 'uuid'
 
   import Scanner from '$lib/scanner/Scanner.svelte'
   import notify from '$lib/notify'
@@ -10,7 +11,8 @@
 
   let remote: DataConnection | undefined = undefined
   let isConnected = false
-  const peer = new Peer()
+  const peerToken = uuidv4()
+  const peer = new Peer(peerToken)
   peer.on('open', () => {
     const token = $params['token']
     if (token) connectTo(token)
@@ -25,10 +27,12 @@
 
   async function connectTo(remoteToken: string) {
     if (isConnected) return
+    console.log('remote token', remoteToken)
     remote = peer.connect(remoteToken)
     remote.on('open', () => (isConnected = true))
     remote.on('close', () => (isConnected = false))
     remote.on('iceStateChanged', (state) => {
+      console.log('conection state', state)
       if (state === 'disconnected') isConnected = false
     })
     remote.on('error', (error) => {

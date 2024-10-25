@@ -94,8 +94,9 @@
   async function onDetect(scanResult: { data: string }) {
     isProcessing = true
     pause()
-    if ($isSoundOn) audio.play()
-    if ($isVibrateOn) navigator.vibrate([50])
+    if ($isSoundOn)
+      audio.play().catch((e) => console.log('Sound no playing', e.name))
+    if ($isVibrateOn && 'vibrate' in navigator) navigator.vibrate([50])
 
     dispatch('detect', scanResult.data)
 

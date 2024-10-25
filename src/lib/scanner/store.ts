@@ -1,4 +1,3 @@
-import { readable } from 'svelte/store'
 import { storeBoolean } from '$lib/utils'
 
 export const isAutoScanOn = storeBoolean('isAutoScanOn')

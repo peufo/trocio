@@ -21,6 +21,9 @@
   function connect() {
     console.log('connect', remoteToken)
     remote = peer.connect(remoteToken)
+    remote.on('iceStateChanged', (state) => {
+      console.log('Connection state', state)
+    })
     remote.on('open', () => {
       console.log(`${name} open a connection`)
     })

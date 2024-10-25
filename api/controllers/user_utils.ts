@@ -1,32 +1,34 @@
+import type { RequestHandler } from 'express'
 import UserModel from '../models/user'
-
 import config from '../../config'
 import axios from 'axios'
 import qs from 'qs'
 import mail from './mail'
 import randomize from 'randomatic'
+import { User } from '../../types'
 
 const { VITE_TROCIO_GOOGLE_CLIENT_ID, TROCIO_GOOGLE_CLIENT_SECRET } = config
 
-export async function login(req, res, next) {
+export const login: RequestHandler = async (req, res, next) => {
   const { mail, password } = req.body
   if (!mail || !password) return next(Error('mail and password required'))
 
   UserModel.getAuthenticated(mail, password)
     .then((user) => {
       console.log(`Nouvelle connexion de ${user.name}`)
-      req.session.user = user
-      delete req.session.user.password //TODO: not work ?
+      req.session.user = user as User
       next()
     })
     .catch(next)
 }
 
-export async function loginWithGoogle(req, res, next) {
+export const loginWithGoogle: RequestHandler = async (req, res, next) => {
   const { code, error, state } = req.query
   if (error) return next(error)
+  if (!state || typeof state !== 'string')
+    return next(Error('state need to be a string'))
 
-  const host = state.match(/^(http|https):\/\/[^\/]+/)[0]
+  const host = state.match(/^(http|https):\/\/[^\/]+/)?.[0]
 
   const data = qs.stringify({
     client_id: VITE_TROCIO_GOOGLE_CLIENT_ID,
@@ -76,7 +78,7 @@ export async function loginWithGoogle(req, res, next) {
               console.log(`Nouvelle utilisateur: ${user.name}`)
             }
             console.log(`Nouvelle connexion de ${user.name}`)
-            req.session.user = user
+            req.session.user = user as User
 
             return res.redirect(state)
           } catch (err) {

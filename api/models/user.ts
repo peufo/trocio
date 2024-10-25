@@ -105,7 +105,6 @@ userSchema.statics.getAuthenticated = async function (
       $unset: { lockUntil: 1 },
     })
     .exec()
-
   return user
 }
 

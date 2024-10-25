@@ -1,3 +1,5 @@
+/// <reference types="./app.d.ts" />
+
 import express, { type ErrorRequestHandler, type RequestHandler } from 'express'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
@@ -19,13 +21,7 @@ import routesSubscribe from './routes/subscribe'
 import routesTroc from './routes/troc'
 import routesUser from './routes/user'
 import routesMessage from './routes/message'
-import type { User } from '../types'
-
-declare module 'express-session' {
-  interface SessionData {
-    user: User
-  }
-}
+import routesCashSSE from './routes/cash-sse'
 
 // Connection database
 try {
@@ -63,6 +59,7 @@ app.use('/trocs', routesTroc)
 app.use('/payments', routesPayment)
 app.use('/subscribes', routesSubscribe)
 app.use('/messages', routesMessage)
+app.use('/cash-sse', routesCashSSE)
 app.use('/root', ensureIsRootUser, routesRoot)
 
 const catchError404: RequestHandler = (req, res, next) => {
