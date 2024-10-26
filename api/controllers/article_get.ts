@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import type { RequestHandler } from 'express'
 
 import Article from '../models/article'
+import Subscribe from '../models/subscribe'
 import { populateUser } from './lookup'
 import { dynamicQuery } from './utils'
 import type { Article as IArticle } from '../../types'
@@ -55,6 +56,53 @@ export const getArticles: RequestHandler = async (req, res, next) => {
 
     const articles = await aggregate.exec()
     res.json(articles)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getArticleImportable: RequestHandler = async (req, res, next) => {
+  try {
+    const { subscribeId } = req.query
+    if (!mongoose.isValidObjectId(subscribeId))
+      throw Error('subscribeId need to be a valid objectId')
+
+    const subscribe = await Subscribe.findById(subscribeId)
+
+    console.log(subscribe)
+
+    const trocs = await Article.aggregate([
+      {
+        $match: {
+          providerId: subscribe?.userId,
+          $or: [{ recover: { $exists: true } }, { recover: { $exists: true } }],
+        },
+      },
+      {
+        $group: {
+          _id: '$trocId',
+          articles_count: { $sum: 1 },
+          articles: {
+            $push: { _id: '$_id', name: '$name', ref: '$ref', price: '$price' },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'trocs',
+          foreignField: '_id',
+          localField: '_id',
+          as: 'troc',
+        },
+      },
+      {
+        $addFields: {
+          troc: { $arrayElemAt: ['$troc', 0] },
+        },
+      },
+    ])
+
+    res.json(trocs)
   } catch (error) {
     next(error)
   }

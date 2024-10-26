@@ -15,13 +15,13 @@ import {
   getArticles,
   getArticleCorrection,
   getArticleCountsByState,
+  getArticleImportable,
 } from '../controllers/article_get'
 
 router
   .get('/', getArticles)
   .post('/', createArticle)
   .delete('/', deleteArticle)
-  .get('/counts-by-state', getArticleCountsByState)
   .post('/edit-name', editName)
   .post('/edit-price', editPrice)
   .post('/valid', validArticles)
@@ -29,5 +29,7 @@ router
   .post('/recover', recoverArticles)
   .post('/cancel-event', cancelEvent)
   .get('/corrections', getArticleCorrection)
+  .get('/counts-by-state', getArticleCountsByState)
+  .get('/importables', getArticleImportable)
 
 export default router
