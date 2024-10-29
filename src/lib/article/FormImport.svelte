@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { Article, ArticleCreate, Troc } from 'types'
+  import type { Article, ArticleCreate, Troc } from 'types'
   import { api, useApi } from '$lib/api'
   import { List, ProgressCircular } from '$material'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
@@ -67,7 +67,14 @@
     <List disabled={$importArticles.isLoading}>
       {#each $queryImportables.data as importable}
         <ListItem on:click={() => handleClickImportable(importable)}>
-          {importable.troc.name}
+          <span>{importable.troc.name}</span>
+          {#if importable.troc.schedule && importable.troc.schedule[0]}
+            <span style="opacity: 0.7;">
+              -
+              {new Date(importable.troc.schedule[0].open).toLocaleDateString()}
+            </span>
+          {/if}
+
           <svelte:fragment slot="subtitle">
             {importable.articles_count}
             article{importable.articles_count > 1 ? 's' : ''}

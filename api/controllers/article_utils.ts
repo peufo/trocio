@@ -22,10 +22,13 @@ export async function getTarif(
 
 export async function getFee(article: Article) {
   const tarif = await getTarif(article.providerSubId)
+  console.log({ article, tarif })
   if (tarif && tarif.fee.length && article.price > 0) {
-    return tarif.fee
-      .sort((a, b) => b.price - a.price)
-      .filter((f) => f.price <= article.price)[0].value
+    return (
+      tarif.fee
+        .sort((a, b) => b.price - a.price)
+        .filter((f) => f.price <= article.price)[0]?.value || 0
+    )
   } else {
     return 0
   }

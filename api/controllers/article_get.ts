@@ -112,6 +112,11 @@ export const getArticleImportable: RequestHandler = async (req, res, next) => {
           troc: { $arrayElemAt: ['$troc', 0] },
         },
       },
+      {
+        $sort: {
+          'troc.schedule.0': -1,
+        },
+      },
     ])
 
     res.json(trocs)
