@@ -7,10 +7,10 @@
 
   import IconLink from '$lib/util/IconLink.svelte'
   import type { Article, ArticleCreate, ISubscribe } from 'types'
-  import { api, useApi } from '$lib/api'
+  import { api } from '$lib/api'
 
   const queryClient = useQueryClient()
-  export let subscribeId: string
+  export let subscribe: ISubscribe
   export let actionName = 'Valider'
 
   let newArticles = ''
@@ -22,11 +22,7 @@
     done: Article[]
   }>()
 
-  $: querySubscribe = useApi<{ subscribeId: string }, ISubscribe>([
-    'subscribes/byId',
-    { subscribeId },
-  ])
-  $: prefix = $querySubscribe.data?.prefix || ''
+  $: prefix = subscribe.prefix || ''
   $: listPlaceHolder = `\n\t-- Glissez ou copiez une liste depuis un tableur --\n\t-- ${
     prefix ? '[ Référence ] ' : ''
   }[ Désignation ] [ Prix ] --\n\n\n${
@@ -97,7 +93,7 @@
     listArticles.push({
       name,
       price,
-      providerSubId: subscribeId,
+      providerSubId: subscribe._id,
     })
   }
 
@@ -138,7 +134,7 @@
       ref,
       name,
       price,
-      providerSubId: subscribeId,
+      providerSubId: subscribe._id,
     })
   }
 </script>

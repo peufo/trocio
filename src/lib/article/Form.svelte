@@ -6,12 +6,12 @@
   import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 
   import IconLink from '$lib/util/IconLink.svelte'
-  import type { Article, ArticleCreate } from 'types'
+  import type { Article, ArticleCreate, ISubscribe } from 'types'
   import { api } from '$lib/api'
   import notify from '$lib/notify'
 
   const queryClient = useQueryClient()
-  export let subscribeId: string = ''
+  export let subscribe: ISubscribe
   export let article: Article | undefined = undefined
   export let actionName = 'Valider'
 
@@ -28,7 +28,7 @@
   })
 
   async function handleSubmit() {
-    if (!article && !subscribeId)
+    if (!article && !subscribe._id)
       return notify.error('subscribeId or article is required')
 
     if (!article)
@@ -36,7 +36,7 @@
         await $createArticle.mutateAsync({
           name: newName,
           price: +newPrice,
-          providerSubId: subscribeId,
+          providerSubId: subscribe._id,
         })
       )
 

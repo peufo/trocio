@@ -1,12 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import type { Article, ArticleCreate, Troc } from 'types'
+  import type { Article, ArticleCreate, ISubscribe, Troc } from 'types'
   import { api, useApi } from '$lib/api'
   import { List, ProgressCircular } from '$material'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
   import ListItem from '$material/components/List/ListItem.svelte'
 
-  export let subscribeId: string
+  export let subscribe: ISubscribe
   const dispatch = createEventDispatcher<{
     done: Article[]
   }>()
@@ -27,7 +27,7 @@
 
   $: queryImportables = useApi<{ subscribeId: string }, Importable[]>([
     '/articles/importables',
-    { subscribeId },
+    { subscribeId: subscribe._id },
   ])
 
   const importArticles = useMutation(
@@ -52,7 +52,7 @@
   async function handleClickImportable(importable: Importable) {
     const articles: ArticleImport[] = importable.articles.map((art) => ({
       ...art,
-      providerSubId: subscribeId,
+      providerSubId: subscribe._id,
     }))
     await $importArticles.mutateAsync(articles)
   }

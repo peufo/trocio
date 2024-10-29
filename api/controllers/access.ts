@@ -69,8 +69,8 @@ export const ensureUserCanAccessResum: RequestHandler = async (
   next
 ) => {
   try {
-    if (isRootUser(req)) return next()
     const { accessed, accessor } = await getAccessedAndAssecor(req, res)
+    if (isRootUser(req)) return next()
     if (
       accessed._id !== accessor._id &&
       accessor.role !== 'admin' &&

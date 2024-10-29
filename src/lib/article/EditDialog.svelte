@@ -15,9 +15,10 @@
     Menu,
     List,
     ListItem,
+    ProgressCircular,
   } from '$material'
 
-  import type { Article } from 'types'
+  import type { Article, ISubscribe } from 'types'
   import { isMobile } from '$lib/store/layout'
   import notify from '$lib/notify'
   import { troc } from '$lib/troc/store'
@@ -25,7 +26,7 @@
   import ArticleFormList from '$lib/article/FormList.svelte'
   import ArticleFormImport from '$lib/article/FormImport.svelte'
   import IconLink from '$lib/util/IconLink.svelte'
-
+  import { useApi } from '$lib/api'
   export let subscribeId: string = ''
   export let article: Article | undefined = undefined
   export let active = false
@@ -35,15 +36,21 @@
   export let actionName = 'Proposer'
 
   type Mode = 'simple' | 'list' | 'import'
+  type Option = { label: string; getEnable: (sub: ISubscribe) => boolean }
   let mode: Mode = 'simple'
-  const modeLabel: Record<Mode, string> = {
-    simple: 'Simple',
-    list: 'Liste',
-    import: 'Importation',
+  const modeLabel: Record<Mode, Option> = {
+    simple: { label: 'Simple', getEnable: () => true },
+    list: { label: 'Liste', getEnable: () => true },
+    import: { label: 'Importation', getEnable: (sub) => sub.role == 'trader' },
   }
-  const modeLabelEntries = Object.entries(modeLabel) as [Mode, string][]
+  const modeLabelEntries = Object.entries(modeLabel) as [Mode, Option][]
 
   let keepOpen = false
+
+  $: querySubscribe = useApi<{ subscribeId: string }, ISubscribe>([
+    'subscribes/byId',
+    { subscribeId },
+  ])
 
   const dispatch = createEventDispatcher<{
     open: null
@@ -102,56 +109,85 @@
 {/if}
 
 <Dialog bind:active class="pa-4" {fullscreen}>
-  <div class="d-flex justify-space-between mb-3">
-    <div class="text-h6">
-      {#if article}
-        Éditer un article
-      {:else if mode === 'simple'}
-        {actionName} un article
-      {:else if mode === 'list'}
-        {actionName} une liste d'articles
-      {:else if mode === 'import'}
-        Importer des articles invendus
+  {#if !$querySubscribe.data}
+    <div class="placeholder">
+      <ProgressCircular indeterminate />
+    </div>
+  {:else}
+    <div class="d-flex justify-space-between mb-3">
+      <div class="text-h6">
+        {#if article}
+          Éditer un article
+        {:else if mode === 'simple'}
+          {actionName} un article
+        {:else if mode === 'list'}
+          {actionName} une liste d'articles
+        {:else if mode === 'import'}
+          Importer des articles invendus
+        {/if}
+      </div>
+      <div class="flex-grow-1" />
+      {#if !article}
+        <Menu right>
+          <div slot="activator">
+            <Button text size="small" style="opacity: .8;" class="d-flex">
+              {modeLabel[mode].label}
+              <IconLink icon={faChevronDown} size="1em" class="ml-2" />
+            </Button>
+          </div>
+          <List dense>
+            {#each modeLabelEntries as [_mode, { label, getEnable }]}
+              {@const enable = getEnable($querySubscribe.data)}
+              <ListItem
+                on:click={() => (mode = _mode)}
+                on:keypress={(e) => e.key === 'Enter' && (mode = _mode)}
+                disabled={!enable}
+                style="opacity: {enable ? '1' : '0.5'};"
+              >
+                {label}
+              </ListItem>
+            {/each}
+          </List>
+        </Menu>
+      {/if}
+
+      {#if fullscreen}
+        <IconLink icon={faTimes} on:click={close} clickable />
       {/if}
     </div>
-    <div class="flex-grow-1" />
-    {#if !article}
-      <Menu right>
-        <div slot="activator">
-          <Button text size="small" style="opacity: .8;" class="d-flex">
-            {modeLabel[mode]}
-            <IconLink icon={faChevronDown} size="1em" class="ml-2" />
-          </Button>
-        </div>
-        <List dense>
-          {#each modeLabelEntries as [_mode, label]}
-            <ListItem
-              on:click={() => (mode = _mode)}
-              on:keypress={(e) => e.key === 'Enter' && (mode = _mode)}
-            >
-              {label}
-            </ListItem>
-          {/each}
-        </List>
-      </Menu>
+
+    {#if mode === 'simple'}
+      <ArticleForm
+        subscribe={$querySubscribe.data}
+        on:done={handleDone}
+        {article}
+        {actionName}
+      />
+    {:else if mode === 'list'}
+      <ArticleFormList
+        subscribe={$querySubscribe.data}
+        on:done={handleDoneList}
+        {actionName}
+      />
+    {:else if mode === 'import'}
+      <ArticleFormImport
+        subscribe={$querySubscribe.data}
+        on:done={handleDoneList}
+      />
     {/if}
 
-    {#if fullscreen}
-      <IconLink icon={faTimes} on:click={close} clickable />
+    {#if !article && mode === 'simple'}
+      <Checkbox bind:checked={keepOpen} color="secondary">
+        Garder la fenêtre ouverte
+      </Checkbox>
     {/if}
-  </div>
-
-  {#if mode === 'simple'}
-    <ArticleForm {subscribeId} on:done={handleDone} {article} {actionName} />
-  {:else if mode === 'list'}
-    <ArticleFormList {subscribeId} on:done={handleDoneList} {actionName} />
-  {:else if mode === 'import'}
-    <ArticleFormImport {subscribeId} on:done={handleDoneList} />
-  {/if}
-
-  {#if !article && mode === 'simple'}
-    <Checkbox bind:checked={keepOpen} color="secondary">
-      Garder la fenêtre ouverte
-    </Checkbox>
   {/if}
 </Dialog>
+
+<style>
+  .placeholder {
+    display: grid;
+    place-content: center;
+    min-height: 216px;
+  }
+</style>
