@@ -43,7 +43,7 @@
             'Règlement des achats:',
             ...articles.map((art) => `${art.price.toFixed(2)} - ${art.name}`),
           ].join('\n')
-          paymentRows = Math.max(2, Math.min(articles.length, 8))
+          paymentRows = Math.max(2, Math.min(articles.length + 2, 8))
           if (purchasesSum > 0)
             paymentDialog.open(subscribe, comment, purchasesSum)
         }
