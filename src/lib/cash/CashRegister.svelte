@@ -277,7 +277,7 @@
             {:else if tabIndex === '1'}
               <Recover bind:template={templateComponent} {subscribeId} />
             {:else if tabIndex === '2'}
-              <Buy bind:template={templateComponent} {subscribeId} />
+              <Buy bind:template={templateComponent} {subscribe} />
             {:else if $isMobile}
               <SubActivityMobile {subscribeId} modeAdmin />
             {:else}

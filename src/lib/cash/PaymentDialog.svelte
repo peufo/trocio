@@ -8,6 +8,7 @@
 
   export let active = false
   export let modeCorrection = false
+  export let rows = 2
 
   let subscribe: SubscribeLookup | undefined
   let message = ''
@@ -67,7 +68,7 @@
     </div>
     <form on:submit|preventDefault={() => $queryPayment.mutate()}>
       <div class="mt-3">
-        <Textarea bind:value={message} rows={2} autogrow color="secondary">
+        <Textarea bind:value={message} {rows} autogrow color="secondary">
           Commentaire
         </Textarea>
       </div>

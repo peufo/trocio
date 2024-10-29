@@ -21,7 +21,7 @@
       <tr>
         <td>{new Date(payment.createdAt).toLocaleString()}</td>
         <td>{payment.acceptor.name}</td>
-        <td>{payment.message || '-'}</td>
+        <td>{@html (payment.message || '-').replaceAll('\n', '<br>')}</td>
         <td align="right">{renderAmount(payment.amount)}</td>
       </tr>
     {/each}
