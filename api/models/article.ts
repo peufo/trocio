@@ -10,6 +10,10 @@ let articleModel = new Schema({
     index: true,
     default: Types.ObjectId,
   },
+  isCopied: {
+    type: Boolean,
+    default: false,
+  },
   providerSubId: {
     type: ObjectId,
     ref: 'subscribe',

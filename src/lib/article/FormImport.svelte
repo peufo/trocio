@@ -1,20 +1,93 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { Article } from 'types'
-  import { useApi } from '$lib/api'
+  import { Article, ArticleCreate, Troc } from 'types'
+  import { api, useApi } from '$lib/api'
+  import { List, ProgressCircular } from '$material'
+  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
+  import ListItem from '$material/components/List/ListItem.svelte'
 
   export let subscribeId: string
   const dispatch = createEventDispatcher<{
     done: Article[]
   }>()
+  const queryClient = useQueryClient()
+  type ArticleImport = ArticleCreate & { _id: string }
+  type Importable = {
+    _id: string
+    articles_count: number
+    articles: {
+      _id: string
+      tagId: string
+      name: string
+      ref: string
+      price: number
+    }[]
+    troc: Troc
+  }
 
-  $: queryArticles = useApi<{ subscribeId: string }, Article[]>([
+  $: queryImportables = useApi<{ subscribeId: string }, Importable[]>([
     '/articles/importables',
     { subscribeId },
   ])
+
+  const importArticles = useMutation(
+    (articles: ArticleImport[]) =>
+      api<ArticleImport[], Article[]>('/api/articles/import', {
+        method: 'post',
+        data: articles,
+        success: `${articles.length} article${
+          articles.length > 1 ? 's' : ''
+        } importé${articles.length > 1 ? 's' : ''}`,
+      }),
+    {
+      onSuccess: (articles) => {
+        $queryImportables.refetch()
+        queryClient.invalidateQueries('articles')
+        queryClient.invalidateQueries('subscribes/resum')
+        dispatch('done', articles)
+      },
+    }
+  )
+
+  async function handleClickImportable(importable: Importable) {
+    const articles: ArticleImport[] = importable.articles.map((art) => ({
+      ...art,
+      providerSubId: subscribeId,
+    }))
+    await $importArticles.mutateAsync(articles)
+  }
 </script>
 
 <div style="min-height: 260px;">
-  <p>TODO: Lister les invendues</p>
-  <pre>{JSON.stringify($queryArticles.data, null, 2)}</pre>
+  {#if !$queryImportables.data}
+    <div class="placeholder">
+      <ProgressCircular indeterminate />
+    </div>
+  {:else}
+    <List disabled={$importArticles.isLoading}>
+      {#each $queryImportables.data as importable}
+        <ListItem on:click={() => handleClickImportable(importable)}>
+          {importable.troc.name}
+          <svelte:fragment slot="subtitle">
+            {importable.articles_count}
+            article{importable.articles_count > 1 ? 's' : ''}
+          </svelte:fragment>
+        </ListItem>
+      {:else}
+        <div class="placeholder">
+          <span style="opacity: .6;">
+            Aucun article à importer d'autre trocs.
+          </span>
+        </div>
+      {/each}
+    </List>
+  {/if}
 </div>
+
+<style>
+  .placeholder {
+    display: grid;
+    place-content: center;
+    min-height: 216px;
+  }
+</style>

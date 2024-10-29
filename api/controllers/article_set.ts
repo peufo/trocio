@@ -1,4 +1,5 @@
 import type { RequestHandler, Request } from 'express'
+import mongoose from 'mongoose'
 
 import Troc from '../models/troc'
 import Article from '../models/article'
@@ -11,9 +12,67 @@ import type {
 import { getRole } from './access'
 import Subscribe from '../models/subscribe'
 
+const { ObjectId } = mongoose.Types
+
 function ensureArray<T extends any | any[]>(value: T | T[]): T[] {
   if (Array.isArray(value)) return value
   return [value]
+}
+
+async function useCreateArticlePermission(
+  req: Request,
+  data: ArticleCreate | ArticleCreate[]
+) {
+  if (!req.session.user) throw 'Login is required'
+  const isArray = Array.isArray(data)
+  const articles = ensureArray(data)
+  let { providerSubId, trocId } = articles[0]
+  /** Permet de valider directement les articles */
+  let accessorIsAdminOrCashier = false
+  if (!providerSubId && !trocId)
+    throw 'article need "providerSubId" or "trocId"'
+
+  const sub = providerSubId
+    ? await Subscribe.findById(providerSubId)
+    : await Subscribe.findOne({ trocId, userId: req.session.user._id })
+  if (!sub) throw new Error('sub not found')
+
+  const accessor = providerSubId
+    ? await Subscribe.findOne({
+        trocId: sub.trocId,
+        userId: req.session.user._id,
+      })
+    : sub
+
+  if (!sub || !accessor) throw `Subscribe not found`
+
+  accessorIsAdminOrCashier =
+    accessor.role === 'admin' || accessor.role === 'cashier'
+
+  // Test le role de l'utilisateur connecté si celui ci n'est pas le fournisseur
+  if (String(sub.userId) !== req.session.user._id) {
+    if (!accessorIsAdminOrCashier) throw 'Not allowed'
+  }
+
+  // Trouve le troc et le tarif correspondant
+  const troc = await Troc.findById(sub.trocId).exec()
+  if (!troc) throw 'Troc is not found !'
+  const tarif = await getTarif(sub._id)
+  if (!tarif) throw 'Tarif is not found !'
+
+  // Controle la limite du nombre d'article
+  const articlesCount = await Article.countDocuments({
+    trocId: sub.trocId,
+    providerSubId: sub._id,
+  })
+  if (articlesCount + articles.length > tarif.maxarticles)
+    throw `The limit of ${tarif.maxarticles} articles is reached`
+  return {
+    isArray,
+    articles,
+    troc,
+    subscribe: sub,
+  }
 }
 
 /**
@@ -22,55 +81,13 @@ function ensureArray<T extends any | any[]>(value: T | T[]): T[] {
  * - L'utilisateur est le fournisseur de l'article ou un cassier du troc
  */
 export const createArticle: RequestHandler<
-  void,
+  any,
   any,
   ArticleCreate | ArticleCreate[]
 > = async (req, res, next) => {
   try {
-    if (!req.session.user) throw 'Login is required'
-    const isArray = Array.isArray(req.body)
-    const articles = ensureArray(req.body)
-    let { providerSubId, trocId } = articles[0]
-    /** Permet de valider directement les articles */
-    let accessorIsAdminOrCashier = false
-    if (!providerSubId && !trocId)
-      throw 'article need "providerSubId" or "trocId"'
-
-    const sub = providerSubId
-      ? await Subscribe.findById(providerSubId)
-      : await Subscribe.findOne({ trocId, userId: req.session.user._id })
-    if (!sub) throw new Error('sub not found')
-
-    const accessor = providerSubId
-      ? await Subscribe.findOne({
-          trocId: sub.trocId,
-          userId: req.session.user._id,
-        })
-      : sub
-
-    if (!sub || !accessor) throw `Subscribe not found`
-
-    accessorIsAdminOrCashier =
-      accessor.role === 'admin' || accessor.role === 'cashier'
-
-    // Test le role de l'utilisateur connecté si celui ci n'est pas le fournisseur
-    if (String(sub.userId) !== req.session.user._id) {
-      if (!accessorIsAdminOrCashier) throw 'Not allowed'
-    }
-
-    // Trouve le troc et le tarif correspondant
-    const troc = await Troc.findById(sub.trocId).exec()
-    if (!troc) throw 'Troc is not found !'
-    const tarif = await getTarif(sub._id)
-    if (!tarif) throw 'Tarif is not found !'
-
-    // Controle la limite du nombre d'article
-    const articlesCount = await Article.countDocuments({
-      trocId: sub.trocId,
-      providerSubId: sub._id,
-    })
-    if (articlesCount + articles.length > tarif.maxarticles)
-      throw `The limit of ${tarif.maxarticles} articles is reached`
+    const { isArray, troc, articles, subscribe } =
+      await useCreateArticlePermission(req, req.body)
 
     // Attribution d'une ref
     // Met a jour les state du troc
@@ -83,9 +100,9 @@ export const createArticle: RequestHandler<
     const articlesCreated = await Article.insertMany(
       articles.map((art, index) => {
         /** Shortcuts */
-        art.providerSubId = sub._id
-        art.providerId = sub.userId
-        art.trocId = sub.trocId
+        art.providerSubId = subscribe._id
+        art.providerId = subscribe.userId
+        art.trocId = subscribe.trocId
 
         /** Preserve order */
         art.index = index
@@ -98,10 +115,40 @@ export const createArticle: RequestHandler<
       })
     )
 
-    console.log(articlesCreated)
-
     if (isArray) return res.json(articlesCreated)
     res.json(articlesCreated[0])
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const importArticles: RequestHandler = async (req, res, next) => {
+  try {
+    const { articles, subscribe } = await useCreateArticlePermission(
+      req,
+      req.body
+    )
+
+    const articlesId = articles.map((art) => new ObjectId(art._id))
+
+    const [articlesCreated, results] = await Promise.all([
+      Article.insertMany(
+        articles.map((art, index) => {
+          art.providerSubId = subscribe._id
+          art.providerId = subscribe.userId
+          art.trocId = subscribe.trocId
+          delete art._id
+          const article = new Article(art)
+          return article
+        })
+      ),
+      Article.updateMany(
+        { _id: { $in: articlesId } },
+        { $set: { isCopied: true } }
+      ),
+    ])
+
+    return res.json(articlesCreated)
   } catch (error) {
     next(error)
   }

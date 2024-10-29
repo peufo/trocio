@@ -3,6 +3,7 @@ const router = express.Router()
 
 import {
   createArticle,
+  importArticles,
   deleteArticle,
   editName,
   editPrice,
@@ -22,6 +23,7 @@ router
   .get('/', getArticles)
   .post('/', createArticle)
   .delete('/', deleteArticle)
+  .post('/import', importArticles)
   .post('/edit-name', editName)
   .post('/edit-price', editPrice)
   .post('/valid', validArticles)

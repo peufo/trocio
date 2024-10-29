@@ -69,13 +69,19 @@ export const getArticleImportable: RequestHandler = async (req, res, next) => {
 
     const subscribe = await Subscribe.findById(subscribeId)
 
-    console.log(subscribe)
-
     const trocs = await Article.aggregate([
       {
         $match: {
           providerId: subscribe?.userId,
-          $or: [{ recover: { $exists: true } }, { recover: { $exists: true } }],
+          $and: [
+            { $or: [{ isCopied: false }, { isCopied: { $exists: false } }] },
+            {
+              $or: [
+                { recover: { $exists: true } },
+                { recover: { $exists: true } },
+              ],
+            },
+          ],
         },
       },
       {
@@ -83,7 +89,13 @@ export const getArticleImportable: RequestHandler = async (req, res, next) => {
           _id: '$trocId',
           articles_count: { $sum: 1 },
           articles: {
-            $push: { _id: '$_id', name: '$name', ref: '$ref', price: '$price' },
+            $push: {
+              _id: '$_id',
+              name: '$name',
+              tagId: '$tagId',
+              ref: '$ref',
+              price: '$price',
+            },
           },
         },
       },

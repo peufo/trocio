@@ -2,6 +2,7 @@ import type { ISubscribe } from './subscribe'
 import type { User } from './user'
 
 export type ArticleCreate = {
+  _id?: string
   /** ID du subscribe de l'utilisateur qui propose l'article */
   providerSubId: string
   /** Shortcuts */
@@ -15,6 +16,7 @@ export type ArticleCreate = {
   price: number
   /** Index pour préserver l'ordre à la création */
   index?: number
+  tagId?: string
 }
 
 export type Article = ArticleCreate & {
