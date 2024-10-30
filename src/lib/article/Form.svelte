@@ -6,12 +6,12 @@
   import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 
   import IconLink from '$lib/util/IconLink.svelte'
-  import type { Article, ArticleCreate, ISubscribe } from 'types'
+  import type { Article, ArticleCreate } from 'types'
   import { api } from '$lib/api'
   import notify from '$lib/notify'
 
   const queryClient = useQueryClient()
-  export let subscribe: ISubscribe
+  export let subscribeId = ''
   export let article: Article | undefined = undefined
   export let actionName = 'Valider'
 

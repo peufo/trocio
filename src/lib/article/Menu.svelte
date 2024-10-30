@@ -60,9 +60,6 @@
   let articleEditDialog: ArticleEditDialog
 
   const queryClient = useQueryClient()
-  let correctionsVisible = false
-
-  $: if (!active) correctionsVisible = false
 
   const queryDelete = useMutation(
     (data: { articleId: string }) =>

@@ -36,21 +36,21 @@
   export let actionName = 'Proposer'
 
   type Mode = 'simple' | 'list' | 'import'
-  type Option = { label: string; getEnable: (sub: ISubscribe) => boolean }
+  type Option = { label: string; getEnable: (sub?: ISubscribe) => boolean }
   let mode: Mode = 'simple'
   const modeLabel: Record<Mode, Option> = {
     simple: { label: 'Simple', getEnable: () => true },
     list: { label: 'Liste', getEnable: () => true },
-    import: { label: 'Importation', getEnable: (sub) => sub.role == 'trader' },
+    import: { label: 'Importation', getEnable: (sub) => sub?.role == 'trader' },
   }
   const modeLabelEntries = Object.entries(modeLabel) as [Mode, Option][]
 
   let keepOpen = false
 
-  $: querySubscribe = useApi<{ subscribeId: string }, ISubscribe>([
-    'subscribes/byId',
-    { subscribeId },
-  ])
+  $: querySubscribe = useApi<{ subscribeId: string }, ISubscribe>({
+    queryKey: ['subscribes/byId', { subscribeId }],
+    enabled: !!subscribeId,
+  })
 
   const dispatch = createEventDispatcher<{
     open: null
@@ -109,7 +109,7 @@
 {/if}
 
 <Dialog bind:active class="pa-4" {fullscreen}>
-  {#if !$querySubscribe.data}
+  {#if !!subscribeId && !$querySubscribe.data}
     <div class="placeholder">
       <ProgressCircular indeterminate />
     </div>
@@ -157,12 +157,7 @@
     </div>
 
     {#if mode === 'simple'}
-      <ArticleForm
-        subscribe={$querySubscribe.data}
-        on:done={handleDone}
-        {article}
-        {actionName}
-      />
+      <ArticleForm {subscribeId} on:done={handleDone} {article} {actionName} />
     {:else if mode === 'list'}
       <ArticleFormList
         subscribe={$querySubscribe.data}
