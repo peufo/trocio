@@ -28,7 +28,7 @@
   })
 
   async function handleSubmit() {
-    if (!article && !subscribe._id)
+    if (!article && !subscribeId)
       return notify.error('subscribeId or article is required')
 
     if (!article)
@@ -36,7 +36,7 @@
         await $createArticle.mutateAsync({
           name: newName,
           price: +newPrice,
-          providerSubId: subscribe._id,
+          providerSubId: subscribeId,
         })
       )
 
