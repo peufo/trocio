@@ -52,7 +52,8 @@
 
   export let isOpen = false
 
-  export let confirmBeforeClear: () => Promise<boolean> | boolean = () => true
+  export let confirmBeforeFocus: (() => Promise<boolean> | boolean) | null =
+    null
   let isFocus = false
   let selectedIndex = 0
   let listContainer: HTMLDivElement
@@ -73,7 +74,6 @@
   }
 
   export async function clear() {
-    if (!(await confirmBeforeClear())) return
     if (selectKey) {
       const query = $params
       delete query[selectKey]
@@ -140,7 +140,14 @@
     }
   }
 
-  function handleFocus(event: FocusEvent) {
+  async function handleFocus(event: FocusEvent) {
+    if (confirmBeforeFocus) {
+      const isConfirmed = await confirmBeforeFocus()
+      if (!isConfirmed) {
+        inputElement?.blur()
+        return
+      }
+    }
     isFocus = true
     isOpen = true
     dispatch('focus', event)

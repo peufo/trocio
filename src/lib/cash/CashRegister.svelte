@@ -32,6 +32,7 @@
   import { subscribe as subscribeSSE } from '$lib/sse'
   import Template from './Template.svelte'
   import ConfirmDialog from './ConfirmDialog.svelte'
+  import { isAutoPurchasesPayment } from '$lib/cash/store'
 
   let clientSelector: MagicSelect
   const subscribeKey = 'client_subscribe_id'
@@ -167,12 +168,18 @@
     paymentDialog.open(subscribe, msg, -balance)
   }
 
-  function confirmBeforeClear(): Promise<boolean> | boolean {
+  async function confirmBeforeFocus(): Promise<boolean> {
+    if ($isAutoPurchasesPayment) return true
     if (!subscribe) return true
     if (Math.abs(balance) < 0.001) return true
-    return confirmDialog.confirm(
+    const confirmed = await confirmDialog.confirm(
       "Le solde n'est pas reglé. Es-tu sur de vouloir quitter ?"
     )
+    if (!confirmed) return false
+    setTimeout(() => {
+      clientSelector.focus()
+    }, 100)
+    return true
   }
 </script>
 
@@ -195,7 +202,7 @@
     <div class="d-flex flex-wrap align-center pb-2" style="gap: 0.5em;">
       <div class:flex-grow-1={$isMobile}>
         <MagicSelect
-          {confirmBeforeClear}
+          {confirmBeforeFocus}
           placeholder="Chercher un client"
           bind:this={clientSelector}
           path="/subscribes"

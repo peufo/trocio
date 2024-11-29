@@ -40,7 +40,7 @@
   styleBox="z-index: 101;"
 >
   <div class="text-h6">{message}</div>
-  <div class="d-flex">
+  <div class="d-flex pt-4" style="gap: 0.5em; justify-content: flex-end;">
     <Button bind:button={btnCancel} type="submit flex-grow">Annuler</Button>
     <Button
       bind:button={btnConfirm}
