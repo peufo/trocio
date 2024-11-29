@@ -31,12 +31,14 @@
   import CashPlaceholder from '$lib/cash/CashPlaceholder.svelte'
   import { subscribe as subscribeSSE } from '$lib/sse'
   import Template from './Template.svelte'
+  import ConfirmDialog from './ConfirmDialog.svelte'
 
   let clientSelector: MagicSelect
   const subscribeKey = 'client_subscribe_id'
   const tabIndexKey = 'cash_register_tab_index'
   let paymentDialog: PaymentDialog
   let guestDialog: GuestDialog
+  let confirmDialog: ConfirmDialog
   let subscribe: SubscribeLookup | undefined = undefined
   let mainContainer: HTMLDivElement
 
@@ -164,6 +166,14 @@
     msg += balance > 0 ? 'client' : 'troc'
     paymentDialog.open(subscribe, msg, -balance)
   }
+
+  function confirmBeforeClear(): Promise<boolean> | boolean {
+    if (!subscribe) return true
+    if (Math.abs(balance) < 0.001) return true
+    return confirmDialog.confirm(
+      "Le solde n'est pas reglé. Es-tu sur de vouloir quitter ?"
+    )
+  }
 </script>
 
 <PaymentDialog bind:this={paymentDialog} />
@@ -174,6 +184,7 @@
     clientSelector.setValue(newSubscribe.name)
   }}
 />
+<ConfirmDialog bind:this={confirmDialog} />
 
 {#if $troc}
   <div
@@ -184,6 +195,7 @@
     <div class="d-flex flex-wrap align-center pb-2" style="gap: 0.5em;">
       <div class:flex-grow-1={$isMobile}>
         <MagicSelect
+          {confirmBeforeClear}
           placeholder="Chercher un client"
           bind:this={clientSelector}
           path="/subscribes"

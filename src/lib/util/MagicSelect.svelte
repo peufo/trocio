@@ -51,6 +51,8 @@
   export let reduceMode = false
 
   export let isOpen = false
+
+  export let confirmBeforeClear: () => Promise<boolean> | boolean = () => true
   let isFocus = false
   let selectedIndex = 0
   let listContainer: HTMLDivElement
@@ -70,7 +72,8 @@
     inputElement?.blur()
   }
 
-  export function clear() {
+  export async function clear() {
+    if (!(await confirmBeforeClear())) return
     if (selectKey) {
       const query = $params
       delete query[selectKey]
@@ -236,7 +239,8 @@
 
         {#if !itemsFiltred.length && !$querySearch.isLoading}
           <div class="item simple-card text-center pa-2">
-            Aucun résultat {#if searchValue} pour <b>{searchValue}</b>{/if}
+            Aucun résultat {#if searchValue}
+              pour <b>{searchValue}</b>{/if}
           </div>
         {/if}
 

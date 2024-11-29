@@ -15,7 +15,6 @@
   // Nécéssaire pour mettre à jour le point sur la map
   $: $trocs = $trocQuery.data ? [$trocQuery.data] : []
   $: $troc = $trocs[0]
-
   $: metatags.title = `Trocio ⋅ ${$trocs[0]?.name}` || 'Trocio'
 </script>
 
