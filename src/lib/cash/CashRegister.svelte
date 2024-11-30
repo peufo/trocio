@@ -178,7 +178,7 @@
     if (!confirmed) return false
     setTimeout(() => {
       clientSelector.focus()
-    }, 100)
+    }, 300)
     return true
   }
 </script>
