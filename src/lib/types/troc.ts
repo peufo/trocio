@@ -1,7 +1,7 @@
-import type { Article } from "$lib/types";
-import type { User } from "$lib/types";
-import type { IPayment } from "./payment";
-import type { ISubscribe } from "./subscribe";
+import type { Article } from "./article.js";
+import type { User } from "./user.js";
+import type { IPayment } from "./payment.js";
+import type { ISubscribe } from "./subscribe.js";
 
 /** Période dont est composé l'horaire */
 export type Period = {

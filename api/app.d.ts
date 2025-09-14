@@ -1,3 +1,5 @@
+import "express-session";
+
 type User = {
   _id: string;
   name: string;

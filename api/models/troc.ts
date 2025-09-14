@@ -1,10 +1,10 @@
-import { model, Schema, Document } from 'mongoose'
-import cc from 'currency-codes'
+import { model, Schema, Document } from "mongoose";
+import cc from "currency-codes";
 
-const ObjectId = Schema.Types.ObjectId
-import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
-import type { Troc } from '../../types'
-import { EMAIL_REGEX } from './utils'
+const ObjectId = Schema.Types.ObjectId;
+import mongooseLeanVirtuals from "mongoose-lean-virtuals";
+import type { Troc } from "../../src/lib/types/index.js";
+import { EMAIL_REGEX } from "./utils.js";
 
 const trocModel = new Schema(
   {
@@ -19,11 +19,11 @@ const trocModel = new Schema(
       required: false,
       validate: {
         validator: (value: string) => {
-          if (!value) return true
-          if (typeof value !== 'string') return false
-          return !!value.match(EMAIL_REGEX)
+          if (!value) return true;
+          if (typeof value !== "string") return false;
+          return !!value.match(EMAIL_REGEX);
         },
-        message: 'Is not valid email',
+        message: "Is not valid email",
       },
     },
     currency: { type: String, enum: cc.codes() },
@@ -36,14 +36,14 @@ const trocModel = new Schema(
       lng: { type: Number, required: notRequiredIfIsTry },
     },
     description: { type: String, required: true },
-    creator: { type: ObjectId, ref: 'user', required: true },
+    creator: { type: ObjectId, ref: "user", required: true },
 
     schedule: [
       {
         name: {
           type: String,
-          enum: ['open', 'deposit', 'recovery', 'sale'],
-          default: 'open',
+          enum: ["open", "deposit", "recovery", "sale"],
+          default: "open",
         },
         open: Date,
         close: Date,
@@ -52,7 +52,7 @@ const trocModel = new Schema(
     ],
     tarif: [
       {
-        name: { type: String, default: 'Tarif' },
+        name: { type: String, default: "Tarif" },
         bydefault: { type: Boolean, default: false },
         margin: { type: Number, default: 0, min: 0, max: 1 },
         fee: [
@@ -62,6 +62,7 @@ const trocModel = new Schema(
           },
         ],
         maxarticles: { type: Number, default: 100, min: 0, max: 10000 },
+        apply: [{ type: String }],
       },
     ],
     articlelastref: { type: Number, required: true, default: 0 },
@@ -79,7 +80,7 @@ const trocModel = new Schema(
     toJSON: { virtuals: true },
     timestamps: true,
   }
-)
+);
 
 /*
 trocModel.virtual('isClosed').get(function () {
@@ -91,10 +92,10 @@ trocModel.virtual('isClosed').get(function () {
 })
 */
 
-trocModel.plugin(mongooseLeanVirtuals)
+trocModel.plugin(mongooseLeanVirtuals);
 
 function notRequiredIfIsTry() {
-  return !this.is_try
+  return !this.is_try;
 }
 
-export default model<Troc & Document>('troc', trocModel)
+export default model<Troc & Document>("troc", trocModel);

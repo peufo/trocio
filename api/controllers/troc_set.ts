@@ -1,8 +1,8 @@
 import type { RequestHandler } from "express";
-import Troc from "../models/troc";
-import User from "../models/user";
-import Subscribe from "../models/subscribe";
-import { getOpt } from "./option";
+import Troc from "../models/troc.js";
+import User from "../models/user.js";
+import Subscribe from "../models/subscribe.js";
+import { getOpt } from "./option.js";
 
 export const createTroc: RequestHandler = async (req, res, next) => {
   if (!req.session.user) return next(Error("Login required"));
@@ -17,6 +17,7 @@ export const createTroc: RequestHandler = async (req, res, next) => {
         margin: 0,
         fee: [{ price: 0, value: 0 }],
         maxarticles: 100,
+        apply: [],
       },
     ];
 

@@ -1,6 +1,6 @@
-import express from 'express'
-const router = express.Router()
-import { login, logout, loginWithGoogle } from '../controllers/user_utils'
+import express from "express";
+const router = express.Router();
+import { login, logout, loginWithGoogle } from "../controllers/user_utils.js";
 import {
   createUser,
   patchMe,
@@ -9,21 +9,21 @@ import {
   resetpwd,
   sendValidMail,
   validMail,
-} from '../controllers/user_set'
-import { getMe, getUserName } from '../controllers/user_get'
+} from "../controllers/user_set.js";
+import { getMe, getUserName } from "../controllers/user_get.js";
 
 router
-  .post('/', createUser, login, getMe)
-  .post('/login', login, getMe)
-  .get('/logout', logout)
-  .get('/login-with-google', loginWithGoogle)
-  .get('/me', getMe)
-  .patch('/me', patchMe, getMe)
-  .post('/me/changepwd', changepwd)
-  .post('/me/send-resetpwd', sendResetPwd)
-  .post('/me/resetpwd', resetpwd)
-  .post('/me/send-validmail', sendValidMail)
-  .post('/me/validmail', validMail)
-  .get('/name', getUserName)
+  .post("/", createUser, login, getMe)
+  .post("/login", login, getMe)
+  .get("/logout", logout)
+  .get("/login-with-google", loginWithGoogle)
+  .get("/me", getMe)
+  .patch("/me", patchMe, getMe)
+  .post("/me/changepwd", changepwd)
+  .post("/me/send-resetpwd", sendResetPwd)
+  .post("/me/resetpwd", resetpwd)
+  .post("/me/send-validmail", sendValidMail)
+  .post("/me/validmail", validMail)
+  .get("/name", getUserName);
 
-export default router
+export default router;

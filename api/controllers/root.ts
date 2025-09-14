@@ -1,40 +1,40 @@
-import { exec } from 'child_process'
+import { exec } from "child_process";
+import mongoose from "mongoose";
 
-import config from '../../config'
-import mongoose from 'mongoose'
-import Article from '../models/article'
-import { getMargin } from './article_utils'
-const { ObjectId } = mongoose.Types
+import config from "../../config.js";
+import Article from "../models/article.js";
+import { getMargin } from "./article_utils.js";
+const { ObjectId } = mongoose.Types;
 
-const { TROCIO_DB, TROCIO_BACKUP } = config
+const { TROCIO_DB, TROCIO_BACKUP } = config;
 
 /**
  * Fait un dump de la DB
  */
 async function backup() {
   return new Promise((resolve, reject) => {
-    const TROCIO_DB_NAME = TROCIO_DB.split('/').slice(-1)
+    const TROCIO_DB_NAME = TROCIO_DB.split("/").slice(-1);
 
     const backupCommand = `mongodump -d ${TROCIO_DB_NAME} -o ${TROCIO_BACKUP}/${TROCIO_DB_NAME}-${new Date()
       .toISOString()
-      .replace(/:|\./g, '-')}`
+      .replace(/:|\./g, "-")}`;
 
     exec(backupCommand, (error, stdout, stderr) => {
-      if (error) reject(error)
-      console.log(stdout)
-      console.log(stderr)
-      resolve(null)
-    })
-  })
+      if (error) reject(error);
+      console.log(stdout);
+      console.log(stderr);
+      resolve(null);
+    });
+  });
 }
 
-function handleError(error: any, label = 'MIGRATION FAILED') {
-  console.log('---------------------------------------------')
-  console.log(`------------  ${label} --------------`)
-  console.log('---------------------------------------------')
-  console.log('')
-  console.error(error)
-  throw error
+function handleError(error: any, label = "MIGRATION FAILED") {
+  console.log("---------------------------------------------");
+  console.log(`------------  ${label} --------------`);
+  console.log("---------------------------------------------");
+  console.log("");
+  console.error(error);
+  throw error;
 }
 
 /**
@@ -43,22 +43,22 @@ function handleError(error: any, label = 'MIGRATION FAILED') {
  */
 export async function cleanUpArticlesMargin() {
   try {
-    await backup()
+    await backup();
 
     const soldArticles = await Article.find({
       sold: { $exists: true },
-    })
+    });
     await Promise.all(
       soldArticles.map(async (art) => {
-        art.margin = await getMargin(art)
-        return art.save()
+        art.margin = await getMargin(art);
+        return art.save();
       })
-    )
+    );
 
-    console.log(`${soldArticles.length} article margin computed`)
-    return
+    console.log(`${soldArticles.length} article margin computed`);
+    return;
   } catch (error) {
-    handleError(error)
+    handleError(error);
   }
 }
 
@@ -67,22 +67,22 @@ export async function cleanUpArticlesMargin() {
  */
 export async function articlesAddTagId() {
   try {
-    await backup()
+    await backup();
     const articles = await Article.find({
       tagId: { $exists: false },
-    })
+    });
     await Promise.all(
       articles.map(async (art) => {
-        art.tagId = new ObjectId() as any
-        return art.save()
+        art.tagId = new ObjectId() as any;
+        return art.save();
       })
-    )
+    );
     await Article.updateMany({
       filter: { tagId: { $exists: false } },
       update: { tagId: new ObjectId() },
-    })
-    return
+    });
+    return;
   } catch (error) {
-    handleError(error)
+    handleError(error);
   }
 }

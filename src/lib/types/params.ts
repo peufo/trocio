@@ -1,5 +1,5 @@
-import type { Article } from "./article";
-import type { ISubscribe } from "./subscribe";
+import type { Article } from "./article.js";
+import type { ISubscribe } from "./subscribe.js";
 
 export type DynamicQueryKey =
   | "exact"

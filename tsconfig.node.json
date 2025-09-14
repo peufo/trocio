@@ -1,13 +1,11 @@
 {
-  "files": ["server.ts"],
-  "ts-node": {
-    "transpileOnly": true
-  },
+  "include": ["api/**/*"],
 
   "compilerOptions": {
-    "outDir": "dist/server",
-    "target": "ES6",
+    "target": "esnext",
     "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "outDir": "dist/server",
 
     "noImplicitAny": false,
     "noUnusedLocals": true,
@@ -21,12 +19,5 @@
     "baseUrl": ".",
     "allowJs": true,
     "checkJs": false
-  },
-
-  /**
-   * Use global.d.ts instead of compilerOptions.types
-   * to avoid limiting type declarations.
-   */
-  "include": ["api/**/*"],
-  "exclude": ["node_modules"]
+  }
 }

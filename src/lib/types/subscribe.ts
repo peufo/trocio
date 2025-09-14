@@ -1,4 +1,4 @@
-import type { User, Troc, Tarif, Article, IPaymentLookup } from "$lib/types";
+import type { User, Troc, Tarif, Article, IPaymentLookup } from "./index.js";
 
 export type RoleEnum = "basic" | "trader" | "cashier" | "admin";
 

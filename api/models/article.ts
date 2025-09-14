@@ -1,9 +1,9 @@
-import { Types, model, Schema, Document } from 'mongoose'
-import type { Article } from '../../types'
-const { ObjectId } = Schema.Types
+import { Types, model, Schema, Document } from "mongoose";
+import type { Article } from "../../src/lib/types/index.js";
+const { ObjectId } = Schema.Types;
 
 let articleModel = new Schema({
-  trocId: { type: ObjectId, ref: 'troc', required: true, index: true },
+  trocId: { type: ObjectId, ref: "troc", required: true, index: true },
   tagId: {
     type: ObjectId,
     required: true,
@@ -16,21 +16,21 @@ let articleModel = new Schema({
   },
   providerSubId: {
     type: ObjectId,
-    ref: 'subscribe',
+    ref: "subscribe",
     required: true,
     index: true,
   },
 
   /** Shortcuts */
-  providerId: { type: ObjectId, ref: 'user', index: true },
-  buyerId: { type: ObjectId, ref: 'user', index: true },
-  validatorId: { type: ObjectId, ref: 'user' },
-  sellerId: { type: ObjectId, ref: 'user' },
+  providerId: { type: ObjectId, ref: "user", index: true },
+  buyerId: { type: ObjectId, ref: "user", index: true },
+  validatorId: { type: ObjectId, ref: "user" },
+  sellerId: { type: ObjectId, ref: "user" },
 
   // index de création pour préserver l'ordre des articles
   index: { type: Number, default: 0 },
   ref: { type: String, required: true },
-  name: { type: String, default: '' },
+  name: { type: String, default: "" },
   price: { type: Number, default: 0, min: 0 },
   fee: { type: Number, default: 0 },
   margin: { type: Number, default: 0 },
@@ -41,17 +41,17 @@ let articleModel = new Schema({
   corrections: [
     {
       timestamp: Date,
-      authorId: { type: ObjectId, ref: 'user', required: true },
-      authorSubId: { type: ObjectId, ref: 'subscribe', required: true },
+      authorId: { type: ObjectId, ref: "user", required: true },
+      authorSubId: { type: ObjectId, ref: "subscribe", required: true },
       event: {
         type: String,
         enum: [
-          'edit-name',
-          'edit-price',
-          'cancel-valided',
-          'cancel-refused',
-          'cancel-sold',
-          'cancel-recover',
+          "edit-name",
+          "edit-price",
+          "cancel-valided",
+          "cancel-refused",
+          "cancel-sold",
+          "cancel-recover",
         ],
       },
       message: String,
@@ -67,38 +67,38 @@ let articleModel = new Schema({
       back: Date,
       raison: String,
       /** @deprecated use giveback.subscribeId */
-      user: { type: ObjectId, ref: 'user' },
-      subscribeId: { type: ObjectId, ref: 'subscribe' },
+      user: { type: ObjectId, ref: "user" },
+      subscribeId: { type: ObjectId, ref: "subscribe" },
     },
   ],
-  buyerSubId: { type: ObjectId, ref: 'subscribe', index: true },
+  buyerSubId: { type: ObjectId, ref: "subscribe", index: true },
   validatorSubId: {
     type: ObjectId,
-    ref: 'subscribe',
+    ref: "subscribe",
     required: isValidedOrRefused,
   },
-  sellerSubId: { type: ObjectId, ref: 'subscribe', required: isSoldOrRecover },
+  sellerSubId: { type: ObjectId, ref: "subscribe", required: isSoldOrRecover },
 
   /** @deprecated */
-  troc: { type: ObjectId, ref: 'troc' },
+  troc: { type: ObjectId, ref: "troc" },
   /** @deprecated  */
-  provider: { type: ObjectId, ref: 'user' },
+  provider: { type: ObjectId, ref: "user" },
   /** @deprecated  */
-  buyer: { type: ObjectId, ref: 'user' },
+  buyer: { type: ObjectId, ref: "user" },
   /** @deprecated  */
-  validator: { type: ObjectId, ref: 'user' },
+  validator: { type: ObjectId, ref: "user" },
   /** @deprecated  */
-  seller: { type: ObjectId, ref: 'user' },
-})
+  seller: { type: ObjectId, ref: "user" },
+});
 
-articleModel.set('timestamps', true)
+articleModel.set("timestamps", true);
 
 function isValidedOrRefused() {
-  return !!this.valided || !!this.refused
+  return !!this.valided || !!this.refused;
 }
 
 function isSoldOrRecover() {
-  return !!this.sold || !!this.recover
+  return !!this.sold || !!this.recover;
 }
 
-export default model<Article & Document>('article', articleModel)
+export default model<Article & Document>("article", articleModel);

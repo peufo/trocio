@@ -1,75 +1,79 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
-import Subscribe from '../models/subscribe'
-import { lookupTarif } from './subscribe_get'
-import type { Article, ArticleState, Tarif } from '../../types'
-const { ObjectId } = mongoose.Types
+import Subscribe from "../models/subscribe.js";
+import { lookupTarif } from "./subscribe_get.js";
+import type {
+  Article,
+  ArticleState,
+  Tarif,
+} from "../../src/lib/types/index.js";
+const { ObjectId } = mongoose.Types;
 
 export async function getTarif(
   subscribeId: string | typeof ObjectId
 ): Promise<Tarif> {
-  const aggregate = Subscribe.aggregate()
+  const aggregate = Subscribe.aggregate();
   const match =
-    typeof subscribeId === 'string'
+    typeof subscribeId === "string"
       ? { _id: new ObjectId(subscribeId) }
-      : { _id: subscribeId }
+      : { _id: subscribeId };
 
-  aggregate.match(match)
-  lookupTarif(aggregate)
-  const subscribes = await aggregate.exec()
-  return subscribes[0].tarif
+  aggregate.match(match);
+  lookupTarif(aggregate);
+  const subscribes = await aggregate.exec();
+  return subscribes[0].tarif;
 }
 
 export async function getFee(article: Article) {
-  const tarif = await getTarif(article.providerSubId)
-  console.log({ article, tarif })
+  const tarif = await getTarif(article.providerSubId);
+  console.log({ article, tarif });
   if (tarif && tarif.fee.length && article.price > 0) {
     return (
       tarif.fee
         .sort((a, b) => b.price - a.price)
         .filter((f) => f.price <= article.price)[0]?.value || 0
-    )
+    );
   } else {
-    return 0
+    return 0;
   }
 }
 
 export async function getMargin(article: Article) {
-  const tarif = await getTarif(article.providerSubId)
-  return tarif && article.price ? tarif.margin * article.price : 0
+  const tarif = await getTarif(article.providerSubId);
+  return tarif && article.price ? tarif.margin * article.price : 0;
 }
 
 interface MatcheStateOption {
   /** Permet au query retourné d'être utilisé dans un aggregat */
-  modeAggregate?: boolean
+  modeAggregate?: boolean;
   /** Le article validés qui ont été vendu ou récupérer sont inclue */
-  validedIncludNextStates?: boolean
+  validedIncludNextStates?: boolean;
 }
 
 export function getMatchesByState(
   state: ArticleState | unknown,
   options: MatcheStateOption = {}
 ): mongoose.FilterQuery<Article>[] {
-  if (typeof state !== 'string') return []
+  if (typeof state !== "string") return [];
   // https://stackoverflow.com/questions/25497150/mongodb-aggregate-by-field-exists
   const exist = options.modeAggregate
     ? (key: ArticleState) => ({ $gt: [`$${key}`, null] })
-    : (key: ArticleState) => ({ [key]: { $exists: true } })
+    : (key: ArticleState) => ({ [key]: { $exists: true } });
   const existNot = options.modeAggregate
     ? (key: ArticleState) => ({ $lte: [`$${key}`, null] })
-    : (key: ArticleState) => ({ [key]: { $exists: false } })
+    : (key: ArticleState) => ({ [key]: { $exists: false } });
 
   const states = {
-    proposed: [existNot('valided'), existNot('refused')],
-    valided: [exist('valided'), existNot('sold'), existNot('recover')],
-    refused: [exist('refused')],
-    sold: [exist('sold')],
-    recover: [exist('recover')],
-  }
+    proposed: [existNot("valided"), existNot("refused")],
+    valided: [exist("valided"), existNot("sold"), existNot("recover")],
+    refused: [exist("refused")],
+    sold: [exist("sold")],
+    recover: [exist("recover")],
+  };
 
-  if (options.validedIncludNextStates) states.valided = [exist('valided')]
+  if (options.validedIncludNextStates) states.valided = [exist("valided")];
 
-  return states[state] || []
+  return states[state] || [];
 }
 
 export const sumOfArticles = (
@@ -84,4 +88,4 @@ export const sumOfArticles = (
       else: 0,
     },
   },
-})
+});

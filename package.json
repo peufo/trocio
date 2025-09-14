@@ -9,20 +9,16 @@
   "scripts": {
     "start": "node ./dist/server/server.js",
     "dev": "run-p dev:*",
-    "dev:api": "nodemon ./api/server.ts --watch ./api",
+    "dev:run": "sleep 1 && export NODE_ENV=development && nodemon ./dist/server/server.js --delay 2000ms --watch ./dist/server",
+    "dev:api": "tsc -p tsconfig.node.json -w --preserveWatchOutput",
     "dev:vite": "vite dev --host",
     "build": "run-s build:*",
     "build:vite": "vite build",
-    "build:server": "tsc --project tsconfig.node.json",
+    "build:api": "tsc -p tsconfig.node.json",
     "sync": "svelte-kit sync",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check-ignore-material": "svelte-kit sync && svelte-check --no-tsconfig --ignore src/lib/material",
     "serve": "pm2 startOrRestart ecosystem.config.js"
-  },
-  "nodemonConfig": {
-    "execMap": {
-      "ts": "ts-node --project tsconfig.node.json"
-    }
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.3.2",
@@ -76,7 +72,6 @@
     "dotenv": "^10.0.0",
     "express": "^4.21.2",
     "express-session": "^1.18.2",
-    "got": "^11.8.6",
     "http-errors": "^2.0.0",
     "http2-proxy": "^5.0.53",
     "json-2-csv": "^3.20.0",
@@ -104,7 +99,10 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "esbuild"
+      "@parcel/watcher",
+      "bufferutil",
+      "esbuild",
+      "svelte-preprocess"
     ]
   }
 }

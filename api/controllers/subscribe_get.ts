@@ -1,172 +1,174 @@
-import type { RequestHandler } from 'express'
-import mongoose from 'mongoose'
-const { ObjectId } = mongoose.Types
+import type { RequestHandler } from "express";
+import mongoose from "mongoose";
+const { ObjectId } = mongoose.Types;
 
-import { lookupUser, populateUser } from './lookup'
-import Subscribe from '../models/subscribe'
-import User from '../models/user'
-import Article from '../models/article'
-import Payment from '../models/payment'
-import type { ISubscribe, SubscribeLookup } from '../../types'
-import { dynamicQuery } from './utils'
-import { sumOfArticles } from './article_utils'
+import { lookupUser, populateUser } from "./lookup.js";
+import Subscribe from "../models/subscribe.js";
+import User from "../models/user.js";
+import Article from "../models/article.js";
+import Payment from "../models/payment.js";
+import type { ISubscribe, SubscribeLookup } from "../../src/lib/types/index.js";
+import { dynamicQuery } from "./utils.js";
+import { sumOfArticles } from "./article_utils.js";
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
   try {
-    let { skip = 0, limit = 10 } = req.query
-    skip = +skip
-    limit = +limit
+    let { skip = 0, limit = 10 } = req.query;
+    skip = +skip;
+    limit = +limit;
 
-    if (!req.session.user) throw 'Login required'
+    if (!req.session.user) throw "Login required";
 
-    const aggregate = Subscribe.aggregate()
+    const aggregate = Subscribe.aggregate();
     aggregate.match({
       userId: new ObjectId(req.session.user._id),
       validedByUser: true,
       // validedByUser: false => invitations
-    })
+    });
 
-    lookupTroc(aggregate)
+    lookupTroc(aggregate);
 
     const subscribes = await aggregate
       .sort({ updatedAt: -1 })
       .skip(skip)
       .limit(limit)
-      .exec()
+      .exec();
 
-    res.json(subscribes)
+    res.json(subscribes);
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Récupère l'activité d'un participant
  */
 export const getResum: RequestHandler = async (req, res, next) => {
   try {
-    const { userId, trocId, subscribeId } = req.query
-    if (subscribeId && typeof subscribeId !== 'string')
-      throw 'subscribeId need to be a string'
-    if (userId && typeof userId !== 'string') throw 'userId need to be a string'
-    if (trocId && typeof trocId !== 'string') throw 'trocId need to be a string'
+    const { userId, trocId, subscribeId } = req.query;
+    if (subscribeId && typeof subscribeId !== "string")
+      throw "subscribeId need to be a string";
+    if (userId && typeof userId !== "string")
+      throw "userId need to be a string";
+    if (trocId && typeof trocId !== "string")
+      throw "trocId need to be a string";
     if (subscribeId && (userId || trocId))
-      throw 'Query "subscribeId" or "userId" and "trocId" are required'
+      throw 'Query "subscribeId" or "userId" and "trocId" are required';
 
     const match = subscribeId
       ? { _id: new ObjectId(subscribeId as string) }
       : {
           userId: new ObjectId(userId as string),
           trocId: new ObjectId(trocId as string),
-        }
+        };
 
-    const aggregate = Subscribe.aggregate()
-    aggregate.match(match)
-    lookupResum(aggregate)
-    lookupTarif(aggregate)
-    lookupUser(aggregate)
-    lookupTroc(aggregate)
+    const aggregate = Subscribe.aggregate();
+    aggregate.match(match);
+    lookupResum(aggregate);
+    lookupTarif(aggregate);
+    lookupUser(aggregate);
+    lookupTroc(aggregate);
 
-    const [subscribe] = await aggregate.exec()
-    res.json(subscribe)
+    const [subscribe] = await aggregate.exec();
+    res.json(subscribe);
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Retourne des chiffre clé du troc
  */
 export const getResumCounts: RequestHandler = async (req, res, next) => {
   try {
-    const { trocId } = req.query
+    const { trocId } = req.query;
 
-    if (!mongoose.isValidObjectId(trocId) || typeof trocId !== 'string')
-      throw 'trocId need to be a string'
+    if (!mongoose.isValidObjectId(trocId) || typeof trocId !== "string")
+      throw "trocId need to be a string";
 
-    const match = { trocId: new ObjectId(trocId) }
+    const match = { trocId: new ObjectId(trocId) };
 
-    const aggregate = Subscribe.aggregate().match(match)
-    lookupResum(aggregate)
+    const aggregate = Subscribe.aggregate().match(match);
+    lookupResum(aggregate);
     aggregate.group({
       _id: null,
       positiveCount: {
-        $sum: { $cond: [{ $gt: ['$resum.balance', 0.01] }, 1, 0] },
+        $sum: { $cond: [{ $gt: ["$resum.balance", 0.01] }, 1, 0] },
       },
       positiveSum: {
         $sum: {
-          $cond: [{ $gt: ['$resum.balance', 0.01] }, '$resum.balance', 0],
+          $cond: [{ $gt: ["$resum.balance", 0.01] }, "$resum.balance", 0],
         },
       },
       negativeCount: {
-        $sum: { $cond: [{ $lt: ['$resum.balance', -0.01] }, 1, 0] },
+        $sum: { $cond: [{ $lt: ["$resum.balance", -0.01] }, 1, 0] },
       },
       negativeSum: {
         $sum: {
-          $cond: [{ $lt: ['$resum.balance', -0.01] }, '$resum.balance', 0],
+          $cond: [{ $lt: ["$resum.balance", -0.01] }, "$resum.balance", 0],
         },
       },
-      benefit: { $sum: { $add: ['$resum.feeSum', '$resum.marginSum'] } },
-      benefitFee: { $sum: '$resum.feeSum' },
-      benefitMargin: { $sum: '$resum.marginSum' },
-    })
+      benefit: { $sum: { $add: ["$resum.feeSum", "$resum.marginSum"] } },
+      benefitFee: { $sum: "$resum.feeSum" },
+      benefitMargin: { $sum: "$resum.marginSum" },
+    });
 
-    const [resum] = await aggregate.exec()
+    const [resum] = await aggregate.exec();
     const [payment] = await Payment.aggregate()
       .match(match)
       .group({
         _id: null,
         paymentCount: { $sum: 1 },
-        paymentSum: { $sum: '$amount' },
-      })
+        paymentSum: { $sum: "$amount" },
+      });
 
-    res.json({ ...resum, ...payment })
+    res.json({ ...resum, ...payment });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 export const getResumePrintData: RequestHandler = async (req, res, next) => {
   try {
-    const { subscribeId } = req.query
-    if (typeof subscribeId !== 'string') throw 'subscribeId query is required'
+    const { subscribeId } = req.query;
+    if (typeof subscribeId !== "string") throw "subscribeId query is required";
 
-    const aggregate = Subscribe.aggregate()
-    aggregate.match({ _id: new ObjectId(subscribeId) })
-    lookupResum(aggregate)
-    lookupTarif(aggregate)
-    lookupUser(aggregate)
-    lookupTroc(aggregate)
-    const [subscribe] = await aggregate.exec()
-    if (!subscribe) throw 'subscribe not found'
+    const aggregate = Subscribe.aggregate();
+    aggregate.match({ _id: new ObjectId(subscribeId) });
+    lookupResum(aggregate);
+    lookupTarif(aggregate);
+    lookupUser(aggregate);
+    lookupTroc(aggregate);
+    const [subscribe] = await aggregate.exec();
+    if (!subscribe) throw "subscribe not found";
 
     const articles = await Article.find({
       providerSubId: subscribeId,
       valided: { $exists: true },
-    })
+    });
 
-    const validedArticles = articles.filter((art) => !art.sold && !art.recover)
-    const soldArticles = articles.filter((art) => art.sold)
-    const recoverArticles = articles.filter((art) => art.recover)
+    const validedArticles = articles.filter((art) => !art.sold && !art.recover);
+    const soldArticles = articles.filter((art) => art.sold);
+    const recoverArticles = articles.filter((art) => art.recover);
 
     res.json({
       subscribe,
       validedArticles,
       soldArticles,
       recoverArticles,
-    })
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 export const getSubscribe: RequestHandler = async (req, res, next) => {
   try {
-    res.json(res.locals.accessed)
+    res.json(res.locals.accessed);
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 export const getSubscribers: RequestHandler = async (req, res, next) => {
   let {
@@ -174,51 +176,51 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
     exact_trocId,
     skip = 0,
     limit = 10,
-    q = '',
+    q = "",
     includResum = false,
     includTarif = false,
     /** Active une recherche d'utilisateur au delà du troc */
     includGlobalUser = false,
-  } = req.query
+  } = req.query;
   try {
     if (!trocId && !exact_trocId)
-      throw 'Query "trocId" or exact_trocId is rquired'
+      throw 'Query "trocId" or exact_trocId is rquired';
 
-    if (typeof q !== 'string') throw 'Query "q" need to be a string'
+    if (typeof q !== "string") throw 'Query "q" need to be a string';
 
-    skip = Number(skip)
-    limit = Number(limit)
+    skip = Number(skip);
+    limit = Number(limit);
 
     // Assure de filtrer sur le troc
     const initialMatch = {
       trocId: new ObjectId((exact_trocId || trocId) as string),
-    }
+    };
 
-    const aggregate = Subscribe.aggregate()
-    aggregate.match(initialMatch)
+    const aggregate = Subscribe.aggregate();
+    aggregate.match(initialMatch);
 
-    lookupUser(aggregate, 'user', { mail: 1 })
+    lookupUser(aggregate, "user", { mail: 1 });
     if (q)
       aggregate.match({
         $or: [
-          { name: new RegExp(q, 'i') },
-          { 'user.name': new RegExp(q, 'i') },
-          { 'user.mail': new RegExp(q, 'i') },
+          { name: new RegExp(q, "i") },
+          { "user.name": new RegExp(q, "i") },
+          { "user.mail": new RegExp(q, "i") },
         ],
-      })
+      });
 
     if (includResum) {
-      lookupResum(aggregate)
+      lookupResum(aggregate);
     }
 
-    if (includTarif) lookupTarif(aggregate)
+    if (includTarif) lookupTarif(aggregate);
 
-    let { match, sort } = dynamicQuery(req.query)
+    let { match, sort } = dynamicQuery(req.query);
 
-    aggregate.match(match)
-    if (Object.keys(sort).length) aggregate.sort(sort)
+    aggregate.match(match);
+    if (Object.keys(sort).length) aggregate.sort(sort);
 
-    const subscribes = await aggregate.skip(skip).limit(limit).exec()
+    const subscribes = await aggregate.skip(skip).limit(limit).exec();
 
     // Inclue la recherche au delà du troc si le nombre de subscribes est inférieur à la limite
     // TODO: skip ne peu pas fonctioner avec cette méthode...
@@ -226,35 +228,35 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
       const users = await User.aggregate()
         .match({
           _id: { $nin: subscribes.map((sub) => sub.userId) },
-          $or: [{ name: new RegExp(q, 'i') }, { mail: new RegExp(q, 'i') }],
+          $or: [{ name: new RegExp(q, "i") }, { mail: new RegExp(q, "i") }],
         })
         .limit(limit - subscribes.length)
         .project({
           _id: null,
-          userId: '$_id',
-          user: { _id: '$_id', name: '$name', mail: '$mail' },
+          userId: "$_id",
+          user: { _id: "$_id", name: "$name", mail: "$mail" },
         })
-        .exec()
+        .exec();
 
-      res.json(hideMail([...subscribes, ...users]))
+      res.json(hideMail([...subscribes, ...users]));
     } else {
-      res.json(hideMail(subscribes))
+      res.json(hideMail(subscribes));
     }
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Cache le mail d'un subscribe si il n'est pas validé pas un client
  */
 function hideMail(subscribes: SubscribeLookup[]): SubscribeLookup[] {
   return subscribes.map((sub) => {
-    if (sub.validedByUser) return sub
-    if (!sub.user?.mail) return sub
-    sub.user.mail = sub.user.mail.replace(/(?<=.+).+(?=.+@)/, '***')
-    return sub
-  })
+    if (sub.validedByUser) return sub;
+    if (!sub.user?.mail) return sub;
+    sub.user.mail = sub.user.mail.replace(/(?<=.+).+(?=.+@)/, "***");
+    return sub;
+  });
 }
 
 /**
@@ -262,33 +264,33 @@ function hideMail(subscribes: SubscribeLookup[]): SubscribeLookup[] {
  */
 export const getSubscribersCount: RequestHandler = async (req, res, next) => {
   try {
-    let { match } = dynamicQuery(req.query)
+    let { match } = dynamicQuery(req.query);
 
-    const count = await Subscribe.countDocuments(match)
-    res.json(count)
+    const count = await Subscribe.countDocuments(match);
+    res.json(count);
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Update aggregate for lookup troc from trocId
  */
 export function lookupTroc(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
-  trocId = '$trocId'
+  trocId = "$trocId"
 ): void {
-  const NOW = new Date()
+  const NOW = new Date();
 
   aggregate
     .lookup({
-      from: 'trocs',
+      from: "trocs",
       let: { trocId },
       pipeline: [
         {
           $match: {
             $expr: {
-              $eq: ['$_id', '$$trocId'],
+              $eq: ["$_id", "$$trocId"],
             },
           },
         },
@@ -312,18 +314,18 @@ export function lookupTroc(
         },
         {
           $addFields: {
-            isClosed: { $gt: [NOW, '$close'] },
+            isClosed: { $gt: [NOW, "$close"] },
             isOpen: {
-              $and: [{ $lt: [NOW, '$close'] }, { $gt: [NOW, '$open'] }],
+              $and: [{ $lt: [NOW, "$close"] }, { $gt: [NOW, "$open"] }],
             },
           },
         },
       ],
-      as: 'troc',
+      as: "troc",
     })
     .addFields({
-      troc: { $arrayElemAt: ['$troc', 0] },
-    })
+      troc: { $arrayElemAt: ["$troc", 0] },
+    });
 }
 
 /**
@@ -331,36 +333,36 @@ export function lookupTroc(
  */
 export function lookupTarif(
   aggregate: mongoose.Aggregate<ISubscribe[]>,
-  tarifId = '$tarifId'
+  tarifId = "$tarifId"
 ): void {
   aggregate
     .lookup({
-      from: 'trocs',
+      from: "trocs",
       let: { tarifId },
       pipeline: [
         {
           $unwind: {
-            path: '$tarif',
+            path: "$tarif",
           },
         },
         {
           $match: {
             $expr: {
-              $eq: ['$$tarifId', '$tarif._id'],
+              $eq: ["$$tarifId", "$tarif._id"],
             },
           },
         },
         {
           $replaceRoot: {
-            newRoot: '$tarif',
+            newRoot: "$tarif",
           },
         },
       ],
-      as: 'tarif',
+      as: "tarif",
     })
     .addFields({
-      tarif: { $arrayElemAt: ['$tarif', 0] },
-    })
+      tarif: { $arrayElemAt: ["$tarif", 0] },
+    });
 }
 
 /**
@@ -369,13 +371,13 @@ export function lookupTarif(
 export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
   aggregate
     .lookup({
-      from: 'articles',
-      let: { subscribeId: '$_id' },
+      from: "articles",
+      let: { subscribeId: "$_id" },
       pipeline: [
         {
           $match: {
             $expr: {
-              $eq: ['$$subscribeId', '$providerSubId'],
+              $eq: ["$$subscribeId", "$providerSubId"],
             },
           },
         },
@@ -383,30 +385,30 @@ export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
           $group: {
             _id: null,
             articleCount: { $sum: 1 },
-            proposedCount: sumOfArticles('proposed'),
-            proposedSum: sumOfArticles('proposed', '$price'),
-            validedCount: sumOfArticles('valided'),
-            validedSum: sumOfArticles('valided', '$price'),
-            refusedCount: sumOfArticles('refused'),
-            feeSum: sumOfArticles('valided', '$fee', {
+            proposedCount: sumOfArticles("proposed"),
+            proposedSum: sumOfArticles("proposed", "$price"),
+            validedCount: sumOfArticles("valided"),
+            validedSum: sumOfArticles("valided", "$price"),
+            refusedCount: sumOfArticles("refused"),
+            feeSum: sumOfArticles("valided", "$fee", {
               validedIncludNextStates: true,
             }),
-            soldCount: sumOfArticles('sold'),
-            soldSum: sumOfArticles('sold', '$price'),
-            marginSum: sumOfArticles('sold', '$margin'),
+            soldCount: sumOfArticles("sold"),
+            soldSum: sumOfArticles("sold", "$price"),
+            marginSum: sumOfArticles("sold", "$margin"),
           },
         },
       ],
-      as: 'providedResum',
+      as: "providedResum",
     })
     .lookup({
-      from: 'articles',
-      let: { subscribeId: '$_id' },
+      from: "articles",
+      let: { subscribeId: "$_id" },
       pipeline: [
         {
           $match: {
             $expr: {
-              $eq: ['$$subscribeId', '$buyerSubId'],
+              $eq: ["$$subscribeId", "$buyerSubId"],
             },
           },
         },
@@ -415,55 +417,55 @@ export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
           $group: {
             _id: null,
             purchasesCount: { $sum: 1 },
-            purchasesSum: { $sum: '$price' },
-            purchases: { $push: '$$ROOT' },
+            purchasesSum: { $sum: "$price" },
+            purchases: { $push: "$$ROOT" },
           },
         },
       ],
-      as: 'purchasesResum',
+      as: "purchasesResum",
     })
     .lookup({
-      from: 'payments',
-      let: { subscribeId: '$_id' },
+      from: "payments",
+      let: { subscribeId: "$_id" },
       pipeline: [
         {
           $match: {
             $expr: {
-              $eq: ['$$subscribeId', '$userSubId'],
+              $eq: ["$$subscribeId", "$userSubId"],
             },
           },
         },
         { $sort: { createdAt: -1 } },
-        { $lookup: populateUser('acceptor') },
-        { $addFields: { acceptor: { $arrayElemAt: ['$acceptor', 0] } } },
+        { $lookup: populateUser("acceptor") },
+        { $addFields: { acceptor: { $arrayElemAt: ["$acceptor", 0] } } },
         {
           $group: {
             _id: null,
             paymentsCount: { $sum: 1 },
-            paymentsSum: { $sum: '$amount' },
-            payments: { $push: '$$ROOT' },
+            paymentsSum: { $sum: "$amount" },
+            payments: { $push: "$$ROOT" },
           },
         },
       ],
-      as: 'paymentsResum',
+      as: "paymentsResum",
     })
     .addFields({
       resum: {
         $mergeObjects: [
-          { $arrayElemAt: ['$providedResum', 0] },
-          { $arrayElemAt: ['$purchasesResum', 0] },
-          { $arrayElemAt: ['$paymentsResum', 0] },
+          { $arrayElemAt: ["$providedResum", 0] },
+          { $arrayElemAt: ["$purchasesResum", 0] },
+          { $arrayElemAt: ["$paymentsResum", 0] },
         ],
       },
     })
     .addFields({
-      'resum.balance': {
+      "resum.balance": {
         $subtract: [
           {
-            $sum: ['$resum.paymentsSum', '$resum.soldSum'],
+            $sum: ["$resum.paymentsSum", "$resum.soldSum"],
           },
           {
-            $sum: ['$resum.feeSum', '$resum.marginSum', '$resum.purchasesSum'],
+            $sum: ["$resum.feeSum", "$resum.marginSum", "$resum.purchasesSum"],
           },
         ],
       },
@@ -472,5 +474,5 @@ export function lookupResum(aggregate: mongoose.Aggregate<ISubscribe[]>): void {
       providedResum: 0,
       purchasesResum: 0,
       paymentsResum: 0,
-    })
+    });
 }

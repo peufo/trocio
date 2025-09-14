@@ -1,152 +1,152 @@
-import { Router } from 'express'
-import mongoose from 'mongoose'
+import { Router } from "express";
+import mongoose from "mongoose";
 
-import config from '../../config'
-import User from '../models/user'
-import Troc from '../models/troc'
-import Article from '../models/article'
-import Payment from '../models/payment'
-import Subscribe from '../models/subscribe'
-import { getOptions, setOption } from '../controllers/option'
-import { articlesAddTagId } from '../controllers/root'
-import { dynamicQuery } from '../controllers/utils'
+import config from "../../config.js";
+import User from "../models/user.js";
+import Troc from "../models/troc.js";
+import Article from "../models/article.js";
+import Payment from "../models/payment.js";
+import Subscribe from "../models/subscribe.js";
+import { getOptions, setOption } from "../controllers/option.js";
+import { articlesAddTagId } from "../controllers/root.js";
+import { dynamicQuery } from "../controllers/utils.js";
 
-const router = Router()
-const { ObjectId } = mongoose.Types
+const router = Router();
+const { ObjectId } = mongoose.Types;
 
 router
-  .get('/', (req, res, next) => {
-    res.json({ success: true, message: 'Yo root user' })
+  .get("/", (req, res, next) => {
+    res.json({ success: true, message: "Yo root user" });
   })
-  .get('/options', getOptions)
-  .post('/options', setOption)
-  .get('/envs', (req, res, next) => {
-    const options: { name: string; value: string }[] = []
+  .get("/options", getOptions)
+  .post("/options", setOption)
+  .get("/envs", (req, res, next) => {
+    const options: { name: string; value: string }[] = [];
     for (const key in config) {
       if (key.match(/TROCIO/)) {
         options.push({
           name: key,
           value: config[key],
-        })
+        });
       }
     }
-    res.json(options)
+    res.json(options);
   })
-  .post('/addcredit', (req, res, next) => {
-    let { user } = req.body
+  .post("/addcredit", (req, res, next) => {
+    let { user } = req.body;
     User.findOne({ _id: user }, { mail: 1, creditTroc: 1 }, {}, (err, user) => {
-      if (err || !user) return next(err || Error('User not found'))
-      if (user.creditTroc) user.creditTroc++
-      else user.creditTroc = 1
+      if (err || !user) return next(err || Error("User not found"));
+      if (user.creditTroc) user.creditTroc++;
+      else user.creditTroc = 1;
       user.save((err) => {
-        if (err) return next(err)
+        if (err) return next(err);
         res.json({
           message: `One credit is added for ${user.mail}\nTotal: ${user.creditTroc}`,
-        })
-      })
-    })
+        });
+      });
+    });
   })
-  .get('/users', async (req, res, next) => {
+  .get("/users", async (req, res, next) => {
     try {
-      const { limit = 20, skip = 0 } = req.query
-      let { match, sort } = dynamicQuery(req.query)
+      const { limit = 20, skip = 0 } = req.query;
+      let { match, sort } = dynamicQuery(req.query);
 
       const aggregate = User.aggregate()
         .lookup({
-          from: 'trocs',
-          let: { userId: '$_id' },
+          from: "trocs",
+          let: { userId: "$_id" },
           pipeline: [
             {
               $match: {
-                $expr: { $eq: ['$$userId', '$creator'] },
+                $expr: { $eq: ["$$userId", "$creator"] },
               },
             },
             {
               $group: {
                 _id: null,
                 count: {
-                  $sum: { $cond: [{ $eq: ['$is_try', false] }, 1, 0] },
+                  $sum: { $cond: [{ $eq: ["$is_try", false] }, 1, 0] },
                 },
                 countTry: {
-                  $sum: { $cond: [{ $eq: ['$is_try', true] }, 1, 0] },
+                  $sum: { $cond: [{ $eq: ["$is_try", true] }, 1, 0] },
                 },
               },
             },
           ],
-          as: 'trocs',
+          as: "trocs",
         })
         .addFields({
-          trocs: { $arrayElemAt: ['$trocs', 0] },
+          trocs: { $arrayElemAt: ["$trocs", 0] },
         })
-        .match(match)
+        .match(match);
 
-      if (Object.keys(sort).length) aggregate.sort(sort)
-      aggregate.skip(+skip).limit(+limit)
-      const users = await aggregate.exec()
-      res.json(users)
+      if (Object.keys(sort).length) aggregate.sort(sort);
+      aggregate.skip(+skip).limit(+limit);
+      const users = await aggregate.exec();
+      res.json(users);
     } catch (error) {
-      next(error)
+      next(error);
     }
   })
-  .get('/users/count', async (req, res, next) => {
-    const userCount = await User.count()
-    res.json(userCount)
+  .get("/users/count", async (req, res, next) => {
+    const userCount = await User.count();
+    res.json(userCount);
   })
-  .get('/trocs', async (req, res, next) => {
-    const { limit = 20, skip = 0 } = req.query
-    let { match, sort } = dynamicQuery(req.query)
+  .get("/trocs", async (req, res, next) => {
+    const { limit = 20, skip = 0 } = req.query;
+    let { match, sort } = dynamicQuery(req.query);
     const aggregate = Troc.aggregate()
       .match(match)
       .lookup({
-        from: 'users',
-        localField: 'creator',
-        foreignField: '_id',
-        as: 'creator',
+        from: "users",
+        localField: "creator",
+        foreignField: "_id",
+        as: "creator",
       })
       .addFields({
-        creator: { $arrayElemAt: ['$creator', 0] },
-      })
+        creator: { $arrayElemAt: ["$creator", 0] },
+      });
 
-    if (Object.keys(sort).length) aggregate.sort(sort)
-    aggregate.skip(+skip).limit(+limit)
+    if (Object.keys(sort).length) aggregate.sort(sort);
+    aggregate.skip(+skip).limit(+limit);
 
-    const trocs = await aggregate.exec()
-    res.json(trocs)
+    const trocs = await aggregate.exec();
+    res.json(trocs);
   })
-  .get('/articles', (req, res, next) => {
+  .get("/articles", (req, res, next) => {
     Article.find(req.query, (err, articles) => {
-      if (err) return next(err)
-      res.json(articles)
-    })
+      if (err) return next(err);
+      res.json(articles);
+    });
   })
-  .get('/payments', (req, res, next) => {
+  .get("/payments", (req, res, next) => {
     Payment.find(req.query, (err, payments) => {
-      if (err) return next(err)
-      res.json(payments)
-    })
+      if (err) return next(err);
+      res.json(payments);
+    });
   })
-  .get('/mails', (req, res, next) => {
+  .get("/mails", (req, res, next) => {
     User.find(req.query, { mail: 1 }).exec((err, users) => {
-      if (err) return next(err)
-      let str = users.map((user) => user.mail).join('<br>')
-      res.send(str)
-    })
+      if (err) return next(err);
+      let str = users.map((user) => user.mail).join("<br>");
+      res.send(str);
+    });
   })
-  .get('/subscribes', async (req, res, next) => {
+  .get("/subscribes", async (req, res, next) => {
     try {
-      const { trocId } = req.query
-      if (typeof trocId !== 'string') throw 'trocId is required'
+      const { trocId } = req.query;
+      if (typeof trocId !== "string") throw "trocId is required";
 
       const subscribes = await Subscribe.aggregate()
         .match({ trocId: new ObjectId(trocId) })
         .lookup({
-          from: 'users',
-          let: { userId: '$userId' },
+          from: "users",
+          let: { userId: "$userId" },
           pipeline: [
             {
               $match: {
                 $expr: {
-                  $eq: ['$$userId', '$_id'],
+                  $eq: ["$$userId", "$_id"],
                 },
               },
             },
@@ -154,49 +154,49 @@ router
               $project: { name: 1, mail: 1 },
             },
           ],
-          as: 'user',
+          as: "user",
         })
         .addFields({
-          user: { $arrayElemAt: ['$user', 0] },
+          user: { $arrayElemAt: ["$user", 0] },
         })
         .addFields({
-          user_name: '$user.name',
-          user_mail: '$user.mail',
+          user_name: "$user.name",
+          user_mail: "$user.mail",
         })
         .project({ user: 0 })
-        .exec()
+        .exec();
 
-      res.json(subscribes)
+      res.json(subscribes);
     } catch (error) {
-      next(error)
+      next(error);
     }
   })
-  .post('/articlesAddTagId', async (req, res, next) => {
+  .post("/articlesAddTagId", async (req, res, next) => {
     try {
-      await articlesAddTagId()
-      res.json({ success: true, message: 'Articles has tagId' })
+      await articlesAddTagId();
+      res.json({ success: true, message: "Articles has tagId" });
     } catch (error) {
-      next(error)
+      next(error);
     }
   })
-  .post('/remove-troc', async (req, res, next) => {
-    const { trocId } = req.body
-    if (!trocId) return next(Error('trocId field is required in body'))
+  .post("/remove-troc", async (req, res, next) => {
+    const { trocId } = req.body;
+    if (!trocId) return next(Error("trocId field is required in body"));
     try {
-      const troc = await Troc.findById(trocId).exec()
-      if (!troc) throw 'Troc not found'
+      const troc = await Troc.findById(trocId).exec();
+      if (!troc) throw "Troc not found";
 
       let { deletedCount: deletedSubscribes } = await Subscribe.deleteMany({
         trocId: troc._id,
-      }).exec()
+      }).exec();
 
       let deletedArticles = await Article.deleteMany({
         troc: troc._id,
       })
         .remove()
-        .exec()
+        .exec();
 
-      await Troc.deleteOne({ _id: troc._id }).exec()
+      await Troc.deleteOne({ _id: troc._id }).exec();
 
       res.json({
         success: true,
@@ -204,10 +204,10 @@ router
             ${troc.name} is removed,
             ${deletedSubscribes} subscribes and ${deletedArticles} articles
         `,
-      })
+      });
     } catch (error) {
-      next(error)
+      next(error);
     }
-  })
+  });
 
-export default router
+export default router;

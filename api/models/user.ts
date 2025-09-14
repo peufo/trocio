@@ -1,23 +1,23 @@
-import { model, Schema, Document, Model } from 'mongoose'
-import bcrypt from 'bcrypt'
+import { model, Schema, Document, Model } from "mongoose";
+import bcrypt from "bcrypt";
 
-import type { UserWithoutId } from '../../types'
-import { EMAIL_REGEX } from './utils'
+import type { UserWithoutId } from "../../src/lib/types/index.js";
+import { EMAIL_REGEX } from "./utils.js";
 
-const SALT_WORK_FACTOR = 10
-const MAX_LOGIN_ATTEMPTS = 12
-const LOCK_TIME = 2 * 60 * 60 * 1000 // 2h
+const SALT_WORK_FACTOR = 10;
+const MAX_LOGIN_ATTEMPTS = 12;
+const LOCK_TIME = 2 * 60 * 60 * 1000; // 2h
 
 export interface UserDocument extends UserWithoutId, Document {
-  isLocked: boolean
+  isLocked: boolean;
   /** Methods */
-  comparePassword(candidatePassword: string): Promise<boolean>
-  incLoginAttempts(): Promise<UserDocument>
+  comparePassword(candidatePassword: string): Promise<boolean>;
+  incLoginAttempts(): Promise<UserDocument>;
 }
 
 export interface UserModel extends Model<UserDocument> {
   /** Statics */
-  getAuthenticated(mail: string, password: string): Promise<UserDocument>
+  getAuthenticated(mail: string, password: string): Promise<UserDocument>;
 }
 
 const userSchema = new Schema<UserDocument, UserModel>({
@@ -39,64 +39,65 @@ const userSchema = new Schema<UserDocument, UserModel>({
   creditTroc: { type: Number, default: 0 },
   acceptTerms: { type: Boolean, default: false },
   lastLogin: Date,
-})
+});
 
-userSchema.set('timestamps', true)
+userSchema.set("timestamps", true);
 
-userSchema.virtual('isLocked').get(function (this: UserDocument) {
-  return !!(this.lockUntil && this.lockUntil > Date.now())
-})
+userSchema.virtual("isLocked").get(function (this: UserDocument) {
+  return !!(this.lockUntil && this.lockUntil > Date.now());
+});
 
-userSchema.pre<UserDocument>('save', async function (next) {
+userSchema.pre<UserDocument>("save", async function (next) {
   // Hash password
-  if (this.isModified('password')) {
-    const salt = await bcrypt.genSalt(SALT_WORK_FACTOR)
-    const hash = await bcrypt.hash(this.password, salt)
-    this.password = hash
+  if (this.isModified("password")) {
+    const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
+    const hash = await bcrypt.hash(this.password, salt);
+    this.password = hash;
   }
   // Invalid mail
-  if (this.isModified('mail') && !this.isNew) {
-    this.mailvalided = false
+  if (this.isModified("mail") && !this.isNew) {
+    this.mailvalided = false;
   }
-})
+});
 
 userSchema.methods.comparePassword = function (
   this: UserDocument,
   candidatePassword: string
 ) {
-  return bcrypt.compare(candidatePassword, this.password)
-}
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 userSchema.methods.incLoginAttempts = async function (this: UserDocument) {
   if (this.lockUntil && this.lockUntil < Date.now()) {
     return this.updateOne({
       $set: { loginAttempts: 1 },
       $unset: { lockUntil: 1 },
-    }).exec()
+    }).exec();
   }
-  const updates = { $inc: { loginAttempts: 1 }, $set: {} }
+  const updates = { $inc: { loginAttempts: 1 }, $set: {} };
   if (!this.isLocked && this.loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS) {
-    updates.$set = { lockUntil: Date.now() + LOCK_TIME }
+    updates.$set = { lockUntil: Date.now() + LOCK_TIME };
   }
 
-  return this.updateOne(updates).exec()
-}
+  return this.updateOne(updates).exec();
+};
 
 userSchema.statics.getAuthenticated = async function (
   this: Model<UserDocument>,
   mail: string,
   password: string
 ) {
-  const user = await this.findOne({ mail }).exec()
-  if (!user) throw Error(`public: Le mail indiqué n'est associé à aucun compte`)
+  const user = await this.findOne({ mail }).exec();
+  if (!user)
+    throw Error(`public: Le mail indiqué n'est associé à aucun compte`);
   if (user.isLocked) {
-    throw Error(`public: Ce compte est temporairement verrouillé`)
+    throw Error(`public: Ce compte est temporairement verrouillé`);
   }
 
-  const isMatch = await user.comparePassword(password)
+  const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    await user.incLoginAttempts()
-    throw Error('public: Mot de passe invalide ')
+    await user.incLoginAttempts();
+    throw Error("public: Mot de passe invalide ");
   }
 
   await user
@@ -104,8 +105,8 @@ userSchema.statics.getAuthenticated = async function (
       $set: { loginAttempts: 0, lastLogin: new Date() },
       $unset: { lockUntil: 1 },
     })
-    .exec()
-  return user
-}
+    .exec();
+  return user;
+};
 
-export default model<UserDocument, UserModel>('user', userSchema)
+export default model<UserDocument, UserModel>("user", userSchema);

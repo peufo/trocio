@@ -1,2 +1,2 @@
-export * from './getters'
-export * from './setters'
+export * from "./getters.js";
+export * from "./setters.js";

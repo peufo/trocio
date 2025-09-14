@@ -1,7 +1,7 @@
-import type { RequestHandler } from 'express'
-import type { IPaymentCreate } from '../../../types'
-import Payment from '../../models/payment'
-import Subscribe from '../../models/subscribe'
+import type { RequestHandler } from "express";
+import type { IPaymentCreate } from "../../../src/lib/types/index.js";
+import Payment from "../../models/payment.js";
+import Subscribe from "../../models/subscribe.js";
 
 export const createPayment: RequestHandler<any, any, IPaymentCreate> = async (
   req,
@@ -9,22 +9,22 @@ export const createPayment: RequestHandler<any, any, IPaymentCreate> = async (
   next
 ) => {
   try {
-    const { userSubId, amount, message = '' } = req.body
+    const { userSubId, amount, message = "" } = req.body;
 
-    if (!req.session.user) throw 'Login required !'
-    if (!userSubId) throw 'userSubId is required'
-    if (!amount) throw 'amount is required'
+    if (!req.session.user) throw "Login required !";
+    if (!userSubId) throw "userSubId is required";
+    if (!amount) throw "amount is required";
 
-    const acceded = await Subscribe.findById(userSubId)
-    if (!acceded) throw 'acceded not found'
+    const acceded = await Subscribe.findById(userSubId);
+    if (!acceded) throw "acceded not found";
 
     const accesor = await Subscribe.findOne({
       userId: req.session.user._id,
       trocId: acceded.trocId,
-    })
-    if (!accesor) throw 'accesor not found'
-    if (accesor.role !== 'admin' && accesor.role !== 'cashier')
-      throw 'Not allowed'
+    });
+    if (!accesor) throw "accesor not found";
+    if (accesor.role !== "admin" && accesor.role !== "cashier")
+      throw "Not allowed";
 
     const payment = new Payment({
       trocId: acceded.trocId,
@@ -34,11 +34,11 @@ export const createPayment: RequestHandler<any, any, IPaymentCreate> = async (
       acceptorId: accesor.userId,
       amount,
       message,
-    })
+    });
 
-    await payment.save()
-    res.json(payment)
+    await payment.save();
+    res.json(payment);
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
