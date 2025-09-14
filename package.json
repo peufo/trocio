@@ -13,7 +13,7 @@
     "dev:run": "sleep 1 && export NODE_ENV=development && nodemon ./dist/server/server.js --delay 2000ms --watch ./dist/server",
     "dev:api": "tsc -p tsconfig.node.json -w --preserveWatchOutput",
     "dev:vite": "vite dev --host",
-    "build": "run-s build:*",
+    "build": "build:api && build:vite",
     "build:vite": "vite build",
     "build:api": "tsc -p tsconfig.node.json",
     "sync": "svelte-kit sync",
