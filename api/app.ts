@@ -13,7 +13,7 @@ import compression from "compression";
 import createError from "http-errors";
 
 import { ensureIsRootUser } from "./controllers/access.js";
-import config from "../config.js";
+import config from "./config.js";
 import { initOptions } from "./controllers/option.js";
 
 import routesArticle from "./routes/article.js";

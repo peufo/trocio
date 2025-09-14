@@ -1,7 +1,7 @@
 import nodemailer, { type SendMailOptions } from "nodemailer";
 
 import type { User } from "../../src/lib/types/index.js";
-import config from "../../config.js";
+import config from "../config.js";
 import { generateToken } from "./token.js";
 
 const {

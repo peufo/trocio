@@ -1,7 +1,7 @@
 import express from "express";
 
 import type { OpenCageResult } from "../../src/lib/types/index.js";
-import config from "../../config.js";
+import config from "../config.js";
 const router = express.Router();
 
 router.get("/geocode/:query", (req, res, next) => {

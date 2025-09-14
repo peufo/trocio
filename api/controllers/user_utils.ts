@@ -3,7 +3,7 @@ import qs from "qs";
 import randomize from "randomatic";
 
 import UserModel from "../models/user.js";
-import config from "../../config.js";
+import config from "../config.js";
 import mail from "./mail.js";
 import { User } from "../../src/lib/types/index.js";
 

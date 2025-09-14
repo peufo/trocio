@@ -1,7 +1,7 @@
 import type { RequestHandler, Request, Response } from "express";
 import createError from "http-errors";
 
-import config from "../../config.js";
+import config from "../config.js";
 import Subscribe from "../models/subscribe.js";
 
 const { TROCIO_ROOT_USER } = config;

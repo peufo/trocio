@@ -5,7 +5,7 @@
     "target": "esnext",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "outDir": "dist/server",
+    "outDir": "build/api",
 
     "noImplicitAny": false,
     "noUnusedLocals": true,

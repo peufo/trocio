@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 
 import Message from "../models/message.js";
 import { transporter } from "./mail.js";
-import config from "../../config.js";
+import config from "../config.js";
 
 export const createContact: RequestHandler = async (req, res, next) => {
   try {

@@ -1,7 +1,7 @@
 import { exec } from "child_process";
 import mongoose from "mongoose";
 
-import config from "../../config.js";
+import config from "../config.js";
 import Article from "../models/article.js";
 import { getMargin } from "./article_utils.js";
 const { ObjectId } = mongoose.Types;
