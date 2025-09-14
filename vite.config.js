@@ -1,49 +1,30 @@
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
-import sveltePreprocess from 'svelte-preprocess'
-import { mdsvex } from 'mdsvex'
-import fs from 'fs'
+import { defineConfig } from "vite";
+import fs from "fs";
+
+import devtoolsJson from "vite-plugin-devtools-json";
+import { sveltekit } from "@sveltejs/kit/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    svelte({
-      extensions: ['.svelte', '.md'],
-      preprocess: [
-        mdsvex({ extension: '.md' }),
-        sveltePreprocess({
-          scss: {
-            includePaths: ['src/theme'],
-          },
-        }),
-      ],
-    }),
-  ],
-  clearScreen: false,
-  resolve: {
-    alias: {
-      $lib: '/src/lib',
-      $assets: '/src/assets',
-      $material: '/src/material',
-    },
-  },
-  optimizeDeps: {
-    exclude: ['@roxi/routify', '@sveltestack/svelte-query'],
-  },
+  plugins: [sveltekit(), devtoolsJson()],
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:5001',
-        rewrite: (path) => path.replace(/^\/api/, ''),
+      "/api": {
+        target: "http://localhost:5001",
+        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
     https: {
-      key: readIfExists('localhost-key.pem'),
-      cert: readIfExists('localhost.pem'),
+      key: readIfExists("localhost-key.pem"),
+      cert: readIfExists("localhost.pem"),
     },
   },
-})
+});
 
+/**
+ * @param {string} path
+ * @returns
+ */
 function readIfExists(path) {
-  return fs.existsSync(path) ? fs.readFileSync(path) : ''
+  return fs.existsSync(path) ? fs.readFileSync(path) : "";
 }

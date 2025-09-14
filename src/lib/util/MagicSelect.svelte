@@ -1,200 +1,200 @@
 <script lang="ts">
-  import { createEventDispatcher, tick } from 'svelte'
-  import { fade, fly } from 'svelte/transition'
-  import { flip } from 'svelte/animate'
-  import { url, params, goto, redirect } from '@roxi/routify'
-  import { debounce } from 'debounce'
+  import { createEventDispatcher, tick } from "svelte";
+  import { fade, fly } from "svelte/transition";
+  import { flip } from "svelte/animate";
+  import { debounce } from "debounce";
 
-  import { Button } from '$material'
-  import { isMobile } from '$lib/store/layout'
-  import SearchTextField from '$lib/util/SearchTextField.svelte'
-  import Loader from '$lib/util/Loader.svelte'
-  import { useInfinitApi } from '$lib/api'
+  import { Button } from "$lib/material";
+  import { isMobile } from "$lib/store/layout";
+  import SearchTextField from "$lib/util/SearchTextField.svelte";
+  import Loader from "$lib/util/Loader.svelte";
+  import { useInfinitApi } from "$lib/api";
+  import { goto } from "$app/navigation";
+  import { urlParam } from "$lib/param";
 
-  let klass = ''
-  export { klass as class }
-  export let style = ''
+  let klass = "";
+  export { klass as class };
+  export let style = "";
 
-  export let label = ''
-  export let inputElement: HTMLInputElement | undefined = undefined
-  export let selectedItem: any = null
-  export let queryParams: object = {}
-  export let searchValue = ''
+  export let label = "";
+  export let inputElement: HTMLInputElement | undefined = undefined;
+  export let selectedItem: any = null;
+  export let queryParams: object = {};
+  export let searchValue = "";
   /** Désactive la pagination */
-  export let disableFetchNext = false
+  export let disableFetchNext = false;
 
   /** Url path for search items */
-  export let path: string
+  export let path: string;
   /** key used in url for search values */
-  export let searchKey: string
+  export let searchKey: string;
   /** key used in url for select à value. exemple: 'providerId' */
-  export let selectKey: string | undefined = undefined
+  export let selectKey: string | undefined = undefined;
 
   /** Function for obtain unique string key from item */
-  export let getKey: (item: any) => string = (item) => item?._id
+  export let getKey: (item: any) => string = (item) => item?._id;
   /** Items key hidden */
-  export let exepted: string[] = []
+  export let exepted: string[] = [];
 
   /** Maintien la valeur de la sélection est maintenue dans le champ de text */
-  export let keepValue = false
+  export let keepValue = false;
   /** Maintien le focus sur le champs de recherche lors des seléction */
-  export let keepFocus = false
+  export let keepFocus = false;
 
   /** func used for obtain name from item */
-  export let getValue: (item: any) => string = (item) => item?.name
+  export let getValue: (item: any) => string = (item) => item?.name;
   /** func used for obtain the secoundary name from item */
-  export let getValue2: ((item: any) => string) | undefined = undefined
+  export let getValue2: ((item: any) => string) | undefined = undefined;
 
   /** Les choix sont en permanance visible */
-  export let flatMode = false
+  export let flatMode = false;
   /** Le champ est reduit à un simple îcon*/
-  export let reduceMode = false
+  export let reduceMode = false;
 
-  export let isOpen = false
+  export let isOpen = false;
 
   export let confirmBeforeFocus: (() => Promise<boolean> | boolean) | null =
-    null
-  let isFocus = false
-  let selectedIndex = 0
-  let listContainer: HTMLDivElement
+    null;
+  let isFocus = false;
+  let selectedIndex = 0;
+  let listContainer: HTMLDivElement;
 
   interface EventsMap {
-    select: any
-    focus: FocusEvent
-    blur: FocusEvent
+    select: any;
+    focus: FocusEvent;
+    blur: FocusEvent;
   }
 
-  const dispatch = createEventDispatcher<EventsMap>()
+  const dispatch = createEventDispatcher<EventsMap>();
 
   export function focus() {
-    inputElement?.focus()
+    inputElement?.focus();
   }
   export function blur() {
-    inputElement?.blur()
+    inputElement?.blur();
   }
 
   export async function clear() {
     if (selectKey) {
-      const query = $params
-      delete query[selectKey]
-      $redirect($url(), query)
+      goto($urlParam.without(selectKey));
     }
-    selectedItem = null
-    searchValue = ''
-    if (inputElement) inputElement.value = ''
+    selectedItem = null;
+    searchValue = "";
+    if (inputElement) inputElement.value = "";
   }
 
   export function setValue(value: string) {
-    if (inputElement) inputElement.value = value
+    if (inputElement) inputElement.value = value;
   }
 
   $: querySearch = useInfinitApi<any, any[]>([
     path,
     { [searchKey]: searchValue, ...queryParams },
-  ])
-  $: items = $querySearch.data ? $querySearch.data.pages.flat() : []
-  $: itemsFiltred = items.filter((item) => !exepted.includes(getKey(item)))
+  ]);
+  $: items = $querySearch.data ? $querySearch.data.pages.flat() : [];
+  $: itemsFiltred = items.filter((item) => !exepted.includes(getKey(item)));
 
   async function handleSelect(item: any) {
     if (selectKey) {
-      const query = $params
-      query[selectKey] = getKey(item)
-      $goto($url(), query)
+      goto($urlParam.with({ [selectKey]: getKey(item) }));
     }
 
-    selectedItem = item
-    dispatch('select', item)
-    if (!inputElement) return
-    if (!flatMode) inputElement.value = keepValue ? getValue(item) : ''
-    if (!$isMobile && keepFocus) inputElement.focus()
-    else inputElement.blur()
-    await tick()
+    selectedItem = item;
+    dispatch("select", item);
+    if (!inputElement) return;
+    if (!flatMode) inputElement.value = keepValue ? getValue(item) : "";
+    if (!$isMobile && keepFocus) inputElement.focus();
+    else inputElement.blur();
+    await tick();
 
     if (selectedIndex >= itemsFiltred.length)
-      selectedIndex = itemsFiltred.length - 1
+      selectedIndex = itemsFiltred.length - 1;
   }
 
   function handleKeydown(event: KeyboardEvent) {
     switch (event.key) {
-      case 'Enter':
-        if ($isMobile) inputElement?.blur()
+      case "Enter":
+        if ($isMobile) inputElement?.blur();
         else if (itemsFiltred[selectedIndex])
-          handleSelect(itemsFiltred[selectedIndex])
+          handleSelect(itemsFiltred[selectedIndex]);
 
-        break
+        break;
 
-      case 'ArrowDown':
-        event.preventDefault()
-        if (++selectedIndex >= itemsFiltred.length) selectedIndex = 0
-        scrollToSelected()
-        break
+      case "ArrowDown":
+        event.preventDefault();
+        if (++selectedIndex >= itemsFiltred.length) selectedIndex = 0;
+        scrollToSelected();
+        break;
 
-      case 'ArrowUp':
-        event.preventDefault()
-        if (--selectedIndex < 0) selectedIndex = itemsFiltred.length - 1
-        scrollToSelected()
-        break
+      case "ArrowUp":
+        event.preventDefault();
+        if (--selectedIndex < 0) selectedIndex = itemsFiltred.length - 1;
+        scrollToSelected();
+        break;
 
       default:
-        selectedIndex = 0
+        selectedIndex = 0;
     }
   }
 
   async function handleFocus(event: FocusEvent) {
     if (confirmBeforeFocus) {
-      const isConfirmed = await confirmBeforeFocus()
+      const isConfirmed = await confirmBeforeFocus();
       if (!isConfirmed) {
-        inputElement?.blur()
-        return
+        inputElement?.blur();
+        return;
       }
     }
-    isFocus = true
-    isOpen = true
-    dispatch('focus', event)
-    selectedIndex = 0
-    if (keepValue) clear()
+    isFocus = true;
+    isOpen = true;
+    dispatch("focus", event);
+    selectedIndex = 0;
+    if (keepValue) clear();
   }
 
-  const closeDebounced = debounce(() => (isOpen = isFocus), 200)
+  const closeDebounced = debounce(() => (isOpen = isFocus), 200);
   function handleBlur(event: FocusEvent) {
-    isFocus = false
-    dispatch('blur', event)
-    if (!flatMode) closeDebounced()
-    else isOpen = false
+    isFocus = false;
+    dispatch("blur", event);
+    if (!flatMode) closeDebounced();
+    else isOpen = false;
   }
 
   function scrollToSelected() {
     const el = listContainer.querySelector(
       `.item[data-index="${selectedIndex}"]`
-    ) as HTMLLIElement
-    if (!el) return
+    ) as HTMLLIElement;
+    if (!el) return;
 
-    const offsetTop = flatMode ? -53 : -3
-    const offsetBottom = flatMode ? -43 : 6
+    const offsetTop = flatMode ? -53 : -3;
+    const offsetBottom = flatMode ? -43 : 6;
 
-    const top = el.offsetTop + offsetTop
+    const top = el.offsetTop + offsetTop;
     if (top < listContainer.scrollTop) {
-      listContainer.scrollTo({ top })
-      return
+      listContainer.scrollTo({ top });
+      return;
     }
-    const bottom = el.offsetTop + el.offsetHeight
+    const bottom = el.offsetTop + el.offsetHeight;
     const delta =
       bottom -
       (listContainer.scrollTop + listContainer.offsetHeight) +
-      offsetBottom
+      offsetBottom;
     if (delta > 0) {
-      listContainer.scrollTo({ top: listContainer.scrollTop + delta })
-      return
+      listContainer.scrollTo({ top: listContainer.scrollTop + delta });
+      return;
     }
   }
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
   class:flatMode
   class="wrapper {reduceMode && !isOpen ? 'reduced' : ''} {klass}"
+  role="button"
+  tabindex="0"
   {style}
   on:click={() => {
-    if (reduceMode && !isOpen) focus()
+    if (reduceMode && !isOpen) focus();
   }}
 >
   <div class="d-flex" style="gap: 4px;">
@@ -205,7 +205,7 @@
       on:focus={handleFocus}
       on:blur={handleBlur}
       autocomplete="off"
-      placeholder={keepValue && !!selectedItem ? ' ' : ''}
+      placeholder={keepValue && !!selectedItem ? " " : ""}
       class="flex-grow-1 "
       {...$$restProps}
     >
@@ -233,6 +233,8 @@
             animate:flip={{ duration: 200 }}
             on:click={() => handleSelect(item)}
             data-index={index}
+            role="button"
+            tabindex="0"
           >
             <span class="text-subtitle-1">{getValue(item)}</span>
             {#if getValue2}
@@ -244,7 +246,7 @@
           </div>
         {/each}
 
-        {#if !itemsFiltred.length && !$querySearch.isLoading}
+        {#if !itemsFiltred.length && !$querySearch.isPending}
           <div class="item simple-card text-center pa-2">
             Aucun résultat {#if searchValue}
               pour <b>{searchValue}</b>{/if}
@@ -254,8 +256,8 @@
         {#if !disableFetchNext && $querySearch.hasNextPage && !$querySearch.isFetchingNextPage}
           <Button
             on:click={() => {
-              $querySearch.fetchNextPage()
-              focus()
+              $querySearch.fetchNextPage();
+              focus();
             }}
             depressed
           >
@@ -264,7 +266,7 @@
         {/if}
       {/if}
 
-      {#if $querySearch.isLoading || $querySearch.isFetchingNextPage}
+      {#if $querySearch.isPending || $querySearch.isFetchingNextPage}
         <div class="item simple-card text-center pa-2">
           <Loader />
         </div>

@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { fade, slide } from 'svelte/transition'
-  import { params, redirect, afterPageLoad } from '@roxi/routify'
-  import { Button, Tabs, Tab } from '$material'
-  import { useMutation } from '@sveltestack/svelte-query'
+  import { onMount } from "svelte";
+  import { fade, slide } from "svelte/transition";
+  import { Button, Tabs, Tab } from "$lib/material";
+  import { createMutation } from "@tanstack/svelte-query";
   import {
     faArrowRightArrowLeft,
     faArrowRightFromBracket,
@@ -11,175 +10,174 @@
     faCartShopping,
     faUserAlt,
     faUserPlus,
-  } from '@fortawesome/free-solid-svg-icons'
+  } from "@fortawesome/free-solid-svg-icons";
 
-  import type { ISubscribe, SubscribeLookup, SubscribeResum } from 'types'
-  import { api, useApi } from '$lib/api'
-  import { troc } from '$lib/troc/store'
-  import { layout, isMobile } from '$lib/store/layout'
-  import MagicSelect from '$lib/util/MagicSelect.svelte'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import Provide from '$lib/cash/Provide.svelte'
-  import Recover from '$lib/cash/Recover.svelte'
-  import Buy from '$lib/cash/Buy.svelte'
-  import SubActivity from '$lib/sub/Activity.svelte'
-  import SubActivityMobile from '$lib/sub/ActivityMobile.svelte'
-  import { renderAmount } from '$lib/utils'
-  import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
-  import GuestDialog from '$lib/cash/GuestDialog.svelte'
-  import notify from '$lib/notify'
-  import CashPlaceholder from '$lib/cash/CashPlaceholder.svelte'
-  import { subscribe as subscribeSSE } from '$lib/sse'
-  import Template from './Template.svelte'
-  import ConfirmDialog from './ConfirmDialog.svelte'
-  import { isAutoPurchasesPayment } from '$lib/cash/store'
+  import type { ISubscribe, SubscribeLookup, SubscribeResum } from "$lib/types";
+  import { api, useApi } from "$lib/api";
+  import { troc } from "$lib/troc/store";
+  import { layout, isMobile } from "$lib/store/layout";
+  import MagicSelect from "$lib/util/MagicSelect.svelte";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import Provide from "$lib/cash/Provide.svelte";
+  import Recover from "$lib/cash/Recover.svelte";
+  import Buy from "$lib/cash/Buy.svelte";
+  import SubActivity from "$lib/sub/Activity.svelte";
+  import SubActivityMobile from "$lib/sub/ActivityMobile.svelte";
+  import { renderAmount } from "$lib/utils";
+  import PaymentDialog from "$lib/cash/PaymentDialog.svelte";
+  import GuestDialog from "$lib/cash/GuestDialog.svelte";
+  import notify from "$lib/notify";
+  import CashPlaceholder from "$lib/cash/CashPlaceholder.svelte";
+  import { subscribe as subscribeSSE } from "$lib/sse";
+  import Template from "./Template.svelte";
+  import ConfirmDialog from "./ConfirmDialog.svelte";
+  import { isAutoPurchasesPayment } from "$lib/cash/store";
+  import { param, urlParam } from "$lib/param";
+  import { afterNavigate, goto } from "$app/navigation";
+  import { page } from "$app/state";
 
-  let clientSelector: MagicSelect
-  const subscribeKey = 'client_subscribe_id'
-  const tabIndexKey = 'cash_register_tab_index'
-  let paymentDialog: PaymentDialog
-  let guestDialog: GuestDialog
-  let confirmDialog: ConfirmDialog
-  let subscribe: SubscribeLookup | undefined = undefined
-  let mainContainer: HTMLDivElement
+  let clientSelector: MagicSelect;
+  const subscribeKey = "client_subscribe_id";
+  const tabIndexKey = "cash_register_tab_index";
+  let paymentDialog: PaymentDialog;
+  let guestDialog: GuestDialog;
+  let confirmDialog: ConfirmDialog;
+  let subscribe: SubscribeLookup | undefined = undefined;
+  let mainContainer: HTMLDivElement;
 
-  let templateComponent: Template
-  let cashPlaceholder: CashPlaceholder
+  let templateComponent: Template;
+  let cashPlaceholder: CashPlaceholder;
 
   $: TABS = [
-    { label: 'Dépot', icon: faArrowRightToBracket },
-    { label: 'Retrait', icon: faArrowRightFromBracket },
-    { label: 'Achat', icon: faCartShopping },
-    { label: 'Compte', icon: faArrowRightArrowLeft },
-  ]
+    { label: "Dépot", icon: faArrowRightToBracket },
+    { label: "Retrait", icon: faArrowRightFromBracket },
+    { label: "Achat", icon: faCartShopping },
+    { label: "Compte", icon: faArrowRightArrowLeft },
+  ];
 
-  $: tabIndex = $params[tabIndexKey] || 3
+  $: tabIndex = $param.get(tabIndexKey) || 3;
 
-  $: subscribeId = $params[subscribeKey]
+  $: subscribeId = $param.get(subscribeKey) || "";
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>({
     enabled: !!subscribeId,
-    queryKey: ['subscribes/resum', { subscribeId }],
-  })
-  $: subscribe = $queryResum.data
-  $: balance = $queryResum.data?.resum.balance
+    queryKey: ["subscribes/resum", { subscribeId }],
+  });
+  $: subscribe = $queryResum.data;
+  $: balance = $queryResum.data?.resum.balance;
   $: mainContainerHeight =
-    $layout.innerHeight - mainContainer?.offsetTop - ($isMobile ? 6 : 16)
+    $layout.innerHeight - mainContainer?.offsetTop - ($isMobile ? 6 : 16);
 
-  $afterPageLoad(createUserLoader())
+  afterNavigate(createUserLoader());
 
   onMount(() => {
     const unsubscribeSSE = subscribeSSE({
       scan(data) {
         if (templateComponent) {
-          templateComponent.selectArticleTagId(data.value)
+          templateComponent.selectArticleTagId(data.value);
         } else {
-          cashPlaceholder.openArticleMenu(data.value)
+          cashPlaceholder.openArticleMenu(data.value);
         }
       },
-    })
+    });
 
     // Ecoute les racourcis claviers
-    document.addEventListener('keyup', handleShortcut)
+    document.addEventListener("keyup", handleShortcut);
     return () => {
-      document.removeEventListener('keyup', handleShortcut)
-      unsubscribeSSE()
-    }
-  })
+      document.removeEventListener("keyup", handleShortcut);
+      unsubscribeSSE();
+    };
+  });
 
   function createUserLoader() {
-    let subscribrIdLoaded = ''
+    let subscribrIdLoaded = "";
     return () => {
-      if (!subscribeId) subscribrIdLoaded = ''
+      if (!subscribeId) subscribrIdLoaded = "";
       else if (subscribeId !== subscribrIdLoaded) {
-        api<{ subscribeId: string }, { name: string }>('/api/users/name', {
+        api<{ subscribeId: string }, { name: string }>("/api/users/name", {
           params: { subscribeId },
         }).then((user) => {
-          subscribrIdLoaded = subscribeId
-          clientSelector.setValue(user.name)
-        })
+          subscribrIdLoaded = subscribeId;
+          clientSelector.setValue(user.name);
+        });
       }
-      return true
-    }
+      return true;
+    };
   }
 
   function handleShortcut(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      paymentDialog.close()
+    if (event.key === "Escape") {
+      paymentDialog.close();
     }
 
-    if (!event.ctrlKey) return
+    if (!event.ctrlKey) return;
     switch (event.key) {
-      case 'Backspace':
-        clientSelector.focus()
-        break
-      case 'Enter':
-        openPaymentDialog()
-        break
+      case "Backspace":
+        clientSelector.focus();
+        break;
+      case "Enter":
+        openPaymentDialog();
+        break;
     }
   }
 
   function handleSelectClient(event: { detail: ISubscribe }) {
-    const sub = event.detail
+    const sub = event.detail;
     if (!sub._id) {
       /** Création du subscribe dans le cas ou le client n'est pas encore participant */
       $createSubscribe.mutate({
-        trocId: $params.trocId,
-        userId: sub.userId || '',
-      })
+        trocId: $param.get("trocId") || "",
+        userId: sub.userId || "",
+      });
     }
   }
 
   function handleChangeTab(event: { detail: number }) {
-    const queryParams = $params
-    queryParams[tabIndexKey] = event.detail
-    $redirect('', queryParams)
+    goto($urlParam.with({ [tabIndexKey]: event.detail }));
   }
 
   interface CreateSubscribeBody {
-    trocId: string
-    userId: string
+    trocId: string;
+    userId: string;
   }
 
   /** Inscris un client qui à pu être identifé */
-  const createSubscribe = useMutation(
-    (data: CreateSubscribeBody) =>
-      api<CreateSubscribeBody, ISubscribe>('/api/subscribes', {
-        method: 'post',
+  const createSubscribe = createMutation({
+    mutationFn: (data: CreateSubscribeBody) =>
+      api<CreateSubscribeBody, ISubscribe>("/api/subscribes", {
+        method: "post",
         data,
-        success: 'Nouvelle participation créée',
+        success: "Nouvelle participation créée",
       }),
-    {
-      onSuccess: redirectSubscribe,
-    }
-  )
+    onSuccess: redirectSubscribe,
+  });
 
   function redirectSubscribe(newSubscribe: ISubscribe) {
-    $redirect('', { ...$params, [subscribeKey]: newSubscribe._id })
+    goto($urlParam.with({ [subscribeKey]: newSubscribe._id }));
   }
 
   function openPaymentDialog() {
-    if (!subscribe || balance === undefined) return
+    if (!subscribe || balance === undefined) return;
     if (Math.abs(balance) < 0.001)
       return notify.info(
         `Le solde de ${subscribe.user?.name || subscribe.name} est nul`
-      )
-    let msg = 'Règlement du solde en faveur du '
-    msg += balance > 0 ? 'client' : 'troc'
-    paymentDialog.open(subscribe, msg, -balance)
+      );
+    let msg = "Règlement du solde en faveur du ";
+    msg += balance > 0 ? "client" : "troc";
+    paymentDialog.open(subscribe, msg, -balance);
   }
 
   async function confirmBeforeFocus(): Promise<boolean> {
-    if ($isAutoPurchasesPayment) return true
-    if (!subscribe) return true
-    if (Math.abs(balance) < 0.001) return true
+    if ($isAutoPurchasesPayment) return true;
+    if (!subscribe) return true;
+    if (Math.abs(balance || 0) < 0.001) return true;
     const confirmed = await confirmDialog.confirm(
       "Le solde n'est pas reglé. Es-tu sur de vouloir quitter ?"
-    )
-    if (!confirmed) return false
+    );
+    if (!confirmed) return false;
     setTimeout(() => {
-      clientSelector.focus()
-    }, 300)
-    return true
+      clientSelector.focus();
+    }, 300);
+    return true;
   }
 </script>
 
@@ -187,8 +185,8 @@
 <GuestDialog
   bind:this={guestDialog}
   on:success={({ detail: newSubscribe }) => {
-    redirectSubscribe(newSubscribe)
-    clientSelector.setValue(newSubscribe.name)
+    redirectSubscribe(newSubscribe);
+    clientSelector.setValue(newSubscribe.name);
   }}
 />
 <ConfirmDialog bind:this={confirmDialog} />
@@ -211,7 +209,7 @@
           on:select={handleSelectClient}
           queryParams={{ trocId: $troc._id, includGlobalUser: true }}
           getValue={(sub) => sub.user?.name || sub.name}
-          getValue2={(sub) => sub.user?.mail || ''}
+          getValue2={(sub) => sub.user?.mail || ""}
           getKey={(sub) => sub._id}
           icon={faUserAlt}
           solo
@@ -229,21 +227,21 @@
       >
         <IconLink
           icon={faUserPlus}
-          class={$isMobile ? '' : 'mr-2'}
-          size={$isMobile ? '1.4em' : '1.2em'}
+          class={$isMobile ? "" : "mr-2"}
+          size={$isMobile ? "1.4em" : "1.2em"}
         />
-        {$isMobile ? '' : 'Nouveau client'}
+        {$isMobile ? "" : "Nouveau client"}
       </Button>
 
       {#if !$isMobile}
-        <div class="flex-grow-1" />
+        <div class="flex-grow-1"></div>
       {/if}
 
       {#if subscribeId && balance && Math.abs(balance) > 0.01}
-        <div transition:slide|local style={$isMobile ? 'width: 100%;' : ''}>
+        <div transition:slide|local style={$isMobile ? "width: 100%;" : ""}>
           <Button block class="secondary-color" on:click={openPaymentDialog}>
             Règler {renderAmount(-balance, $troc.currency)} en faveur du
-            {balance > 0 ? 'client' : 'troc'}
+            {balance > 0 ? "client" : "troc"}
           </Button>
         </div>
       {/if}
@@ -261,7 +259,7 @@
         <Tabs
           grow
           icons={$isMobile}
-          value={$params[tabIndexKey] || 3}
+          value={+($param.get(tabIndexKey) || 3)}
           showArrows={false}
           on:change={handleChangeTab}
         >
@@ -271,11 +269,11 @@
                 {#if $isMobile || true}
                   <IconLink
                     {icon}
-                    class={$isMobile ? '' : 'mr-3'}
+                    class={$isMobile ? "" : "mr-3"}
                     size="1.2em"
                   />
                 {/if}
-                <span style={$isMobile ? 'font-size: 0.8em;' : ''}>
+                <span style={$isMobile ? "font-size: 0.8em;" : ""}>
                   {label}
                 </span>
               </Tab>
@@ -291,11 +289,11 @@
                 overflow-y: auto;
               "
           >
-            {#if tabIndex === '0'}
+            {#if tabIndex === "0"}
               <Provide bind:template={templateComponent} {subscribeId} />
-            {:else if tabIndex === '1'}
+            {:else if tabIndex === "1"}
               <Recover bind:template={templateComponent} {subscribeId} />
-            {:else if tabIndex === '2'}
+            {:else if tabIndex === "2"}
               <Buy bind:template={templateComponent} {subscribe} />
             {:else if $isMobile}
               <SubActivityMobile {subscribeId} modeAdmin />

@@ -1,33 +1,36 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition'
-  import { Button, Switch, TextField, Icon } from '$material'
-  import { mdiOverscan, mdiFormatSize } from '@mdi/js'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import { faArrowsAltV, faArrowsAltH } from '@fortawesome/free-solid-svg-icons'
+  import { fade } from "svelte/transition";
+  import { Button, Switch, TextField, Icon } from "$lib/material";
+  import { mdiOverscan, mdiFormatSize } from "@mdi/js";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import {
+    faArrowsAltV,
+    faArrowsAltH,
+  } from "@fortawesome/free-solid-svg-icons";
 
-  import { troc, useUpdateTroc } from '$lib/troc/store'
-  import type { Article, TagInterface } from 'types'
-  import TagsPrint from '$lib/troc/TagsPrint.svelte'
+  import { troc, useUpdateTroc } from "$lib/troc/store";
+  import type { Article, TagInterface } from "$lib/types";
+  import TagsPrint from "$lib/troc/TagsPrint.svelte";
 
-  const updateTroc = useUpdateTroc()
+  const updateTroc = useUpdateTroc();
 
-  let tagsPrint: TagsPrint
-  let tag: TagInterface = { ...$troc.tag }
+  let tagsPrint: TagsPrint;
+  let tag: TagInterface = { ...$troc.tag };
   const articlesExemple: Partial<Article>[] = [
-    { name: 'Article test A', ref: '123', price: 99 },
+    { name: "Article test A", ref: "123", price: 99 },
     {
-      name: 'Article test B qui a une désignation un peu longue',
-      ref: '231',
+      name: "Article test B qui a une désignation un peu longue",
+      ref: "231",
       price: 45,
     },
-    { name: 'Art C', ref: '321', price: 900 },
-  ]
+    { name: "Art C", ref: "321", price: 900 },
+  ];
 
-  $: if (!tag.width) tag.width = 1
-  $: if (!tag.height) tag.height = 1
-  $: if (!tag.padding) tag.padding = 0
+  $: if (!tag.width) tag.width = 1;
+  $: if (!tag.height) tag.height = 1;
+  $: if (!tag.padding) tag.padding = 0;
 
-  $: isModified = JSON.stringify(tag) !== JSON.stringify($troc.tag)
+  $: isModified = JSON.stringify(tag) !== JSON.stringify($troc.tag);
 </script>
 
 <div class="wrapper">
@@ -110,21 +113,21 @@
       >
         Tester l'impression
       </Button>
-      <div class="flex-grow-1" />
+      <div class="flex-grow-1"></div>
       {#if isModified}
         <div transition:fade|local>
           <Button
-            disabled={$updateTroc.isLoading}
-            class={$updateTroc.isLoading ? '' : 'primary-color'}
+            disabled={$updateTroc.isPending}
+            class={$updateTroc.isPending ? "" : "primary-color"}
             on:click={() => {
               $updateTroc.mutate(
                 { tag, _id: $troc._id },
                 {
                   onSuccess: (newTroc) => {
-                    tag = { ...newTroc.tag }
+                    tag = { ...newTroc.tag };
                   },
                 }
-              )
+              );
             }}
           >
             Valider

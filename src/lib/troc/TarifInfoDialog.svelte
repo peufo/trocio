@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { Dialog, Button } from '$material'
-  import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
+  import { Dialog, Button } from "$lib/material";
+  import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 
-  import IconLink from '$lib/util/IconLink.svelte'
-  import type { Tarif } from 'types'
-  import { renderAmount } from '$lib/utils'
+  import IconLink from "$lib/util/IconLink.svelte";
+  import type { Tarif } from "$lib/types";
+  import { renderAmount } from "$lib/utils";
 
-  export let active = false
-  export let tarif: Tarif | undefined
-  export let modeAdmin = false
+  export let active = false;
+  export let tarif: Tarif | undefined;
+  export let modeAdmin = false;
 
   function handleClick() {
-    active = true
+    active = true;
   }
 </script>
 
@@ -26,7 +26,7 @@
       <div class="d-flex flex-column" style="gap: 1.2em;">
         <h6>
           Le tarif <b>{tarif.name}</b>
-          {modeAdmin ? 'est attribué au client' : 'vous est attribué'}
+          {modeAdmin ? "est attribué au client" : "vous est attribué"}
         </h6>
 
         <div>
@@ -42,7 +42,7 @@
           <div>
             {#each tarif.fee.sort((a, b) => a.price - b.price) as fee}
               A partir de <b>{renderAmount(fee.price)} </b>
-              <i class="fas fa-arrow-right" />
+              <i class="fas fa-arrow-right"></i>
               <b>{renderAmount(fee.value)}</b>
               <br />
             {/each}
@@ -63,7 +63,7 @@
           Cette tarification est définit et attribué par l'organisateur
         </div>
 
-        <div class="flex-grow-1" />
+        <div class="flex-grow-1"></div>
         <Button on:click={() => (active = false)}>ok merci</Button>
       </div>
     </div>

@@ -1,23 +1,23 @@
 <script lang="ts">
-  import { renderAmount } from '$lib/utils'
-  import type { SubscribeResum, Article } from 'types'
+  import { renderAmount } from "$lib/utils";
+  import type { SubscribeResum, Article } from "$lib/types";
 
-  export let subscribe: SubscribeResum
-  export let validedArticles: Article[]
-  export let soldArticles: Article[]
-  export let recoverArticles: Article[]
+  export let subscribe: SubscribeResum;
+  export let validedArticles: Article[];
+  export let soldArticles: Article[];
+  export let recoverArticles: Article[];
 
   const dateFormat = new Intl.DateTimeFormat(undefined, {
-    day: 'numeric',
-    month: '2-digit',
-    year: '2-digit',
-    hour: 'numeric',
-    minute: 'numeric',
-  }).format
+    day: "numeric",
+    month: "2-digit",
+    year: "2-digit",
+    hour: "numeric",
+    minute: "numeric",
+  }).format;
 
   function sumOf(arr: number[]) {
-    if (!arr.length) return 0
-    return arr.reduce((acc, cur) => (acc += cur))
+    if (!arr.length) return 0;
+    return arr.reduce((acc, cur) => (acc += cur));
   }
 </script>
 
@@ -42,7 +42,7 @@
     <div>
       <span class="h2">Solde</span>
     </div>
-    <div style="flex-grow: 1;" />
+    <div style="flex-grow: 1;"></div>
     <div>
       <span class="h2"
         >{renderAmount(subscribe.resum.balance, subscribe.troc.currency)}</span
@@ -74,10 +74,10 @@
           {#each subscribe.resum.payments || [] as payment}
             <tr>
               <td style="padding: 2px 0px;">
-                {dateFormat(new Date(payment.createdAt || ''))}
+                {dateFormat(new Date(payment.createdAt || ""))}
               </td>
               <td style="padding: 2px 8px; max-width: 500px;">
-                {payment.message || '-'}
+                {payment.message || "-"}
               </td>
               <td style="padding: 2px 0px;" align="right">
                 {renderAmount(payment.amount, subscribe.troc.currency)}
@@ -85,7 +85,7 @@
             </tr>
           {/each}
           <tr>
-            <td colspan="2" />
+            <td colspan="2"></td>
             <td
               style="padding: 2px 0px; border-top: 1px solid grey; font-size: 1.1em;"
               align="right"
@@ -127,7 +127,7 @@
           {#each subscribe.resum.purchases || [] as purchase}
             <tr>
               <td style="padding: 2px 0px;">
-                {dateFormat(new Date(purchase.sold || ''))}
+                {dateFormat(new Date(purchase.sold || ""))}
               </td>
               <td style="padding: 2px 8px;">{purchase.ref}</td>
               <td style="padding: 2px 8px; max-width: 500px;"
@@ -139,7 +139,7 @@
             </tr>
           {/each}
           <tr>
-            <td colspan="3" />
+            <td colspan="3"></td>
             <td
               style="padding: 2px 0px; border-top: 1px solid grey; font-size: 1.1em;"
               align="right"
@@ -183,7 +183,7 @@
           {#each soldArticles as article}
             <tr>
               <td style="padding: 2px 0px;">
-                {dateFormat(new Date(article.sold || ''))}
+                {dateFormat(new Date(article.sold || ""))}
               </td>
               <td style="padding: 2px 8px;">{article.ref}</td>
               <td style="padding: 2px 8px; max-width: 500px;">{article.name}</td
@@ -200,7 +200,7 @@
             </tr>
           {/each}
           <tr>
-            <td colspan="3" />
+            <td colspan="3"></td>
             <td
               style="padding: 2px 0px; border-top: 1px solid grey; font-size: 1.1em;"
               align="right"
@@ -265,7 +265,7 @@
           {#each validedArticles as article}
             <tr>
               <td style="padding: 2px 0px;">
-                {dateFormat(new Date(article.valided || ''))}
+                {dateFormat(new Date(article.valided || ""))}
               </td>
               <td style="padding: 2px 8px;">{article.ref}</td>
               <td style="padding: 2px 8px; max-width: 500px;">{article.name}</td
@@ -279,7 +279,7 @@
             </tr>
           {/each}
           <tr>
-            <td colspan="3" />
+            <td colspan="3"></td>
             <td
               style="padding: 2px 0px; border-top: 1px solid grey; font-size: 1.1em;"
               align="right"
@@ -322,7 +322,7 @@
           {#each recoverArticles as article}
             <tr>
               <td style="padding: 2px 0px;">
-                {dateFormat(new Date(article.recover || ''))}
+                {dateFormat(new Date(article.recover || ""))}
               </td>
               <td style="padding: 2px 8px;">{article.ref}</td>
               <td style="padding: 2px 8px; max-width: 500px;">{article.name}</td
@@ -336,7 +336,7 @@
             </tr>
           {/each}
           <tr>
-            <td colspan="3" />
+            <td colspan="3"></td>
             <td
               style="padding: 2px 0px; border-top: 1px solid grey; font-size: 1.1em;"
               align="right"

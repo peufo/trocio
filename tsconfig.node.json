@@ -7,7 +7,7 @@
   "compilerOptions": {
     "outDir": "dist/server",
     "target": "ES6",
-    "module": "NodeNext",
+    "module": "nodenext",
 
     "noImplicitAny": false,
     "noUnusedLocals": true,

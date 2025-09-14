@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { Table } from '$material'
+  import { Table } from "$lib/material";
 
-  import type { IPaymentLookup } from 'types'
-  import { renderAmount } from '$lib/utils'
+  import type { IPaymentLookup } from "$lib/types";
+  import { renderAmount } from "$lib/utils";
 
-  export let payments: IPaymentLookup[]
+  export let payments: IPaymentLookup[];
 </script>
 
 <Table>
@@ -21,7 +21,7 @@
       <tr>
         <td>{new Date(payment.createdAt).toLocaleString()}</td>
         <td>{payment.acceptor.name}</td>
-        <td>{@html (payment.message || '-').replaceAll('\n', '<br>')}</td>
+        <td>{@html (payment.message || "-").replaceAll("\n", "<br>")}</td>
         <td align="right">{renderAmount(payment.amount)}</td>
       </tr>
     {/each}

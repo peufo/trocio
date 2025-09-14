@@ -1,57 +1,54 @@
-<script>
-  import { onMount, onDestroy } from 'svelte'
-  import { draw, fade, fly } from 'svelte/transition'
-  import {
-    sineOut,
-    quintInOut,
-    quadInOut,
-    quadIn,
-    quadOut,
-  } from 'svelte/easing'
+<script lang="ts">
+  import { onMount, onDestroy } from "svelte";
+  import { draw, fade, fly } from "svelte/transition";
+  import { quadInOut } from "svelte/easing";
 
-  export let cubeSize = 200
+  export let cubeSize = 200;
 
-  let show = false
-  let showPaths = false
-  let showPathsCenter = false
-  let showPolygons = false
-  let showPolygonsInt = false
-  let interval
+  let show = false;
+  let showPaths = false;
+  let showPathsCenter = false;
+  let showPolygons = false;
+  let showPolygonsInt = false;
+  let interval: NodeJS.Timeout;
 
-  function rotate(node, { duration, delay }) {
+  function rotate(
+    node: SVGSVGElement,
+    { duration, delay }: { duration: number; delay: number }
+  ) {
     return {
       duration,
       delay,
-      css: (t) => {
-        return `transform: rotate(${(t - 0.5) * 240}deg);`
+      css: (t: number) => {
+        return `transform: rotate(${(t - 0.5) * 240}deg);`;
       },
-    }
+    };
   }
 
   function showLogo() {
-    show = true
-    showPathsCenter = true
-    showPaths = false
-    showPolygons = false
+    show = true;
+    showPathsCenter = true;
+    showPaths = false;
+    showPolygons = false;
 
-    setTimeout(() => (showPaths = true), 500)
-    setTimeout(() => (showPolygons = true), 1000)
-    setTimeout(() => (showPathsCenter = false), 1000)
-    setTimeout(() => (showPaths = false), 1000)
-    setTimeout(() => (showPolygons = false), 1400)
-    setTimeout(() => (showPolygonsInt = true), 1400)
-    setTimeout(() => (showPolygonsInt = false), 1400)
-    setTimeout(() => (show = false), 2400)
+    setTimeout(() => (showPaths = true), 500);
+    setTimeout(() => (showPolygons = true), 1000);
+    setTimeout(() => (showPathsCenter = false), 1000);
+    setTimeout(() => (showPaths = false), 1000);
+    setTimeout(() => (showPolygons = false), 1400);
+    setTimeout(() => (showPolygonsInt = true), 1400);
+    setTimeout(() => (showPolygonsInt = false), 1400);
+    setTimeout(() => (show = false), 2400);
   }
 
   onMount(() => {
-    showLogo()
-    interval = setInterval(showLogo, 2800)
-  })
+    showLogo();
+    interval = setInterval(showLogo, 2800);
+  });
 
   onDestroy(() => {
-    clearInterval(interval)
-  })
+    clearInterval(interval);
+  });
 </script>
 
 <div style="height: {cubeSize}px; width: {cubeSize}px;">

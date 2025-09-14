@@ -1,67 +1,66 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { params, goto, url } from '@roxi/routify'
-  import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
-  import { mdiClose } from '@mdi/js'
+  import { onMount } from "svelte";
+  import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+  import { mdiClose } from "@mdi/js";
 
-  import { List, ListItem, Menu, Chip, Icon } from '$material'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import type { FieldInteface, Option } from 'types/magic'
+  import { List, ListItem, Menu, Chip, Icon } from "$lib/material";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import type { FieldInteface, Option } from "$lib/types/magic";
+  import { param, urlParam } from "$lib/param";
+  import { goto } from "$app/navigation";
 
-  export let field: Partial<FieldInteface>
-  export let queryParam: { [key: string]: any } = {}
+  export let field: Partial<FieldInteface>;
+  export let queryParam: { [key: string]: any } = {};
 
-  const key = `exact_${field.key}`
-  let queryLabel = ''
+  const key = `exact_${field.key}`;
+  let queryLabel = "";
 
   onMount(() => {
     // Charge le queryLabel
-    let queryValue = $params[key]
+    let queryValue: string | boolean | null = $param.get(key);
     if (queryValue) {
-      if (queryValue === 'true') queryValue = true
-      if (queryValue === 'false') queryValue = false
-      queryParam[key] = queryValue
+      if (queryValue === "true") queryValue = true;
+      if (queryValue === "false") queryValue = false;
+      queryParam[key] = queryValue;
       queryLabel =
-        field.options?.find((opt) => opt.value === queryValue)?.label || ''
+        field.options?.find((opt) => opt.value === queryValue)?.label || "";
     }
-  })
+  });
 
   function handleClick(option: Option) {
-    if (!field.key) return
+    if (!field.key) return;
 
-    const query = $params
-    query[key] = option.value
     if (option.value === null) {
-      delete query[key]
-      queryLabel = ''
-      queryParam = {}
-    } else {
-      queryLabel = option.label
-      queryParam[key] = option.value
+      queryLabel = "";
+      queryParam = {};
+      goto($urlParam.without(key));
+      return;
     }
-    $goto($url(), query)
+    queryLabel = option.label;
+    queryParam[key] = option.value;
+    goto($urlParam.with({ [key]: option.value }));
   }
 
   function clearSelection(event: CustomEvent<PointerEvent>) {
-    event.detail.stopPropagation()
+    event.detail.stopPropagation();
     handleClick({
       value: null,
-      label: '',
-    })
+      label: "",
+    });
   }
 
   const booleanOptions = [
-    { value: null, label: 'Tous' },
+    { value: null, label: "Tous" },
     {
       value: true,
-      label: 'Oui',
+      label: "Oui",
       icon: faCheck,
-      iconStyle: 'color: green;',
+      iconStyle: "color: green;",
     },
-    { value: false, label: 'Non', icon: faTimes, iconStyle: 'color: red;' },
-  ]
+    { value: false, label: "Non", icon: faTimes, iconStyle: "color: red;" },
+  ];
 
-  $: options = field.type === 'boolean' ? booleanOptions : field.options
+  $: options = field.type === "boolean" ? booleanOptions : field.options;
 </script>
 
 <th>
@@ -80,7 +79,7 @@
           <Icon path={mdiClose} size="0.7em" />
         </span>
       </Chip>
-      <span class="text-caption" style="white-space: pre;" />
+      <span class="text-caption" style="white-space: pre;"></span>
     </span>
     <List dense>
       {#each options || [] as option}

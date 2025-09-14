@@ -6,55 +6,61 @@
     CardText,
     CardActions,
     Button,
-  } from '$material'
-  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
+  } from "$lib/material";
+  import { createMutation, useQueryClient } from "@tanstack/svelte-query";
 
-  import { api, useApi } from '$lib/api'
-  import type { ParamsSubscribeAPI, SubscribeLookup, TrocLookup } from 'types'
-  import Loader from '$lib/util/Loader.svelte'
-  import { params } from '@roxi/routify'
+  import { api, useApi } from "$lib/api";
+  import type {
+    ParamsSubscribeAPI,
+    SubscribeLookup,
+    TrocLookup,
+  } from "$lib/types";
+  import Loader from "$lib/util/Loader.svelte";
+  import { param } from "$lib/param";
 
-  let active = false
-  let subscribe: undefined | SubscribeLookup = undefined
-  let selectedPrefix = ''
+  let active = false;
+  let subscribe: undefined | SubscribeLookup = undefined;
+  let selectedPrefix = "";
 
   export function open(sub: SubscribeLookup) {
-    selectedPrefix = sub.prefix || ''
-    subscribe = sub
-    active = true
+    selectedPrefix = sub.prefix || "";
+    subscribe = sub;
+    active = true;
   }
 
   export function close() {
-    active = false
+    active = false;
   }
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const setTraderPrefix = useMutation(
-    (data: { trocId: string; userId: string; prefix: string }) =>
+  const setTraderPrefix = createMutation({
+    mutationFn: (data: { trocId: string; userId: string; prefix: string }) =>
       api<{}, TrocLookup>(`/api/subscribes/prefix`, {
-        method: 'post',
+        method: "post",
         data,
-        success: 'Prefix mis à jour',
+        success: "Prefix mis à jour",
       }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('subscribes')
-      },
-    }
-  )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscribes"] });
+    },
+  });
 
-  const prefixs: string[] = []
+  const prefixs: string[] = [];
   for (let index = 65; index < 91; index++) {
-    prefixs.push(String.fromCharCode(index))
+    prefixs.push(String.fromCharCode(index));
   }
 
   /** Liste des prefix déjà utilisé */
   $: queryTraders = useApi<ParamsSubscribeAPI, SubscribeLookup[]>([
-    'subscribes',
-    { exact_trocId: $params.trocId, exact_role: 'trader', limit: 100 },
-  ])
-  $: disabledPrefixs = $queryTraders.data?.map((sub) => sub.prefix || '') || []
+    "subscribes",
+    {
+      exact_trocId: $param.get("trocId") || "",
+      exact_role: "trader",
+      limit: 100,
+    },
+  ]);
+  $: disabledPrefixs = $queryTraders.data?.map((sub) => sub.prefix || "") || [];
 </script>
 
 <Dialog bind:active>
@@ -66,7 +72,10 @@
 
       <CardText>
         {#each prefixs as prefix}
+          <!-- svelte-ignore a11y_click_events_have_key_events -->
           <div
+            role="button"
+            tabindex="0"
             on:click={() => (selectedPrefix = prefix)}
             class="prefix"
             class:selected={selectedPrefix === prefix}
@@ -80,7 +89,7 @@
       </CardText>
 
       <CardActions class="justify-end">
-        {#if $setTraderPrefix.isLoading}
+        {#if $setTraderPrefix.isPending}
           <Button text disabled>
             <Loader title="Validation" />
           </Button>
@@ -90,16 +99,16 @@
             on:click={() => {
               $setTraderPrefix.mutate(
                 {
-                  trocId: $params.trocId,
-                  userId: subscribe?.user?._id || '',
+                  trocId: $param.get("trocId") || "",
+                  userId: subscribe?.user?._id || "",
                   prefix: selectedPrefix,
                 },
                 {
                   onSuccess: () => {
-                    active = false
+                    active = false;
                   },
                 }
-              )
+              );
             }}
             disabled={disabledPrefixs.includes(selectedPrefix)}
           >
@@ -138,7 +147,7 @@
   }
 
   .prefix.disabled::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 50%;
     border-top: 2px var(--theme-text-secondary) solid;

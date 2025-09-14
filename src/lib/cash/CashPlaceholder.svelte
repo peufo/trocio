@@ -1,46 +1,47 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte'
-  import { fade } from 'svelte/transition'
-  import QrCode from 'qrcode'
-  import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
-  import { mdiQrcodeScan } from '@mdi/js'
-  import { params } from '@roxi/routify'
+  import { onDestroy } from "svelte";
+  import { fade } from "svelte/transition";
+  import QrCode from "qrcode";
+  import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
+  import { mdiQrcodeScan } from "@mdi/js";
 
-  import type { ArticleLookup } from 'types'
-  import { isMobile } from '$lib/store/layout'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import { api } from '$lib/api'
-  import notify from '$lib/notify'
-  import ArticleMenu from '$lib/article/Menu.svelte'
+  import type { ArticleLookup } from "$lib/types";
+  import { isMobile } from "$lib/store/layout";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { api } from "$lib/api";
+  import notify from "$lib/notify";
+  import ArticleMenu from "$lib/article/Menu.svelte";
+  import { page } from "$app/state";
+  import { param } from "$lib/param";
 
-  export let disabled: boolean
+  export let disabled: boolean;
 
-  let qrcode = ''
+  let qrcode = "";
 
-  let articleMenu: ArticleMenu
-  let menuActive = false
-  let timeoutMenu: NodeJS.Timer
+  let articleMenu: ArticleMenu;
+  let menuActive = false;
+  let timeoutMenu: NodeJS.Timeout;
 
   QrCode.toDataURL(`https://${location.host}/scanner`).then(
     (qr) => (qrcode = qr)
-  )
+  );
 
-  onDestroy(() => clearTimeout(timeoutMenu))
+  onDestroy(() => clearTimeout(timeoutMenu));
 
   export async function openArticleMenu(articleTagId: string) {
     try {
-      const [article] = await api<ArticleLookup[]>('/api/articles', {
-        params: { exact_tagId: articleTagId, trocId: $params['trocId'] },
-      })
-      if (!article) throw new Error('Article introuvable !')
+      const [article] = await api<ArticleLookup[]>("/api/articles", {
+        params: { exact_tagId: articleTagId, trocId: $param.get("trocId") },
+      });
+      if (!article) throw new Error("Article introuvable !");
 
-      menuActive = true
-      articleMenu.open(article)
-      notify.success('Article scanner !')
-      clearTimeout(timeoutMenu)
-      timeoutMenu = setTimeout(() => articleMenu.close(), 12_000)
+      menuActive = true;
+      articleMenu.open(article);
+      notify.success("Article scanner !");
+      clearTimeout(timeoutMenu);
+      timeoutMenu = setTimeout(() => articleMenu.close(), 12_000);
     } catch (error: any) {
-      notify.error(error)
+      notify.error(error);
     }
   }
 </script>
@@ -75,7 +76,6 @@
       <ArticleMenu
         bind:this={articleMenu}
         modeAdmin
-        useRelativeCashierUrl
         on:close={() => (menuActive = false)}
         fadeParamsIn={{ duration: 150, delay: 150 }}
       />

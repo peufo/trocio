@@ -1,53 +1,53 @@
 <script lang="ts">
-  import { fade, slide } from 'svelte/transition'
-  import { Card } from '$material'
-  import dayjs from 'dayjs'
-  import relativeTime from 'dayjs/plugin/relativeTime'
-  import 'dayjs/locale/fr'
+  import { fade, slide } from "svelte/transition";
+  import { Card } from "$lib/material";
+  import dayjs from "dayjs";
+  import relativeTime from "dayjs/plugin/relativeTime";
+  import "dayjs/locale/fr";
 
-  import type { SubscribeResum } from 'types'
-  import { renderAmount } from '$lib/utils'
-  import ArticleEditDialog from '$lib/article/EditDialog.svelte'
-  import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
-  import Loader from '$lib/util/Loader.svelte'
-  import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
-  import { useApi } from '$lib/api'
-  import TablePurchases from './TablePurchases.svelte'
-  import TablePayments from './TablePayments.svelte'
+  import type { SubscribeResum } from "$lib/types";
+  import { renderAmount } from "$lib/utils";
+  import ArticleEditDialog from "$lib/article/EditDialog.svelte";
+  import ArticleProvidedTable from "$lib/article/ProvidedTable.svelte";
+  import Loader from "$lib/util/Loader.svelte";
+  import TarifInfoDialog from "$lib/troc/TarifInfoDialog.svelte";
+  import { useApi } from "$lib/api";
+  import TablePurchases from "./TablePurchases.svelte";
+  import TablePayments from "./TablePayments.svelte";
 
-  export let subscribeId: string
-  export let currency: string | undefined = undefined
-  export let createArticleDisabled = false
+  export let subscribeId: string;
+  export let currency: string | undefined = undefined;
+  export let createArticleDisabled = false;
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles */
-  export let modeAdmin = false
+  export let modeAdmin = false;
 
-  type OpenType = 'sales' | 'buys' | 'payments'
-  export let open: null | OpenType = null
+  type OpenType = "sales" | "buys" | "payments";
+  export let open: null | OpenType = null;
 
-  let klass = ''
-  export { klass as class }
+  let klass = "";
+  export { klass as class };
 
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
-    'subscribes/resum',
+    "subscribes/resum",
     { subscribeId },
-  ])
-  $: resum = $queryResum.data?.resum
+  ]);
+  $: resum = $queryResum.data?.resum;
   $: totalProposedCount =
     (resum?.proposedCount || 0) +
     (resum?.validedCount || 0) +
     (resum?.soldCount || 0) +
-    (resum?.refusedCount || 0)
+    (resum?.refusedCount || 0);
 
-  dayjs.locale('fr')
-  dayjs.extend(relativeTime)
+  dayjs.locale("fr");
+  dayjs.extend(relativeTime);
 
   function handleClick(key: OpenType) {
-    if (open === key) open = null
-    else open = key
+    if (open === key) open = null;
+    else open = key;
   }
 </script>
 
-{#if $queryResum.isLoading}
+{#if $queryResum.isPending}
   <div in:fade|local class="centered" style="height: 85vh;">
     <Loader />
   </div>
@@ -71,7 +71,7 @@
 
     <!-- Nouvelle proposition + tarif-->
     <div class="d-flex">
-      <div class="flex-grow-1" />
+      <div class="flex-grow-1"></div>
       <TarifInfoDialog tarif={$queryResum.data?.tarif} {modeAdmin} />
       {#if !modeAdmin}
         <ArticleEditDialog {subscribeId} disabled={createArticleDisabled} />
@@ -80,21 +80,25 @@
 
     <!-- Propositions -->
     <Card outlined>
-      <div on:click={() => handleClick('sales')} class="card-header d-flex">
+      <button
+        type="button"
+        on:click={() => handleClick("sales")}
+        class="card-header d-flex"
+      >
         <div>
           {totalProposedCount}
-          Proposition{totalProposedCount > 1 ? 's' : ''}
+          Proposition{totalProposedCount > 1 ? "s" : ""}
         </div>
-        <div class="flex-grow-1" />
+        <div class="flex-grow-1"></div>
         <div>
           {renderAmount(
             (resum.soldSum || 0) - (resum.feeSum || 0) - (resum.marginSum || 0),
             currency
           )}
         </div>
-      </div>
+      </button>
 
-      {#if open === 'sales'}
+      {#if open === "sales"}
         <div transition:slide|local class="card-content">
           <ArticleProvidedTable {modeAdmin} {subscribeId} on:openTarifDialog />
         </div>
@@ -103,18 +107,22 @@
 
     <!-- Achats -->
     <Card outlined>
-      <div on:click={() => handleClick('buys')} class="card-header d-flex">
+      <button
+        type="button"
+        on:click={() => handleClick("buys")}
+        class="card-header d-flex"
+      >
         <div>
           {resum.purchasesCount || 0} Achat{(resum.purchasesCount || 0) > 1
-            ? 's'
-            : ''}
+            ? "s"
+            : ""}
         </div>
-        <div class="flex-grow-1" />
+        <div class="flex-grow-1"></div>
         <div>
           {renderAmount(-(resum.purchasesSum || 0), currency)}
         </div>
-      </div>
-      {#if open === 'buys'}
+      </button>
+      {#if open === "buys"}
         <div class="card-content" transition:slide|local>
           <TablePurchases purchases={resum.purchases || []} />
         </div>
@@ -123,17 +131,21 @@
 
     <!-- Paiements -->
     <Card outlined>
-      <div on:click={() => handleClick('payments')} class="card-header d-flex">
+      <button
+        type="button"
+        on:click={() => handleClick("payments")}
+        class="card-header d-flex"
+      >
         <div>
           {resum.paymentsCount || 0}
-          Paiement{(resum.paymentsCount || 0) > 1 ? 's' : ''}
+          Paiement{(resum.paymentsCount || 0) > 1 ? "s" : ""}
         </div>
-        <div class="flex-grow-1" />
+        <div class="flex-grow-1"></div>
         <div>
           {renderAmount(resum.paymentsSum || 0, currency)}
         </div>
-      </div>
-      {#if open === 'payments'}
+      </button>
+      {#if open === "payments"}
         <div class="card-content" transition:slide|local>
           <TablePayments payments={resum.payments || []} />
         </div>

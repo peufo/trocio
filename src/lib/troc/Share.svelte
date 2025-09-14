@@ -1,37 +1,37 @@
 <script lang="ts">
-  import { Button } from '$material'
-  import { fly } from 'svelte/transition'
-  import notify from '$lib/notify'
+  import { Button } from "$lib/material";
+  import { fly } from "svelte/transition";
+  import notify from "$lib/notify";
 
-  import IconLink from '$lib/util/IconLink.svelte'
-  import { faFacebook, faWhatsapp } from '@fortawesome/free-brands-svg-icons'
-  import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
-  import { faBullhorn, faLink } from '@fortawesome/free-solid-svg-icons'
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { faFacebook, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+  import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
+  import { faBullhorn, faLink } from "@fortawesome/free-solid-svg-icons";
 
-  let klass = ''
-  export { klass as class }
+  let klass = "";
+  export { klass as class };
 
-  export let troc: { _id: string; name: string }
-  export let label = 'Partager'
-  export let open = false
+  export let troc: { _id: string; name: string };
+  export let label = "Partager";
+  export let open = false;
 
-  $: url = `https://${document.location.host}/trocs/${troc._id}`
+  $: url = `https://${document.location.host}/trocs/${troc._id}`;
 
   function copyLink() {
     navigator.clipboard
       .writeText(url)
       .then(() => {
-        notify.success({ title: 'URL du troc copié', text: url })
+        notify.success({ title: "URL du troc copié", text: url });
       })
       .catch((error) => {
-        notify.error(error)
-      })
+        notify.error(error);
+      });
   }
 
   function handleClick(event: Event) {
     // event.stopPropagation()
-    event.preventDefault()
-    open = true
+    event.preventDefault();
+    open = true;
   }
 </script>
 

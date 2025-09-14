@@ -1,29 +1,28 @@
 <script lang="ts">
-  import { AppBar, Button, Dialog, Icon } from '$material'
-  import { faUser } from '@fortawesome/free-regular-svg-icons'
-  import { mdiWeatherNight, mdiWhiteBalanceSunny } from '@mdi/js'
-  import { params } from '@roxi/routify'
+  import { AppBar, Button, Dialog, Icon } from "$lib/material";
+  import { faUser } from "@fortawesome/free-regular-svg-icons";
+  import { mdiWeatherNight, mdiWhiteBalanceSunny } from "@mdi/js";
 
-  import { troc } from '$lib/troc/store'
-  import { user } from '$lib/user/store'
-  import { isDarkTheme, isMobile } from '$lib/store/layout'
+  import { troc } from "$lib/troc/store";
+  import { user } from "$lib/user/store";
+  import { isDarkTheme, isMobile } from "$lib/store/layout";
 
-  import MobileMenu from '$lib/layout/MobileMenu.svelte'
-  import logo from '$assets/logo'
-  import logoIco from '$assets/favicon.ico'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import Login from '$lib/user/Login.svelte'
+  import MobileMenu from "$lib/layout/MobileMenu.svelte";
+  import logo from "$lib/assets/logo";
+  import logoIco from "$lib/assets/favicon.ico";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import Login from "$lib/user/Login.svelte";
 
-  export let offsetHeight = 0
-  let offsetWidth = 0
-  $: $isMobile = offsetWidth < 900
+  export let offsetHeight = 0;
+  let offsetWidth = 0;
+  $: $isMobile = offsetWidth < 900;
 
-  let dialogLoginIsActive = false
+  let dialogLoginIsActive = false;
 </script>
 
 <svelte:head>
   <title>
-    Trocio {$params.trocId && $troc ? ` - ${$troc.name}` : ''}
+    Trocio {$troc ? ` - ${$troc.name}` : ""}
   </title>
 </svelte:head>
 
@@ -42,7 +41,7 @@
       <a href="/" class="title">Troc.io</a>
     </div>
 
-    <div style="flex-grow: 1;" />
+    <div style="flex-grow: 1;"></div>
 
     {#if $isMobile}
       <MobileMenu />

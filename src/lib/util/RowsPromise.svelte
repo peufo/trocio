@@ -1,22 +1,17 @@
 <script>
-  import { onMount } from 'svelte'
-  import { ListItem } from '$material'
+  import { ListItem } from "$lib/material";
 
-  export let rowsNumber = 5
-  export let cellsWidth = [60, 60, 60]
-  export let listMode = false
-  export let twoLine = false
-  export let meta = false
+  export let rowsNumber = 5;
+  export let cellsWidth = [60, 60, 60];
+  export let listMode = false;
+  export let twoLine = false;
+  export let meta = false;
 
-  let emptyRows = []
-
-  onMount(() => {
-    emptyRows.length = rowsNumber
-  })
+  let emptyRows = Array(rowsNumber);
 </script>
 
 {#if listMode}
-  {#each emptyRows as emptyRow}
+  {#each emptyRows}
     <ListItem>
       {#if twoLine}
         <span
@@ -31,12 +26,12 @@
         TODO
       {/if}
       {#if meta}
-        <span class="ghostMeta" />
+        <span class="ghostMeta"></span>
       {/if}
     </ListItem>
   {/each}
 {:else}
-  {#each emptyRows as emptyRow}
+  {#each emptyRows}
     <tr style="text-align: left;">
       {#each cellsWidth as cellWidth}
         <td style={`width: ${cellWidth}px;`}>
@@ -80,7 +75,7 @@
   }
 
   .ghostText::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;

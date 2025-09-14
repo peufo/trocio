@@ -1,52 +1,52 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition'
-  import dayjs from 'dayjs'
-  import relativeTime from 'dayjs/plugin/relativeTime'
-  import 'dayjs/locale/fr'
-  import { mdiPrinter } from '@mdi/js'
-  import { faDownload } from '@fortawesome/free-solid-svg-icons'
+  import { fade } from "svelte/transition";
+  import dayjs from "dayjs";
+  import relativeTime from "dayjs/plugin/relativeTime";
+  import "dayjs/locale/fr";
+  import { mdiPrinter } from "@mdi/js";
+  import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
-  import { Button, Icon, Menu, List, ListItem } from '$material'
-  import type { SubscribeResum } from 'types'
-  import { renderAmount } from '$lib/utils'
-  import ArticleProvidedTable from '$lib/article/ProvidedTable.svelte'
-  import TablePurchases from './TablePurchases.svelte'
-  import TablePayments from './TablePayments.svelte'
-  import ArticleEditDialog from '$lib/article/EditDialog.svelte'
-  import TarifInfoDialog from '$lib/troc/TarifInfoDialog.svelte'
-  import Loader from '$lib/util/Loader.svelte'
-  import DetailCard from '$lib/util/DetailCard.svelte'
-  import { useApi } from '$lib/api'
-  import downloadCSV from '$lib/downloadCSV'
-  import IconLink from '$lib/util/IconLink.svelte'
+  import { Button, Icon, Menu, List, ListItem } from "$lib/material";
+  import type { SubscribeResum } from "$lib/types";
+  import { renderAmount } from "$lib/utils";
+  import ArticleProvidedTable from "$lib/article/ProvidedTable.svelte";
+  import TablePurchases from "./TablePurchases.svelte";
+  import TablePayments from "./TablePayments.svelte";
+  import ArticleEditDialog from "$lib/article/EditDialog.svelte";
+  import TarifInfoDialog from "$lib/troc/TarifInfoDialog.svelte";
+  import Loader from "$lib/util/Loader.svelte";
+  import DetailCard from "$lib/util/DetailCard.svelte";
+  import { useApi } from "$lib/api";
+  import downloadCSV from "$lib/downloadCSV";
+  import IconLink from "$lib/util/IconLink.svelte";
 
-  export let subscribeId: string
+  export let subscribeId: string;
   /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
-  export let modeAdmin = false
-  export let createArticleDisabled = false
+  export let modeAdmin = false;
+  export let createArticleDisabled = false;
 
-  let klass = ''
-  export { klass as class }
+  let klass = "";
+  export { klass as class };
 
-  let providedOpen = false
-  let paymentOpen = false
+  let providedOpen = false;
+  let paymentOpen = false;
 
   $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
-    'subscribes/resum',
+    "subscribes/resum",
     { subscribeId },
-  ])
-  $: resum = $queryResum.data?.resum
+  ]);
+  $: resum = $queryResum.data?.resum;
   $: totalProposedCount =
     (resum?.proposedCount || 0) +
     (resum?.validedCount || 0) +
     (resum?.soldCount || 0) +
-    (resum?.refusedCount || 0)
+    (resum?.refusedCount || 0);
 
-  dayjs.locale('fr')
-  dayjs.extend(relativeTime)
+  dayjs.locale("fr");
+  dayjs.extend(relativeTime);
 </script>
 
-{#if $queryResum.isLoading}
+{#if $queryResum.isPending}
   <div in:fade|local class="centered" style="height: 160px;">
     <Loader />
   </div>
@@ -84,7 +84,7 @@
         </List>
       </Menu>
 
-      <div class="flex-grow-1" />
+      <div class="flex-grow-1"></div>
 
       <h6 class="mr-1">
         <span class="mr-2">Solde</span>

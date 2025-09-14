@@ -1,47 +1,47 @@
-<script>
-  import { slide } from 'svelte/transition'
-  import { Button, TextField, Icon, Card } from '$material'
+<script lang="ts">
+  import { slide } from "svelte/transition";
+  import { Button, TextField, Icon, Card } from "$lib/material";
 
-  import Loader from '$lib/util/Loader.svelte'
-  import { user, userQuery, userStatus } from '$lib/user/store'
+  import Loader from "$lib/util/Loader.svelte";
+  import { user, userQuery, userStatus } from "$lib/user/store";
 
-  import RULES from '$lib/rules'
+  import RULES from "$lib/rules";
 
-  let userName = $user?.name
-  let userNameError = false
+  let userName = $user?.name;
+  let userNameError = false;
 
-  let userMail = $user?.mail
-  let sendValidationMailPromise
-  let mailValidationSent = false
-  let userMailError = false
+  let userMail = $user?.mail;
+  let sendValidationMailPromise: Promise<boolean>;
+  let mailValidationSent = false;
+  let userMailError = false;
 
-  let changePasswordPromise
-  let changePassword = false
-  let oldPassword = ''
-  let newPassword = ''
-  let newPasswordError = false
-  let newPassword2 = ''
-  let newPassword2Error = false
+  let changePasswordPromise: Promise<void>;
+  let changePassword = false;
+  let oldPassword = "";
+  let newPassword = "";
+  let newPasswordError = false;
+  let newPassword2 = "";
+  let newPassword2Error = false;
   const RULE_NEW_PASSWORD = [
-    () => newPassword !== newPassword2 && 'Pas identique',
-  ]
+    () => newPassword !== newPassword2 && "Pas identique",
+  ];
 
   function handleSendValidationMail() {
     sendValidationMailPromise = userQuery
       .sendValidationMail()
-      .then(() => (mailValidationSent = true))
+      .then(() => (mailValidationSent = true));
   }
 
   function handleChangePassword() {
     changePasswordPromise = userQuery
       .changePassword(oldPassword, newPassword)
       .then(() => {
-        changePassword = false
-        oldPassword = ''
-        newPassword = ''
-        newPassword2 = ''
+        changePassword = false;
+        oldPassword = "";
+        newPassword = "";
+        newPassword2 = "";
       })
-      .catch(() => {})
+      .catch(() => {});
   }
 </script>
 
@@ -62,7 +62,7 @@
 
         {#if userName !== $user.name}
           <div transition:slide|local class="d-flex">
-            <div class="flex-grow-1" />
+            <div class="flex-grow-1"></div>
             <Button
               on:click={() => userQuery.update({ name: userName })}
               disabled={userNameError || $userStatus.isLoading}
@@ -84,10 +84,10 @@
           rules={RULES.MAIL}
           bind:error={userMailError}
           hint={$user.mailvalided
-            ? 'Mail validé'
+            ? "Mail validé"
             : mailValidationSent
-            ? 'Un mail de validation vous à été envoyé.'
-            : 'Mail non validé'}
+              ? "Un mail de validation vous à été envoyé."
+              : "Mail non validé"}
         >
           <div slot="prepend">
             <Icon class="far fa-envelope" />
@@ -97,7 +97,7 @@
 
         {#if userMail !== $user.mail}
           <div transition:slide|local class="d-flex">
-            <div class="flex-grow-1" />
+            <div class="flex-grow-1"></div>
             <Button
               on:click={() => userQuery.update({ mail: userMail })}
               disabled={userMailError || $userStatus.isLoading}
@@ -115,7 +115,7 @@
 
         {#if !$user.mailvalided && !mailValidationSent}
           <div class="d-flex">
-            <div class="flex-grow-1" />
+            <div class="flex-grow-1"></div>
             {#await sendValidationMailPromise}
               <Button text disabled>
                 <Loader title="Envoie du mail" />
@@ -132,7 +132,7 @@
 
         {#if !changePassword}
           <div out:slide|local class="d-flex">
-            <div class="flex-grow-1" />
+            <div class="flex-grow-1"></div>
             <Button on:click={() => (changePassword = true)} text>
               Changer votre mot de passe
             </Button>
@@ -174,7 +174,7 @@
             </TextField>
 
             <div class="d-flex">
-              <div class="flex-grow-1" />
+              <div class="flex-grow-1"></div>
               {#await changePasswordPromise}
                 <Button text disabled>
                   <Loader title="Modification du mot de passe..." />
@@ -206,7 +206,7 @@
 
         <br />
         <div class="d-flex">
-          <div class="flex-grow-1" />
+          <div class="flex-grow-1"></div>
           <Button on:click={userQuery.logout} text class="red-text">
             Déconnexion
           </Button>

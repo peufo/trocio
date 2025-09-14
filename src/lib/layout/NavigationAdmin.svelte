@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { params, url, isActive } from '@roxi/routify'
-  import { createEventDispatcher } from 'svelte'
+  import { createEventDispatcher } from "svelte";
   import {
     faHouseChimney,
     faUsers,
@@ -12,8 +11,8 @@
     faAngleDoubleLeft,
     faAngleDoubleRight,
     faEdit,
-  } from '@fortawesome/free-solid-svg-icons'
-  import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
+  } from "@fortawesome/free-solid-svg-icons";
+  import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
   import {
     List,
     ListItem,
@@ -21,40 +20,42 @@
     Button,
     Overlay,
     NavigationDrawer,
-  } from '$material'
+  } from "$lib/material";
 
-  import { troc } from '$lib/troc/store'
-  import layout, { isMobile, isKeyboardOpen } from '$lib/store/layout'
-  import IconLink from '$lib/util/IconLink.svelte'
+  import { troc } from "$lib/troc/store";
+  import { layout, isMobile, isKeyboardOpen } from "$lib/store/layout";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { param } from "$lib/param";
+  import { page } from "$app/state";
 
-  let width: string | undefined
-  let mini = $isMobile
+  let width: string | undefined;
+  let mini = $isMobile;
 
-  $: miniWidth = $isMobile ? '0px' : '56px'
+  $: miniWidth = $isMobile ? "0px" : "56px";
 
   /** width updated white according to props mini */
-  export let realWidth = mini ? miniWidth : width
-  $: realWidth = mini ? miniWidth : width
-  let scrollY = 0
+  export let realWidth = mini ? miniWidth : width;
+  $: realWidth = mini ? miniWidth : width;
+  let scrollY = 0;
 
   const tabs = [
-    { ref: 'home', label: $troc.name, icon: faHouseChimney, isIndex: true },
-    { ref: 'edit', label: 'Édition', icon: faEdit },
-    { ref: 'tarif', label: 'Tarifications', icon: faCoins },
-    { ref: 'tag', label: 'Étiquetage', icon: faTag },
-    { ref: 'statistic', label: 'Statistiques', icon: faChartPie },
-    { ref: 'management_users', label: 'Participants', icon: faUsers },
-    { ref: 'management_articles', label: 'Articles', icon: faCubes },
-    { ref: 'cash_register', label: 'Caisse', icon: faCashRegister },
-  ]
+    { ref: "home", label: $troc.name, icon: faHouseChimney, isIndex: true },
+    { ref: "edit", label: "Édition", icon: faEdit },
+    { ref: "tarif", label: "Tarifications", icon: faCoins },
+    { ref: "tag", label: "Étiquetage", icon: faTag },
+    { ref: "statistic", label: "Statistiques", icon: faChartPie },
+    { ref: "management_users", label: "Participants", icon: faUsers },
+    { ref: "management_articles", label: "Articles", icon: faCubes },
+    { ref: "cash_register", label: "Caisse", icon: faCashRegister },
+  ];
 
-  const dispatch = createEventDispatcher()
+  const dispatch = createEventDispatcher();
 
   $: offsetY =
-    scrollY > $layout.headerHeight ? 0 : $layout.headerHeight - scrollY
+    scrollY > $layout.headerHeight ? 0 : $layout.headerHeight - scrollY;
 
   function handleClickLink() {
-    if ($isMobile) mini = true
+    if ($isMobile) mini = true;
   }
 </script>
 
@@ -71,20 +72,17 @@
 >
   <NavigationDrawer
     {mini}
-    transition={() => ({ duration: 0, css: (t) => '' })}
+    transition={() => ({ duration: 0, css: (t) => "" })}
     bind:width
     classContent="d-flex flex-column"
     {miniWidth}
   >
     <List nav>
       {#each tabs as tab}
-        <a
-          href={$url(`/admin/${tab.ref}`, { ...$params })}
-          on:click={handleClickLink}
-        >
+        <a href="/admin/{tab.ref}{$param.with({})}" on:click={handleClickLink}>
           <ListItem
-            active={$isActive(`/admin/${tab.ref}`) ||
-              (tab.isIndex && $isActive('/admin/index'))}
+            active={page.route.id?.startsWith(`/admin/${tab.ref}`) ||
+              (tab.isIndex && page.route.id === "/admin")}
             activeClass="secondary-color white-text"
           >
             <span slot="prepend">
@@ -96,11 +94,11 @@
       {/each}
     </List>
 
-    <div class="flex-grow-1" />
+    <div class="flex-grow-1"></div>
     <Divider />
 
     <List nav>
-      <ListItem on:click={() => dispatch('openTips')}>
+      <ListItem on:click={() => dispatch("openTips")}>
         <span slot="prepend">
           <IconLink icon={faQuestionCircle} size="1.1em" />
         </span>

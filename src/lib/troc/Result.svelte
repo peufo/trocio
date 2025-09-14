@@ -1,36 +1,37 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition'
-  import debounce from 'debounce'
+  import { fade } from "svelte/transition";
+  import debounce from "debounce";
 
-  import TrocCard from '$lib/troc/Card.svelte'
-  import Loader from '$lib/util/Loader.svelte'
+  import TrocCard from "$lib/troc/Card.svelte";
+  import Loader from "$lib/util/Loader.svelte";
 
-  import { queryTrocsParams, trocs, trocsElement, map } from '$lib/troc/store'
-  import { useInfinitApi } from '$lib/api'
-  import type { SearchTrocsQuery, TrocLookup } from 'types'
+  import { queryTrocsParams, trocs, trocsElement, map } from "$lib/troc/store";
+  import { useInfinitApi } from "$lib/api";
+  import type { SearchTrocsQuery, TrocLookup } from "$lib/types";
 
-  $: queryTrocs = useInfinitApi<SearchTrocsQuery, TrocLookup[]>({
-    queryKey: ['trocs', $queryTrocsParams],
-  })
-  $: $trocs = $queryTrocs.data ? $queryTrocs.data.pages.flat() : []
+  $: queryTrocs = useInfinitApi<SearchTrocsQuery, TrocLookup[]>([
+    "trocs",
+    $queryTrocsParams,
+  ]);
+  $: $trocs = $queryTrocs.data ? $queryTrocs.data.pages.flat() : [];
 
   /** Charge les résultat suivant en cas de scroll */
   const handleScroll = debounce(() => {
     if ($queryTrocs.hasNextPage && !$queryTrocs.isFetchingNextPage) {
-      const { scrollY, innerHeight } = window
-      const appElement = document.querySelector<HTMLDivElement>('#app')
-      if (!appElement) return
-      const { offsetHeight } = appElement
+      const { scrollY, innerHeight } = window;
+      const appElement = document.querySelector<HTMLDivElement>("#app");
+      if (!appElement) return;
+      const { offsetHeight } = appElement;
       if (scrollY && scrollY + innerHeight > offsetHeight - 100) {
-        $queryTrocs.fetchNextPage()
+        $queryTrocs.fetchNextPage();
       }
     }
-  }, 50)
+  }, 50);
 
   /** Zoom sur le bon marker de la map quand on click sur un troc. */
   function clickTroc(troc: TrocLookup) {
-    if (!troc.location) return
-    $map?.setView(troc.location, 8)
+    if (!troc.location) return;
+    $map?.setView(troc.location, 8);
   }
 </script>
 

@@ -1,121 +1,125 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { flip } from 'svelte/animate'
-  import { fade, scale, slide, fly } from 'svelte/transition'
-  import { params, redirect } from '@roxi/routify'
+  import { onMount } from "svelte";
+  import { flip } from "svelte/animate";
+  import { fade, scale, slide, fly } from "svelte/transition";
   import {
     mdiChevronDown,
     mdiClose,
     mdiQrcodeScan,
     mdiTextBoxCheckOutline,
-  } from '@mdi/js'
-  import { faTimes } from '@fortawesome/free-solid-svg-icons'
-  import 'animate.css'
+  } from "@mdi/js";
+  import { faTimes } from "@fortawesome/free-solid-svg-icons";
+  import "animate.css";
 
-  import { Button, Icon } from '$material'
-  import MagicSelect from '$lib/util/MagicSelect.svelte'
-  import { isMobile } from '$lib/store/layout'
-  import { renderAmount, removeParams } from '$lib/utils'
-  import { troc } from '$lib/troc/store'
-  import { api } from '$lib/api'
-  import type { Article } from 'types'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import notify from '$lib/notify'
-  import Scanner from '$lib/scanner/Scanner.svelte'
-  import { getMismatchRaison } from '$lib/scanner/utils'
+  import { Button, Icon } from "$lib/material";
+  import MagicSelect from "$lib/util/MagicSelect.svelte";
+  import { isMobile } from "$lib/store/layout";
+  import { renderAmount } from "$lib/utils";
+  import { troc } from "$lib/troc/store";
+  import { api } from "$lib/api";
+  import type { Article } from "$lib/types";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import notify from "$lib/notify";
+  import Scanner from "$lib/scanner/Scanner.svelte";
+  import { getMismatchRaison } from "$lib/scanner/utils";
+  import { page } from "$app/state";
+  import { param, urlParam } from "$lib/param";
+  import { goto } from "$app/navigation";
 
-  export let pendingItems: Article[] = []
-  export let queryParams = {}
-  export let placeholder = 'Articles'
-  export let canSelectAll = false
-  export let message = ''
-  export let disableScanner = false
-  let isScannerOpen = false
-  let magicSelect: MagicSelect
-  let selectAllPromise: Promise<void>
+  export let pendingItems: Article[] = [];
+  export let queryParams = {};
+  export let placeholder = "Articles";
+  export let canSelectAll = false;
+  export let message = "";
+  export let disableScanner = false;
+  let isScannerOpen = false;
+  let magicSelect: MagicSelect;
+  let selectAllPromise: Promise<void>;
 
   /** Gestion de l'affichage des seléctions en mode mobile */
-  let isSelectionOpen = false
-  let isIndicatorAnimated = false
+  let isSelectionOpen = false;
+  let isIndicatorAnimated = false;
 
-  let pendingItemsTake = 30
+  let pendingItemsTake = 30;
 
   onMount(() => {
-    if (!$isMobile) magicSelect.focus()
-    if ($params['select_article']) {
-      selectArticleTagId($params['select_article'])
-      $redirect(undefined, removeParams($params, ['select_article']))
+    if (!$isMobile) magicSelect.focus();
+    const select_article = $param.get("select_article");
+
+    if (select_article) {
+      selectArticleTagId(select_article);
+      goto($urlParam.without("select_article"));
     }
-  })
+  });
 
   export function closeSelection() {
-    isSelectionOpen = false
+    isSelectionOpen = false;
   }
 
   async function handleSelectAll() {
-    const articles = await api<Article[]>('/api/articles', {
+    const articles = await api<Article[]>("/api/articles", {
       params: {
         limit: 1000,
         ...queryParams,
       },
-    })
-    pendingItems = articles
-    if (!articles.length) notify.warning(`Le client n'a pas d'article proposé`)
+    });
+    pendingItems = articles;
+    if (!articles.length) notify.warning(`Le client n'a pas d'article proposé`);
     if (articles.length === 1000)
-      notify.warning('Seul 1000 article peuvent être sélectionés')
+      notify.warning("Seul 1000 article peuvent être sélectionés");
 
-    if ($isMobile) animeIndicator()
+    if ($isMobile) animeIndicator();
   }
 
   function handleSelectArticle(event: { detail: Article }) {
-    selectArticle(event.detail)
+    selectArticle(event.detail);
   }
 
   function handleDetectArticle(event: { detail: string }) {
-    selectArticleTagId(event.detail)
+    selectArticleTagId(event.detail);
   }
 
   export async function selectArticleTagId(articleTagId: string) {
     try {
-      const [article] = await api<Article[]>('/api/articles', {
+      const [article] = await api<Article[]>("/api/articles", {
         params: { exact_tagId: articleTagId, ...queryParams },
-      })
+      });
       if (!article) {
-        const raison = await getMismatchRaison(articleTagId, queryParams)
-        notify.warning(raison)
-        return
+        const raison = await getMismatchRaison(articleTagId, queryParams);
+        notify.warning(raison);
+        return;
       }
 
-      selectArticle(article)
+      selectArticle(article);
     } catch (error: any) {
-      notify.error(error)
+      notify.error(error);
     }
   }
 
   export function selectArticle(article: Article) {
     if (pendingItems.map(({ _id }) => _id).includes(article._id))
-      return notify.warning('Article déjà sélectioné')
-    pendingItems = [...pendingItems, article]
-    if ($isMobile) animeIndicator()
+      return notify.warning("Article déjà sélectioné");
+    pendingItems = [...pendingItems, article];
+    if ($isMobile) animeIndicator();
   }
 
   function handleRemove(index: number) {
     pendingItems = [
       ...pendingItems.slice(0, index),
       ...pendingItems.slice(index + 1),
-    ]
+    ];
   }
 
   function handleReset() {
-    pendingItems = []
-    setTimeout(closeSelection, 300)
+    pendingItems = [];
+    setTimeout(closeSelection, 300);
   }
 
   function animeIndicator() {
-    const duration = 1000
+    const duration = 1000;
     if (!isIndicatorAnimated)
-      setTimeout(() => (isIndicatorAnimated = false), duration)
-    isIndicatorAnimated = true
+      setTimeout(() => (isIndicatorAnimated = false), duration);
+    isIndicatorAnimated = true;
   }
 </script>
 
@@ -222,7 +226,7 @@
         <div in:fade|local>
           <Button depressed on:click={handleReset}>
             {pendingItems.length === 1
-              ? 'Un article'
+              ? "Un article"
               : `${pendingItems.length} articles`}
             {#if pendingItems.length}
               <Icon class="ml-3" style="opacity: 0.6;" path={mdiClose} />
@@ -231,7 +235,7 @@
         </div>
       {/if}
 
-      <div class="flex-grow-1" />
+      <div class="flex-grow-1"></div>
 
       <slot name="options-selection" />
 
@@ -302,7 +306,7 @@
     <!-- Basket footer (actions)-->
     {#if pendingItems.length}
       <div class="d-flex">
-        <div class="flex-grow-1" />
+        <div class="flex-grow-1"></div>
         <div in:fade|locale>
           <slot name="actions-selection" />
         </div>

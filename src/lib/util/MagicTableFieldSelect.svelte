@@ -1,37 +1,39 @@
 <script lang="ts">
-  import { params, goto, url } from '@roxi/routify'
+  import { onMount } from "svelte";
+  import { isMobile } from "$lib/store/layout";
+  import { Button, Menu, List, ListItem, Checkbox } from "$lib/material";
+  import type { FieldInteface } from "$lib/types/magic";
+  import { page } from "$app/state";
+  import { goto } from "$app/navigation";
+  import { urlParam } from "$lib/param";
 
-  import { onMount } from 'svelte'
-  import { isMobile } from '$lib/store/layout'
-  import { Button, Menu, List, ListItem, Checkbox } from '$material'
-  import type { FieldInteface } from 'types/magic'
-
-  export let fields: Partial<FieldInteface>[]
-  export let style = ''
-  export let searchColSpan = 0
+  export let fields: Partial<FieldInteface>[];
+  export let style = "";
+  export let searchColSpan = 0;
 
   onMount(() => {
     // show fields if query exist in url
-    const queryKeyRegexps = fields.map(({ key }) => new RegExp(`${key}$`))
-    for (const queryKey in $params) {
+    const queryKeyRegexps = fields.map(({ key }) => new RegExp(`${key}$`));
+
+    for (const queryKey of page.url.searchParams.keys()) {
       queryKeyRegexps.forEach((regex, index) => {
-        if (queryKey.match(regex)) fields[index].hidden = false
-      })
+        if (queryKey.match(regex)) fields[index].hidden = false;
+      });
     }
-  })
+  });
 
   function handleClick(index: number) {
-    const field = fields[index]
-    fields[index].hidden = !field.hidden
+    const field = fields[index];
+    fields[index].hidden = !field.hidden;
 
     // Disable filters and sort if field is hidden
     if (field.hidden) {
-      const query = $params
-      const regexp = new RegExp(`${field.key}$`)
-      for (const queryKey in query) {
-        if (queryKey.match(regexp)) delete query[queryKey]
+      const keysToRemove: string[] = [];
+      const regexp = new RegExp(`${field.key}$`);
+      for (const queryKey of page.url.searchParams.keys()) {
+        if (queryKey.match(regexp)) keysToRemove.push(queryKey);
       }
-      $goto($url(), query)
+      goto($urlParam.without(...keysToRemove));
     }
   }
 </script>

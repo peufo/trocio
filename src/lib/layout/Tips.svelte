@@ -1,33 +1,34 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition'
-  import { isActive, afterPageLoad } from '@roxi/routify'
-  import { faTimes } from '@fortawesome/free-solid-svg-icons'
+  import { fade } from "svelte/transition";
+  import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-  import { NavigationDrawer } from '$material'
+  import { NavigationDrawer } from "$lib/material";
 
-  import IconLink from '$lib/util/IconLink.svelte'
-  import layout from '$lib/store/layout'
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { layout } from "$lib/store/layout";
+  import { afterNavigate } from "$app/navigation";
+  import { page } from "$app/state";
 
-  export let active = true
-  export let isCashier = false
+  export let active = true;
+  export let isCashier = false;
 
-  let content: HTMLDivElement
+  let content: HTMLDivElement;
 
-  let scrollY = 0
-  export const width: string = '400px'
+  let scrollY = 0;
+  export const width: string = "400px";
 
-  $: if (active) setTimeout(scrollToActiveSection, 600)
+  $: if (active) setTimeout(scrollToActiveSection, 600);
 
-  $afterPageLoad(() => {
-    scrollToActiveSection()
-  })
+  afterNavigate(() => {
+    scrollToActiveSection();
+  });
 
   function scrollToActiveSection() {
     if (active && content) {
-      const section = Array.from(content.querySelectorAll('section')).find(
-        ({ dataset }) => $isActive(dataset.path)
-      )
-      if (section) content.scrollTo({ top: section.offsetTop - 125 })
+      const section = Array.from(content.querySelectorAll("section")).find(
+        ({ dataset }) => page.route.id === dataset.path
+      );
+      if (section) content.scrollTo({ top: section.offsetTop - 125 });
     }
   }
 </script>
@@ -37,7 +38,7 @@
 <NavigationDrawer
   right
   {active}
-  transition={() => ({ duration: 0, css: (t) => '' })}
+  transition={() => ({ duration: 0, css: (t) => "" })}
   fixed
   style="
     width: {width};
@@ -49,7 +50,7 @@
 >
   <div class="tipsHeader d-flex pa-2 pt-4 pb-4">
     <div class="text-h5">Aide</div>
-    <div class="flex-grow-1" />
+    <div class="flex-grow-1"></div>
     <IconLink
       icon={faTimes}
       clickable
@@ -59,7 +60,7 @@
   </div>
 
   {#if active}
-    <div transition:fade|local class="content pl-2 " bind:this={content}>
+    <div transition:fade|local class="content pl-2" bind:this={content}>
       {#if !isCashier}
         <section data-path="/admin/edit">
           <span class="title">Information</span>
@@ -178,14 +179,14 @@
         <p>Pensez à utiliser les raccourcis clavier :</p>
 
         <span class="shortcut mr-2">
-          Ctrl + <i class="fas fa-backspace" />
+          Ctrl + <i class="fas fa-backspace"></i>
         </span>
         Champ de recherche client
         <br />
 
         <span class="shortcut mr-2">
-          <i class="fas fa-arrow-up" /> |
-          <i class="fas fa-arrow-down" />
+          <i class="fas fa-arrow-up"></i> |
+          <i class="fas fa-arrow-down"></i>
         </span>
         Choix du client
         <br />
@@ -194,15 +195,16 @@
         Sélection d'un client <br />
 
         <span class="shortcut mr-2">
-          Ctrl + <i class="fas fa-backspace" />,<i class="fas fa-backspace" />
+          Ctrl + <i class="fas fa-backspace"></i>,<i class="fas fa-backspace"
+          ></i>
         </span>
         Client anonyme
         <br />
 
         <span class="shortcut mr-2">
-          Ctrl + <i class="fas fa-arrow-left" />&nbsp;|&nbsp;<i
+          Ctrl + <i class="fas fa-arrow-left"></i>&nbsp;|&nbsp;<i
             class="fas fa-arrow-right"
-          />
+          ></i>
         </span>
         Changer d'onglet
         <br />
@@ -352,7 +354,7 @@
           Proposer un article ici à exactement le même effet que de le faire sur
           l'onglet <span class="tab">Fourni</span>. Hormis la possibilité que
           avez, comme le client, d'importer une liste d'article en cliquant sur
-          l'icône <i class="fas fa-list" />.
+          l'icône <i class="fas fa-list"></i>.
         </p>
       </section>
     </div>

@@ -1,9 +1,9 @@
 <script>
-  import { Button, Icon } from '$material'
-  import { isDarkTheme } from '$lib/store/layout'
-  import { mdiGithub } from '@mdi/js'
+  import { Button, Icon } from "$lib/material";
+  import { isDarkTheme, layout } from "$lib/store/layout";
+  import { mdiGithub } from "@mdi/js";
 
-  export let offsetHeight
+  export let offsetHeight;
 </script>
 
 <footer

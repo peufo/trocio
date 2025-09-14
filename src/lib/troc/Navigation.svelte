@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { fade, slide } from 'svelte/transition'
-  import { Button, NavigationDrawer } from '$material'
+  import { fade, slide } from "svelte/transition";
+  import { Button, NavigationDrawer } from "$lib/material";
 
-  import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons'
-  import { isActive } from '@roxi/routify'
+  import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
 
-  import layout from '$lib/store/layout'
-  import { user } from '$lib/user/store'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import TrocMap from '$lib/troc/Map.svelte'
-  import TrocSearch from '$lib/troc/Search.svelte'
-  import SubTrocsList from '$lib/sub/TrocsList.svelte'
+  import { layout } from "$lib/store/layout";
+  import { user } from "$lib/user/store";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import TrocMap from "$lib/troc/Map.svelte";
+  import TrocSearch from "$lib/troc/Search.svelte";
+  import SubTrocsList from "$lib/sub/TrocsList.svelte";
+  import { page } from "$app/state";
 
-  export let active = true
-  export let width = '360px'
-  export let mobileMode = false
+  export let active = true;
+  export let width = "360px";
+  export let mobileMode = false;
 
-  let scrollY = 0
+  let scrollY = 0;
 
   $: drawerStyle = `
     width: ${width};
@@ -25,7 +25,7 @@
       scrollY > $layout.headerHeight ? 0 : $layout.headerHeight - scrollY
     }px;
     overflow-y: hidden;
-  `
+  `;
 </script>
 
 <svelte:window bind:scrollY />
@@ -40,7 +40,7 @@
     <!-- LIST HEADER -->
     <div>
       <!-- SEARCH FORM -->
-      {#if $isActive('/trocs/index')}
+      {#if page.route.id === "/trocs"}
         <div transition:slide|local style="padding-bottom: 1em;">
           <div class="simple-card">
             <TrocSearch />
@@ -49,7 +49,7 @@
       {/if}
 
       <div class="d-flex">
-        {#if !$isActive('/trocs/index')}
+        {#if page.route.id !== "/trocs"}
           <a
             href="/trocs"
             in:fade|local={{ duration: 100, delay: 100 }}
@@ -61,7 +61,7 @@
             </Button>
           </a>
         {/if}
-        <div class="flex-grow-1" />
+        <div class="flex-grow-1"></div>
 
         <a href="{!$user ? '/login?callback=' : ''}/trocs/create">
           <Button depressed class="secondary-color">

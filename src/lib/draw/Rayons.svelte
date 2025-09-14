@@ -1,24 +1,24 @@
-<script>
-  import { onMount } from 'svelte'
-  import { isDarkTheme } from '$lib/store/layout'
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { isDarkTheme } from "$lib/store/layout";
 
-  export let number = 40
+  export let number = 40;
 
-  const WIDTH = 540
-  const HEIGHT = 540
-  const LINE_WIDTH = 5
+  const WIDTH = 540;
+  const HEIGHT = 540;
+  const LINE_WIDTH = 5;
 
-  let angles = []
+  let angles: number[] = [];
   onMount(() => {
     //Desable SSR
-    if (!navigator.userAgent.includes('jsdom')) {
+    if (!navigator.userAgent.includes("jsdom")) {
       angles = Array(number)
-        .fill()
+        .fill(0)
         .map((n, i) => {
-          return i * (360 / number)
-        })
+          return i * (360 / number);
+        });
     }
-  })
+  });
 </script>
 
 <div class="container">
@@ -27,13 +27,13 @@
       <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop
           offset="0%"
-          stop-color={$isDarkTheme ? '#eee' : '#ccc'}
+          stop-color={$isDarkTheme ? "#eee" : "#ccc"}
           stop-opacity="1"
         />
 
         <stop
           offset="100%"
-          stop-color={$isDarkTheme ? '#eee' : '#ccc'}
+          stop-color={$isDarkTheme ? "#eee" : "#ccc"}
           stop-opacity="0"
         />
       </linearGradient>

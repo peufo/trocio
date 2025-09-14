@@ -1,25 +1,25 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition'
+  import { fade } from "svelte/transition";
 
-  import { Chip } from '$material'
-  import Loader from '$lib/util/Loader.svelte'
-  import { renderAmount } from '$lib/utils'
-  import { useInfinitApi } from '$lib/api'
-  import type { Article, DynamicQuery } from 'types'
-  import SearchTextField from '$lib/util/SearchTextField.svelte'
+  import { Chip } from "$lib/material";
+  import Loader from "$lib/util/Loader.svelte";
+  import { renderAmount } from "$lib/utils";
+  import { useInfinitApi } from "$lib/api";
+  import type { Article, DynamicQuery } from "$lib/types";
+  import SearchTextField from "$lib/util/SearchTextField.svelte";
 
-  export let trocId = ''
-  export let currency = ''
-  export let search = ''
-  export let placeholder = 'Chercher un article'
-  let klass = ''
-  export { klass as class }
+  export let trocId = "";
+  export let currency = "";
+  export let search = "";
+  export let placeholder = "Chercher un article";
+  let klass = "";
+  export { klass as class };
 
   $: queryArticles = useInfinitApi<DynamicQuery<Article>, Article>([
-    'articles',
+    "articles",
     { exact_trocId: trocId, or_search_name: search },
-  ])
-  $: articles = $queryArticles.data ? $queryArticles.data.pages.flat() : []
+  ]);
+  $: articles = $queryArticles.data ? $queryArticles.data.pages.flat() : [];
 </script>
 
 <div class={klass}>
@@ -55,13 +55,14 @@
     </div>
   {:else if $queryArticles.hasNextPage}
     <!-- Bonton pour plus de résultats-->
-    <div
+    <button
+      type="button"
       in:fade|local
       class="underline-div text--secondary mt-3 ml-2"
       on:click={() => $queryArticles.fetchNextPage()}
     >
       <span class="underline-span">Afficher plus</span>
-    </div>
+    </button>
   {/if}
 </div>
 

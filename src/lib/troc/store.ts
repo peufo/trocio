@@ -1,12 +1,14 @@
-import { derived, writable } from 'svelte/store'
-import type L from 'leaflet'
-import { useMutation } from '@sveltestack/svelte-query'
+import { writable } from "svelte/store";
+import type L from "leaflet";
+import { createMutation } from "@tanstack/svelte-query";
 
-import type { SubscribeLookup, Troc, TrocLookup, SearchTrocsQuery } from 'types'
+import type {
+  SubscribeLookup,
+  Troc,
+  TrocLookup,
+  SearchTrocsQuery,
+} from "$lib/types";
 import {
-  getTroc,
-  searchTrocs,
-  getsubscribes,
   addAdmin,
   removeAdmin,
   addCashier,
@@ -16,90 +18,99 @@ import {
   setTraderPrefix,
   createTroc,
   updateTroc,
-  getNextPageParam,
   createTarif,
   deleteTarif,
   editTarif,
-  addApply,
   removeApply,
-} from '$lib/troc/api'
+} from "$lib/troc/api";
 
 /**
  * Get troc
  * Info détaillé d'un troc + liste des participants
  */
-export const troc = writable<TrocLookup>(undefined)
+export const troc = writable<TrocLookup>(undefined);
 
 /**
  * Search Subscribers
  */
 interface SearchSubscribersQuery {
-  trocId: string
-  q: string
-  filtredTarifs?: string[]
+  trocId: string;
+  q: string;
+  filtredTarifs?: string[];
 }
-export const subscribes = writable<SubscribeLookup[]>([])
+export const subscribes = writable<SubscribeLookup[]>([]);
 
 /**
  * Search trocs
  * Liste de trocs selon un recherche
  */
 
-export const queryTrocsParams = writable<SearchTrocsQuery>({})
-export const trocs = writable<TrocLookup[]>([])
-export const trocsElement = writable<{ [key: string]: HTMLElement }>({})
-export const map = writable<L.Map>()
+export const queryTrocsParams = writable<SearchTrocsQuery>({});
+export const trocs = writable<TrocLookup[]>([]);
+export const trocsElement = writable<{ [key: string]: HTMLElement }>({});
+export const map = writable<L.Map>();
 
 /**
  * Creation
  * @deprecated
  */
-export const useCreateTroc = () => useMutation(createTroc, { onSuccess })
+export const useCreateTroc = () =>
+  createMutation({ mutationFn: createTroc, onSuccess });
 
 /**
  * Mise à jour
  */
 
 /** @deprecated */
-export const useUpdateTroc = () => useMutation(updateTroc, { onSuccess })
+export const useUpdateTroc = () =>
+  createMutation({ mutationFn: updateTroc, onSuccess });
 
 /**
  * Collaborators
  */
 /** @deprecated */
-export const useAddAdmin = () => useMutation(addAdmin, { onSuccess })
+export const useAddAdmin = () =>
+  createMutation({ mutationFn: addAdmin, onSuccess });
 /** @deprecated */
-export const useRemoveAdmin = () => useMutation(removeAdmin, { onSuccess })
+export const useRemoveAdmin = () =>
+  createMutation({ mutationFn: removeAdmin, onSuccess });
 /** @deprecated */
-export const useAddCashier = () => useMutation(addCashier, { onSuccess })
+export const useAddCashier = () =>
+  createMutation({ mutationFn: addCashier, onSuccess });
 /** @deprecated */
-export const useRemoveCashier = () => useMutation(removeCashier, { onSuccess })
+export const useRemoveCashier = () =>
+  createMutation({ mutationFn: removeCashier, onSuccess });
 /** @deprecated */
-export const useAddTrader = () => useMutation(addTrader, { onSuccess })
+export const useAddTrader = () =>
+  createMutation({ mutationFn: addTrader, onSuccess });
 /** @deprecated */
-export const useRemoveTrader = () => useMutation(removeTrader, { onSuccess })
+export const useRemoveTrader = () =>
+  createMutation({ mutationFn: removeTrader, onSuccess });
 /** @deprecated */
 export const useSetTraderPrefix = () =>
-  useMutation(setTraderPrefix, { onSuccess })
+  createMutation({ mutationFn: setTraderPrefix, onSuccess });
 
 /**
  * Tarif
  */
 /** @deprecated */
-export const useCreateTarif = () => useMutation(createTarif, { onSuccess })
+export const useCreateTarif = () =>
+  createMutation({ mutationFn: createTarif, onSuccess });
 /** @deprecated */
-export const useEditTarif = () => useMutation(editTarif, { onSuccess })
+export const useEditTarif = () =>
+  createMutation({ mutationFn: editTarif, onSuccess });
 /** @deprecated */
-export const useDeleteTarif = () => useMutation(deleteTarif, { onSuccess })
+export const useDeleteTarif = () =>
+  createMutation({ mutationFn: deleteTarif, onSuccess });
+
 /** @deprecated */
-export const useAddApply = () => useMutation(addApply, { onSuccess })
-/** @deprecated */
-export const useRemoveApply = () => useMutation(removeApply, { onSuccess })
+export const useRemoveApply = () =>
+  createMutation({ mutationFn: removeApply, onSuccess });
 
 /**
  * Update troc on success
  */
 /** @deprecated */
 function onSuccess(newTroc: TrocLookup) {
-  troc.set(newTroc)
+  troc.set(newTroc);
 }

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import SubActivity from '$lib/sub/Activity.svelte'
-  import EnsureSubscribe from '$lib/sub/EnsureSubscribe.svelte'
-  import type { TrocLookup } from 'types'
+  import SubActivity from "$lib/sub/Activity.svelte";
+  import EnsureSubscribe from "$lib/sub/EnsureSubscribe.svelte";
+  import type { TrocLookup } from "$lib/types";
 
-  export let troc: TrocLookup
+  export let troc: TrocLookup;
 </script>
 
 <EnsureSubscribe {troc}>

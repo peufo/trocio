@@ -14,7 +14,7 @@
     faShoppingBasket,
     faTimes,
     faUserTie,
-  } from '@fortawesome/free-solid-svg-icons'
+  } from "@fortawesome/free-solid-svg-icons";
   import {
     Card,
     CardTitle,
@@ -24,45 +24,45 @@
     Button,
     Chip,
     Icon,
-  } from '$material'
-  import dayjs from 'dayjs'
-  import relativeTime from 'dayjs/plugin/relativeTime'
-  import 'dayjs/locale/fr'
-  import { mdiPhone, mdiWeb } from '@mdi/js'
+  } from "$lib/material";
+  import dayjs from "dayjs";
+  import relativeTime from "dayjs/plugin/relativeTime";
+  import "dayjs/locale/fr";
+  import { mdiPhone, mdiWeb } from "@mdi/js";
 
-  import IconLink from '$lib/util/IconLink.svelte'
-  import { user } from '$lib/user/store'
-  import Share from '$lib/troc/Share.svelte'
-  import type { TrocLookup } from 'types'
-  import { useApi } from '$lib/api'
-  import { faEnvelope } from '@fortawesome/free-regular-svg-icons'
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { user } from "$lib/user/store";
+  import Share from "$lib/troc/Share.svelte";
+  import type { TrocLookup } from "$lib/types";
+  import { useApi } from "$lib/api";
+  import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 
-  export let troc: TrocLookup
-  export let clickable = false
-  export let hideAdminButton = false
-  let klass = ''
-  export { klass as class }
-  export let style = ''
+  export let troc: TrocLookup;
+  export let clickable = false;
+  export let hideAdminButton = false;
+  let klass = "";
+  export { klass as class };
+  export let style = "";
 
-  dayjs.locale('fr')
-  dayjs.extend(relativeTime)
+  dayjs.locale("fr");
+  dayjs.extend(relativeTime);
 
-  const DESCRIPTION_SIZE = 250
-  let sliceDescription = DESCRIPTION_SIZE
+  const DESCRIPTION_SIZE = 250;
+  let sliceDescription = DESCRIPTION_SIZE;
 
   const SCHEDULE = {
-    open: { icon: faStoreAlt, title: 'Ouverture du troc' },
-    deposit: { icon: faSignInAlt, title: 'Dépot des articles' },
-    recovery: { icon: faSignOutAlt, title: 'Récupération des articles' },
-    sale: { icon: faShoppingBasket, title: 'Ouverture des ventes' },
+    open: { icon: faStoreAlt, title: "Ouverture du troc" },
+    deposit: { icon: faSignInAlt, title: "Dépot des articles" },
+    recovery: { icon: faSignOutAlt, title: "Récupération des articles" },
+    sale: { icon: faShoppingBasket, title: "Ouverture des ventes" },
     delete: { icon: faTimes, title: `Cette option n'a pas de sens ici` },
-  }
-  let scheduleInfo = ''
+  };
+  let scheduleInfo = "";
 
   $: queryCounters = useApi<
     { trocId: string },
     { articlesCount: number; subscribesCount: number }
-  >(['trocs/byId/counters', { trocId: troc._id }])
+  >(["trocs/byId/counters", { trocId: troc._id }]);
 </script>
 
 <Card hover={clickable} class={klass} {style}>
@@ -71,14 +71,14 @@
     <Chip size="small" outlined class="text--secondary">
       <IconLink icon={faChild} size=".7em" />
       <span title="Nombre de participants">
-        {$queryCounters.isSuccess ? $queryCounters.data.subscribesCount : '∿'}
+        {$queryCounters.isSuccess ? $queryCounters.data.subscribesCount : "∿"}
       </span>
     </Chip>
 
     <Chip size="small" outlined class="text--secondary">
       <IconLink icon={faCubes} size=".7em" />
       <span title="Nombre d'articles">
-        {$queryCounters.isSuccess ? $queryCounters.data.articlesCount : '∿'}
+        {$queryCounters.isSuccess ? $queryCounters.data.articlesCount : "∿"}
       </span>
     </Chip>
 
@@ -106,19 +106,21 @@
         <p style="word-wrap: break-word;">
           {troc.description?.slice(0, sliceDescription)}
           {#if troc.description?.length > sliceDescription}
-            <span
+            <button
+              type="button"
               class="showDescription"
               on:click={() => (sliceDescription = Infinity)}
             >
               ...Afficher
-            </span>
+            </button>
           {:else if troc.description?.length > DESCRIPTION_SIZE && sliceDescription == Infinity}
-            <span
+            <button
+              type="button"
               class="showDescription"
               on:click={() => (sliceDescription = DESCRIPTION_SIZE)}
             >
               Réduire
-            </span>
+            </button>
           {/if}
         </p>
       </div>
@@ -139,10 +141,11 @@
         {#if troc.schedule?.length}
           <div class="d-flex align-start">
             <IconLink icon={faCalendarAlt} opacity />
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
             <div
               class="pl-4 d-flex flex-column"
               style="gap: 4px;"
-              on:mouseleave={() => (scheduleInfo = '')}
+              on:mouseleave={() => (scheduleInfo = "")}
             >
               <span>
                 <b class="mr-2">
@@ -155,10 +158,10 @@
 
               {#each troc.schedule as period}
                 <div
-                  title={(period.name && SCHEDULE[period.name].title) || ''}
+                  title={(period.name && SCHEDULE[period.name].title) || ""}
                   on:mouseenter={() =>
                     (scheduleInfo =
-                      (period.name && SCHEDULE[period.name].title) || '')}
+                      (period.name && SCHEDULE[period.name].title) || "")}
                 >
                   <IconLink
                     icon={(period.name && SCHEDULE[period.name].icon) ||
@@ -166,8 +169,8 @@
                     size="1.1em"
                     class="mr-1"
                   />
-                  {dayjs(period.open).format('dddd DD.MM.YY [d]e H[h]mm à ')}
-                  {dayjs(period.close).format('H[h]mm')}
+                  {dayjs(period.open).format("dddd DD.MM.YY [d]e H[h]mm à ")}
+                  {dayjs(period.close).format("H[h]mm")}
                 </div>
               {/each}
             </div>
@@ -188,7 +191,7 @@
                   title="Ouvrir le site internet de l'organisateur"
                 >
                   <Icon path={mdiWeb} size="1.1em" class="mr-1" />
-                  {troc.societyweb.replace(/^https?:\/\//, '')}
+                  {troc.societyweb.replace(/^https?:\/\//, "")}
                 </a>
               </div>
             {/if}
@@ -228,18 +231,18 @@
     <Share {troc} />
     <slot name="card-actions" />
 
-    <div class="flex-grow-1" />
+    <div class="flex-grow-1"></div>
 
     {#if !hideAdminButton}
       {#if !!$user && troc.subscribe?.validedByUser}
-        {#if troc.subscribe?.role === 'admin'}
+        {#if troc.subscribe?.role === "admin"}
           <a href={`/admin?trocId=${troc._id}`}>
             <Button depressed class="secondary-color">
               administration
               <IconLink icon={faCog} class="ml-2" size="1.2em" opacity />
             </Button>
           </a>
-        {:else if troc.subscribe?.role === 'cashier'}
+        {:else if troc.subscribe?.role === "cashier"}
           <a href={`/cashier?trocId=${troc._id}`}>
             <Button depressed class="secondary-color">
               Caisse

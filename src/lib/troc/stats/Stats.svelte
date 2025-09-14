@@ -6,66 +6,73 @@
     Button,
     ButtonGroup,
     ButtonGroupItem,
-  } from '$material'
+  } from "$lib/material";
   import {
     faCashRegister,
     faShoppingCart,
     faTruck,
     faUser,
-  } from '@fortawesome/free-solid-svg-icons'
+  } from "@fortawesome/free-solid-svg-icons";
 
-  import type { TrocStats, Tarif } from 'types'
-  import type { TrocStatsFormatted } from './formatStats'
-  import ExpansionCard from '$lib/util/ExpansionCard.svelte'
-  import { troc } from '$lib/troc/store'
-  import { isMobile } from '$lib/store/layout'
-  import MagicSelect from '$lib/util/MagicSelect.svelte'
-  import Loader from '$lib/util/Loader.svelte'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import { renderAmount } from '$lib/utils'
-  import { useApi } from '$lib/api'
+  import type { TrocStats, Tarif } from "$lib/types";
+  import type { TrocStatsFormatted } from "./formatStats";
+  import ExpansionCard from "$lib/util/ExpansionCard.svelte";
+  import { troc } from "$lib/troc/store";
+  import { isMobile } from "$lib/store/layout";
+  import MagicSelect from "$lib/util/MagicSelect.svelte";
+  import Loader from "$lib/util/Loader.svelte";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { renderAmount } from "$lib/utils";
+  import { useApi } from "$lib/api";
 
-  import PlotStock from './PlotStock.svelte'
-  import PlotConsommation from './PlotConsommation.svelte'
-  import PlotCash from './PlotCash.svelte'
-  import { formatStats } from './formatStats'
+  import PlotStock from "./PlotStock.svelte";
+  import PlotConsommation from "./PlotConsommation.svelte";
+  import PlotCash from "./PlotCash.svelte";
+  import { formatStats } from "./formatStats";
+  import type { CreateQueryResult } from "@tanstack/svelte-query";
 
-  let magicSelectUser: MagicSelect
-  let selectedSubscribeId = ''
-  let selectedTarif: Tarif | null = null
-  let stats: TrocStatsFormatted | null = null
-  let plotStockMode: 'sums' | 'numbers' = 'sums'
+  let magicSelectUser: MagicSelect;
+  let selectedSubscribeId = "";
+  let selectedTarif: Tarif | null = null;
+  let stats: TrocStatsFormatted | null = null;
+  let plotStockMode: "sums" | "numbers" = "sums";
 
   interface ParamsStats {
-    trocId: string
-    subscribeId?: string
-    tarifId?: string
+    trocId: string;
+    subscribeId?: string;
+    tarifId?: string;
   }
 
-  $: queryStats = useApi<ParamsStats, TrocStats>({
-    queryKey: [
-      'trocs/byId/stats',
-      {
-        trocId: $troc._id,
-        subscribeId: selectedSubscribeId,
-        tarifId: selectedTarif?._id,
-      },
-    ],
-    onSuccess: (statsBrut) => {
-      stats = formatStats(statsBrut)
-    },
-    refetchOnWindowFocus: false,
-  })
+  let queryStats: CreateQueryResult<TrocStats, Error>;
+
+  $: {
+    queryStats = useApi<ParamsStats, TrocStats>({
+      queryKey: [
+        "trocs/byId/stats",
+        {
+          trocId: $troc._id,
+          subscribeId: selectedSubscribeId,
+          tarifId: selectedTarif?._id,
+        },
+      ],
+      refetchOnWindowFocus: false,
+    });
+    queryStats.subscribe((run) => {
+      if (run.isSuccess) {
+        stats = formatStats(run.data);
+      }
+    });
+  }
 
   function selectUserSub(e: { detail: { _id: string } }) {
-    selectedTarif = null
-    selectedSubscribeId = e.detail._id
+    selectedTarif = null;
+    selectedSubscribeId = e.detail._id;
   }
 
   function handleSelectTarif(tarif: Tarif | null) {
-    magicSelectUser.clear()
-    selectedSubscribeId = ''
-    selectedTarif = tarif
+    magicSelectUser.clear();
+    selectedSubscribeId = "";
+    selectedTarif = tarif;
   }
 </script>
 
@@ -82,8 +89,8 @@
         searchKey="q"
         queryParams={{ exact_trocId: $troc._id }}
         getValue={(sub) => sub.user?.name || sub.name}
-        getValue2={(sub) => sub.user?.mail || ''}
-        getKey={(sub) => sub._id || ''}
+        getValue2={(sub) => sub.user?.mail || ""}
+        getKey={(sub) => sub._id || ""}
         dense
         solo
         keepValue
@@ -95,7 +102,7 @@
           <Button depressed>
             {selectedTarif?.name
               ? `Tarif: ${selectedTarif.name}`
-              : 'Tous les tarifs'}
+              : "Tous les tarifs"}
           </Button>
         </div>
         <List>
@@ -182,11 +189,11 @@
             <div>
               <b>{stats.numbers.payment.toLocaleString()}</b>
               <span class="ml-2" style="color: green;">
-                <i class="fas fa-chevron-up" />
+                <i class="fas fa-chevron-up"></i>
                 {stats.numbers.paymentPositif.toLocaleString()}
               </span>
               <span class="ml-2 mr-2" style="color: red;">
-                <i class="fas fa-chevron-down" />
+                <i class="fas fa-chevron-down"></i>
                 {stats.numbers.paymentNegatif.toLocaleString()}
               </span>
             </div>
@@ -198,15 +205,15 @@
 
             <div>
               <span class="ml-2" style="color: green;">
-                <i class="fas fa-chevron-up" />
+                <i class="fas fa-chevron-up"></i>
                 {renderAmount(stats.sums.paymentPositif, $troc.currency)}
               </span>
               <span class="ml-2" style="color: red;">
-                <i class="fas fa-chevron-down" />
+                <i class="fas fa-chevron-down"></i>
                 {renderAmount(stats.sums.paymentNegatif, $troc.currency)}
               </span>
               <span class="ml-2" style="color: blue;">
-                <i class="fas fa-angle-right" />
+                <i class="fas fa-angle-right"></i>
                 {renderAmount(
                   stats.sums.paymentPositif - stats.sums.paymentNegatif,
                   $troc.currency

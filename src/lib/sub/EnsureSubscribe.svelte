@@ -1,45 +1,44 @@
 <script lang="ts">
   /** Affiche soit le bouton pour participer, soit l'activité d'un utilisateur sur un troc */
-  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { goto } from '@roxi/routify'
-  import { Button } from '$material'
-  import { fade } from 'svelte/transition'
+  import { createMutation, useQueryClient } from "@tanstack/svelte-query";
+  import { Button } from "$lib/material";
+  import { fade } from "svelte/transition";
 
-  import { user } from '$lib/user/store'
-  import { api } from '$lib/api'
-  import type { SubscribeBase, SubscribeLookup, TrocLookup } from 'types'
+  import { user } from "$lib/user/store";
+  import { api } from "$lib/api";
+  import type { SubscribeBase, SubscribeLookup, TrocLookup } from "$lib/types";
+  import { goto } from "$app/navigation";
 
-  export let troc: TrocLookup
+  export let troc: TrocLookup;
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const createSubscribe = useMutation((data: SubscribeBase) =>
-    api<SubscribeBase, SubscribeLookup>('/api/subscribes', {
-      method: 'post',
-      data,
-      success: () => {
-        queryClient.invalidateQueries('subscribes/me')
-        return 'Nouvelle participation'
-      },
-    })
-  )
+  const createSubscribe = createMutation({
+    mutationFn: (data: SubscribeBase) =>
+      api<SubscribeBase, SubscribeLookup>("/api/subscribes", {
+        method: "post",
+        data,
+        success: () => {
+          queryClient.invalidateQueries({ queryKey: ["subscribes/me"] });
+          return "Nouvelle participation";
+        },
+      }),
+  });
 
   function handleClickActivity() {
     if (!$user) {
-      $goto('/login', {
-        callback: `/trocs/${troc._id}/activity`,
-      })
-      return
+      goto(`/login?callback=/trocs/${troc._id}/activity`);
+      return;
     }
     $createSubscribe.mutate(
       { trocId: troc._id },
       {
         onSuccess: (subscribe) => {
-          if (subscribe) troc.subscribe = subscribe
-          $goto(`/trocs/${troc._id}/activity`)
+          if (subscribe) troc.subscribe = subscribe;
+          goto(`/trocs/${troc._id}/activity`);
         },
       }
-    )
+    );
   }
 </script>
 
@@ -53,7 +52,7 @@
       on:click={handleClickActivity}
       depressed
       class="primary-color"
-      disabled={$createSubscribe.isLoading}
+      disabled={$createSubscribe.isPending}
     >
       Je veux participer à ce troc
     </Button>

@@ -1,52 +1,50 @@
 <script lang="ts">
-  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { mdiTagArrowRightOutline, mdiTagOffOutline } from '@mdi/js'
+  import { createMutation, useQueryClient } from "@tanstack/svelte-query";
+  import { mdiTagArrowRightOutline, mdiTagOffOutline } from "@mdi/js";
 
-  import { Button, Icon } from '$material'
-  import notify from '$lib/notify'
-  import Template from '$lib/cash/Template.svelte'
-  import ArticleEditDialog from '$lib/article/EditDialog.svelte'
-  import Loader from '$lib/util/Loader.svelte'
-  import { api } from '$lib/api'
-  import type { Article } from 'types'
-  import TagsPrint from '$lib/troc/TagsPrint.svelte'
-  import { troc } from '$lib/troc/store'
-  import { isAutoPrint } from '$lib/cash/store'
+  import { Button, Icon } from "$lib/material";
+  import notify from "$lib/notify";
+  import Template from "$lib/cash/Template.svelte";
+  import ArticleEditDialog from "$lib/article/EditDialog.svelte";
+  import Loader from "$lib/util/Loader.svelte";
+  import { api } from "$lib/api";
+  import type { Article } from "$lib/types";
+  import TagsPrint from "$lib/troc/TagsPrint.svelte";
+  import { troc } from "$lib/troc/store";
+  import { isAutoPrint } from "$lib/cash/store";
 
-  export let subscribeId: string
-  export let template: Template | undefined = undefined
-  let tagsPrint: TagsPrint
+  export let subscribeId: string;
+  export let template: Template | undefined = undefined;
+  let tagsPrint: TagsPrint;
 
-  let pendingItems: Article[] = []
-  const queryClient = useQueryClient()
-  const queryValid = useMutation(
-    (valided: boolean) =>
+  let pendingItems: Article[] = [];
+  const queryClient = useQueryClient();
+  const queryValid = createMutation({
+    mutationFn: (valided: boolean) =>
       api<{ articlesId: string[]; valided: boolean }, Article[]>(
-        '/api/articles/valid',
+        "/api/articles/valid",
         {
-          method: 'post',
+          method: "post",
           data: { articlesId: pendingItems.map((art) => art._id), valided },
           success: `${pendingItems.length} articles ${
-            valided ? 'validés' : 'refusés'
+            valided ? "validés" : "refusés"
           }`,
         }
       ),
-    {
-      onSuccess: async (articles: Article[]) => {
-        if ($isAutoPrint && articles[0].valided) await tagsPrint.print()
-        pendingItems = []
-        queryClient.invalidateQueries('articles')
-        queryClient.invalidateQueries('subscribes/resum')
-        template.closeSelection()
-      },
-    }
-  )
+    onSuccess: async (articles: Article[]) => {
+      if ($isAutoPrint && articles[0].valided) await tagsPrint.print();
+      pendingItems = [];
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+      queryClient.invalidateQueries({ queryKey: ["subscribes/resum"] });
+      template?.closeSelection();
+    },
+  });
 
   function toggleAutoPrint() {
-    $isAutoPrint = !$isAutoPrint
+    $isAutoPrint = !$isAutoPrint;
     notify.info(
-      `Impression automatique des étiquettes ${$isAutoPrint ? '' : 'dés'}activé`
-    )
+      `Impression automatique des étiquettes ${$isAutoPrint ? "" : "dés"}activé`
+    );
   }
 </script>
 
@@ -63,7 +61,7 @@
   queryParams={{
     exact_trocId: $troc._id,
     exact_providerSubId: subscribeId,
-    exact_state: 'proposed',
+    exact_state: "proposed",
   }}
   placeholder="Articles proposés"
   canSelectAll
@@ -91,13 +89,13 @@
   </div>
 
   <div slot="actions-selection">
-    {#if $queryValid.isLoading}
+    {#if $queryValid.isPending}
       <Button disabled><Loader /></Button>
     {:else}
       <Button
         text
         class="red-text"
-        on:click={() => confirm('Etes-vous sur ?') && $queryValid.mutate(false)}
+        on:click={() => confirm("Etes-vous sur ?") && $queryValid.mutate(false)}
       >
         Refuser
       </Button>

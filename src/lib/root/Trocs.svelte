@@ -1,44 +1,44 @@
 <script lang="ts">
-  import { mdiMail, mdiTrashCanOutline } from '@mdi/js'
+  import { mdiMail, mdiTrashCanOutline } from "@mdi/js";
 
-  import type { DynamicQuery, Troc, TrocLookup } from 'types'
-  import { List, ListItem, Icon } from '$material'
-  import { useInfinitApi } from '$lib/api'
-  import { layout } from '$lib/store/layout'
-  import { fieldsTroc } from '$lib/root/fieldsTroc'
-  import notify from '$lib/notify'
-  import MagicTable from '$lib/util/MagicTable.svelte'
-  import logo from '$assets/logo'
+  import type { DynamicQuery, Troc, TrocLookup } from "$lib/types";
+  import { List, ListItem, Icon } from "$lib/material";
+  import { useInfinitApi } from "$lib/api";
+  import { layout } from "$lib/store/layout";
+  import { fieldsTroc } from "$lib/root/fieldsTroc";
+  import notify from "$lib/notify";
+  import MagicTable from "$lib/util/MagicTable.svelte";
+  import logo from "$lib/assets/logo";
 
-  let searchValue = ''
-  let queryParams = {}
+  let searchValue = "";
+  let queryParams = {};
   $: query = useInfinitApi<DynamicQuery<Troc>, TrocLookup>([
-    'root/trocs',
+    "root/trocs",
     {
       or_search_name: searchValue,
       or_search__id: searchValue,
       ...queryParams,
     },
-  ])
+  ]);
 
   async function deleteTroc(troc: Troc) {
     if (prompt(`Tapez "${troc.name}" pour le supprimer`) === troc.name) {
       try {
-        let res = await fetch('/api/root/remove-troc', {
-          method: 'post',
+        let res = await fetch("/api/root/remove-troc", {
+          method: "post",
           body: JSON.stringify({ trocId: troc._id }),
           headers: {
-            'Content-type': 'application/json',
+            "Content-type": "application/json",
           },
-        })
-        let json = await res.json()
-        if (json.error) throw json.message
-        notify.success(json.message)
+        });
+        let json = await res.json();
+        if (json.error) throw json.message;
+        notify.success(json.message);
       } catch (error: any) {
-        notify.error(error)
+        notify.error(error);
       }
     } else {
-      notify.warning('Nom incorrect')
+      notify.warning("Nom incorrect");
     }
   }
 </script>
@@ -72,8 +72,8 @@
         <ListItem
           class="red-text"
           on:click={() => {
-            menu.close()
-            deleteTroc(item)
+            menu.close();
+            deleteTroc(item);
           }}
         >
           <Icon path={mdiTrashCanOutline} class="mr-2" />

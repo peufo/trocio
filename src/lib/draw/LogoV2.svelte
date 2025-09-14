@@ -1,31 +1,33 @@
-<script>
-  import { onMount, onDestroy } from 'svelte'
-  import { fade } from 'svelte/transition'
+<script lang="ts">
+  import { onMount, onDestroy } from "svelte";
+  import { fade } from "svelte/transition";
 
-  export let duration = 3 // SECONDS
-  export let cubeSize = 50 // %
+  export let duration = 3; // SECONDS
+  export let cubeSize = 50; // %
 
-  const WIDTH = 200
-  const HEIGHT = 200
-  const FREQUENCE = 20 // image/second
-  const OX = WIDTH / 2
-  const OY = HEIGHT / 2
+  type Node = { x: number; y: number; z: number };
 
-  const R = 30
-  const RD = (2 * R ** 2) ** 0.5
-  const AY = Math.atan(R / RD)
-  let aX = 0
+  const WIDTH = 200;
+  const HEIGHT = 200;
+  const FREQUENCE = 20; // image/second
+  const OX = WIDTH / 2;
+  const OY = HEIGHT / 2;
 
-  let phase = 0
+  const R = 30;
+  const RD = (2 * R ** 2) ** 0.5;
+  const AY = Math.atan(R / RD);
+  let aX = 0;
 
-  $: phase = Math.floor((aX % (Math.PI * 2)) / (Math.PI / 2))
+  let phase = 0;
+
+  $: phase = Math.floor((aX % (Math.PI * 2)) / (Math.PI / 2));
 
   let surfaces = [
     [0, 1, 2, 3],
     [3, 2, 6, 7],
     [7, 6, 5, 4],
     [0, 1, 5, 4],
-  ]
+  ];
 
   let cube = {
     nodes: [
@@ -38,70 +40,68 @@
       { x: R, y: R, z: -R },
       { x: -R, y: R, z: -R },
     ],
-    writeCord: function (nodesIndex) {
+    writeCord: function (nodesIndex: number[]) {
       //Rotation Y de 35.2634° de la projection
-      let sinTheta = Math.sin(AY)
-      let cosTheta = Math.cos(AY)
+      let sinTheta = Math.sin(AY);
+      let cosTheta = Math.cos(AY);
       return nodesIndex
         .map((i) => {
-          let { x, z } = this.nodes[i]
-          x = x * cosTheta + z * sinTheta
-          return `${OX + x},${OY + this.nodes[i].y}`
+          let { x, z } = this.nodes[i];
+          x = x * cosTheta + z * sinTheta;
+          return `${OX + x},${OY + this.nodes[i].y}`;
         })
-        .join(' ')
+        .join(" ");
     },
-    rotateX3D: function (theta) {
-      theta = (theta / 180) * Math.PI
-      aX += theta
-      let sinTheta = Math.sin(theta)
-      let cosTheta = Math.cos(theta)
+    rotateX3D: function (theta: number) {
+      theta = (theta / 180) * Math.PI;
+      aX += theta;
+      let sinTheta = Math.sin(theta);
+      let cosTheta = Math.cos(theta);
       this.nodes = this.nodes.map((node) => {
-        let { y, z } = node
-        node.y = y * cosTheta - z * sinTheta
-        node.z = z * cosTheta + y * sinTheta
-        return node
-      })
-      cube = cube
+        let { y, z } = node;
+        node.y = y * cosTheta - z * sinTheta;
+        node.z = z * cosTheta + y * sinTheta;
+        return node;
+      });
+      cube = cube;
     },
-    rotateY3D: function (theta) {
-      theta = (theta / 180) * Math.PI
-      aY += theta
-      let sinTheta = Math.sin(theta)
-      let cosTheta = Math.cos(theta)
+    rotateY3D: function (theta: number) {
+      theta = (theta / 180) * Math.PI;
+      let sinTheta = Math.sin(theta);
+      let cosTheta = Math.cos(theta);
       this.nodes = this.nodes.map((node) => {
-        let { x, z } = node
-        node.x = x * cosTheta + z * sinTheta
-        node.z = z * cosTheta - x * sinTheta
-        return node
-      })
-      cube = cube
+        let { x, z } = node;
+        node.x = x * cosTheta + z * sinTheta;
+        node.z = z * cosTheta - x * sinTheta;
+        return node;
+      });
+      cube = cube;
     },
-    rotateZ3D: function (theta) {
-      theta = (theta / 180) * Math.PI
-      aZ += theta
-      let sinTheta = Math.sin(theta)
-      let cosTheta = Math.cos(theta)
+    rotateZ3D: function (theta: number) {
+      theta = (theta / 180) * Math.PI;
+      let sinTheta = Math.sin(theta);
+      let cosTheta = Math.cos(theta);
       this.nodes = this.nodes.map((node) => {
-        let { x, y } = node
-        node.x = x * cosTheta - y * sinTheta
-        node.y = y * cosTheta + x * sinTheta
-        return node
-      })
-      cube = cube
+        let { x, y } = node;
+        node.x = x * cosTheta - y * sinTheta;
+        node.y = y * cosTheta + x * sinTheta;
+        return node;
+      });
+      cube = cube;
     },
-  }
+  };
 
-  let animation
+  let animation: NodeJS.Timeout;
 
   onMount(() => {
     animation = setInterval(() => {
-      cube.rotateX3D(360 / FREQUENCE / duration)
-    }, 1000 / FREQUENCE)
-  })
+      cube.rotateX3D(360 / FREQUENCE / duration);
+    }, 1000 / FREQUENCE);
+  });
 
   onDestroy(() => {
-    clearInterval(animation)
-  })
+    clearInterval(animation);
+  });
 </script>
 
 <div

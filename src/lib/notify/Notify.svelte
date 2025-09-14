@@ -1,30 +1,30 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { scale } from 'svelte/transition'
-  import type { ScaleParams } from 'svelte/transition'
-  import { Button, Icon } from '$material'
-  import { mdiClose } from '@mdi/js'
+  import { onMount } from "svelte";
+  import { scale } from "svelte/transition";
+  import type { ScaleParams } from "svelte/transition";
+  import { Button, Icon } from "$lib/material";
+  import { mdiClose } from "@mdi/js";
 
-  type TNotify = 'info' | 'success' | 'warning' | 'error'
+  type TNotify = "info" | "success" | "warning" | "error";
 
-  export let type: TNotify = 'info'
-  export let text = ''
-  export let title = ''
-  export let duration = 3000
-  export let transitionParams: ScaleParams = { duration: 300 }
-  export let persistent = false
+  export let type: TNotify = "info";
+  export let text = "";
+  export let title = "";
+  export let duration = 3000;
+  export let transitionParams: ScaleParams = { duration: 300 };
+  export let persistent = false;
 
-  let isActive = false
-  let timeoutId: NodeJS.Timeout
+  let isActive = false;
+  let timeoutId: NodeJS.Timeout;
 
   onMount(() => {
-    isActive = true
-    return () => timeoutId && clearTimeout(timeoutId)
-  })
+    isActive = true;
+    return () => timeoutId && clearTimeout(timeoutId);
+  });
 
   function introend() {
-    if (persistent) return
-    timeoutId = setTimeout(() => (isActive = false), duration)
+    if (persistent) return;
+    timeoutId = setTimeout(() => (isActive = false), duration);
   }
 </script>
 
@@ -71,6 +71,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
+    line-clamp: 3;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
   }

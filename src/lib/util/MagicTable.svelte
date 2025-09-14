@@ -1,46 +1,49 @@
 <script lang="ts">
-  import type { UseInfiniteQueryStoreResult } from '@sveltestack/svelte-query'
-  import { createEventDispatcher } from 'svelte'
+  import type {
+    CreateInfiniteQueryResult,
+    InfiniteData,
+  } from "@tanstack/svelte-query";
+  import { createEventDispatcher } from "svelte";
 
-  import SearchTextField from '$lib/util/SearchTextField.svelte'
-  import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
-  import MagicTableWrapper from '$lib/util/MagicTableWrapper.svelte'
-  import MagicTableHeaders from '$lib/util/MagicTableHeaders.svelte'
-  import MagicTableBody from '$lib/util/MagicTableBody.svelte'
-  import type { FieldInteface } from 'types/magic'
-  import MagicMenu from '$lib/util/MagicMenu.svelte'
+  import SearchTextField from "$lib/util/SearchTextField.svelte";
+  import MagicTableFieldSelect from "$lib/util/MagicTableFieldSelect.svelte";
+  import MagicTableWrapper from "$lib/util/MagicTableWrapper.svelte";
+  import MagicTableHeaders from "$lib/util/MagicTableHeaders.svelte";
+  import MagicTableBody from "$lib/util/MagicTableBody.svelte";
+  import type { FieldInteface } from "$lib/types/magic";
+  import MagicMenu from "$lib/util/MagicMenu.svelte";
 
   interface $$Slots {
-    title: {}
-    menu: { item: any; menu: MagicMenu }
+    title: {};
+    menu: { item: any; menu: MagicMenu };
   }
 
-  type RowEvent = { clickEvent: MouseEvent; item: any }
+  type RowEvent = { clickEvent: MouseEvent; item: any };
 
   interface EventMap {
-    click: RowEvent
+    click: RowEvent;
   }
 
-  export let query: UseInfiniteQueryStoreResult<any, any, any, any>
-  export let queryParams: { [key: string]: unknown }
-  export let fields: FieldInteface[]
+  export let query: CreateInfiniteQueryResult<InfiniteData<unknown>>;
+  export let queryParams: { [key: string]: unknown };
+  export let fields: FieldInteface[];
 
-  let klass = ''
-  export { klass as class }
-  export let style = ''
-  export let wrapperStyle = ''
-  export let currency = ''
-  export let searchColSpan = 2
-  export let searchValue = ''
+  let klass = "";
+  export { klass as class };
+  export let style = "";
+  export let wrapperStyle = "";
+  export let currency = "";
+  export let searchColSpan = 2;
+  export let searchValue = "";
 
-  const dispatch = createEventDispatcher<EventMap>()
-  let menu: MagicMenu
-  let item: any
+  const dispatch = createEventDispatcher<EventMap>();
+  let menu: MagicMenu;
+  let item: any;
 
   function handleClickRow(event: CustomEvent<RowEvent>) {
-    dispatch('click', event.detail)
-    item = event.detail.item
-    menu?.open(event.detail.clickEvent)
+    dispatch("click", event.detail);
+    item = event.detail.item;
+    menu?.open(event.detail.clickEvent);
   }
 </script>
 
@@ -53,7 +56,7 @@
 <div {style} class={klass}>
   <div class="d-flex align-center mb-2">
     <slot name="title" />
-    <div class="flex-grow-1" />
+    <div class="flex-grow-1"></div>
     <MagicTableFieldSelect bind:fields {searchColSpan} />
   </div>
 

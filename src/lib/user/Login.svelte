@@ -1,85 +1,85 @@
 <script lang="ts">
-  import { slide, fade } from 'svelte/transition'
-  import { createEventDispatcher } from 'svelte'
-  const dispatch = createEventDispatcher()
-  import { afterPageLoad } from '@roxi/routify'
-  import { Button, TextField, Icon, Divider } from '$material'
+  import { slide, fade } from "svelte/transition";
+  import { createEventDispatcher } from "svelte";
+  const dispatch = createEventDispatcher();
+  import { Button, TextField, Icon, Divider } from "$lib/material";
 
-  import { userQuery } from '$lib/user/store'
-  import notify from '$lib/notify'
-  import RULES from '$lib/rules'
+  import { userQuery } from "$lib/user/store";
+  import notify from "$lib/notify";
+  import RULES from "$lib/rules";
+  import { afterNavigate } from "$app/navigation";
 
-  let mailInput: Element | undefined = undefined
+  let mailInput: HTMLInputElement | undefined = undefined;
 
-  let state = 1
-  const LOGIN = 1
-  const REGISTER = 2
-  const RECOVER = 3
+  let state = 1;
+  const LOGIN = 1;
+  const REGISTER = 2;
+  const RECOVER = 3;
 
-  let name = ''
-  let mail = ''
-  let password = ''
-  let password2 = ''
+  let name = "";
+  let mail = "";
+  let password = "";
+  let password2 = "";
   const RULE_NEW_PASSWORD2 = [
-    () => password !== password2 && 'Mot de passe de confirmation différent',
-  ]
+    () => password !== password2 && "Mot de passe de confirmation différent",
+  ];
 
-  let error = ''
-  let innerWidth: number
+  let error = "";
+  let innerWidth: number;
 
   function checkForm() {
-    error = checkRules(RULES.MAIL, mail)
+    error = checkRules(RULES.MAIL, mail);
     if (!error && state === REGISTER)
       error =
         checkRules(RULES.NAME, name) ||
         checkRules(RULES.NEW_PASSWORD, password) ||
-        checkRules(RULE_NEW_PASSWORD2)
+        checkRules(RULE_NEW_PASSWORD2);
   }
-  function checkRules(rules: ((v: string) => any)[], value = '') {
-    return rules.map((r) => r(value)).filter((r) => typeof r === 'string')[0]
+  function checkRules(rules: ((v: string) => any)[], value = "") {
+    return rules.map((r) => r(value)).filter((r) => typeof r === "string")[0];
   }
 
-  $: state && checkForm()
+  $: state && checkForm();
 
   const GOOGLE_AUTH_API_PARAMS = new URLSearchParams({
-    scope: 'email profile',
-    access_type: 'online',
-    response_type: 'code',
+    scope: "email profile",
+    access_type: "online",
+    response_type: "code",
     redirect_uri: `${location.origin}/api/users/login-with-google`,
     client_id: String(import.meta.env.VITE_TROCIO_GOOGLE_CLIENT_ID),
-  })
+  });
 
-  const GOOGLE_AUTH_API_URL = `https://accounts.google.com/o/oauth2/v2/auth`
+  const GOOGLE_AUTH_API_URL = `https://accounts.google.com/o/oauth2/v2/auth`;
   const getGoogleAuthApi = () =>
     `${GOOGLE_AUTH_API_URL}?${GOOGLE_AUTH_API_PARAMS.toString()}&state=${
       location.href
-    }`
-  let googleAuthApi = getGoogleAuthApi()
-  $afterPageLoad(() => (googleAuthApi = getGoogleAuthApi()))
+    }`;
+  let googleAuthApi = getGoogleAuthApi();
+  afterNavigate(() => (googleAuthApi = getGoogleAuthApi()));
 
   function submit() {
-    if (error) return notify.warning(error)
+    if (error) return notify.warning(error);
 
     switch (state) {
       case LOGIN:
         userQuery.login(mail, password).then(() => {
-          dispatch('close')
-          dispatch('done')
-        })
-        break
+          dispatch("close");
+          dispatch("done");
+        });
+        break;
 
       case REGISTER:
         userQuery.register(name, mail, password).then(() => {
-          dispatch('close')
-          dispatch('done')
-        })
-        break
+          dispatch("close");
+          dispatch("done");
+        });
+        break;
 
       case RECOVER:
         userQuery.sendResetPwd(mail).then(() => {
-          state = LOGIN
-        })
-        break
+          state = LOGIN;
+        });
+        break;
     }
   }
 </script>
@@ -176,7 +176,7 @@
       <Button on:click={() => (state = LOGIN)} text>login</Button>
     {/if}
 
-    <div class="flex-grow-1" />
+    <div class="flex-grow-1"></div>
 
     {#await $userQuery}
       <Button disabled>
@@ -197,7 +197,7 @@
     </div>
     <a href={googleAuthApi}>
       <Button text>
-        <i class="fab fa-google" />&nbsp; Login avec Google
+        <i class="fab fa-google"></i>&nbsp; Login avec Google
       </Button>
     </a>
   </div>

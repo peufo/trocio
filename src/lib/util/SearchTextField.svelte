@@ -1,44 +1,46 @@
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte'
-  import { url, params, goto } from '@roxi/routify'
-  import debounce from 'debounce'
-  import { TextField } from '$material'
-  import { faSearch } from '@fortawesome/free-solid-svg-icons'
+  import { onMount, createEventDispatcher } from "svelte";
+  import debounce from "debounce";
+  import { TextField } from "$lib/material";
+  import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
-  import IconLink from '$lib/util/IconLink.svelte'
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { param, urlParam } from "$lib/param";
+  import { goto } from "$app/navigation";
 
-  let klass = ''
-  export { klass as class }
-  export let style = ''
-  export let search = ''
-  export let placeholder = 'Chercher'
-  export let icon = faSearch
-  export let debounceTime = 200
-  export let inputElement: HTMLInputElement | undefined = undefined
+  let klass = "";
+  export { klass as class };
+  export let style = "";
+  export let search = "";
+  export let placeholder = "Chercher";
+  export let icon = faSearch;
+  export let debounceTime = 200;
+  export let inputElement: HTMLInputElement | undefined = undefined;
 
   // bind with url query
-  export let searchKey = ''
-  export const dispatch = createEventDispatcher()
+  export let searchKey = "";
+  export const dispatch = createEventDispatcher();
 
-  let initialSearch = ''
+  let initialSearch = "";
 
   onMount(() => {
     /** Read initial search value if searchKey is provided */
-    if (!searchKey) return
-    initialSearch = $params[searchKey] || ''
-  })
+    if (!searchKey) return;
+    initialSearch = $param.get(searchKey) || "";
+  });
 
   const handleSearch = debounce((event: any) => {
-    search = event.target.value
-    dispatch('search', search) // debounced event
+    search = event.target.value;
+    dispatch("search", search); // debounced event
 
     /** Update url if searchKey is provided */
-    if (!searchKey) return
-    const query = $params
-    if (!search) delete query[searchKey]
-    else query[searchKey] = search
-    $goto($url(), query)
-  }, debounceTime)
+    if (!searchKey) return;
+    if (!search) {
+      goto($urlParam.without(searchKey));
+      return;
+    }
+    goto($urlParam.with({ [searchKey]: search }));
+  }, debounceTime);
 </script>
 
 <TextField

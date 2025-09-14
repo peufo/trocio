@@ -1,25 +1,25 @@
 <script lang="ts">
-  import { faCubes } from '@fortawesome/free-solid-svg-icons'
-  import { url } from '@roxi/routify'
+  import { faCubes } from "@fortawesome/free-solid-svg-icons";
 
-  import { Card, CardTitle, Button } from '$material'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import { useApi } from '$lib/api'
-  import type { ArticleState } from 'types'
-  import ArticlesButton from '$lib/troc/home/ArticlesButton.svelte'
+  import { Card, CardTitle, Button } from "$lib/material";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { useApi } from "$lib/api";
+  import type { ArticleState } from "$lib/types";
+  import ArticlesButton from "$lib/troc/home/ArticlesButton.svelte";
+  import { param } from "$lib/param";
 
-  export let trocId: string
+  export let trocId: string;
 
-  $: query = useApi<{ trocId: string }, Record<ArticleState | 'total', number>>(
-    ['/articles/counts-by-state', { trocId }]
-  )
+  $: query = useApi<{ trocId: string }, Record<ArticleState | "total", number>>(
+    ["/articles/counts-by-state", { trocId }]
+  );
 </script>
 
 {#if $query.data}
   <Card>
     <CardTitle class="mr-4">
       <Button
-        href={$url('./management_articles', { trocId })}
+        href="/admin/management_articles{$param.withOnly({ trocId })}"
         title="Acceder à la gestion des articles"
         depressed
       >
@@ -27,7 +27,7 @@
         Articles
       </Button>
 
-      <div class="flex-grow-1" />
+      <div class="flex-grow-1"></div>
       {$query.data.total}
     </CardTitle>
     <div class="articles-flow pa-4">
@@ -67,12 +67,12 @@
   </Card>
 {/if}
 
-<style lang="scss" global>
+<style lang="scss">
   $column-gap: 1em;
   $row-gap: 1.88em;
   $line: 2px;
 
-  .articles-flow {
+  .articles-flow :global {
     display: grid;
     grid-template-columns: 1fr 1fr;
     row-gap: $row-gap;
@@ -83,14 +83,14 @@
       position: relative;
     }
 
-    [data-state='refused'],
-    [data-state='recover'] {
+    [data-state="refused"],
+    [data-state="recover"] {
       transform: translateY(calc(50% + $row-gap / 2));
     }
 
-    [data-state='proposed']::before,
-    [data-state='valided']::before {
-      content: '';
+    [data-state="proposed"]::before,
+    [data-state="valided"]::before {
+      content: "";
       position: absolute;
       top: 50%;
       left: 50%;
@@ -101,9 +101,9 @@
       border-radius: calc($row-gap / 2);
     }
 
-    [data-state='proposed']::after,
-    [data-state='valided']::after {
-      content: '';
+    [data-state="proposed"]::after,
+    [data-state="valided"]::after {
+      content: "";
       position: absolute;
       top: 100%;
       height: 100%;

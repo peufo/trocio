@@ -3,45 +3,48 @@
    * Liste abonement de l'utilisateur
    */
 
-  import { Chip, Button } from '$material'
+  import { Chip, Button } from "$lib/material";
   import {
     faCog,
     faCashRegister,
     faMapMarkerAlt,
     faUserTie,
-  } from '@fortawesome/free-solid-svg-icons'
-  import dayjs from 'dayjs'
-  import relativeTime from 'dayjs/plugin/relativeTime'
-  import 'dayjs/locale/fr'
-  import { params } from '@roxi/routify'
+  } from "@fortawesome/free-solid-svg-icons";
+  import dayjs from "dayjs";
+  import relativeTime from "dayjs/plugin/relativeTime";
+  import "dayjs/locale/fr";
 
-  import IconLink from '$lib/util/IconLink.svelte'
-  import Loader from '$lib/util/Loader.svelte'
-  import { useInfinitApi } from '$lib/api'
-  import type { SubscribeLookup } from 'types'
-  import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons'
+  import IconLink from "$lib/util/IconLink.svelte";
+  import Loader from "$lib/util/Loader.svelte";
+  import { useInfinitApi } from "$lib/api";
+  import type { SubscribeLookup } from "$lib/types";
+  import { faCalendarAlt } from "@fortawesome/free-regular-svg-icons";
+  import { param } from "$lib/param";
 
-  export let listGap = '4px'
+  export let listGap = "4px";
 
-  dayjs.locale('fr')
-  dayjs.extend(relativeTime)
+  dayjs.locale("fr");
+  dayjs.extend(relativeTime);
 
   // const querySubscribes = useSubscribedTrocs()
-  const query = useInfinitApi<{}, SubscribeLookup[]>(['subscribes/me', {}])
-  $: subscribes = $query.data ? $query.data.pages.flat() : []
+  const query = useInfinitApi<{}, SubscribeLookup[]>(["subscribes/me", {}]);
+  $: subscribes = $query.data ? $query.data.pages.flat() : [];
 </script>
 
 <div class="list-container" style="gap: {listGap};">
   {#if $query.isSuccess}
     {#each subscribes as sub}
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
       <div
+        role="button"
+        tabindex="0"
         on:click
         class="simple-card item"
-        class:active={$params.trocId === sub.troc._id}
+        class:active={$param.get("trocId") === sub.troc._id}
       >
         <div class="d-flex" style="gap: 1em;">
           <div style="padding-top: 2px;">{sub.troc.name}</div>
-          <div class="flex-grow-1" />
+          <div class="flex-grow-1"></div>
           <div style="translate: 4px 0px;">
             {#if sub.troc.is_try}
               <Chip size="small" label class="orange-text">
@@ -77,21 +80,22 @@
 
             <div class="detail mt-1">
               <IconLink icon={faUserTie} opacity size="1.1em" />
-              <div>{sub.troc.society || '-'}</div>
+              <div>{sub.troc.society || "-"}</div>
             </div>
           </div>
-          <a href={`/trocs/${sub.troc._id}`} class="item-link"><span /></a>
+          <!-- svelte-ignore a11y_consider_explicit_label -->
+          <a href={`/trocs/${sub.troc._id}`} class="item-link"><span></span></a>
 
           <div class="d-flex flex-column">
-            <div class="flex-grow-1" />
-            {#if sub.role === 'admin'}
+            <div class="flex-grow-1"></div>
+            {#if sub.role === "admin"}
               <IconLink
                 href={`/admin?trocId=${sub.troc._id}`}
                 icon={faCog}
                 size="20px"
                 opacity
               />
-            {:else if sub.role === 'cashier'}
+            {:else if sub.role === "cashier"}
               <IconLink
                 href={`/cashier?trocId=${sub.troc._id}`}
                 icon={faCashRegister}

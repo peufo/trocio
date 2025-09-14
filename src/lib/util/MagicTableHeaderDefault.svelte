@@ -1,36 +1,36 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { Menu, ListItem } from '$material'
-  import { params, goto, url } from '@roxi/routify'
-  import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons'
+  import { onMount } from "svelte";
+  import { Menu, ListItem } from "$lib/material";
+  import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-  import type { FieldInteface } from 'types/magic'
-  import SearchTextField from '$lib/util/SearchTextField.svelte'
-  import IconLink from '$lib/util/IconLink.svelte'
+  import type { FieldInteface } from "$lib/types/magic";
+  import SearchTextField from "$lib/util/SearchTextField.svelte";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { param, urlParam } from "$lib/param";
+  import { goto } from "$app/navigation";
 
-  export let field: Partial<FieldInteface>
-  let search = ''
+  export let field: Partial<FieldInteface>;
+  let search = "";
   let queryKey =
-    !field.key || field.key === 'string'
+    !field.key || field.key === "string"
       ? `or_search_${field.key}`
-      : `user_search_${field.key}`
+      : `user_search_${field.key}`;
 
   onMount(() => {
-    search = $params[queryKey] || ''
-  })
+    search = $param.get(queryKey) || "";
+  });
 
   function handleSearchEvent(event: CustomEvent<string>) {
-    handleSearch(event.detail)
+    handleSearch(event.detail);
   }
 
   function handleSearch(value: string) {
-    search = value
-    const query = $params
-    if (!search) delete query[queryKey]
-    else {
-      query[queryKey] = search
+    search = value;
+    if (!search) {
+      goto($urlParam.without(queryKey));
+      return;
     }
-    $goto($url(), query)
+    goto($urlParam.with({ [queryKey]: search }));
   }
 </script>
 
@@ -49,7 +49,7 @@
     <SearchTextField on:search={handleSearchEvent} clearable={false} />
 
     {#if search}
-      <ListItem on:click={() => handleSearch('')} dense>
+      <ListItem on:click={() => handleSearch("")} dense>
         <span slot="prepend">
           <IconLink icon={faTimes} />
         </span>

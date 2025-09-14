@@ -1,35 +1,35 @@
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte'
-  import { fade } from 'svelte/transition'
-  import { Button, Textarea, TextField } from '$material'
-  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
+  import { onMount, createEventDispatcher } from "svelte";
+  import { fade } from "svelte/transition";
+  import { Button, Textarea, TextField } from "$lib/material";
+  import { createMutation, useQueryClient } from "@tanstack/svelte-query";
+  import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 
-  import IconLink from '$lib/util/IconLink.svelte'
-  import type { Article, ArticleCreate } from 'types'
-  import { api } from '$lib/api'
-  import notify from '$lib/notify'
+  import IconLink from "$lib/util/IconLink.svelte";
+  import type { Article, ArticleCreate } from "$lib/types";
+  import { api } from "$lib/api";
+  import notify from "$lib/notify";
 
-  const queryClient = useQueryClient()
-  export let subscribeId = ''
-  export let article: Article | undefined = undefined
-  export let actionName = 'Valider'
+  const queryClient = useQueryClient();
+  export let subscribeId = "";
+  export let article: Article | undefined = undefined;
+  export let actionName = "Valider";
 
-  let newName = ''
-  let newPrice = ''
-  let textarea: HTMLTextAreaElement
-  const dispatch = createEventDispatcher<{ done: Article }>()
+  let newName = "";
+  let newPrice = "";
+  let textarea: HTMLTextAreaElement;
+  const dispatch = createEventDispatcher<{ done: Article }>();
 
   onMount(() => {
-    textarea?.focus()
-    if (!article) return
-    newName = article.name
-    newPrice = article.price.toFixed(2)
-  })
+    textarea?.focus();
+    if (!article) return;
+    newName = article.name;
+    newPrice = article.price.toFixed(2);
+  });
 
   async function handleSubmit() {
     if (!article && !subscribeId)
-      return notify.error('subscribeId or article is required')
+      return notify.error("subscribeId or article is required");
 
     if (!article)
       return done(
@@ -38,77 +38,71 @@
           price: +newPrice,
           providerSubId: subscribeId,
         })
-      )
+      );
 
-    const isNameEdited = newName !== article.name
-    const isPriceEdited = +newPrice !== article.price
+    const isNameEdited = newName !== article.name;
+    const isPriceEdited = +newPrice !== article.price;
     if (!isNameEdited && !isPriceEdited)
-      return notify.warning('Aucune modification !')
-    const articleId = article._id
-    const requests: Promise<any>[] = []
+      return notify.warning("Aucune modification !");
+    const articleId = article._id;
+    const requests: Promise<any>[] = [];
     if (isNameEdited)
-      requests.push($queryEditName.mutateAsync({ articleId, name: newName }))
+      requests.push($queryEditName.mutateAsync({ articleId, name: newName }));
     if (isPriceEdited)
       requests.push(
         $queryEditPrice.mutateAsync({ articleId, price: +newPrice })
-      )
-    await Promise.all(requests)
-    done({ ...article, name: newName, price: +newPrice })
+      );
+    await Promise.all(requests);
+    done({ ...article, name: newName, price: +newPrice });
   }
 
   function done(data: Article) {
-    dispatch('done', data)
-    queryClient.invalidateQueries('articles')
-    queryClient.invalidateQueries('articles/corrections')
-    queryClient.invalidateQueries('subscribes/resum')
-    queryClient.invalidateQueries('trocs/byId/counters')
+    dispatch("done", data);
+    queryClient.invalidateQueries({ queryKey: ["articles"] });
+    queryClient.invalidateQueries({ queryKey: ["articles/corrections"] });
+    queryClient.invalidateQueries({ queryKey: ["subscribes/resum"] });
+    queryClient.invalidateQueries({ queryKey: ["trocs/byId/counters"] });
   }
 
-  const createArticle = useMutation(
-    (data: ArticleCreate) =>
-      api<ArticleCreate, Article>('/api/articles', {
-        method: 'post',
+  const createArticle = createMutation({
+    mutationFn: (data: ArticleCreate) =>
+      api<ArticleCreate, Article>("/api/articles", {
+        method: "post",
         data,
-        success: 'Article ajouté',
+        success: "Article ajouté",
       }),
-    {
-      onSuccess: (data) => {
-        newName = ''
-        newPrice = ''
-        textarea?.focus()
-      },
-    }
-  )
+    onSuccess: (data) => {
+      newName = "";
+      newPrice = "";
+      textarea?.focus();
+    },
+  });
 
-  const queryEditName = useMutation(
-    (data: { articleId: string; name: string }) =>
-      api('/api/articles/edit-name', {
-        method: 'post',
+  const queryEditName = createMutation({
+    mutationFn: (data: { articleId: string; name: string }) =>
+      api("/api/articles/edit-name", {
+        method: "post",
         data,
-        success: 'Nom modifé',
+        success: "Nom modifé",
       }),
-    {
-      onSuccess: (newArticle) => {
-        if (!article) return
-        article.name = newArticle.name
-      },
-    }
-  )
+    onSuccess: (newArticle) => {
+      if (!article) return;
+      article.name = newArticle.name;
+    },
+  });
 
-  const queryEditPrice = useMutation(
-    (data: { articleId: string; price: number }) =>
-      api('/api/articles/edit-price', {
-        method: 'post',
+  const queryEditPrice = createMutation({
+    mutationFn: (data: { articleId: string; price: number }) =>
+      api("/api/articles/edit-price", {
+        method: "post",
         data,
-        success: 'Prix mis à jour',
+        success: "Prix mis à jour",
       }),
-    {
-      onSuccess: (newArticle) => {
-        if (!article) return
-        article.price = newArticle.price
-      },
-    }
-  )
+    onSuccess: (newArticle) => {
+      if (!article) return;
+      article.price = newArticle.price;
+    },
+  });
 </script>
 
 <form in:fade|local on:submit|preventDefault={handleSubmit}>
@@ -128,15 +122,15 @@
       type="number"
       min="0"
       step="0.01"
-      rules={[(value) => +value >= 0 || 'Le prix doit être positif']}
+      rules={[(value: string) => +value >= 0 || "Le prix doit être positif"]}
       color="secondary"
     >
       Prix
     </TextField>
 
-    <div class="flex-grow-1" />
+    <div class="flex-grow-1"></div>
 
-    {#if $createArticle.isLoading}
+    {#if $createArticle.isPending}
       <Button outlined disabled>
         <IconLink icon={faCircleNotch} spin opacity size="1.1em" class="mr-2" />
         Chargement

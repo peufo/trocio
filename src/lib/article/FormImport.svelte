@@ -1,60 +1,58 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
-  import type { Article, ArticleCreate, ISubscribe, Troc } from 'types'
-  import { api, useApi } from '$lib/api'
-  import { List, ProgressCircular } from '$material'
-  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import ListItem from '$material/components/List/ListItem.svelte'
+  import { createEventDispatcher } from "svelte";
+  import type { Article, ArticleCreate, ISubscribe, Troc } from "$lib/types";
+  import { api, useApi } from "$lib/api";
+  import { List, ProgressCircular } from "$lib/material";
+  import { createMutation, useQueryClient } from "@tanstack/svelte-query";
+  import ListItem from "$lib/material/components/List/ListItem.svelte";
 
-  export let subscribe: ISubscribe
+  export let subscribe: ISubscribe;
   const dispatch = createEventDispatcher<{
-    done: Article[]
-  }>()
-  const queryClient = useQueryClient()
-  type ArticleImport = ArticleCreate & { _id: string }
+    done: Article[];
+  }>();
+  const queryClient = useQueryClient();
+  type ArticleImport = ArticleCreate & { _id: string };
   type Importable = {
-    _id: string
-    articles_count: number
+    _id: string;
+    articles_count: number;
     articles: {
-      _id: string
-      tagId: string
-      name: string
-      ref: string
-      price: number
-    }[]
-    troc: Troc
-  }
+      _id: string;
+      tagId: string;
+      name: string;
+      ref: string;
+      price: number;
+    }[];
+    troc: Troc;
+  };
 
   $: queryImportables = useApi<{ subscribeId: string }, Importable[]>([
-    '/articles/importables',
+    "/articles/importables",
     { subscribeId: subscribe._id },
-  ])
+  ]);
 
-  const importArticles = useMutation(
-    (articles: ArticleImport[]) =>
-      api<ArticleImport[], Article[]>('/api/articles/import', {
-        method: 'post',
+  const importArticles = createMutation({
+    mutationFn: (articles: ArticleImport[]) =>
+      api<ArticleImport[], Article[]>("/api/articles/import", {
+        method: "post",
         data: articles,
         success: `${articles.length} article${
-          articles.length > 1 ? 's' : ''
-        } importé${articles.length > 1 ? 's' : ''}`,
+          articles.length > 1 ? "s" : ""
+        } importé${articles.length > 1 ? "s" : ""}`,
       }),
-    {
-      onSuccess: (articles) => {
-        $queryImportables.refetch()
-        queryClient.invalidateQueries('articles')
-        queryClient.invalidateQueries('subscribes/resum')
-        dispatch('done', articles)
-      },
-    }
-  )
+    onSuccess: (articles) => {
+      $queryImportables.refetch();
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+      queryClient.invalidateQueries({ queryKey: ["subscribes/resum"] });
+      dispatch("done", articles);
+    },
+  });
 
   async function handleClickImportable(importable: Importable) {
     const articles: ArticleImport[] = importable.articles.map((art) => ({
       ...art,
       providerSubId: subscribe._id,
-    }))
-    await $importArticles.mutateAsync(articles)
+    }));
+    await $importArticles.mutateAsync(articles);
   }
 </script>
 
@@ -64,7 +62,7 @@
       <ProgressCircular indeterminate />
     </div>
   {:else}
-    <List disabled={$importArticles.isLoading}>
+    <List disabled={$importArticles.isPending}>
       {#each $queryImportables.data as importable}
         <ListItem on:click={() => handleClickImportable(importable)}>
           <span>{importable.troc.name}</span>
@@ -77,7 +75,7 @@
 
           <svelte:fragment slot="subtitle">
             {importable.articles_count}
-            article{importable.articles_count > 1 ? 's' : ''}
+            article{importable.articles_count > 1 ? "s" : ""}
           </svelte:fragment>
         </ListItem>
       {:else}

@@ -1,43 +1,42 @@
 <script lang="ts">
-  import { url } from '@roxi/routify'
-
-  import { Card, CardTitle, CardSubtitle, Button } from '$material'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import { renderAmount } from '$lib/utils'
-  import { useApi } from '$lib/api'
+  import { Card, CardTitle, CardSubtitle, Button } from "$lib/material";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { renderAmount } from "$lib/utils";
+  import { useApi } from "$lib/api";
   import {
     faArrowRightToBracket,
     faArrowUpFromBracket,
     faCashRegister,
-  } from '@fortawesome/free-solid-svg-icons'
+  } from "@fortawesome/free-solid-svg-icons";
+  import { param } from "$lib/param";
 
-  export let trocId: string
-  export let currency: string
+  export let trocId: string;
+  export let currency: string;
 
   interface ResumCount {
-    paymentCount: number
-    paymentSum: number
-    positiveCount: number
-    positiveSum: number
-    negativeCount: number
-    negativeSum: number
-    benefit: number
-    benefitMargin: number
-    benefitFee: number
+    paymentCount: number;
+    paymentSum: number;
+    positiveCount: number;
+    positiveSum: number;
+    negativeCount: number;
+    negativeSum: number;
+    benefit: number;
+    benefitMargin: number;
+    benefitFee: number;
   }
 
   $: query = useApi<{ trocId: string }, ResumCount>([
-    '/subscribes/resum/counts',
+    "/subscribes/resum/counts",
     { trocId },
-  ])
-  $: resum = $query.data || null
+  ]);
+  $: resum = $query.data || null;
 </script>
 
 {#if resum}
   <Card>
     <CardTitle>
       <Button
-        href={$url('./cash_register', { trocId })}
+        href="/admin/cash_register{$param.withOnly({ trocId })}"
         title="Acceder à la caisse"
         depressed
       >
@@ -45,18 +44,18 @@
         Caisse
       </Button>
 
-      <div class="flex-grow-1" />
+      <div class="flex-grow-1"></div>
       <span title="Contenu de la caisse">
         {renderAmount(resum.paymentSum, currency)}
       </span>
     </CardTitle>
     <CardSubtitle class="d-flex">
-      <div class="flex-grow-1" />
+      <div class="flex-grow-1"></div>
       <span
         title={[
           `Frais de dépot : ${renderAmount(resum.benefitMargin, currency)}`,
           `Marge à la vente : ${renderAmount(resum.benefitFee, currency)}`,
-        ].join('\n')}
+        ].join("\n")}
       >
         Bénéfice {renderAmount(resum.benefit, currency)}
       </span>
@@ -67,11 +66,11 @@
         <Button
           depressed
           style="width: 100%;"
-          href={$url('/admin/management_users', {
+          href="/admin/management_users{$param.withOnly({
             trocId,
             'min_resum.balance': 0.01,
             'sort_resum.balance': -1,
-          })}
+          })}"
         >
           <IconLink
             icon={faArrowUpFromBracket}
@@ -79,13 +78,13 @@
             size="1.2em"
             opacity
           />
-          Solde{resum.positiveCount > 1 ? 's' : ''} en faveur du client
-          <div class="flex-grow-1" />
+          Solde{resum.positiveCount > 1 ? "s" : ""} en faveur du client
+          <div class="flex-grow-1"></div>
           {resum.positiveCount}
         </Button>
 
         <CardSubtitle class="d-flex pa-0">
-          <div class="flex-grow-1" />
+          <div class="flex-grow-1"></div>
           {renderAmount(-resum.positiveSum, currency)}
         </CardSubtitle>
       </div>
@@ -94,11 +93,11 @@
         <Button
           depressed
           style="width: 100%;"
-          href={$url('/admin/management_users', {
+          href="/admin/management_users{$param.withOnly({
             trocId,
             'max_resum.balance': -0.01,
             'sort_resum.balance': 1,
-          })}
+          })}"
         >
           <IconLink
             icon={faArrowRightToBracket}
@@ -107,13 +106,13 @@
             opacity
             style="transform: rotate(90deg);"
           />
-          Solde{resum.negativeCount > 1 ? 's' : ''} en votre faveur
-          <div class="flex-grow-1" />
+          Solde{resum.negativeCount > 1 ? "s" : ""} en votre faveur
+          <div class="flex-grow-1"></div>
           {resum.negativeCount}
         </Button>
 
         <CardSubtitle class="d-flex pa-0">
-          <div class="flex-grow-1" />
+          <div class="flex-grow-1"></div>
           {renderAmount(-resum.negativeSum, currency)}
         </CardSubtitle>
       </div>

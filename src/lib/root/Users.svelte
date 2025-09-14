@@ -1,51 +1,51 @@
 <script lang="ts">
-  import { useQueryClient } from '@sveltestack/svelte-query'
-  import { mdiMail, mdiPlus } from '@mdi/js'
+  import { useQueryClient } from "@tanstack/svelte-query";
+  import { mdiMail, mdiPlus } from "@mdi/js";
 
-  import notify from '$lib/notify'
-  import { useInfinitApi, api } from '$lib/api'
-  import { onMount } from 'svelte'
-  import MagicTable from '$lib/util/MagicTable.svelte'
-  import { layout } from '$lib/store/layout'
-  import type { DynamicQuery, User, UserWithRootInfo } from 'types'
-  import { fieldsUser } from '$lib/root/fieldsUser'
-  import { Icon, List, ListItem } from '$material'
-  import logo from '$assets/logo'
+  import notify from "$lib/notify";
+  import { useInfinitApi, api } from "$lib/api";
+  import { onMount } from "svelte";
+  import MagicTable from "$lib/util/MagicTable.svelte";
+  import { layout } from "$lib/store/layout";
+  import type { DynamicQuery, User, UserWithRootInfo } from "$lib/types";
+  import { fieldsUser } from "$lib/root/fieldsUser";
+  import { Icon, List, ListItem } from "$lib/material";
+  import logo from "$lib/assets/logo";
 
-  let searchValue = ''
-  let queryParams = {}
+  let searchValue = "";
+  let queryParams = {};
   $: query = useInfinitApi<DynamicQuery<User>, UserWithRootInfo>([
-    'root/users',
+    "root/users",
     {
       or_search_name: searchValue,
       or_search_mail: searchValue,
       ...queryParams,
     },
-  ])
+  ]);
 
-  let userCount = 0
+  let userCount = 0;
   onMount(async () => {
-    userCount = await api<number>('/api/root/users/count')
-  })
+    userCount = await api<number>("/api/root/users/count");
+  });
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   async function addCredit(user: UserWithRootInfo) {
     try {
-      if (!confirm(`Etes-vous sur d'accorder un crédit à ${user.name}`)) return
+      if (!confirm(`Etes-vous sur d'accorder un crédit à ${user.name}`)) return;
       const res = await fetch(`/api/root/addcredit`, {
-        method: 'post',
+        method: "post",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ user: user?._id }),
-      })
-      const json = await res.json()
-      if (json.error) return notify.error(json.message)
-      queryClient.invalidateQueries('root/users')
-      return notify.success(json.message)
+      });
+      const json = await res.json();
+      if (json.error) return notify.error(json.message);
+      queryClient.invalidateQueries({ queryKey: ["root/users"] });
+      return notify.success(json.message);
     } catch (error) {
-      console.trace(error)
+      console.trace(error);
     }
   }
 </script>
@@ -72,8 +72,8 @@
         </ListItem>
         <ListItem
           on:click={() => {
-            addCredit(item)
-            menu.close()
+            addCredit(item);
+            menu.close();
           }}
         >
           <Icon path={mdiPlus} class="mr-2" />

@@ -1,68 +1,68 @@
-<script>
-  import { onMount, onDestroy } from 'svelte'
+<script lang="ts">
+  import { onMount, onDestroy } from "svelte";
 
-  import { isDarkTheme } from '$lib/store/layout'
+  import { isDarkTheme } from "$lib/store/layout";
 
-  import marker from '$assets/images/marker-icon-2x.png'
+  import marker from "$lib/assets/images/marker-icon-2x.png";
 
-  let klass = ''
-  export { klass as class }
-  const WRITE_WAIT = 200
-  const ERASE_WAIT = 100
-  const WORDS = ['Ski de rando', 'Légo en vrac', 'Vélo enduro']
-  let text = ''
-  let wordIndex = 0
-  let writeIndex = 0
+  let klass = "";
+  export { klass as class };
+  const WRITE_WAIT = 200;
+  const ERASE_WAIT = 100;
+  const WORDS = ["Ski de rando", "Légo en vrac", "Vélo enduro"];
+  let text = "";
+  let wordIndex = 0;
+  let writeIndex = 0;
 
-  let icons = []
-  let showIcon = false
+  let icons: { x: number; y: number }[] = [];
+  let showIcon = false;
 
-  let interval
+  let interval: NodeJS.Timeout;
 
   onMount(() => {
-    interval = setInterval(write, WRITE_WAIT)
-  })
+    interval = setInterval(write, WRITE_WAIT);
+  });
 
   onDestroy(() => {
-    clearInterval(interval)
-  })
+    clearInterval(interval);
+  });
 
   function write() {
-    text += WORDS[wordIndex][writeIndex++]
-    if (writeIndex === WORDS[wordIndex].length - 3) showIcons()
+    text += WORDS[wordIndex][writeIndex++];
+    if (writeIndex === WORDS[wordIndex].length - 3) showIcons();
     if (!WORDS[wordIndex][writeIndex]) {
-      clearInterval(interval)
+      clearInterval(interval);
       setTimeout(() => {
-        interval = setInterval(erase, ERASE_WAIT)
-      }, 1500)
+        interval = setInterval(erase, ERASE_WAIT);
+      }, 1500);
     }
   }
 
   function erase() {
-    text = text.slice(0, -1)
+    text = text.slice(0, -1);
     if (!text) {
-      clearInterval(interval)
-      writeIndex = 0
-      wordIndex = wordIndex === WORDS.length - 1 ? 0 : wordIndex + 1
+      clearInterval(interval);
+      writeIndex = 0;
+      wordIndex = wordIndex === WORDS.length - 1 ? 0 : wordIndex + 1;
       setTimeout(() => {
-        interval = setInterval(write, WRITE_WAIT)
-      }, 500)
+        interval = setInterval(write, WRITE_WAIT);
+      }, 500);
     }
   }
 
   function showIcons() {
-    showIcon = false
+    showIcon = false;
     setTimeout(() => {
       icons = Array(12)
-        .fill()
+        .fill(0)
         .map(() => {
           return {
             x: 10 + Math.round(Math.random() * 80),
             y: 10 + Math.round(Math.random() * 80),
-          }
-        })
-      showIcon = true
-    }, 50)
+          };
+        });
+      showIcon = true;
+    }, 50);
   }
 </script>
 
@@ -78,12 +78,12 @@
   {/each}
 
   <div class="search">
-    <i class="fas fa-search" />
+    <i class="fas fa-search"></i>
     <input
       type="text"
       readonly
       value={text}
-      class={$isDarkTheme && 'grey darken-3 white-text'}
+      class={$isDarkTheme ? "grey darken-3 white-text" : ""}
     />
   </div>
 </div>
@@ -95,7 +95,7 @@
     margin-top: 30px;
     position: relative;
     border-radius: 10px;
-    background: url($assets/images/map.png);
+    background: url($lib/assets/images/map.png);
   }
 
   input {

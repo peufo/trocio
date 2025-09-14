@@ -1,11 +1,11 @@
 <script lang="ts">
-  import printJS from 'print-js'
-  import type { TagInterface, Article } from 'types'
-  import Tag from './Tag.svelte'
+  import printJS from "print-js";
+  import type { TagInterface, Article } from "$lib/types";
+  import Tag from "./Tag.svelte";
 
-  export let visible = false
-  export let articles: Partial<Article>[] = []
-  export let currency = ''
+  export let visible = false;
+  export let articles: Partial<Article>[] = [];
+  export let currency = "";
   export let tag: TagInterface = {
     width: 80,
     height: 22,
@@ -14,22 +14,22 @@
     border: false,
     useTagPrinter: false,
     useScanner: false,
-  }
+  };
   export async function print() {
-    await Promise.all(tags.filter(Boolean).map((tag) => tag.refresh()))
+    await Promise.all(tags.filter(Boolean).map((tag) => tag.refresh()));
 
     const options: printJS.Configuration = {
       printable,
-      type: 'html',
-      targetStyles: ['*'],
+      type: "html",
+      targetStyles: ["*"],
       font_size: undefined,
-    }
+    };
 
-    printJS(options)
+    printJS(options);
   }
 
-  let printable: HTMLDivElement
-  let tags: Tag[] = []
+  let printable: HTMLDivElement;
+  let tags: Tag[] = [];
 </script>
 
 <div class:hide={!visible}>

@@ -1,52 +1,50 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
-  import { useMutation } from '@sveltestack/svelte-query'
+  import { createEventDispatcher } from "svelte";
+  import { createMutation } from "@tanstack/svelte-query";
 
-  import type { ISubscribe } from 'types'
-  import { Dialog, Button, TextField } from '$material'
-  import { api } from '$lib/api'
-  import { troc } from '$lib/troc/store'
-  import Loader from '$lib/util/Loader.svelte'
+  import type { ISubscribe } from "$lib/types";
+  import { Dialog, Button, TextField } from "$lib/material";
+  import { api } from "$lib/api";
+  import { troc } from "$lib/troc/store";
+  import Loader from "$lib/util/Loader.svelte";
 
-  export let active = false
+  export let active = false;
 
-  const dispatch = createEventDispatcher<{ success: ISubscribe }>()
+  const dispatch = createEventDispatcher<{ success: ISubscribe }>();
 
   interface CreateGuestBody {
-    trocId: string
-    guestName: string
-    isGuest: true
+    trocId: string;
+    guestName: string;
+    isGuest: true;
   }
 
-  let guestNameInput: HTMLInputElement
-  let guestName = ''
+  let guestNameInput: HTMLInputElement;
+  let guestName = "";
 
   export function open() {
-    active = true
+    active = true;
     setTimeout(() => {
-      guestNameInput.focus()
-    })
+      guestNameInput.focus();
+    });
   }
 
   export function close() {
-    active = false
+    active = false;
   }
 
   /** Créer un client invité */
-  const createSubscribeGuest = useMutation(
-    () =>
-      api<CreateGuestBody, ISubscribe>('/api/subscribes', {
-        method: 'post',
+  const createSubscribeGuest = createMutation({
+    mutationFn: () =>
+      api<CreateGuestBody, ISubscribe>("/api/subscribes", {
+        method: "post",
         data: { trocId: $troc._id, guestName, isGuest: true },
-        success: 'Nouveau participant invité',
+        success: "Nouveau participant invité",
       }),
-    {
-      onSuccess: (newSubscribe) => {
-        close()
-        dispatch('success', newSubscribe)
-      },
-    }
-  )
+    onSuccess: (newSubscribe) => {
+      close();
+      dispatch("success", newSubscribe);
+    },
+  });
 </script>
 
 <Dialog bind:active class="pa-4">
@@ -62,9 +60,9 @@
         Nom du client
       </TextField>
 
-      <div class="flex-grow-1" />
+      <div class="flex-grow-1"></div>
 
-      {#if $createSubscribeGuest.isLoading}
+      {#if $createSubscribeGuest.isPending}
         <Button outlined disabled>
           <Loader />
         </Button>

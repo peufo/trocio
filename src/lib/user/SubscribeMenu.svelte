@@ -1,43 +1,43 @@
 <script lang="ts">
-  import type { SubscribeLookup } from 'types'
-  import MagicMenu from '$lib/util/MagicMenu.svelte'
-  import { isMobile } from '$lib/store/layout'
-  import SubscribeMenuList from './SubscribeMenuList.svelte'
-  import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
-  import PrefixDialog from '$lib/user/PrefixDialog.svelte'
+  import type { SubscribeLookup } from "$lib/types";
+  import MagicMenu from "$lib/util/MagicMenu.svelte";
+  import { isMobile } from "$lib/store/layout";
+  import SubscribeMenuList from "./SubscribeMenuList.svelte";
+  import PaymentDialog from "$lib/cash/PaymentDialog.svelte";
+  import PrefixDialog from "$lib/user/PrefixDialog.svelte";
 
-  export let state: 'main' | 'role' | 'tarif' = 'main'
-  export let subscribe: SubscribeLookup | undefined = undefined
+  export let state: "main" | "role" | "tarif" = "main";
+  export let subscribe: SubscribeLookup | undefined = undefined;
 
-  let paymentDialog: PaymentDialog
-  let prefixDialog: PrefixDialog
+  let paymentDialog: PaymentDialog;
+  let prefixDialog: PrefixDialog;
 
-  let magicMenu: MagicMenu
+  let magicMenu: MagicMenu;
 
   export function open(event: MouseEvent, sub: SubscribeLookup) {
-    state = 'main'
-    subscribe = sub
-    magicMenu.open(event)
+    state = "main";
+    subscribe = sub;
+    magicMenu.open(event);
   }
 
   export function close() {
-    magicMenu.close()
+    magicMenu.close();
   }
 
   function handleSoldCorrection() {
-    close()
-    paymentDialog.open(subscribe, 'Correction du solde')
+    close();
+    paymentDialog.open(subscribe, "Correction du solde");
   }
 
   function handlePrefixClick() {
-    console.log(subscribe)
-    if (!subscribe) return
-    close()
-    prefixDialog.open(subscribe)
+    console.log(subscribe);
+    if (!subscribe) return;
+    close();
+    prefixDialog.open(subscribe);
   }
 
   function closeAfterClick(force = false) {
-    if ($isMobile || force) setTimeout(close, 200)
+    if ($isMobile || force) setTimeout(close, 200);
   }
 </script>
 

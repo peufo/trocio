@@ -1,34 +1,34 @@
 <script lang="ts">
-  import { Dialog, Button } from '$material'
-  import { tick } from 'svelte'
+  import { Dialog, Button } from "$lib/material";
+  import { tick } from "svelte";
 
-  export let active = false
-  let message = ''
-  let btnCancel: HTMLButtonElement
-  let btnConfirm: HTMLButtonElement
+  export let active = false;
+  let message = "";
+  let btnCancel: HTMLButtonElement;
+  let btnConfirm: HTMLButtonElement;
 
   export async function confirm(msg: string): Promise<boolean> {
-    message = msg
-    active = true
-    await tick()
+    message = msg;
+    active = true;
+    await tick();
     return new Promise((resolve) => {
       const clean = () => {
-        btnCancel.removeEventListener('click', cancel)
-        btnConfirm.removeEventListener('click', conf)
-      }
+        btnCancel.removeEventListener("click", cancel);
+        btnConfirm.removeEventListener("click", conf);
+      };
       const cancel = () => {
-        active = false
-        clean()
-        resolve(false)
-      }
+        active = false;
+        clean();
+        resolve(false);
+      };
       const conf = () => {
-        active = false
-        clean()
-        resolve(true)
-      }
-      btnCancel.addEventListener('click', cancel)
-      btnConfirm.addEventListener('click', conf)
-    })
+        active = false;
+        clean();
+        resolve(true);
+      };
+      btnCancel.addEventListener("click", cancel);
+      btnConfirm.addEventListener("click", conf);
+    });
   }
 </script>
 

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { Table } from '$material'
+  import { Table } from "$lib/material";
 
-  import type { Article } from 'types'
-  import { renderAmount } from '$lib/utils'
+  import type { Article } from "$lib/types";
+  import { renderAmount } from "$lib/utils";
 
-  export let purchases: Article[]
+  export let purchases: Article[];
 </script>
 
 <Table class="pb-2">
@@ -19,7 +19,7 @@
   <tbody>
     {#each purchases || [] as article}
       <tr>
-        <td>{new Date(article.sold || '').toLocaleString()}</td>
+        <td>{new Date(article.sold || "").toLocaleString()}</td>
         <td>{article.ref}</td>
         <td>{article.name}</td>
         <td align="right">{renderAmount(article.price)}</td>

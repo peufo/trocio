@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte'
-  import QrScanner from 'qr-scanner'
+  import { onMount, onDestroy, createEventDispatcher } from "svelte";
+  import QrScanner from "qr-scanner";
   import {
     mdiClose,
     mdiFlashlight,
@@ -11,108 +11,111 @@
     mdiVibrateOff,
     mdiVolumeHigh,
     mdiVolumeOff,
-  } from '@mdi/js'
+  } from "@mdi/js";
 
-  import { Button, Chip, Icon } from '$material'
-  import { isMobile } from '$lib/store/layout'
-  import notify from '$lib/notify'
-  import soundPristine from '$assets/sounds/Pristine.wav'
+  import { Button, Chip, Icon } from "$lib/material";
+  import { isMobile } from "$lib/store/layout";
+  import notify from "$lib/notify";
+  import soundPristine from "$lib/assets/sounds/Pristine.wav";
 
   import {
     isAutoScanOn,
     isFlashOn,
     isSoundOn,
     isVibrateOn,
-  } from '$lib/scanner/store'
+  } from "$lib/scanner/store";
 
   /** Params ajouter à la requet de l'article */
-  export let isClosable = true
+  export let isClosable = true;
 
-  const TIMEOUT = 9 // secondes
-  let intervalId: NodeJS.Timeout
-  let time = TIMEOUT
+  const TIMEOUT = 9; // secondes
+  let intervalId: NodeJS.Timeout;
+  let time = TIMEOUT;
 
-  let qrScanner: QrScanner
-  let isScanning = false
-  let isProcessing = false
+  let qrScanner: QrScanner;
+  let isScanning = false;
+  let isProcessing = false;
 
-  let video: HTMLVideoElement
-  let audio: HTMLAudioElement
-  let offsetWidth: number
-  let overlay: HTMLDivElement
-  let overlaySize: number
+  let video: HTMLVideoElement;
+  let audio: HTMLAudioElement;
+  let offsetWidth: number;
+  let overlay: HTMLDivElement;
+  let overlaySize: number;
 
-  const dispatch = createEventDispatcher<{ close: void; detect: string }>()
+  const dispatch = createEventDispatcher<{ close: void; detect: string }>();
 
   onMount(async () => {
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-      notify.warning('No camera detected')
-      return
+      notify.warning("No camera detected");
+      return;
     }
 
     qrScanner = new QrScanner(video, onDetect, {
       maxScansPerSecond: 4,
       highlightScanRegion: true,
       overlay,
-    })
-    console.log('onMount')
-    scan()
+    });
+    console.log("onMount");
+    scan();
 
     const handleFlashOn = (v: boolean) => {
-      if (v) qrScanner.turnFlashOn()
-      else qrScanner.turnFlashOff()
-    }
-    isFlashOn.subscribe(handleFlashOn)
-    handleFlashOn($isFlashOn)
-  })
+      if (v) qrScanner.turnFlashOn();
+      else qrScanner.turnFlashOff();
+    };
+    isFlashOn.subscribe(handleFlashOn);
+    handleFlashOn($isFlashOn);
+  });
 
   onDestroy(() => {
-    qrScanner?.destroy()
-    clearInterval(intervalId)
-  })
+    qrScanner?.destroy();
+    clearInterval(intervalId);
+  });
 
   function scan() {
-    console.log('onScan')
-    isScanning = true
-    video.play()
-    qrScanner.start()
-    clearInterval(intervalId)
-    time = TIMEOUT
+    console.log("onScan");
+    isScanning = true;
+    video.play();
+    qrScanner.start();
+    clearInterval(intervalId);
+    time = TIMEOUT;
     intervalId = setInterval(() => {
-      if (--time <= 0) pause()
-    }, 1000)
+      if (--time <= 0) pause();
+    }, 1000);
   }
 
-  window.onfocus = scan
+  window.onfocus = scan;
 
   function pause() {
-    isScanning = false
-    video?.pause()
-    clearInterval(intervalId)
+    isScanning = false;
+    video?.pause();
+    clearInterval(intervalId);
   }
 
   async function onDetect(scanResult: { data: string }) {
-    isProcessing = true
-    pause()
+    isProcessing = true;
+    pause();
     if ($isSoundOn)
-      audio.play().catch((e) => console.log('Sound no playing', e.name))
-    if ($isVibrateOn && 'vibrate' in navigator) navigator.vibrate([50])
-    dispatch('detect', scanResult.data)
-    const wait = 1400
+      audio.play().catch((e) => console.log("Sound no playing", e.name));
+    if ($isVibrateOn && "vibrate" in navigator) navigator.vibrate([50]);
+    dispatch("detect", scanResult.data);
+    const wait = 1400;
     setTimeout(() => {
-      isProcessing = false
-      if ($isAutoScanOn) scan()
-    }, wait)
+      isProcessing = false;
+      if ($isAutoScanOn) scan();
+    }, wait);
   }
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
+  role="button"
+  tabindex="0"
   class="scanner-wrapper white-text"
   bind:offsetWidth
   style="height: {offsetWidth}px"
   on:click={scan}
 >
-  <video bind:this={video} kind="caption" width={offsetWidth}>
+  <video bind:this={video} width={offsetWidth}>
     <track kind="captions" />
   </video>
   <div
@@ -162,16 +165,16 @@
       <Icon path={$isAutoScanOn ? mdiRepeat : mdiRepeatOff} />
     </Button>
 
-    <div class="flex-grow-1" />
+    <div class="flex-grow-1"></div>
     {#if isClosable}
-      <Button icon outlined on:click={() => dispatch('close')}>
+      <Button icon outlined on:click={() => dispatch("close")}>
         <Icon path={mdiClose} />
       </Button>
     {/if}
   </div>
 
   <div class="bottom-bar">
-    <div class="flex-grow-1" />
+    <div class="flex-grow-1"></div>
 
     {#if isProcessing}
       <Chip label>
@@ -183,11 +186,11 @@
       </Chip>
     {/if}
 
-    <div class="flex-grow-1" />
+    <div class="flex-grow-1"></div>
   </div>
 </div>
 
-<audio src={soundPristine} bind:this={audio} />
+<audio src={soundPristine} bind:this={audio}></audio>
 
 <style lang="scss">
   $overlay-radius: 10px;

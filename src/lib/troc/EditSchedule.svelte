@@ -1,89 +1,91 @@
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte'
-  import dayjs from 'dayjs'
-  import { Button, Select, Table, TextField } from '$material'
+  import { onMount, createEventDispatcher } from "svelte";
+  import dayjs from "dayjs";
+  import { Button, Select, Table, TextField } from "$lib/material";
 
-  import type { Period } from 'types'
+  import type { Period } from "$lib/types";
 
-  export let schedule: Period[] = []
+  export let schedule: Period[] = [];
 
   /** Schedule formated for user input */
   let scheduleInput: {
-    name?: Period['name'] | 'delete'
-    _id?: string
-    day: string
-    open: string
-    close: string
-  }[] = []
+    name?: Period["name"] | "delete";
+    _id?: string;
+    day: string;
+    open: string;
+    close: string;
+  }[] = [];
 
   const nameItems = [
-    { name: 'Ouvert', value: 'open' },
-    { name: 'Dépot', value: 'deposit' },
-    { name: 'Vente', value: 'sale' },
-    { name: 'Récupération', value: 'recovery' },
-    { name: '❌ Supprimer', value: 'delete' },
-  ]
+    { name: "Ouvert", value: "open" },
+    { name: "Dépot", value: "deposit" },
+    { name: "Vente", value: "sale" },
+    { name: "Récupération", value: "recovery" },
+    { name: "❌ Supprimer", value: "delete" },
+  ];
 
-  const dispatch = createEventDispatcher()
-  let offsetWidth = 0
-  $: smallDisplay = offsetWidth < 570
+  const dispatch = createEventDispatcher();
+  let offsetWidth = 0;
+  $: smallDisplay = offsetWidth < 570;
 
   onMount(() => {
-    if (schedule.length) scheduleToScheduleInput()
-    else addPeriod()
-  })
+    if (schedule.length) scheduleToScheduleInput();
+    else addPeriod();
+  });
 
   function handleInput() {
     setTimeout(() => {
       // Remove deleted period
-      scheduleInput = scheduleInput.filter((period) => period.name !== 'delete')
-      sheduleInputToSchedule()
-    }, 0)
+      scheduleInput = scheduleInput.filter(
+        (period) => period.name !== "delete"
+      );
+      sheduleInputToSchedule();
+    }, 0);
   }
 
   /** Schedule conversion */
   function scheduleToScheduleInput() {
     scheduleInput = schedule.map((period) => {
       return {
-        name: period.name || 'open',
+        name: period.name || "open",
         _id: period._id,
-        day: dayjs(period.open).format('YYYY-MM-DD'),
-        open: dayjs(period.open).format('HH:mm'),
-        close: dayjs(period.close).format('HH:mm'),
-      }
-    })
+        day: dayjs(period.open).format("YYYY-MM-DD"),
+        open: dayjs(period.open).format("HH:mm"),
+        close: dayjs(period.close).format("HH:mm"),
+      };
+    });
   }
 
   function sheduleInputToSchedule() {
     schedule = scheduleInput
       .filter(
         (period) =>
-          period.day && period.open && period.close && period.name !== 'delete'
+          period.day && period.open && period.close && period.name !== "delete"
       )
       .map((period) => {
-        let dayForSafari = dayjs(period.day).format('YYYY/MM/DD')
+        let dayForSafari = dayjs(period.day).format("YYYY/MM/DD");
         return {
           name: period.name,
           _id: period._id,
           open: new Date(`${dayForSafari} ${period.open}`).toISOString(),
           close: new Date(`${dayForSafari} ${period.close}`).toISOString(),
-        }
-      })
-    dispatch('change', { schedule })
+        };
+      });
+    dispatch("change", { schedule });
   }
 
-  function addPeriod(event: Event = null) {
-    event?.preventDefault()
-    const lastPeriod = scheduleInput[scheduleInput.length - 1] || undefined
+  function addPeriod(event?: Event) {
+    event?.preventDefault();
+    const lastPeriod = scheduleInput[scheduleInput.length - 1] || undefined;
     const newPeriod = {
       day: dayjs(lastPeriod?.day)
-        .add(lastPeriod ? 1 : 7, 'day')
-        .format('YYYY-MM-DD'),
-      open: lastPeriod?.open || dayjs().hour(8).minute(0).format('HH:mm'),
-      close: lastPeriod?.close || dayjs().hour(18).minute(0).format('HH:mm'),
-    }
-    scheduleInput = [...scheduleInput, { name: 'open', ...newPeriod }]
-    sheduleInputToSchedule()
+        .add(lastPeriod ? 1 : 7, "day")
+        .format("YYYY-MM-DD"),
+      open: lastPeriod?.open || dayjs().hour(8).minute(0).format("HH:mm"),
+      close: lastPeriod?.close || dayjs().hour(18).minute(0).format("HH:mm"),
+    };
+    scheduleInput = [...scheduleInput, { name: "open", ...newPeriod }];
+    sheduleInputToSchedule();
   }
 </script>
 
@@ -175,7 +177,7 @@
 </div>
 
 <div class="d-flex">
-  <div class="flex-grow-1" />
+  <div class="flex-grow-1"></div>
   <Button on:click={addPeriod} text class="mt-3 mb-3">
     Ajouter une période
   </Button>

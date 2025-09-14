@@ -1,7 +1,7 @@
 import type {
   GetNextPageParamFunction,
   UseInfiniteQueryResult,
-} from '@sveltestack/svelte-query'
+} from "@tanstack/svelte-query";
 
 /**
  * Find and update an item on infinit result pages
@@ -21,11 +21,5 @@ export function setItemById(
         page.map((item) => (item._id === newItem._id ? newItem : item))
       ),
     },
-  }
-}
-
-// TODO: Remove. replaced by $lib/api
-/** @deprecated */
-export function getNextPageParam(lastPage, allPages): GetNextPageParamFunction {
-  return lastPage.length ? allPages.flat().length : undefined
+  };
 }

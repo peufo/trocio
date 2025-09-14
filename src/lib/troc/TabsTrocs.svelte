@@ -1,25 +1,25 @@
 <script lang="ts">
-  import { mdiEarth, mdiPlus } from '@mdi/js'
-  import { isActive, redirect } from '@roxi/routify'
-  import { Tabs, Tab, Icon } from '$material'
+  import { mdiEarth, mdiPlus } from "@mdi/js";
+  import { Tabs, Tab, Icon } from "$lib/material";
 
-  import logo from '$assets/logo'
+  import logo from "$lib/assets/logo";
+  import { page } from "$app/state";
+  import { goto } from "$app/navigation";
 
   const TABS = [
-    { icon: { path: mdiEarth }, label: 'Découvrir', href: './index' },
-    { icon: logo, label: 'Mes trocs', href: './my' },
+    { icon: { path: mdiEarth }, label: "Découvrir", href: "/trocs" },
+    { icon: logo, label: "Mes trocs", href: "/trocs/my" },
     {
       icon: { path: mdiPlus },
-      label: 'Organiser',
-      href: './create',
+      label: "Organiser",
+      href: "/trocs/create",
     },
-  ]
-  let foundTabIndex = TABS.findIndex((tab) => $isActive(tab.href))
-
-  let tabIndex = foundTabIndex > 0 ? foundTabIndex : 0
+  ];
+  let foundTabIndex = TABS.findIndex((tab) => page.route.id === tab.href);
+  let tabIndex = foundTabIndex > 0 ? foundTabIndex : 0;
   function handleChangeTabsTrocs(event: { detail: number }) {
-    tabIndex = event.detail
-    $redirect(TABS[tabIndex].href || '')
+    tabIndex = event.detail;
+    goto(TABS[tabIndex].href);
   }
 </script>
 

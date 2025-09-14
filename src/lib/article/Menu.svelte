@@ -1,142 +1,140 @@
 <script lang="ts">
-  import { type FadeParams, fly } from 'svelte/transition'
-  import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
-  import { url, params } from '@roxi/routify'
-  import { mdiTagOutline, mdiTrashCanOutline, mdiUndo } from '@mdi/js'
+  import { type FadeParams, fly } from "svelte/transition";
+  import { createMutation, useQueryClient } from "@tanstack/svelte-query";
+  import { mdiTagOutline, mdiTrashCanOutline, mdiUndo } from "@mdi/js";
   import {
     faAngleLeft,
     faAngleRight,
     faArrowRightArrowLeft,
     faArrowRightFromBracket,
     faArrowRightToBracket,
-  } from '@fortawesome/free-solid-svg-icons'
-  import { faEdit } from '@fortawesome/free-regular-svg-icons'
+  } from "@fortawesome/free-solid-svg-icons";
+  import { faEdit } from "@fortawesome/free-regular-svg-icons";
 
-  import { Icon, List, ListItem } from '$material'
-  import ArticleEditDialog from '$lib/article/EditDialog.svelte'
-  import TagsPrint from '$lib/troc/TagsPrint.svelte'
-  import type { ArticleLookup, ArticleState } from 'types'
-  import { getState } from '$lib/utils'
-  import { troc } from '$lib/troc/store'
-  import { api } from '$lib/api'
-  import { isMobile } from '$lib/store/layout'
-  import MagicMenu from '$lib/util/MagicMenu.svelte'
-  import ArticleHistoricState from '$lib/article/HistoricState.svelte'
-  import ArticleHistoricEdition from '$lib/article/HistoricEdition.svelte'
-  import IconLink from '$lib/util/IconLink.svelte'
+  import { Icon, List, ListItem } from "$lib/material";
+  import ArticleEditDialog from "$lib/article/EditDialog.svelte";
+  import TagsPrint from "$lib/troc/TagsPrint.svelte";
+  import type { ArticleLookup, ArticleState } from "$lib/types";
+  import { getState } from "$lib/utils";
+  import { troc } from "$lib/troc/store";
+  import { api } from "$lib/api";
+  import { isMobile } from "$lib/store/layout";
+  import MagicMenu from "$lib/util/MagicMenu.svelte";
+  import ArticleHistoricState from "$lib/article/HistoricState.svelte";
+  import ArticleHistoricEdition from "$lib/article/HistoricEdition.svelte";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import { param, urlParam } from "$lib/param";
+  import { page } from "$app/state";
 
-  export let state: 'main' | 'historic-state' | 'historic-edit' = 'main'
-  export let active = false
-  export let modeAdmin = false
-  export let disabledAutoClose = false
-  export let fadeParamsIn: FadeParams | undefined = undefined
-  export let fadeParamsOut: FadeParams | undefined = undefined
+  export let state: "main" | "historic-state" | "historic-edit" = "main";
+  export let active = false;
+  export let modeAdmin = false;
+  export let disabledAutoClose = false;
+  export let fadeParamsIn: FadeParams | undefined = undefined;
+  export let fadeParamsOut: FadeParams | undefined = undefined;
 
-  /**
-   * Si vrai les liens vers la caisse de sont pas absolue
-   * patch rapide pasque la ... plein le cul
-   */
-  export let useRelativeCashierUrl = false
-  $: cashierURl = useRelativeCashierUrl ? undefined : '/admin/cash_register'
-
-  let article: ArticleLookup | undefined
-  let magicMenu: MagicMenu
+  let article: ArticleLookup | undefined;
+  let magicMenu: MagicMenu;
 
   export function open(
     _article: ArticleLookup,
     position?: { x: number; y: number }
   ) {
-    article = _article
-    active = true
-    magicMenu.open(position)
+    article = _article;
+    active = true;
+    magicMenu.open(position);
   }
 
   export function close() {
-    active = false
-    magicMenu.close()
+    active = false;
+    magicMenu.close();
   }
 
-  let tagsPrint: TagsPrint
-  let articleEditDialog: ArticleEditDialog
+  let tagsPrint: TagsPrint;
+  let articleEditDialog: ArticleEditDialog;
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const queryDelete = useMutation(
-    (data: { articleId: string }) =>
-      api('/api/articles', {
-        method: 'delete',
+  const queryDelete = createMutation({
+    mutationFn: (data: { articleId: string }) =>
+      api("/api/articles", {
+        method: "delete",
         data,
-        success: 'Article supprimé',
+        success: "Article supprimé",
       }),
-    {
-      onSuccess: () => {
-        article = undefined
-        active = false
-        queryClient.invalidateQueries('articles')
-        queryClient.invalidateQueries('subscribes/resum')
-      },
-    }
-  )
+    onSuccess: () => {
+      article = undefined;
+      active = false;
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+      queryClient.invalidateQueries({ queryKey: ["subscribes/resum"] });
+    },
+  });
 
-  const queryCancelEvent = useMutation(
-    (eventName: ArticleState) =>
+  const queryCancelEvent = createMutation({
+    mutationFn: (eventName: ArticleState) =>
       api<{ articleId: string; eventName: ArticleState }, ArticleLookup>(
-        '/api/articles/cancel-event',
+        "/api/articles/cancel-event",
         {
-          method: 'post',
+          method: "post",
           data: { eventName, articleId: article?._id },
-          success: 'Evenement de correction annulé',
+          success: "Evenement de correction annulé",
         }
       ),
-    {
-      onSuccess: (articleUpdated) => {
-        // TODO: lookup subscribe
-        article = articleUpdated
-        queryClient.invalidateQueries('articles')
-        queryClient.invalidateQueries('subscribes/resum')
-      },
-    }
-  )
+    onSuccess: (articleUpdated) => {
+      // TODO: lookup subscribe
+      article = articleUpdated;
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+      queryClient.invalidateQueries({ queryKey: ["subscribes/resum"] });
+    },
+  });
 
   const cancelActions: { state: ArticleState; label: string }[] = [
-    { state: 'sold', label: 'la vente' },
-    { state: 'recover', label: 'la récupération' },
-    { state: 'valided', label: 'la validation' },
-    { state: 'refused', label: 'le refus' },
-  ]
+    { state: "sold", label: "la vente" },
+    { state: "recover", label: "la récupération" },
+    { state: "valided", label: "la validation" },
+    { state: "refused", label: "le refus" },
+  ];
 
   $: cancelAction = cancelActions.find(
     ({ state }) => state === getState(article)
-  )
+  );
 
-  $: casheRegisterParams = {
-    trocId: $params.trocId,
+  $: cashRegisterParams = {
     client_subscribe_id: article?.providerSubId,
     select_article: article?.tagId,
+  };
+
+  function getCashRegisterUrl(
+    params: Record<string, string | number | undefined>
+  ): string {
+    const path = page.route.id?.startsWith("/admin")
+      ? "/admin/cash_register"
+      : "/cashier";
+    return `${path}${$param.with(params)}`;
   }
 </script>
 
 <MagicMenu
   bind:this={magicMenu}
-  on:open={() => (state = 'main')}
+  on:open={() => (state = "main")}
   on:close
   bind:fadeParamsIn
   bind:fadeParamsOut
 >
   {#if article}
     <List style="overflow-x: hidden;" dense={!$isMobile}>
-      {#if state === 'main'}
+      {#if state === "main"}
         <div in:fly|local={{ x: -200 }}>
           <ListItem disabled>
             #{article.ref} - {article.name}
           </ListItem>
-          <ListItem on:click={() => (state = 'historic-state')}>
+          <ListItem on:click={() => (state = "historic-state")}>
             Évolution du status
             <span slot="append">
               <IconLink icon={faAngleRight} size="1.1em" class="ml-2" />
             </span>
           </ListItem>
-          <ListItem on:click={() => (state = 'historic-edit')}>
+          <ListItem on:click={() => (state = "historic-edit")}>
             Voir les éditions
             <span slot="append">
               <IconLink icon={faAngleRight} size="1.1em" class="ml-2" />
@@ -145,10 +143,10 @@
 
           <!-- Liens vers la caisse -->
           {#if modeAdmin}
-            {#if getState(article) === 'proposed'}
+            {#if getState(article) === "proposed"}
               <ListItem
-                href={$url(cashierURl, {
-                  ...casheRegisterParams,
+                href={getCashRegisterUrl({
+                  ...cashRegisterParams,
                   cash_register_tab_index: 0,
                 })}
               >
@@ -162,10 +160,10 @@
 
                 Vers le dépot
               </ListItem>
-            {:else if getState(article) === 'valided'}
+            {:else if getState(article) === "valided"}
               <ListItem
-                href={$url(cashierURl, {
-                  ...casheRegisterParams,
+                href={getCashRegisterUrl({
+                  ...cashRegisterParams,
                   cash_register_tab_index: 1,
                 })}
               >
@@ -179,7 +177,7 @@
                 Vers le retrait
               </ListItem>
             {:else}
-              <ListItem href={$url(cashierURl, casheRegisterParams)}>
+              <ListItem href={getCashRegisterUrl(cashRegisterParams)}>
                 <span slot="prepend">
                   <IconLink
                     icon={faArrowRightArrowLeft}
@@ -187,15 +185,14 @@
                     class="mr-3"
                   />
                 </span>
-
                 Vers le fournisseur
               </ListItem>
             {/if}
 
-            {#if getState(article) === 'sold'}
+            {#if getState(article) === "sold"}
               <ListItem
-                href={$url(cashierURl, {
-                  ...casheRegisterParams,
+                href={getCashRegisterUrl({
+                  ...cashRegisterParams,
                   client_subscribe_id: article.buyerSubId,
                 })}
               >
@@ -215,8 +212,8 @@
           <!-- Impression étitquette -->
           <ListItem
             on:click={() => {
-              if (!disabledAutoClose) close()
-              tagsPrint.print()
+              if (!disabledAutoClose) close();
+              tagsPrint.print();
             }}
           >
             <span slot="prepend">
@@ -229,8 +226,8 @@
           {#if modeAdmin || (!article.valided && !article.refused)}
             <ListItem
               on:click={() => {
-                if (!disabledAutoClose) close()
-                articleEditDialog.open()
+                if (!disabledAutoClose) close();
+                articleEditDialog.open();
               }}
             >
               <span slot="prepend">
@@ -248,9 +245,9 @@
           {#if modeAdmin && cancelAction}
             <ListItem
               on:click={() => {
-                if (!cancelAction) return
-                $queryCancelEvent.mutate(cancelAction.state)
-                if (!disabledAutoClose) close()
+                if (!cancelAction) return;
+                $queryCancelEvent.mutate(cancelAction.state);
+                if (!disabledAutoClose) close();
               }}
             >
               <span slot="prepend">
@@ -265,9 +262,9 @@
           {#if !article.valided && !article.refused}
             <ListItem
               on:click={() => {
-                if (!confirm('Etes vous sur ?')) return
-                $queryDelete.mutate({ articleId: article?._id || '' })
-                if (!disabledAutoClose) close()
+                if (!confirm("Etes vous sur ?")) return;
+                $queryDelete.mutate({ articleId: article?._id || "" });
+                if (!disabledAutoClose) close();
               }}
             >
               <span slot="prepend">
@@ -283,9 +280,9 @@
         </div>
       {/if}
 
-      {#if state === 'historic-state'}
+      {#if state === "historic-state"}
         <div in:fly|local={{ x: 200 }}>
-          <ListItem on:click={() => (state = 'main')}>
+          <ListItem on:click={() => (state = "main")}>
             <span slot="prepend">
               <IconLink icon={faAngleLeft} size="1.2em" class="mr-4" />
             </span>
@@ -296,9 +293,9 @@
         </div>
       {/if}
 
-      {#if state === 'historic-edit'}
+      {#if state === "historic-edit"}
         <div in:fly|local={{ x: 200 }}>
-          <ListItem on:click={() => (state = 'main')}>
+          <ListItem on:click={() => (state = "main")}>
             <span slot="prepend">
               <IconLink icon={faAngleLeft} size="1.2em" class="mr-4" />
             </span>

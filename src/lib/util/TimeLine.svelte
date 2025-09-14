@@ -1,23 +1,23 @@
 <script lang="ts" context="module">
   export type EventDescription = {
-    title: string
-    detail?: string
-    time: string | number | Date
-  }
+    title: string;
+    detail?: string;
+    time: string | number | Date;
+  };
 </script>
 
 <script lang="ts">
-  export let events: EventDescription[]
-  export let hasNext = false
+  export let events: EventDescription[];
+  export let hasNext = false;
 
   const intl = new Intl.DateTimeFormat(undefined, {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-  })
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  });
 </script>
 
 <div class="timeline" class:hasNext>
@@ -26,9 +26,12 @@
       {intl.format(new Date(time))}
     </div>
     <div class="decorator">
-      <div class="dot" />
+      <div class="dot"></div>
 
-      <div class="line" class:hide={!hasNext && index === events.length - 1} />
+      <div
+        class="line"
+        class:hide={!hasNext && index === events.length - 1}
+      ></div>
     </div>
     <div class="content">
       <b>{title}</b>

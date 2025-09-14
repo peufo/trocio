@@ -1,107 +1,111 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { slide } from 'svelte/transition'
-  import { goto } from '@roxi/routify'
-  import clone from 'clone'
+  import { onMount } from "svelte";
+  import { slide } from "svelte/transition";
+  import { goto } from "$app/navigation";
+  import clone from "clone";
 
-  import { Button, TextField, Textarea, Checkbox } from '$material'
-  import { faInfo } from '@fortawesome/free-solid-svg-icons'
+  import { Button, TextField, Textarea, Checkbox } from "$lib/material";
+  import { faInfo } from "@fortawesome/free-solid-svg-icons";
 
-  import type { TrocBase } from 'types'
-  import { troc, useCreateTroc, useUpdateTroc } from '$lib/troc/store'
-  import UpdateButton from '$lib/util/UpdateButton.svelte'
-  import EditAddress from '$lib/troc/EditAddress.svelte'
-  import EditSchedule from '$lib/troc/EditSchedule.svelte'
+  import type { TrocBase } from "$lib/types";
+  import { troc, useCreateTroc, useUpdateTroc } from "$lib/troc/store";
+  import UpdateButton from "$lib/util/UpdateButton.svelte";
+  import EditAddress from "$lib/troc/EditAddress.svelte";
+  import EditSchedule from "$lib/troc/EditSchedule.svelte";
 
-  import { user, userQuery } from '$lib/user/store'
-  import IconLink from '$lib/util/IconLink.svelte'
-  import Loader from '$lib/util/Loader.svelte'
-  import notify from '$lib/notify'
+  import { user, userQuery } from "$lib/user/store";
+  import IconLink from "$lib/util/IconLink.svelte";
+  import Loader from "$lib/util/Loader.svelte";
+  import notify from "$lib/notify";
+  import { param } from "$lib/param";
 
   /**
    * createMode permet de créer un troc
    * Sinon, le troc du store est utilisé
    */
-  export let createMode = false
+  export let createMode = false;
   export let newTroc: TrocBase = {
-    name: '',
+    name: "",
     is_try: true,
-    currency: 'EUR',
-    address: '',
+    currency: "EUR",
+    address: "",
     location: undefined,
-    description: '',
+    description: "",
     schedule: [],
-    society: '',
-    societyweb: '',
-  }
-  const createTroc = useCreateTroc()
-  const updateTroc = useUpdateTroc()
+    society: "",
+    societyweb: "",
+    societyMail: "",
+  };
+  const createTroc = useCreateTroc();
+  const updateTroc = useUpdateTroc();
 
-  let isNewTrocCloned = false
-  let error = ''
+  let isNewTrocCloned = false;
+  let error = "";
 
   onMount(() => {
     if (!createMode) {
-      newTroc = clone($troc)
+      newTroc = clone($troc);
     }
-    isNewTrocCloned = true
-    validation()
-  })
+    isNewTrocCloned = true;
+    validation();
+  });
 
   function validation() {
-    error = ''
+    error = "";
     if (!newTroc?.is_try) {
       if (newTroc.description.length < 10)
-        error = `Description trop courte (${newTroc.description.length}/10)`
-      else if (!newTroc.address) error = 'Adresse incomplette'
-      else if (!newTroc.location?.lat) error = 'Adresse non localisé'
-      else if (!newTroc.schedule?.length) error = 'Pas de plage horaire'
-      else if (newTroc.schedule?.includes(undefined))
-        error = 'Plage horaire incomplette'
+        error = `Description trop courte (${newTroc.description.length}/10)`;
+      else if (!newTroc.address) error = "Adresse incomplette";
+      else if (!newTroc.location?.lat) error = "Adresse non localisé";
+      else if (!newTroc.schedule?.length) error = "Pas de plage horaire";
+      else if (newTroc.schedule?.find((el) => el === undefined))
+        error = "Plage horaire incomplette";
     }
-    if (!newTroc.name) error = 'Pas de nom'
+    if (!newTroc.name) error = "Pas de nom";
   }
 
   function handleCreateTroc() {
-    if (error) return notify.warning(error)
+    if (error) return notify.warning(error);
     if (newTroc.is_try && !newTroc.description)
-      newTroc.description = 'Pas de description'
+      newTroc.description = "Pas de description";
     $createTroc.mutate(newTroc, {
       onSuccess: (createdTroc) => {
         if (!createdTroc.is_try)
-          userQuery.set({ ...$user, creditTroc: $user.creditTroc - 1 })
-        $goto('/admin', { trocId: createdTroc._id })
+          userQuery.set({ ...$user, creditTroc: $user.creditTroc - 1 });
+        goto(`/admin${$param.with({ trocId: createdTroc._id })}`);
       },
-    })
+    });
   }
 
   function handleUpdateTroc() {
-    if (error) return notify.warning(error)
+    if (error) return notify.warning(error);
     $updateTroc.mutate(
       { ...newTroc, _id: $troc._id },
       { onSuccess: testIsModifed }
-    )
+    );
   }
 
-  function handleInput(event: any) {
-    const { detail } = event
-    if (detail) {
+  function handleInput(event: CustomEvent | Event) {
+    if ("detail" in event) {
       // Handle custom event
-      Object.keys(detail).forEach((key) => {
-        newTroc[key] = detail[key]
-      })
+      Object.keys(event.detail).forEach((key) => {
+        //@ts-ignore
+        newTroc[key] = detail[key];
+      });
     } else {
       // Handle input event
-      const { type, name, value } = event.target
-      if (type === 'text' || type === 'textarea') {
-        newTroc[name] = value
-      } else if (type === 'checkbox') {
-        newTroc[value] = event.target.checked
+      const { type, name, value } = event.target as HTMLInputElement;
+      if (type === "text" || type === "textarea") {
+        //@ts-ignore
+        newTroc[name] = value;
+      } else if (type === "checkbox") {
+        //@ts-ignore
+        newTroc[value] = event.target.checked;
       }
     }
 
-    validation()
-    if (!createMode) testIsModifed()
+    validation();
+    if (!createMode) testIsModifed();
   }
 
   /**
@@ -112,33 +116,33 @@
     location: false,
     schedule: false,
     society: false,
-  }
+  };
 
-  type TrocBaseKey = keyof TrocBase
+  type TrocBaseKey = keyof TrocBase;
   function isModified(keys: TrocBaseKey[]): boolean {
-    if (!$troc || !isNewTrocCloned) return false
-    keys = Array.isArray(keys) ? keys : [keys]
+    if (!$troc || !isNewTrocCloned) return false;
+    keys = Array.isArray(keys) ? keys : [keys];
     return (
       keys.filter((key) => {
-        return typeof newTroc[key] === 'object'
+        return typeof newTroc[key] === "object"
           ? JSON.stringify(newTroc[key]) === JSON.stringify($troc[key])
-          : newTroc[key] === $troc[key]
+          : newTroc[key] === $troc[key];
       }).length < keys.length
-    )
+    );
   }
 
   function testIsModifed() {
     blockIsModifed = {
-      troc: isModified(['name', 'description']),
-      location: isModified(['address', 'location', 'currency']),
-      schedule: isModified(['schedule']),
+      troc: isModified(["name", "description"]),
+      location: isModified(["address", "location", "currency"]),
+      schedule: isModified(["schedule"]),
       society: isModified([
-        'society',
-        'societyweb',
-        'societyMail',
-        'societyPhone',
+        "society",
+        "societyweb",
+        "societyMail",
+        "societyPhone",
       ]),
-    }
+    };
   }
 </script>
 
@@ -227,7 +231,7 @@
         <span style="opacity: .5;">
           Les trocs d'entrainement n'ont pas d'horaire
         </span>
-        <i class="far fa-calendar-alt" />
+        <i class="far fa-calendar-alt"></i>
       </div>
     {:else}
       <EditSchedule schedule={newTroc.schedule} on:change={handleInput} />
@@ -303,12 +307,12 @@
     <div class="buttons-container">
       <Button
         on:click={handleCreateTroc}
-        text={$createTroc.isLoading}
-        disabled={$createTroc.isLoading}
+        text={$createTroc.isPending}
+        disabled={$createTroc.isPending}
         title="Valider la création de mon troc"
         class="primary-color"
       >
-        {#if $createTroc.isLoading}
+        {#if $createTroc.isPending}
           <Loader title="Création en cours" />
         {:else}
           Créer un troc
@@ -340,10 +344,6 @@
     transform: scale(0);
     transition: all 0.2s ease;
     cursor: pointer;
-  }
-
-  .schedule tr:hover i {
-    transform: scale(1);
   }
 
   .icon-container {

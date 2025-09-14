@@ -1,67 +1,67 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { TextField } from '$material'
-  import { debounce } from 'debounce'
-  import { faSearch } from '@fortawesome/free-solid-svg-icons'
-  import Litepicker from 'litepicker'
-  import 'litepicker/dist/plugins/mobilefriendly'
-  import dayjs from 'dayjs'
+  import { onMount } from "svelte";
+  import { TextField } from "$lib/material";
+  import { debounce } from "debounce";
+  import { faSearch } from "@fortawesome/free-solid-svg-icons";
+  import Litepicker from "litepicker";
+  import "litepicker/dist/plugins/mobilefriendly";
+  import dayjs from "dayjs";
 
-  import { queryTrocsParams } from '$lib/troc/store'
-  import IconLink from '$lib/util/IconLink.svelte'
+  import { queryTrocsParams } from "$lib/troc/store";
+  import IconLink from "$lib/util/IconLink.svelte";
 
   // const initialStart = dayjs().add(-2, 'year').format('YYYY-MM-DD')
-  const initialStart = dayjs().format('YYYY-MM-DD')
-  const initialEnd = dayjs().add(2, 'month').format('YYYY-MM-DD')
-  let searchElement: HTMLInputElement
-  let startElement: HTMLInputElement
-  let endElement: HTMLInputElement
-  let picker: Litepicker
+  const initialStart = dayjs().format("YYYY-MM-DD");
+  const initialEnd = dayjs().add(2, "month").format("YYYY-MM-DD");
+  let searchElement: HTMLInputElement;
+  let startElement: HTMLInputElement;
+  let endElement: HTMLInputElement;
+  let picker: Litepicker;
 
   onMount(() => {
-    initTimePicker()
+    initTimePicker();
     queryTrocsParams.update((query) => ({
       start: initialStart,
       end: initialEnd,
       ...query,
-    }))
+    }));
     return () => {
-      picker?.destroy()
-    }
-  })
+      picker?.destroy();
+    };
+  });
 
   function initTimePicker() {
-    picker?.destroy()
+    picker?.destroy();
     picker = new Litepicker({
       element: startElement,
       elementEnd: endElement,
       // Nécéssaire pour traquer le theme
-      parentEl: document.querySelector<HTMLDivElement>('#app .s-app'),
+      parentEl: document.querySelector<HTMLDivElement>("#app .s-app"),
       singleMode: false,
       allowRepick: true,
       numberOfColumns: 2,
       numberOfMonths: 2,
       lang: navigator.language,
-      plugins: ['mobilefriendly'],
+      plugins: ["mobilefriendly"],
       setup: (picker) => {
-        picker.on('selected', (date1, date2) => {
+        picker.on("selected", (date1, date2) => {
           queryTrocsParams.update((query) => ({
             ...query,
-            start: dayjs(date1.dateInstance).format('YYYY-MM-DD'),
-            end: dayjs(date2.dateInstance).format('YYYY-MM-DD'),
-          }))
-        })
+            start: dayjs(date1.dateInstance).format("YYYY-MM-DD"),
+            end: dayjs(date2.dateInstance).format("YYYY-MM-DD"),
+          }));
+        });
       },
-    })
+    });
   }
 
   const handleSearch = debounce((event: any) => {
     queryTrocsParams.update((query) => ({
       ...query,
       search: event.target.value,
-    }))
-    if (event.type === 'change') searchElement.blur()
-  }, 300)
+    }));
+    if (event.type === "change") searchElement.blur();
+  }, 300);
 </script>
 
 <TextField
@@ -69,7 +69,7 @@
   placeholder="Chercher"
   solo
   flat
-  value={$queryTrocsParams.search || ''}
+  value={$queryTrocsParams.search || ""}
   color="secondary"
   bind:inputElement={searchElement}
   on:input={handleSearch}

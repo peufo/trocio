@@ -1,36 +1,29 @@
 <script lang="ts">
-  import { Button } from '$material'
-  import { url, params, goto } from '@roxi/routify'
-  import { api } from '$lib/api'
-  import { troc } from '$lib/troc/store'
-  import Tarif from '$lib/troc/Tarif.svelte'
-  import { useMutation } from '@sveltestack/svelte-query'
-  import type { TrocLookup, Tarif as ITarif } from 'types'
+  import { Button } from "$lib/material";
+  import { api } from "$lib/api";
+  import { troc } from "$lib/troc/store";
+  import Tarif from "$lib/troc/Tarif.svelte";
+  import { createMutation } from "@tanstack/svelte-query";
+  import type { TrocLookup, Tarif as ITarif } from "$lib/types";
+  import { param, urlParam } from "$lib/param";
+  import { goto } from "$app/navigation";
 
-  const queryCreateTarif = useMutation(
-    (data: { trocId: string } & Partial<ITarif>) =>
+  const queryCreateTarif = createMutation({
+    mutationFn: (data: { trocId: string } & Partial<ITarif>) =>
       api<{}, TrocLookup>(`/api/trocs/tarif`, {
-        method: 'post',
+        method: "post",
         data,
-        success: 'Nouveau tarif créé',
+        success: "Nouveau tarif créé",
       }),
-    {
-      onSuccess: troc.set,
-    }
-  )
-
-  // Nécéssaire pour la vitesse de réaction
-  let tarif_selected: string | undefined
-  $: tarif_selected = $params.tarif_selected || ''
+    onSuccess: troc.set,
+  });
 
   function handleOpen(tarifId?: string) {
-    tarif_selected = tarifId
-    $goto($url(), { ...$params, tarif_selected })
+    goto($urlParam.with({ tarif_selected: tarifId }));
   }
 
   function handleClose() {
-    tarif_selected = ''
-    $goto($url(), { ...$params, tarif_selected })
+    goto($urlParam.with({ tarif_selected: "" }));
   }
 </script>
 
@@ -41,27 +34,28 @@
     <Tarif
       {tarif}
       class="mb-3"
-      open={tarif_selected === tarif._id}
+      open={tarif._id === $param.get("tarif_selected")}
       on:open={() => handleOpen(tarif._id)}
       on:close={handleClose}
     />
   {/each}
 
   <div class="d-flex">
-    <div class="flex-grow-1" />
+    <div class="flex-grow-1"></div>
     <Button
-      disabled={$queryCreateTarif.isLoading}
+      disabled={$queryCreateTarif.isPending}
       depressed
       on:click={() =>
         $queryCreateTarif.mutate(
           {
             trocId: $troc._id,
-            name: 'Nouveau tarif',
+            name: "Nouveau tarif",
           },
           {
             onSuccess: (newTroc) => {
-              tarif_selected = newTroc.tarif[newTroc.tarif.length - 1]._id
-              $goto($url(), { ...$params, tarif_selected })
+              const tarif_selected =
+                newTroc.tarif[newTroc.tarif.length - 1]._id;
+              goto($urlParam.with({ tarif_selected }));
             },
           }
         )}

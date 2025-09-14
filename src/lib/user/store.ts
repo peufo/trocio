@@ -1,35 +1,35 @@
-import { writable, derived } from 'svelte/store'
+import { writable, derived } from "svelte/store";
 
-import type { User } from 'types'
-import apiUser from '$lib/user/api'
+import type { User } from "$lib/types";
+import apiUser from "$lib/user/api";
 
-export const userQuery = createUserQuery()
+export const userQuery = createUserQuery();
 
 export const userStatus = derived<
   typeof userQuery,
   {
-    isLoading: boolean
-    isSuccess?: boolean
-    isError?: boolean
+    isLoading: boolean;
+    isSuccess?: boolean;
+    isError?: boolean;
   }
 >(userQuery, ($userQuery, set) => {
-  set({ isLoading: true })
+  set({ isLoading: true });
   $userQuery
     .then(() => set({ isLoading: false, isSuccess: true }))
-    .catch(() => set({ isLoading: false, isError: true }))
-})
+    .catch(() => set({ isLoading: false, isError: true }));
+});
 
 export const user = derived<typeof userQuery, User>(
   userQuery,
   ($userQuery, set) => {
-    $userQuery.then(set).catch(() => set(null))
+    $userQuery.then(set).catch(() => set(null));
   }
-)
+);
 
 function createUserQuery() {
-  const { subscribe, set } = writable<Promise<User>>(apiUser.authenticate())
+  const { subscribe, set } = writable<Promise<User>>(apiUser.authenticate());
 
-  const setAndReturnPromise = createSetAndReturnPromise(set)
+  const setAndReturnPromise = createSetAndReturnPromise(set);
 
   return {
     subscribe,
@@ -55,14 +55,14 @@ function createUserQuery() {
 
     changePassword: (oldPassword: string, newPassword: string) =>
       apiUser.changePassword(oldPassword, newPassword),
-  }
+  };
 }
 
 function createSetAndReturnPromise(
   set: (this: void, value: Promise<User>) => void
 ) {
   return (promise: Promise<User>) => {
-    set(promise)
-    return promise
-  }
+    set(promise);
+    return promise;
+  };
 }
