@@ -1,6 +1,7 @@
 {
   "name": "trocio",
   "type": "module",
+  "packageManager": "pnpm@10.15.1",
   "author": {
     "name": "Jonas Voisard",
     "email": "jonas.voisard@gmail.com"
