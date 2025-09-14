@@ -23,5 +23,5 @@ app.get("*", (req, res) => {
 });
 
 app.listen(config.TROCIO_PORT, () => {
-  console.log(`Server listen on port ${config.TROCIO_PORT}`);
+  console.log(`Server listen on port https://localhost:${config.TROCIO_PORT}`);
 });

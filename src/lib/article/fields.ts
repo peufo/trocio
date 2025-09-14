@@ -1,6 +1,6 @@
 import { faDotCircle } from "@fortawesome/free-solid-svg-icons";
 import type { Article, ArticleWithState, SubscribeLookup } from "$lib/types";
-import type { FieldInteface, SelectAsync } from "types/magic";
+import type { FieldInteface, SelectAsync } from "$lib/types/magic";
 import { getStateLabel } from "$lib/utils";
 
 export function getFields(): FieldInteface<ArticleWithState>[] {
