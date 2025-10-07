@@ -101,6 +101,12 @@
     "swiper": "^6.6.2",
     "uuid": "^9.0.0"
   },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true
+  },
   "volta": {
     "node": "18.20.8"
   }
