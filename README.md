@@ -6,7 +6,7 @@ Plateforme pour l'organisation et la gestion de commerces éphémères.
 
 > 👉 [Voir la roadmap](https://github.com/users/peufo/projects/5)
 
-![Screenshots de trocio](./src/assets/images/screenshots.png)
+![Screenshots de trocio](./src/lib/assets/images/screenshots.png)
 
 ## Installation de l'environement de développement
 
