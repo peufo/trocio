@@ -1,46 +1,39 @@
-name: Trocio CI
+name: Create and publish a Docker image
 
 on:
-  push:
-    branches: [master, dev]
-  workflow_call:
-    secrets:
-      SSH_HOST:
-        required: true
-      SSH_USERNAME:
-        required: true
-      SSH_PASSWORD:
-        required: true
+    push:
+        branches: ['master']
+
+env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  deploy:
-    environment: ${{ github.ref_name == 'master' && 'Nestor - Trocio' || 'Nestor - Labo'}}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Copy codebase in tmp/app
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          source: '.'
-          target: '~/tmp/app'
-
-      - name: Deploy /trocio
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cp ~/.env ~/tmp/app/.env
-            cd ~/tmp/app
-            pnpm install
-            pnpm build
-            rm -rf ~/app
-            mv ~/tmp/app ~/app
-            cd ~/app
-            pnpm serve
+    build-and-push-image:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+            id-token: write
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
+            - name: Log in to the Container registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            - name: Build and push Docker image
+              id: push
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
