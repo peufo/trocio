@@ -6,7 +6,7 @@ import { EMAIL_REGEX } from "./utils.js";
 
 const SALT_WORK_FACTOR = 10;
 const MAX_LOGIN_ATTEMPTS = 12;
-const LOCK_TIME = 2 * 60 * 60 * 1000; // 2h
+const LOCK_TIME = 5 * 60 * 1000; // 5min
 
 export interface UserDocument extends UserWithoutId, Document {
   isLocked: boolean;
