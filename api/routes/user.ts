@@ -1,6 +1,11 @@
 import express from 'express'
 const router = express.Router()
-import { login, logout, loginWithGoogle } from '../controllers/user_utils'
+import {
+  login,
+  logout,
+  redirectToGoogle,
+  loginWithGoogle,
+} from '../controllers/user_utils'
 import {
   createUser,
   patchMe,
@@ -16,6 +21,7 @@ router
   .post('/', createUser, login, getMe)
   .post('/login', login, getMe)
   .get('/logout', logout)
+  .get('/google-auth', redirectToGoogle)
   .get('/login-with-google', loginWithGoogle)
   .get('/me', getMe)
   .patch('/me', patchMe, getMe)

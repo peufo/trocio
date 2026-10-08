@@ -41,19 +41,8 @@
 
   $: state && checkForm()
 
-  const GOOGLE_AUTH_API_PARAMS = new URLSearchParams({
-    scope: 'email profile',
-    access_type: 'online',
-    response_type: 'code',
-    redirect_uri: `${location.origin}/api/users/login-with-google`,
-    client_id: String(import.meta.env.VITE_TROCIO_GOOGLE_CLIENT_ID),
-  })
-
-  const GOOGLE_AUTH_API_URL = `https://accounts.google.com/o/oauth2/v2/auth`
   const getGoogleAuthApi = () =>
-    `${GOOGLE_AUTH_API_URL}?${GOOGLE_AUTH_API_PARAMS.toString()}&state=${
-      location.href
-    }`
+    `/api/users/google-auth?state=${encodeURIComponent(location.href)}`
   let googleAuthApi = getGoogleAuthApi()
   $afterPageLoad(() => (googleAuthApi = getGoogleAuthApi()))
 
@@ -195,7 +184,7 @@
     <div class="or">
       <span>ou</span>
     </div>
-    <a href={googleAuthApi}>
+    <a href={googleAuthApi} target="_self">
       <Button text>
         <i class="fab fa-google" />&nbsp; Login avec Google
       </Button>
