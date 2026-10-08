@@ -19,8 +19,10 @@ cp .env.example .env
 Crée et installe les certificats avec [mkcert](https://github.com/FiloSottile/mkcert)
 
 ```zsh
-mkcert localhost
-mkcert -install
+npm run certs            # crée les certificats (localhost + IP locale)
+npm run certs -- renew   # les recrée (ex: changement d'IP)
+npm run certs -- info    # domaines et date d'expiration
+npm run certs -- remove  # les supprime
 ```
 
 Si Docker est dispo:

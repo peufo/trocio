@@ -11,6 +11,7 @@
     "version": "2.0.1",
     "scripts": {
         "start": "node dist/server/server.js",
+        "certs": "bash scripts/certs.sh",
         "dev": "run-p dev:*",
         "dev:api": "nodemon ./api/server.ts --watch ./api",
         "dev:routify": "routify",
