@@ -29,7 +29,7 @@
     </Button>
   </div>
 
-  <div>Site réalisé par <a href="https://github.com/peufo">peufo</a></div>
+  <div>Site réalisé par <a href="https://github.com/peufo">peufo</a> · v{__APP_VERSION__}</div>
 </footer>
 
 <style>

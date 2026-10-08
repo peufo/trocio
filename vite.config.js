@@ -4,6 +4,8 @@ import sveltePreprocess from 'svelte-preprocess'
 import { mdsvex } from 'mdsvex'
 import fs from 'fs'
 
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -20,6 +22,9 @@ export default defineConfig({
     }),
   ],
   clearScreen: false,
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+  },
   resolve: {
     alias: {
       $lib: '/src/lib',

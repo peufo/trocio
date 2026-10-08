@@ -2,6 +2,8 @@
 /// <reference types="vite/client" />
 /// <reference types="../types" />
 
+declare const __APP_VERSION__: string
+
 declare interface LayoutScoped {
   headerHeight: number
   footerHeight: number
