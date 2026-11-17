@@ -70,15 +70,14 @@
       <CardText>
         <p class="text-caption mb-4">
           Visible uniquement par les organisateurs du troc (administrateurs et
-          caissiers). Par exemple : nature, n° et date de la pièce d'identité,
-          autorité qui l'a délivrée, adresse.
+          caissiers).
         </p>
         <Textarea
           bind:value={note}
           rows={5}
           autogrow
           outlined
-          placeholder=" "
+          placeholder="Ex : CNI n° 123456789, délivrée le 01/02/2020 par la préfecture de Haute-Savoie. 12 rue du Lac, 74320 Sevrier"
           rules={[
             (v) =>
               v.length <= MAX_LENGTH || `${MAX_LENGTH} caractères maximum`,

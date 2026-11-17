@@ -8,10 +8,12 @@
     faCashRegister,
     faCubes,
     faEdit,
+    faNoteSticky as faNoteStickySolid,
   } from '@fortawesome/free-solid-svg-icons'
   import {
     faCheckCircle,
     faEnvelope,
+    faNoteSticky,
   } from '@fortawesome/free-regular-svg-icons'
   import { mdiCart } from '@mdi/js'
   import { useMutation, useQueryClient } from '@sveltestack/svelte-query'
@@ -162,7 +164,11 @@
       {#if $troc.subscribe?.role === 'admin' || $troc.subscribe?.role === 'cashier'}
         <ListItem on:click={() => dispatch('noteClick')}>
           <span slot="prepend">
-            <IconLink icon={faEdit} class="mr-3" size="1.1em" />
+            <IconLink
+              icon={subscribe?.staffNote ? faNoteStickySolid : faNoteSticky}
+              class="mr-3"
+              size="1.1em"
+            />
           </span>
           Note interne
         </ListItem>
