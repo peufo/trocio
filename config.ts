@@ -14,7 +14,7 @@ const defaultConfig = {
     TROCIO_SMTP_PORT: 465,
     TROCIO_PORT,
     TROCIO_API_PORT: 5001,
-    TROCIO_DB: 'mongodb://localhost:27017/trocio',
+    TROCIO_DB: 'mongodb://127.0.0.1:27017/trocio',
     TROCIO_BACKUP: '../dump',
     TROCIO_GOOGLE_CLIENT_ID: '',
     TROCIO_GOOGLE_CLIENT_SECRET: '',

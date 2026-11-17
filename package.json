@@ -12,7 +12,9 @@
     "scripts": {
         "start": "node dist/server/server.js",
         "certs": "bash scripts/certs.sh",
-        "dev": "run-p dev:*",
+        "dev": "run-s db && run-p dev:*",
+        "db": "command -v docker >/dev/null || exit 0; docker compose up -d --wait mongo",
+        "db:stop": "docker compose stop mongo",
         "dev:api": "nodemon ./api/server.ts --watch ./api",
         "dev:routify": "routify",
         "dev:vite": "vite --host",

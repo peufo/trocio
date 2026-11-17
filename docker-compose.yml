@@ -1,8 +1,16 @@
-version: '3.8'
 services:
   mongo:
-    image: mongo
-    restart: always
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:27017:27017
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
 
   trocio:
     container_name: trocio
@@ -15,3 +23,6 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
+
+volumes:
+  mongo-data:
