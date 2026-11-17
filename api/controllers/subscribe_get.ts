@@ -1,4 +1,4 @@
-import type { RequestHandler } from 'express'
+import type { RequestHandler, Request, Response } from 'express'
 import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Types
 
@@ -10,6 +10,26 @@ import Payment from '../models/payment'
 import type { ISubscribe, SubscribeLookup } from '../../types'
 import { dynamicQuery } from './utils'
 import { sumOfArticles } from './article_utils'
+import { isRootUser } from './access'
+
+/**
+ * Retire la note interne des résultats d'un aggregate
+ * (les aggregates ignorent le `select: false` du schéma)
+ */
+export function hideStaffNote(aggregate: mongoose.Aggregate<any[]>): void {
+  aggregate.project({ staffNote: 0 })
+}
+
+/**
+ * La note interne n'est visible que par les organisateurs du troc
+ * (admins et caissiers) et root.
+ * `res.locals.accessor` est défini par les middlewares de `access.ts`
+ */
+export function canSeeStaffNote(req: Request, res: Response): boolean {
+  if (isRootUser(req)) return true
+  const role = res.locals.accessor?.role
+  return role === 'admin' || role === 'cashier'
+}
 
 export const getMySubscribes: RequestHandler = async (req, res, next) => {
   try {
@@ -25,6 +45,7 @@ export const getMySubscribes: RequestHandler = async (req, res, next) => {
       validedByUser: true,
       // validedByUser: false => invitations
     })
+    hideStaffNote(aggregate)
 
     lookupTroc(aggregate)
 
@@ -62,6 +83,7 @@ export const getResum: RequestHandler = async (req, res, next) => {
 
     const aggregate = Subscribe.aggregate()
     aggregate.match(match)
+    if (!canSeeStaffNote(req, res)) hideStaffNote(aggregate)
     lookupResum(aggregate)
     lookupTarif(aggregate)
     lookupUser(aggregate)
@@ -133,6 +155,7 @@ export const getResumePrintData: RequestHandler = async (req, res, next) => {
 
     const aggregate = Subscribe.aggregate()
     aggregate.match({ _id: new ObjectId(subscribeId) })
+    hideStaffNote(aggregate)
     lookupResum(aggregate)
     lookupTarif(aggregate)
     lookupUser(aggregate)
@@ -196,6 +219,8 @@ export const getSubscribers: RequestHandler = async (req, res, next) => {
 
     const aggregate = Subscribe.aggregate()
     aggregate.match(initialMatch)
+
+    if (!canSeeStaffNote(req, res)) hideStaffNote(aggregate)
 
     lookupUser(aggregate, 'user', { mail: 1 })
     if (q)

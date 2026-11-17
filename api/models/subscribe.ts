@@ -31,6 +31,15 @@ let subscribeModel = new Schema({
   /** Prefix pour les traders  */
   prefix: { type: String, uppercase: true, required: isRoleTrader },
 
+  /**
+   * Note interne, lisible et modifiable uniquement par les organisateurs
+   * du troc (admins et caissiers).
+   * Ex: infos du registre des vendeurs, art. 321-7 du code pénal.
+   * Attention: `select: false` n'est pas appliqué par les aggregates,
+   * utiliser `hideStaffNote()` dans les pipelines.
+   */
+  staffNote: { type: String, trim: true, maxlength: 1000, select: false },
+
   /** @deprecated please use trocId */
   troc: { type: ObjectId, ref: 'troc' },
   /** @deprecated please, use userId*/

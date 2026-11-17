@@ -170,6 +170,8 @@ export function lookupSubscribe(
             },
           },
         },
+        // La note admin ne doit pas être visible par le participant
+        { $project: { staffNote: 0 } },
       ],
       as: 'subscribe',
     })

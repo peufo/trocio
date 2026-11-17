@@ -65,9 +65,14 @@ export async function subscribes(troc: TrocLookup) {
 
     const fields = getFields(troc)
     function getValue(item: any, field: FieldInteface): string | number {
-      if (typeof field.getValue === 'function') return field.getValue(item)
-      const value = objectPath.get(item, field.key)
-      return typeof value === 'number' ? value.toLocaleString() : value
+      const value =
+        typeof field.getValue === 'function'
+          ? field.getValue(item)
+          : objectPath.get(item, field.key)
+      if (typeof value === 'number') return value.toLocaleString()
+      // Les tabulations et retours à la ligne casseraient les colonnes/lignes
+      if (typeof value === 'string') return value.replace(/[\t\r\n]+/g, ' ')
+      return value
     }
     const headers = fields.map((field) => field.label).join('\t')
     const rows = subscribes.map((sub) =>

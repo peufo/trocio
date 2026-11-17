@@ -36,6 +36,9 @@ export type ISubscribe = SubscribeBase & {
 
   /** Prefix pour les traders  */
   prefix?: string
+
+  /** Note interne, visible uniquement par les admins et caissiers du troc */
+  staffNote?: string
 }
 
 export type SubscribeLookup = ISubscribe & {

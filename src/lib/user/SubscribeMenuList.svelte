@@ -34,6 +34,7 @@
     tarifSelect: void
     sendMail: void
     prefixClick: void
+    noteClick: void
   }
   const dispatch = createEventDispatcher<EventsMap>()
   const queryClient = useQueryClient()
@@ -158,6 +159,14 @@
         </span>
         Corriger le solde
       </ListItem>
+      {#if $troc.subscribe?.role === 'admin' || $troc.subscribe?.role === 'cashier'}
+        <ListItem on:click={() => dispatch('noteClick')}>
+          <span slot="prepend">
+            <IconLink icon={faEdit} class="mr-3" size="1.1em" />
+          </span>
+          Note interne
+        </ListItem>
+      {/if}
       <a
         href="mailto:{subscribe?.user?.mail}?subject=Troc.io - {$troc.name}"
         target="_blank"

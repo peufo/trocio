@@ -5,12 +5,14 @@
   import SubscribeMenuList from './SubscribeMenuList.svelte'
   import PaymentDialog from '$lib/cash/PaymentDialog.svelte'
   import PrefixDialog from '$lib/user/PrefixDialog.svelte'
+  import StaffNoteDialog from '$lib/user/StaffNoteDialog.svelte'
 
   export let state: 'main' | 'role' | 'tarif' = 'main'
   export let subscribe: SubscribeLookup | undefined = undefined
 
   let paymentDialog: PaymentDialog
   let prefixDialog: PrefixDialog
+  let staffNoteDialog: StaffNoteDialog
 
   let magicMenu: MagicMenu
 
@@ -36,6 +38,12 @@
     prefixDialog.open(subscribe)
   }
 
+  function handleNoteClick() {
+    if (!subscribe) return
+    close()
+    staffNoteDialog.open(subscribe)
+  }
+
   function closeAfterClick(force = false) {
     if ($isMobile || force) setTimeout(close, 200)
   }
@@ -45,6 +53,8 @@
 
 <PrefixDialog bind:this={prefixDialog} />
 
+<StaffNoteDialog bind:this={staffNoteDialog} />
+
 <MagicMenu bind:this={magicMenu}>
   <SubscribeMenuList
     {state}
@@ -52,6 +62,7 @@
     dense={!$isMobile}
     on:soldCorrection={handleSoldCorrection}
     on:prefixClick={handlePrefixClick}
+    on:noteClick={handleNoteClick}
     on:roleSelect={() => closeAfterClick()}
     on:tarifSelect={() => closeAfterClick()}
     on:sendMail={() => closeAfterClick(true)}

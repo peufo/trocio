@@ -4,7 +4,11 @@
     import relativeTime from 'dayjs/plugin/relativeTime'
     import 'dayjs/locale/fr'
     import { mdiLoading, mdiPrinter, mdiTagMultipleOutline } from '@mdi/js'
-    import { faDownload } from '@fortawesome/free-solid-svg-icons'
+    import {
+        faDownload,
+        faNoteSticky as faNoteStickySolid,
+    } from '@fortawesome/free-solid-svg-icons'
+    import { faNoteSticky } from '@fortawesome/free-regular-svg-icons'
 
     import { Button, Icon, Menu, List, ListItem } from '$material'
     import type { SubscribeResum } from 'types'
@@ -19,6 +23,7 @@
     import { useApi } from '$lib/api'
     import downloadCSV from '$lib/downloadCSV'
     import IconLink from '$lib/util/IconLink.svelte'
+    import StaffNoteDialog from '$lib/user/StaffNoteDialog.svelte'
 
     export let subscribeId: string
     /** Affiche le bouton du reglement du sold et les fonctions d'anulation d'évenement sur les articles*/
@@ -32,12 +37,14 @@
     let paymentOpen = false
     let articlesProvidedTable: ArticleProvidedTable
     let printTagsPending = false
+    let staffNoteDialog: StaffNoteDialog
 
     $: queryResum = useApi<{ subscribeId: string }, SubscribeResum>([
         'subscribes/resum',
         { subscribeId },
     ])
     $: resum = $queryResum.data?.resum
+    $: staffNote = $queryResum.data?.staffNote
     $: totalProposedCount =
         (resum?.proposedCount || 0) +
         (resum?.validedCount || 0) +
@@ -98,6 +105,26 @@
                     </ListItem>
                 </List>
             </Menu>
+
+            {#if modeAdmin}
+                <Button
+                    text
+                    size="small"
+                    style="opacity: .8;"
+                    title={staffNote || 'Ajouter une note interne'}
+                    on:click={() =>
+                        $queryResum.data &&
+                        staffNoteDialog.open($queryResum.data)}
+                >
+                    <IconLink
+                        icon={staffNote ? faNoteStickySolid : faNoteSticky}
+                        size="1.1em"
+                        class="mr-2"
+                    />
+                    Note
+                </Button>
+                <StaffNoteDialog bind:this={staffNoteDialog} />
+            {/if}
 
             <div class="flex-grow-1" />
 

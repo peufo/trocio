@@ -140,6 +140,34 @@ export const assignTarif: RequestHandler = async (req, res, next) => {
   }
 }
 
+export const STAFF_NOTE_MAX_LENGTH = 1000
+
+/**
+ * Définit la note libre d'un participant, visible uniquement par les admins
+ */
+export const setStaffNote: RequestHandler = async (req, res, next) => {
+  try {
+    const { subscribeId, staffNote } = req.body
+    if (typeof subscribeId !== 'string')
+      throw 'subscribeId string is required in body'
+    if (typeof staffNote !== 'string')
+      throw 'staffNote string is required in body'
+    const note = staffNote.trim()
+    if (note.length > STAFF_NOTE_MAX_LENGTH)
+      throw `staffNote must be at most ${STAFF_NOTE_MAX_LENGTH} characters`
+
+    const { matchedCount } = await Subscribe.updateOne(
+      { _id: subscribeId },
+      { staffNote: note }
+    )
+    if (!matchedCount) throw 'Subscribe not found'
+
+    res.json({ _id: subscribeId, staffNote: note })
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const setTraderPrefix: RequestHandler = async (req, res, next) => {
   try {
     const { trocId, userId, prefix } = req.body

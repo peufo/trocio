@@ -5,6 +5,7 @@ import {
   assignRole,
   assignTarif,
   setTraderPrefix,
+  setStaffNote,
 } from '../controllers/subscribe_set'
 import {
   getMySubscribes,
@@ -33,5 +34,6 @@ router
   .post('/role', ensureUserIsAdmin, assignRole)
   .post('/tarif', ensureUserIsAdmin, assignTarif)
   .post('/prefix', ensureUserIsAdmin, setTraderPrefix)
+  .post('/note', ensureUserIsCashier, setStaffNote)
 
 export default router

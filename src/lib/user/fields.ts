@@ -47,6 +47,11 @@ export function getFields(troc: TrocLookup): FieldInteface<SubscribeResum>[] {
       ],
     },
     {
+      label: 'Note interne',
+      key: 'staffNote',
+      cellWidth: 50,
+    },
+    {
       label: 'Solde',
       key: 'resum.balance',
       type: 'currency',
