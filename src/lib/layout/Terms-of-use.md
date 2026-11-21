@@ -4,6 +4,20 @@
     font-size: 1.8em;
   }
 
+  h2, h3 {
+    scroll-margin-top: 80px;
+  }
+
+  .anchor {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .anchor:hover::after {
+    content: ' #';
+    opacity: 0.4;
+  }
+
   table {
     margin-bottom: 2em;
     border: 1px solid #ccc;
