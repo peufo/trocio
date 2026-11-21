@@ -4,6 +4,13 @@
     font-size: 1.8em;
   }
 
+  h3 {
+    font-size: 1.25em;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 1.5em 0 0.5em;
+  }
+
   h2, h3 {
     scroll-margin-top: 80px;
   }
