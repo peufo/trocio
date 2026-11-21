@@ -29,7 +29,7 @@
       <b>Hébergement</b>
     </div>
     <div>
-      <span>Infomaniak</span><br />
+      <span>Hostinger</span><br />
     </div>
   </section>
 

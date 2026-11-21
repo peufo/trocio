@@ -19,6 +19,8 @@
 
 </style>
 
+_Dernière mise à jour : 21 novembre 2026_
+
 ## 1. Terminologie
 
 Tous les termes décrits ci-dessous ont la même définition indifféremment du genre ou du nombre.
@@ -28,6 +30,7 @@ Tous les termes décrits ci-dessous ont la même définition indifféremment du 
 - Un Troc désigne une manifestation créée et gérée sur l'application.
 - Un Utilisateur désigne une personne physique ou morale qui possède un compte sur l'application.
 - Un Organisateur désigne un Utilisateur ayant accès à la page d'administration ou à la caisse d'un troc.
+- Un Participant désigne une personne inscrite à un Troc, avec ou sans compte, en tant que client, fournisseur ou commerçant.
 
 ## 2. Les parties contractantes
 
@@ -75,12 +78,39 @@ Voici un aperçu, à titre indicatif, de la portée des actions qu’un Utilisat
 | Définition des collaborateur d’un Troc | L’Organisateur du Troc                  | L’Organisateur du Troc                  |
 | Définition des tarifs                  | Tous                                    | L’Organisateur du Troc                  |
 | Formatage des étiquettes               | Tous                                    | L’Organisateur du Troc                  |
+| Note interne sur un Participant        | L’Organisateur du Troc                  | L’Organisateur du Troc                  |
 
 Pour permettre la recherche et l’identification d’utilisateurs de manière globale, les adresses mails sont partiellement cachées. Par exemple, l'adresse "tartempion@mail.com" sera transformée en "ta**\*\*\***n@mail.com". Cependant, lors de la participation à un troc, l'utilisateur permet à l’organisateur de voir son adresse. Cela peut s'avérer utile si l'organisateur souhaite contacter directement un utilisateur sans passer par l'application.
 
 Lors de la tarification d'un troc, l'organisateur sera contraint de compléter ses données personnelles. Un numéro de carte de crédit valable est nécessaire. Cette partie sensible du traitement est assurée par l'entreprise Stripe.
 
 Les intervenants externes tels que Google ou Stripe disposent de leur propre réglementation qui entre en vigueur dès l’utilisation de leur service respectif. Trocio n’est par conséquent pas responsable dans la gestion des données liées à ces services.
+
+### Note interne sur un Participant
+
+L’Organisateur peut rattacher une note libre à chaque Participant de son Troc, par exemple pour tenir le registre des vendeurs exigé par la loi française (art. 321-7 du code pénal). Cette note n’est visible et modifiable que par les Organisateurs du Troc (administrateurs et caissiers) et par Trocio. Elle n’est jamais montrée au Participant concerné, aux autres Participants, sur la page publique du Troc ni sur les récapitulatifs imprimés. Elle figure en revanche dans l’export des participants téléchargé par l’Organisateur.
+
+L’Organisateur n’y inscrit que les informations nécessaires à son obligation, et informe ses Participants de ce traitement. Il est conseillé de vider la note dès que l’information n’est plus utile. Une fois un export téléchargé, sa conservation et sa sécurité relèvent du seul Organisateur.
+
+### Rôles
+
+Pour les données qu’il saisit sur ses Participants (note interne, paiements, statuts d’articles), l’Organisateur est responsable du traitement au sens de la loi fédérale sur la protection des données (LPD) et, le cas échéant, du règlement européen (RGPD). Trocio agit alors comme sous-traitant : il héberge ces données pour le compte de l’Organisateur, ne les utilise pas à ses propres fins, ne les transmet à aucun tiers (sous réserve de l’article 10) et n’y accède que pour le support, la maintenance ou à la demande de l’Organisateur.
+
+### Hébergement et sécurité
+
+L’application et ses données sont hébergées en Europe.
+
+Les échanges entre le navigateur et la Plateforme sont chiffrés (HTTPS). Les données stockées sont chiffrées sur les disques. L’accès aux données d’un Troc est contrôlé côté serveur selon le rôle de chaque Utilisateur, tel que décrit dans le tableau ci-dessus.
+
+### Durée de conservation
+
+Les données d’un Troc (articles, paiements, Participants, notes internes) sont conservées tant que le Troc existe sur la Plateforme. Il n’y a pas de suppression automatique : les Organisateurs peuvent consulter l’historique de leur Troc après sa clôture, notamment en cas de litige.
+
+L’Organisateur peut à tout moment vider une note interne, ou demander à Trocio la suppression complète de son Troc et des données qui y sont rattachées. Un Utilisateur peut demander la suppression de son compte. Ces demandes se font via la page Contact.
+
+### Droits des personnes
+
+Toute personne peut demander l’accès à ses données, leur rectification ou leur suppression. Pour les données saisies par un Organisateur, la demande est à adresser en premier lieu à celui-ci. Trocio l’assiste pour y répondre.
 
 ## 6. Utilisation appropriée, contenu pertinent, devoir de l’utilisateur et du participant
 
