@@ -219,7 +219,7 @@
       </ListItem>
     {/each}
 
-    <ListItem on:click={() => tagsPrint.print()}>
+    <ListItem on:click={() => tagsPrint.print(selected)}>
       <span slot="prepend">
         <Icon path={mdiTagOutline} class="mr-3" size="1.1em" />
       </span>
@@ -238,7 +238,6 @@
 {#if $troc}
   <TagsPrint
     bind:this={tagsPrint}
-    articles={selected}
     tag={$troc.tag}
     currency={$troc.currency}
   />

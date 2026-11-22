@@ -518,6 +518,12 @@ export const bulkArticles: RequestHandler<
         if (!Array.isArray(articlesId) || !articlesId.length)
             throw 'articlesId string array is required in body'
 
+        if (!req.session.user) throw 'Login required'
+
+        // Tous les articles ont pu être supprimés depuis leur sélection
+        const found = await Article.countDocuments({ _id: { $in: articlesId } })
+        if (!found) return res.json({ updated: 0, skipped: articlesId.length })
+
         const { articles, subscribe, userId } = await ensureCanEdit(req, false)
 
         const eligibles = articles.filter((article) =>
@@ -590,6 +596,8 @@ async function ensureCanEdit(req: Request, needFromSameProvider = true) {
         let articles = isArray
             ? await Article.find({ _id: { $in: articlesId } }).exec()
             : await Article.find({ _id: articleId }).exec()
+
+        if (!articles.length) throw 'Articles not found'
 
         if (isArray) {
             // Assure que tout les articles viennent du même troc
