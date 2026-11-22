@@ -1,53 +1,55 @@
 import mongoose from 'mongoose'
-import type { RequestHandler } from 'express'
+import type { RequestHandler, Request } from 'express'
 
 import Article from '../models/article'
 import Subscribe from '../models/subscribe'
 import { populateUser } from './lookup'
 import { dynamicQuery } from './utils'
+import { getRole } from './access'
 import type { Article as IArticle } from '../../types'
 import { getMatchesByState, sumOfArticles } from './article_utils'
 
 const { ObjectId } = mongoose.Types
 
+/**
+ * Construit le match et le sort d'une recherche d'articles à partir de la query
+ * Partagé par getArticles et getArticlesSelection
+ */
+function buildArticlesMatch(query: Request['query']) {
+    const { q, exact_state, include_without_name } = query
+
+    let { match, sort } = dynamicQuery(query, {
+        ignore: 'exact_state',
+        cleanupMatch: false,
+    })
+    if (!match.$and || !match.$or) throw Error('never')
+
+    // add specific match
+    if (!include_without_name) match.$and.push({ name: { $ne: '' } })
+
+    if (exact_state) match.$and.push(...getMatchesByState(exact_state))
+
+    if (q && typeof q === 'string') {
+        match.$and.push({
+            $or: [{ name: new RegExp(q, 'i') }, { ref: new RegExp(q, 'i') }],
+        })
+    }
+
+    //remove match if is empty
+    if (match.$and.length === 0) delete match.$and
+    if (match.$or.length === 0) delete match.$or
+
+    if (!Object.keys(sort).length) sort = { createdAt: 1, index: 1 }
+
+    return { match, sort }
+}
+
 export const getArticles: RequestHandler = async (req, res, next) => {
     try {
-        let {
-            q,
-            exact_state,
-            include_without_name,
-            limit = 20,
-            skip = 0,
-        } = req.query
+        const { limit = 20, skip = 0 } = req.query
+        const { match, sort } = buildArticlesMatch(req.query)
 
-        let { match, sort } = dynamicQuery(req.query, {
-            ignore: 'exact_state',
-            cleanupMatch: false,
-        })
-        if (!match.$and || !match.$or) throw Error('never')
-
-        // add specific match
-        if (!include_without_name) match.$and.push({ name: { $ne: '' } })
-
-        if (exact_state) match.$and.push(...getMatchesByState(exact_state))
-
-        if (q && typeof q === 'string') {
-            match.$and.push({
-                $or: [
-                    { name: new RegExp(q, 'i') },
-                    { ref: new RegExp(q, 'i') },
-                ],
-            })
-        }
-
-        //remove match if is empty
-        if (match.$and.length === 0) delete match.$and
-        if (match.$or.length === 0) delete match.$or
-
-        const aggregate = Article.aggregate().match(match)
-
-        if (Object.keys(sort).length) aggregate.sort(sort)
-        else aggregate.sort({ createdAt: 1, index: 1 })
+        const aggregate = Article.aggregate().match(match).sort(sort)
 
         aggregate
             .skip(+skip || 0)
@@ -58,6 +60,49 @@ export const getArticles: RequestHandler = async (req, res, next) => {
         lookupSubscribe(aggregate, 'buyer')
 
         const articles = await aggregate.exec()
+        res.json(articles)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const SELECTION_MAX = 20_000
+
+/**
+ * Retourne une projection légère de tous les articles correspondant au filtre
+ * Utilisé pour la sélection multiple de la table de gestion des articles
+ */
+export const getArticlesSelection: RequestHandler = async (req, res, next) => {
+    try {
+        const { exact_trocId } = req.query
+        if (!exact_trocId || typeof exact_trocId !== 'string')
+            throw 'exact_trocId query is required'
+
+        const role = await getRole(exact_trocId, req.session.user?._id)
+        if (role !== 'admin' && role !== 'cashier') throw 'Not allowed'
+
+        const { skip, limit, ...query } = req.query
+        const { match, sort } = buildArticlesMatch(query)
+
+        const articles = await Article.aggregate()
+            .match(match)
+            .sort(sort)
+            .limit(SELECTION_MAX + 1)
+            .project({
+                ref: 1,
+                name: 1,
+                price: 1,
+                tagId: 1,
+                valided: 1,
+                refused: 1,
+                sold: 1,
+                recover: 1,
+            })
+            .exec()
+
+        if (articles.length > SELECTION_MAX)
+            throw `La sélection ne peut pas dépasser ${SELECTION_MAX} articles`
+
         res.json(articles)
     } catch (error) {
         next(error)

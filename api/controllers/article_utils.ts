@@ -85,3 +85,17 @@ export const sumOfArticles = (
     },
   },
 })
+
+/**
+ * Statut courant d'un article
+ * Copie de getState de src/lib/utils.ts
+ */
+export function getArticleState(
+  article: Pick<Article, 'valided' | 'refused' | 'sold' | 'recover'>
+): ArticleState {
+  if (article.recover) return 'recover'
+  if (article.sold) return 'sold'
+  if (article.refused) return 'refused'
+  if (article.valided) return 'valided'
+  return 'proposed'
+}

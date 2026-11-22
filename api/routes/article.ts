@@ -11,12 +11,14 @@ import {
   soldArticles,
   recoverArticles,
   cancelEvent,
+  bulkArticles,
 } from '../controllers/article_set'
 import {
   getArticles,
   getArticleCorrection,
   getArticleCountsByState,
   getArticleImportable,
+  getArticlesSelection,
 } from '../controllers/article_get'
 
 router
@@ -30,6 +32,8 @@ router
   .post('/sold', soldArticles)
   .post('/recover', recoverArticles)
   .post('/cancel-event', cancelEvent)
+  .post('/bulk', bulkArticles)
+  .get('/selection', getArticlesSelection)
   .get('/corrections', getArticleCorrection)
   .get('/counts-by-state', getArticleCountsByState)
   .get('/importables', getArticleImportable)

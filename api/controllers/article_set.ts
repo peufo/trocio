@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 
 import Troc from '../models/troc'
 import Article from '../models/article'
-import { getTarif, getFee, getMargin } from './article_utils'
+import { getTarif, getFee, getMargin, getArticleState } from './article_utils'
 import type {
     ArticleCreate,
     ArticleState,
@@ -309,14 +309,7 @@ export const validArticles: RequestHandler = async (req, res, next) => {
 
         articles = await Promise.all(
             articles.map(async (article) => {
-                if (valided) {
-                    article.valided = now
-                    article.fee = await getFee(article)
-                } else {
-                    article.refused = now
-                }
-                article.validatorId = subscribe.userId
-                article.validatorSubId = subscribe._id
+                await applyValid(article, !!valided, subscribe, now)
                 return article.save()
             })
         )
@@ -381,9 +374,7 @@ export const recoverArticles: RequestHandler = async (req, res, next) => {
 
         articles = await Promise.all(
             articles.map(async (article) => {
-                article.recover = new Date()
-                article.sellerId = userId
-                article.sellerSubId = subscribe._id
+                applyRecover(article, subscribe, userId)
                 return article.save()
             })
         )
@@ -417,48 +408,160 @@ export const cancelEvent: RequestHandler<
                 )
                     throw `Refused or valided events can't be canceled if article is already sold or recover `
 
-                switch (eventName) {
-                    case 'refused':
-                    case 'valided':
-                        article.refused = undefined
-                        article.valided = undefined
-                        article.validatorId = undefined
-                        article.validatorSubId = undefined
-                        article.fee = 0
-                        article.corrections.push({
-                            ...correctionBase,
-                            event:
-                                eventName === 'refused'
-                                    ? 'cancel-refused'
-                                    : 'cancel-valided',
-                        })
-                        break
-                    case 'sold':
-                    case 'recover':
-                        article.sold = undefined
-                        article.recover = undefined
-                        article.sellerId = undefined
-                        article.sellerSubId = undefined
-                        article.buyerId = undefined
-                        article.buyerSubId = undefined
-                        article.margin = 0
-                        article.corrections.push({
-                            ...correctionBase,
-                            event:
-                                eventName === 'sold'
-                                    ? 'cancel-sold'
-                                    : 'cancel-recover',
-                        })
-                        break
-                    default:
-                        throw `eventName ${eventName} unknow`
-                }
+                applyCancel(article, eventName, correctionBase)
 
                 return article.save()
             })
         )
 
         res.json(isArray ? articles : articles[0])
+    } catch (error) {
+        next(error)
+    }
+}
+
+type ArticleDoc = InstanceType<typeof Article>
+type SubscribeDoc = InstanceType<typeof Subscribe>
+
+/** Valide ou refuse un article (sans sauvegarde) */
+async function applyValid(
+    article: ArticleDoc,
+    valided: boolean,
+    subscribe: SubscribeDoc,
+    now = new Date()
+) {
+    if (valided) {
+        article.valided = now
+        article.fee = await getFee(article)
+    } else {
+        article.refused = now
+    }
+    article.validatorId = subscribe.userId
+    article.validatorSubId = subscribe._id
+}
+
+/** Marque un article comme récupéré par son fournisseur (sans sauvegarde) */
+function applyRecover(
+    article: ArticleDoc,
+    subscribe: SubscribeDoc,
+    userId: string
+) {
+    article.recover = new Date()
+    article.sellerId = userId
+    article.sellerSubId = subscribe._id
+}
+
+/** Annule un événement de l'article et l'inscrit dans ses corrections (sans sauvegarde) */
+function applyCancel(
+    article: ArticleDoc,
+    eventName: ArticleState,
+    correctionBase: Omit<ArticleCorrection, 'event'>
+) {
+    switch (eventName) {
+        case 'refused':
+        case 'valided':
+            article.refused = undefined
+            article.valided = undefined
+            article.validatorId = undefined
+            article.validatorSubId = undefined
+            article.fee = 0
+            article.corrections.push({
+                ...correctionBase,
+                event:
+                    eventName === 'refused'
+                        ? 'cancel-refused'
+                        : 'cancel-valided',
+            })
+            break
+        case 'sold':
+        case 'recover':
+            article.sold = undefined
+            article.recover = undefined
+            article.sellerId = undefined
+            article.sellerSubId = undefined
+            article.buyerId = undefined
+            article.buyerSubId = undefined
+            article.margin = 0
+            article.corrections.push({
+                ...correctionBase,
+                event: eventName === 'sold' ? 'cancel-sold' : 'cancel-recover',
+            })
+            break
+        default:
+            throw `eventName ${eventName} unknow`
+    }
+}
+
+export type BulkAction = 'valid' | 'refuse' | 'recover' | 'cancel' | 'delete'
+
+const BULK_ELIGIBLE_STATES: Record<BulkAction, ArticleState[]> = {
+    valid: ['proposed'],
+    refuse: ['proposed'],
+    recover: ['valided'],
+    cancel: ['valided', 'refused', 'sold', 'recover'],
+    // Même règle que deleteArticle : ni validé ni refusé
+    delete: ['proposed'],
+}
+
+/**
+ * Applique une action à une liste d'articles d'un même troc
+ * Les articles dont le statut ne permet pas l'action sont ignorés
+ */
+export const bulkArticles: RequestHandler<
+    any,
+    any,
+    { articlesId: string[]; action: BulkAction }
+> = async (req, res, next) => {
+    try {
+        const { action, articlesId } = req.body
+        if (!BULK_ELIGIBLE_STATES[action]) throw `action ${action} unknow`
+        if (!Array.isArray(articlesId) || !articlesId.length)
+            throw 'articlesId string array is required in body'
+
+        const { articles, subscribe, userId } = await ensureCanEdit(req, false)
+
+        const eligibles = articles.filter((article) =>
+            BULK_ELIGIBLE_STATES[action].includes(getArticleState(article))
+        )
+
+        const now = new Date()
+        const correctionBase: Omit<ArticleCorrection, 'event'> = {
+            authorId: userId,
+            authorSubId: subscribe._id,
+            timestamp: now,
+        }
+
+        if (action === 'delete') {
+            await Article.deleteMany({
+                _id: { $in: eligibles.map((art) => art._id) },
+            })
+        } else {
+            await Promise.all(
+                eligibles.map(async (article) => {
+                    if (action === 'valid' || action === 'refuse')
+                        await applyValid(
+                            article,
+                            action === 'valid',
+                            subscribe,
+                            now
+                        )
+                    else if (action === 'recover')
+                        applyRecover(article, subscribe, userId)
+                    else
+                        applyCancel(
+                            article,
+                            getArticleState(article),
+                            correctionBase
+                        )
+                    return article.save()
+                })
+            )
+        }
+
+        res.json({
+            updated: eligibles.length,
+            skipped: articlesId.length - eligibles.length,
+        })
     } catch (error) {
         next(error)
     }
