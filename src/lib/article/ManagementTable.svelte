@@ -14,8 +14,6 @@
   import ArticleMenu from '$lib/article/Menu.svelte'
   import ArticleBulkActions from '$lib/article/BulkActions.svelte'
   import { Checkbox } from '$material'
-  import Loader from '$lib/util/Loader.svelte'
-  import { api } from '$lib/api'
 
   let searchValue = ''
   let fields = getFieldsLookup($params.trocId)
@@ -37,7 +35,6 @@
 
   /** Sélection multiple */
   let selected: Partial<ArticleLookup>[] = []
-  let loadingFilterSelection = false
 
   // Vide la sélection quand la recherche ou les filtres changent réellement
   $: filterKey = JSON.stringify(filterParams)
@@ -55,18 +52,6 @@
   function toggleAllLoaded() {
     selected = allLoadedSelected ? [] : [...loadedItems]
   }
-
-  async function selectAllFiltered() {
-    loadingFilterSelection = true
-    try {
-      selected = await api<ParamsArticleAPI, Partial<ArticleLookup>[]>(
-        '/api/articles/selection',
-        { params: filterParams }
-      )
-    } finally {
-      loadingFilterSelection = false
-    }
-  }
 </script>
 
 <ArticleMenu bind:this={articleMenu} modeAdmin />
@@ -75,27 +60,15 @@
   <div class="d-flex align-center mb-2">
     <h6>{$isMobile ? 'Articles' : 'Gestion des articles'}</h6>
     <div class="flex-grow-1" />
+    <ArticleBulkActions
+      bind:selected
+      {filterParams}
+      canSelectAllFiltered={allLoadedSelected &&
+        !!$query.hasNextPage &&
+        selected.length === loadedItems.length}
+    />
     <MagicTableFieldSelect bind:fields />
   </div>
-
-  {#if selected.length}
-    <ArticleBulkActions bind:selected />
-  {/if}
-
-  {#if allLoadedSelected && $query.hasNextPage && selected.length === loadedItems.length}
-    <div class="d-flex align-center justify-center mb-2">
-      {#if loadingFilterSelection}
-        <Loader />
-      {:else}
-        <span class="text--secondary mr-1">
-          Les {loadedItems.length} articles affichés sont sélectionnés.
-        </span>
-        <a href="#select-all" on:click|preventDefault={selectAllFiltered}>
-          Sélectionner tous les articles du filtre
-        </a>
-      {/if}
-    </div>
-  {/if}
 
   <MagicTableWrapper
     {query}

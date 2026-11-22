@@ -8,10 +8,11 @@
     mdiUndo,
     mdiArrowULeftTop,
     mdiCancel,
+    mdiSelectAll,
   } from '@mdi/js'
 
-  import { Button, Icon } from '$material'
-  import type { Article, ArticleState } from 'types'
+  import { Button, Icon, Menu, List, ListItem } from '$material'
+  import type { Article, ArticleState, ParamsArticleAPI } from 'types'
   import { api } from '$lib/api'
   import notify from '$lib/notify'
   import { getState } from '$lib/utils'
@@ -22,6 +23,25 @@
 
   /** Articles sélectionnés (complets ou projection légère) */
   export let selected: Partial<Article>[] = []
+  /** Paramètres de la recherche affichée, pour sélectionner tout le filtre */
+  export let filterParams: ParamsArticleAPI
+  /** Propose de sélectionner tous les articles du filtre */
+  export let canSelectAllFiltered = false
+
+  let loadingFilterSelection = false
+  $: busy = $queryBulk.isLoading || loadingFilterSelection
+
+  async function selectAllFiltered() {
+    loadingFilterSelection = true
+    try {
+      selected = await api<ParamsArticleAPI, Partial<Article>[]>(
+        '/api/articles/selection',
+        { params: filterParams }
+      )
+    } finally {
+      loadingFilterSelection = false
+    }
+  }
 
   /** Taille max d'un lot accepté par l'API */
   const BATCH_SIZE = 1000
@@ -150,46 +170,70 @@
   }
 </script>
 
-<div class="bulk-actions simple-card d-flex align-center flex-wrap pa-1 mb-2">
-  <Button icon size="small" on:click={() => (selected = [])} title="Vider la sélection">
-    <Icon path={mdiClose} size="1.1em" />
-  </Button>
-  <span class="mx-2 text-no-wrap">
-    {selected.length} article{selected.length > 1 ? 's' : ''} sélectionné{selected.length >
-    1
-      ? 's'
-      : ''}
-  </span>
-
-  {#if progress}
-    <span class="text--secondary mx-2">{progress}</span>
-  {/if}
-
-  <div class="flex-grow-1" />
-
-  {#each actions as action (action.action)}
-    {@const count = eligibles(action.states).length}
-    <Button
-      text
-      size="small"
-      disabled={!count || $queryBulk.isLoading}
-      on:click={() => run(action)}
-    >
-      <Icon path={action.icon} class="mr-1 {action.iconClass}" size="1.1em" />
-      {action.label} ({count})
+<Menu
+  right
+  disabled={!selected.length || busy}
+  closeOnClick={true}
+  style="max-height: none;"
+>
+  <div slot="activator">
+    <Button depressed disabled={!selected.length || busy} class="mr-2">
+      {#if progress}
+        {progress}
+      {:else if loadingFilterSelection}
+        Chargement…
+      {:else}
+        Sélection ({selected.length})
+      {/if}
     </Button>
-  {/each}
+  </div>
 
-  <Button
-    text
-    size="small"
-    disabled={$queryBulk.isLoading}
-    on:click={() => tagsPrint.print()}
-  >
-    <Icon path={mdiTagOutline} class="mr-1" size="1.1em" />
-    Imprimer les étiquettes
-  </Button>
-</div>
+  <List dense>
+    <ListItem disabled>
+      {selected.length} article{selected.length > 1 ? 's' : ''} sélectionné{selected.length >
+      1
+        ? 's'
+        : ''}
+    </ListItem>
+
+    {#if canSelectAllFiltered}
+      <ListItem on:click={selectAllFiltered}>
+        <span slot="prepend">
+          <Icon path={mdiSelectAll} class="mr-3" size="1.1em" />
+        </span>
+        Sélectionner tous les articles du filtre
+      </ListItem>
+    {/if}
+
+    {#each actions as action (action.action)}
+      {@const count = eligibles(action.states).length}
+      <ListItem disabled={!count} on:click={() => run(action)}>
+        <span slot="prepend">
+          <Icon
+            path={action.icon}
+            class="mr-3 {action.iconClass}"
+            size="1.1em"
+          />
+        </span>
+        {action.label} ({count})
+      </ListItem>
+    {/each}
+
+    <ListItem on:click={() => tagsPrint.print()}>
+      <span slot="prepend">
+        <Icon path={mdiTagOutline} class="mr-3" size="1.1em" />
+      </span>
+      Imprimer les étiquettes ({selected.length})
+    </ListItem>
+
+    <ListItem on:click={() => (selected = [])}>
+      <span slot="prepend">
+        <Icon path={mdiClose} class="mr-3" size="1.1em" />
+      </span>
+      Vider la sélection
+    </ListItem>
+  </List>
+</Menu>
 
 {#if $troc}
   <TagsPrint
