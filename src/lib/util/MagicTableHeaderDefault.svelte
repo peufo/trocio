@@ -13,10 +13,24 @@
   let search = ''
   const queryKey = `search_${field.key}`
 
+  /** Champ de recherche, monté seulement quand le menu est ouvert */
+  let inputElement: HTMLInputElement | undefined
+  // À l'ouverture du menu, affiche la recherche en cours
+  // (ne dépend que de inputElement pour ne pas écraser la saisie en cours)
+  $: showCurrentSearch(inputElement)
+  function showCurrentSearch(input: HTMLInputElement | undefined) {
+    if (input) input.value = search
+  }
+
   onMount(() => {
     search = $params[queryKey] || ''
     if (search) queryParam = { ...queryParam, [queryKey]: search }
   })
+
+  function handleClear() {
+    if (inputElement) inputElement.value = ''
+    handleSearch('')
+  }
 
   function handleSearchEvent(event: CustomEvent<string>) {
     handleSearch(event.detail)
@@ -49,10 +63,14 @@
       {/if}
     </span>
 
-    <SearchTextField on:search={handleSearchEvent} clearable={false} />
+    <SearchTextField
+      bind:inputElement
+      on:search={handleSearchEvent}
+      clearable={false}
+    />
 
     {#if search}
-      <ListItem on:click={() => handleSearch('')} dense>
+      <ListItem on:click={handleClear} dense>
         <span slot="prepend">
           <IconLink icon={faTimes} />
         </span>
