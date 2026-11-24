@@ -1,5 +1,6 @@
 import type { Article } from './article'
 import type { ISubscribe } from './subscribe'
+import type { IPayment } from './payment'
 
 export type DynamicQueryKey =
   | 'exact'
@@ -39,6 +40,11 @@ export interface ParamsArticleAPI extends DynamicQuery<Article>, ParamsAPI {
   providernot?: string[]
   /** Si vrai, les article sans nom seront retourné */
   include_without_name?: boolean
+}
+
+export interface ParamsPaymentAPI extends DynamicQuery<IPayment>, ParamsAPI {
+  /** 'in' : encaissé (montant positif), 'out' : versé (montant négatif) */
+  exact_direction?: 'in' | 'out'
 }
 
 export interface ParamsClient extends ParamsAPI {

@@ -9,14 +9,13 @@
   import IconLink from '$lib/util/IconLink.svelte'
 
   export let field: Partial<FieldInteface>
+  export let queryParam: { [key: string]: any } = {}
   let search = ''
-  let queryKey =
-    !field.key || field.key === 'string'
-      ? `or_search_${field.key}`
-      : `user_search_${field.key}`
+  const queryKey = `search_${field.key}`
 
   onMount(() => {
     search = $params[queryKey] || ''
+    if (search) queryParam = { ...queryParam, [queryKey]: search }
   })
 
   function handleSearchEvent(event: CustomEvent<string>) {
@@ -26,10 +25,14 @@
   function handleSearch(value: string) {
     search = value
     const query = $params
-    if (!search) delete query[queryKey]
-    else {
+    if (!search) {
+      delete query[queryKey]
+      delete queryParam[queryKey]
+    } else {
       query[queryKey] = search
+      queryParam[queryKey] = search
     }
+    queryParam = queryParam
     $goto($url(), query)
   }
 </script>

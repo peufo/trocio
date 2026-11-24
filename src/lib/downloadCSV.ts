@@ -2,7 +2,8 @@ import { api } from '$lib/api'
 import notify from '$lib/notify'
 import { getState } from '$lib/utils'
 import { getFields } from '$lib/user/fields'
-import type { TrocLookup } from 'types'
+import { getPaymentFields } from '$lib/payment/fields'
+import type { TrocLookup, ParamsPaymentAPI } from 'types'
 import objectPath from 'object-path'
 import type { FieldInteface } from 'types/magic'
 
@@ -10,6 +11,7 @@ export default {
   proposed,
   purchases,
   payments,
+  trocPayments,
   subscribes,
 }
 
@@ -63,27 +65,50 @@ export async function subscribes(troc: TrocLookup) {
       params: { trocId: troc._id, limit: 10_000, includResum: true },
     })
 
-    const fields = getFields(troc)
-    function getValue(item: any, field: FieldInteface): string | number {
-      const value =
-        typeof field.getValue === 'function'
-          ? field.getValue(item)
-          : objectPath.get(item, field.key)
-      if (typeof value === 'number') return value.toLocaleString()
-      // Les tabulations et retours à la ligne casseraient les colonnes/lignes
-      if (typeof value === 'string') return value.replace(/[\t\r\n]+/g, ' ')
-      return value
-    }
-    const headers = fields.map((field) => field.label).join('\t')
-    const rows = subscribes.map((sub) =>
-      fields.map((field) => getValue(sub, field)).join('\t')
-    )
-
-    downloadFile('Trocio-subscribes.txt', [headers, ...rows].join('\r\n'))
+    downloadFile('Trocio-subscribes.txt', fieldsToTSV(subscribes, getFields(troc)))
     notify.success('Fichier téléchargé')
   } catch (error) {
     notify.error(error)
   }
+}
+
+/**
+ * Exporte tous les paiements d'un troc correspondant aux filtres
+ */
+export async function trocPayments(filterParams: ParamsPaymentAPI) {
+  try {
+    const payments = await api('/api/payments', {
+      params: { ...filterParams, limit: 10_000 },
+    })
+    const fields = getPaymentFields(filterParams.exact_trocId as string)
+
+    downloadFile('Trocio-payments.txt', fieldsToTSV(payments, fields))
+    notify.success('Fichier téléchargé')
+  } catch {
+    // Erreur déjà notifiée par api() (dont le dépassement du plafond)
+  }
+}
+
+/**
+ * Convertit des items en texte tabulé, une colonne par champ
+ */
+function fieldsToTSV(items: any[], fields: FieldInteface<any>[]): string {
+  function getValue(item: any, field: FieldInteface<any>): string | number {
+    const value =
+      typeof field.getValue === 'function'
+        ? field.getValue(item)
+        : objectPath.get(item, field.key)
+    if (field.type === 'date' && value) return new Date(value).toLocaleString()
+    if (typeof value === 'number') return value.toLocaleString()
+    // Les tabulations et retours à la ligne casseraient les colonnes/lignes
+    if (typeof value === 'string') return value.replace(/[\t\r\n]+/g, ' ')
+    return value
+  }
+  const headers = fields.map((field) => field.label).join('\t')
+  const rows = items.map((item) =>
+    fields.map((field) => getValue(item, field)).join('\t')
+  )
+  return [headers, ...rows].join('\r\n')
 }
 
 function downloadFile(title: string, content: string) {

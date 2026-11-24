@@ -58,6 +58,8 @@
                 active = false
                 queryClient.invalidateQueries('subscribes')
                 queryClient.invalidateQueries('subscribes/resum')
+                queryClient.invalidateQueries('payments')
+                queryClient.invalidateQueries('payments/resum')
             },
         }
     )

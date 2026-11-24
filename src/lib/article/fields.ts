@@ -74,7 +74,7 @@ export function getFields(): FieldInteface<ArticleWithState>[] {
   ]
 }
 
-function selectAsyncUser(trocId: string): SelectAsync {
+export function selectAsyncUser(trocId: string): SelectAsync {
   return {
     path: 'subscribes',
     searchKey: 'q',
