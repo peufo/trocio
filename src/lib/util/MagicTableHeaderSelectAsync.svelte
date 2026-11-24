@@ -46,7 +46,9 @@
     const query = $params
     delete query[key]
     $goto($url(), query)
-    queryParam = {}
+    // Ne retire que ce filtre, pas ceux des autres colonnes
+    delete queryParam[key]
+    queryParam = queryParam
     filterLabel = ''
     active = false
   }

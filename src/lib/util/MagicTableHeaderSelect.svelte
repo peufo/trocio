@@ -34,7 +34,9 @@
     if (option.value === null) {
       delete query[key]
       queryLabel = ''
-      queryParam = {}
+      // Ne retire que ce filtre, pas ceux des autres colonnes
+      delete queryParam[key]
+      queryParam = queryParam
     } else {
       queryLabel = option.label
       queryParam[key] = option.value
