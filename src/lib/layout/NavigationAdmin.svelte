@@ -9,7 +9,7 @@
     faTag,
     faChartPie,
     faCashRegister,
-    faMoneyBillTransfer,
+    faReceipt,
     faAngleDoubleLeft,
     faAngleDoubleRight,
     faEdit,
@@ -46,7 +46,7 @@
     { ref: 'statistic', label: 'Statistiques', icon: faChartPie },
     { ref: 'management_users', label: 'Participants', icon: faUsers },
     { ref: 'management_articles', label: 'Articles', icon: faCubes },
-    { ref: 'payments', label: 'Paiements', icon: faMoneyBillTransfer },
+    { ref: 'payments', label: 'Paiements', icon: faReceipt },
     { ref: 'cash_register', label: 'Caisse', icon: faCashRegister },
   ]
 
