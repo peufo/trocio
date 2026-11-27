@@ -6,6 +6,11 @@ import Subscribe from '../models/subscribe'
 import { populateUser } from './lookup'
 import { dynamicQuery } from './utils'
 import { getRole } from './access'
+import {
+    authorizeArticlesQuery,
+    canSeePeople,
+    sanitizeArticles,
+} from './article_access'
 import type { Article as IArticle } from '../../types'
 import { getMatchesByState, sumOfArticles } from './article_utils'
 
@@ -49,6 +54,7 @@ const ARTICLES_MAX = 10_000
 export const getArticles: RequestHandler = async (req, res, next) => {
     try {
         const { limit = 20, skip = 0 } = req.query
+        await authorizeArticlesQuery(req)
         const { match, sort } = buildArticlesMatch(req.query)
 
         const aggregate = Article.aggregate().match(match).sort(sort)
@@ -60,9 +66,12 @@ export const getArticles: RequestHandler = async (req, res, next) => {
             .skip(+skip || 0)
             .limit(reachMax ? ARTICLES_MAX + 1 : +limit || 20)
 
-        lookupUsers(aggregate)
-        lookupSubscribe(aggregate, 'provider')
-        lookupSubscribe(aggregate, 'buyer')
+        // Les noms de personnes ne sont jamais envoyés à un visiteur anonyme
+        if (canSeePeople(req)) {
+            lookupUsers(aggregate)
+            lookupSubscribe(aggregate, 'provider')
+            lookupSubscribe(aggregate, 'buyer')
+        }
 
         const articles = await aggregate.exec()
         if (articles.length > ARTICLES_MAX)
@@ -70,7 +79,7 @@ export const getArticles: RequestHandler = async (req, res, next) => {
                 `public: Plus de ${ARTICLES_MAX.toLocaleString('fr')} articles correspondent aux filtres, affinez-les`
             )
 
-        res.json(articles)
+        res.json(await sanitizeArticles(req, articles))
     } catch (error) {
         next(error)
     }

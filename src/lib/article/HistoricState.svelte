@@ -29,14 +29,15 @@
         detail: `par ${article.validator?.name}`,
       })
 
-    if (article.sold)
+    if (article.sold) {
+      // Le nom du client n'est envoyé qu'aux admins et caissiers du troc
+      const buyerName = article.buyer?.name || article.buyerSub?.name
       events.push({
         title: 'Vendu',
         time: article.sold,
-        detail: `par ${article.seller?.name} à ${
-          article.buyer?.name || article.buyerSub?.name
-        }`,
+        detail: `par ${article.seller?.name}${buyerName ? ` à ${buyerName}` : ''}`,
       })
+    }
 
     if (article.recover)
       events.push({
