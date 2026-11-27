@@ -5,8 +5,7 @@
         "email": "jonas.voisard@gmail.com"
     },
     "engines": {
-        "node": "18.20.8",
-        "npm": "10.8.2"
+        "node": "18"
     },
     "version": "2.0.1",
     "scripts": {
@@ -109,8 +108,5 @@
         "tabWidth": 4,
         "semi": false,
         "singleQuote": true
-    },
-    "volta": {
-        "node": "18.20.8"
     }
 }
