@@ -1,5 +1,6 @@
 <script lang="ts">
   import { params } from '@roxi/routify'
+  import { faDownload } from '@fortawesome/free-solid-svg-icons'
 
   import MagicTableWrapper from '$lib/util/MagicTableWrapper.svelte'
   import MagicTableFieldSelect from '$lib/util/MagicTableFieldSelect.svelte'
@@ -13,7 +14,9 @@
   import { getFieldsLookup } from '$lib/article/fields'
   import ArticleMenu from '$lib/article/Menu.svelte'
   import ArticleBulkActions from '$lib/article/BulkActions.svelte'
-  import { Checkbox } from '$material'
+  import { Checkbox, ProgressCircular } from '$material'
+  import IconLink from '$lib/util/IconLink.svelte'
+  import downloadCSV from '$lib/downloadCSV'
 
   let searchValue = ''
   let fields = getFieldsLookup($params.trocId)
@@ -52,6 +55,15 @@
   function toggleAllLoaded() {
     selected = allLoadedSelected ? [] : [...loadedItems]
   }
+
+  let downloadPending = false
+  async function handleDownload() {
+    if (downloadPending) return
+    downloadPending = true
+    downloadCSV.trocArticles(filterParams).finally(() => {
+      downloadPending = false
+    })
+  }
 </script>
 
 <ArticleMenu bind:this={articleMenu} modeAdmin />
@@ -67,6 +79,23 @@
         !!$query.hasNextPage &&
         selected.length === loadedItems.length}
     />
+    <div class="download" style:position="relative">
+      <IconLink
+        icon={faDownload}
+        clickable
+        size="18px"
+        tip="Télécharger les articles filtrés"
+        on:click={handleDownload}
+        style={downloadPending ? 'scale: 0.7; opacity: 0.7;' : ''}
+      />
+      {#if downloadPending}
+        <ProgressCircular
+          indeterminate
+          size={36}
+          style="position: absolute; left: 0; top: 0;"
+        />
+      {/if}
+    </div>
     <MagicTableFieldSelect bind:fields />
   </div>
 
@@ -109,6 +138,10 @@
 </div>
 
 <style>
+  .download {
+    margin: 0 1em;
+  }
+
   .select-cell {
     width: 40px;
     padding-right: 0;

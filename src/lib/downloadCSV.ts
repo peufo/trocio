@@ -3,7 +3,8 @@ import notify from '$lib/notify'
 import { getState } from '$lib/utils'
 import { getFields } from '$lib/user/fields'
 import { getPaymentFields } from '$lib/payment/fields'
-import type { TrocLookup, ParamsPaymentAPI } from 'types'
+import { getFieldsLookup as getArticleFields } from '$lib/article/fields'
+import type { TrocLookup, ParamsPaymentAPI, ParamsArticleAPI } from 'types'
 import objectPath from 'object-path'
 import type { FieldInteface } from 'types/magic'
 
@@ -12,6 +13,7 @@ export default {
   purchases,
   payments,
   trocPayments,
+  trocArticles,
   subscribes,
 }
 
@@ -83,6 +85,24 @@ export async function trocPayments(filterParams: ParamsPaymentAPI) {
     const fields = getPaymentFields(filterParams.exact_trocId as string)
 
     downloadFile('Trocio-payments.txt', fieldsToTSV(payments, fields))
+    notify.success('Fichier téléchargé')
+  } catch {
+    // Erreur déjà notifiée par api() (dont le dépassement du plafond)
+  }
+}
+
+/**
+ * Exporte tous les articles d'un troc correspondant aux filtres
+ * Toutes les colonnes sont exportées, même celles masquées dans la table
+ */
+export async function trocArticles(filterParams: ParamsArticleAPI) {
+  try {
+    const articles = await api('/api/articles', {
+      params: { ...filterParams, limit: 10_000 },
+    })
+    const fields = getArticleFields(filterParams.exact_trocId as string)
+
+    downloadFile('Trocio-articles.txt', fieldsToTSV(articles, fields))
     notify.success('Fichier téléchargé')
   } catch {
     // Erreur déjà notifiée par api() (dont le dépassement du plafond)

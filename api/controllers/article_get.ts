@@ -44,6 +44,8 @@ function buildArticlesMatch(query: Request['query']) {
     return { match, sort }
 }
 
+const ARTICLES_MAX = 10_000
+
 export const getArticles: RequestHandler = async (req, res, next) => {
     try {
         const { limit = 20, skip = 0 } = req.query
@@ -51,15 +53,23 @@ export const getArticles: RequestHandler = async (req, res, next) => {
 
         const aggregate = Article.aggregate().match(match).sort(sort)
 
+        // Au plafond (export), on demande une ligne de plus pour détecter
+        // un résultat qui serait tronqué au lieu de le couper en silence
+        const reachMax = (+limit || 20) >= ARTICLES_MAX
         aggregate
             .skip(+skip || 0)
-            .limit((+limit || 20) > 10_000 ? 10_000 : +limit || 20)
+            .limit(reachMax ? ARTICLES_MAX + 1 : +limit || 20)
 
         lookupUsers(aggregate)
         lookupSubscribe(aggregate, 'provider')
         lookupSubscribe(aggregate, 'buyer')
 
         const articles = await aggregate.exec()
+        if (articles.length > ARTICLES_MAX)
+            throw Error(
+                `public: Plus de ${ARTICLES_MAX.toLocaleString('fr')} articles correspondent aux filtres, affinez-les`
+            )
+
         res.json(articles)
     } catch (error) {
         next(error)
