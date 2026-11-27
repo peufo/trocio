@@ -108,5 +108,11 @@
         "tabWidth": 4,
         "semi": false,
         "singleQuote": true
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "bcrypt",
+            "esbuild"
+        ]
     }
 }
