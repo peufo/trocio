@@ -121,10 +121,10 @@ export function getFieldsLookup(
     },
     {
       label: 'Client',
-      hidden: true,
       key: 'buyerSubId',
       type: 'selectAsync',
-      getValue: (art) => art.buyer?.name,
+      // Un client invité n'a pas de compte : son nom est sur son abonnement
+      getValue: (art) => art?.buyer?.name || art?.buyerSub?.name,
       cellWidth: 50,
       selectAsync: selectAsyncUser(trocId),
     },
