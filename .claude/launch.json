@@ -13,7 +13,7 @@
       ],
       "port": 5173,
       "autoPort": false,
-      "url": "https://localhost:5173"
+      "url": "http://localhost:5173"
     }
   ]
 }

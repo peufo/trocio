@@ -21,7 +21,7 @@
   let menuActive = false
   let timeoutMenu: NodeJS.Timer
 
-  QrCode.toDataURL(`https://${location.host}/scanner`).then(
+  QrCode.toDataURL(`${location.origin}/scanner`).then(
     (qr) => (qrcode = qr)
   )
 

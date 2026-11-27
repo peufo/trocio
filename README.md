@@ -16,7 +16,9 @@ Crée un fichier `.env` minimal qui écrase les valeurs de `config.ts`
 cp .env.example .env
 ```
 
-Crée et installe les certificats avec [mkcert](https://github.com/FiloSottile/mkcert)
+Le serveur de dev tourne en HTTP. Pour scanner avec la caméra d'un téléphone
+via l'IP locale, il faut du HTTPS : crée les certificats avec
+[mkcert](https://github.com/FiloSottile/mkcert) puis lance `npm run dev-https`.
 
 ```zsh
 npm run certs            # crée les certificats (localhost + IP locale)

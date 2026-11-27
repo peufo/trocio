@@ -42,10 +42,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
-    https: {
-      key: readIfExists('localhost-key.pem'),
-      cert: readIfExists('localhost.pem'),
-    },
+    https: process.env.DEV_HTTPS ? devCerts() : false,
   },
 })
 
@@ -88,6 +85,16 @@ function headingAnchors() {
   return (tree) => visit(tree)
 }
 
-function readIfExists(path) {
-  return fs.existsSync(path) ? fs.readFileSync(path) : ''
+/**
+ * HTTPS opt-in (DEV_HTTPS=1, cf. `npm run dev-https`) : seulement utile pour
+ * scanner avec la caméra d'un téléphone via l'IP locale. Sur localhost, la
+ * caméra marche en HTTP.
+ */
+function devCerts() {
+  const key = 'localhost-key.pem'
+  const cert = 'localhost.pem'
+  if (!fs.existsSync(key) || !fs.existsSync(cert)) {
+    throw new Error('DEV_HTTPS : certificats absents, lance `npm run certs`')
+  }
+  return { key: fs.readFileSync(key), cert: fs.readFileSync(cert) }
 }
